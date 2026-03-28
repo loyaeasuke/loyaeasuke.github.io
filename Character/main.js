@@ -2,108 +2,122 @@ const csvFileName = 'data.csv';
 let allData = [];
 let myRadarChart = null;
 
-window.onload = function() {
-    fetchCSV();
-};
+window.onload = () => fetchCSV();
 
 async function fetchCSV() {
     try {
         const cacheBuster = `?v=${new Date().getTime()}`;
         const response = await fetch(csvFileName + cacheBuster);
-        
-        if (!response.ok) throw new Error('讀取失敗，請確認 data.csv 是否在同一個資料夾');
-
+        if (!response.ok) throw new Error('無法讀取 CSV 檔案，請檢查路徑與伺服器設定。');
         const csvText = await response.text();
         
         Papa.parse(csvText, {
             header: true,
             skipEmptyLines: true,
-            complete: function(results) {
+            complete: (results) => {
                 allData = results.data;
                 document.getElementById('status').innerText = `已載入 ${allData.length} 位角色`;
-                renderNameList(); 
+                renderNameList();
             }
         });
-    } catch (error) {
-        document.getElementById('status').innerText = '錯誤: ' + error.message;
-    }
+    } catch (e) { document.getElementById('status').innerText = '錯誤: ' + e.message; }
 }
 
 function renderNameList() {
     const list = document.getElementById('nameList');
     list.innerHTML = '';
-
-    allData.forEach((char, index) => {
-        const item = document.createElement('div');
-        item.className = 'name-item';
-        item.innerText = char['名字'] || `角色 ${index + 1}`;
-        item.onclick = () => updateDisplay(char, item);
-        list.appendChild(item);
+    allData.forEach((char, i) => {
+        const div = document.createElement('div');
+        div.className = 'name-item';
+        div.innerText = char['名字'] || `未知角色 ${i+1}`;
+        div.onclick = () => updateDisplay(char, div);
+        list.appendChild(div);
     });
 }
 
-function updateDisplay(char, element) {
-    document.querySelectorAll('.name-item').forEach(el => el.classList.remove('active'));
-    element.classList.add('active');
+function updateDisplay(char, el) {
+    // 樣式切換
+    document.querySelectorAll('.name-item').forEach(item => item.classList.remove('active'));
+    el.classList.add('active');
     
     document.getElementById('welcome').style.display = 'none';
     document.getElementById('detailCard').style.display = 'block';
 
+    // 1. 填入文字資訊 (支援 HTML 語法)
     document.getElementById('displayName').innerText = char['名字'];
-    const iconPath = char['ICON'] || 'https://via.placeholder.com/180';
-    document.getElementById('displayIcon').src = iconPath;
-    document.getElementById('displayIcon').onclick = () => openLightbox(iconPath);
+    document.getElementById('displayJob').innerText = char['職業'] || '';
+    document.getElementById('displayQuote').innerHTML = char['台詞'] || '';
+    document.getElementById('displaySummary').innerHTML = char['概要'] || '';
 
-    const table = document.getElementById('attrTable');
-    table.innerHTML = '';
-    const filterKeys = ['名字', 'ICON', '全身圖', '半身圖', '背景'];
-    
-    for (let key in char) {
-        if (!filterKeys.includes(key) && char[key]) {
-            let value = char[key];
-            if (key.includes('圖') || key.includes('背景')) {
-                value = `<button onclick="openLightbox('${char[key]}')">查看圖片</button>`;
-            }
-            table.innerHTML += `<tr><td class="attr-label">${key}</td><td>${value}</td></tr>`;
-        }
-    }
-    updateRadarChart(char);
+    // 2. 處理三張圖片的顯示/隱藏與不裁切縮放
+    handleImageDisplay('imgIcon', char['ICON'], '頭像');
+    handleImageDisplay('imgFull', char['全身圖'], '全身立繪');
+    handleImageDisplay('imgHalf', char['半身圖'] || char['背景'], '相關圖片');
+
+    // 3. 填入橫向數值網格
+    const gridValues = document.getElementById('gridValues');
+    const attrKeys = ['STR', 'CON', 'POW', 'DEX', 'APP', 'SIZ', 'INT', 'EDU'];
+    gridValues.innerHTML = attrKeys.map(key => `<div>${char[key] || 0}</div>`).join('');
+
+    // 4. 更新雷達圖
+    updateRadarChart(char, attrKeys);
 }
 
-function updateRadarChart(char) {
-    const labels = ['STR', 'CON', 'POW', 'DEX', 'APP', 'SIZ', 'INT'];
+// 核心功能：判斷圖片是否有資料，無資料則完全隱藏該區塊
+function handleImageDisplay(imgId, charData, labelText) {
+    const imgEl = document.getElementById(imgId);
+    const boxEl = imgEl.parentElement; 
+    const labelEl = boxEl.querySelector('.img-label');
+
+    // 檢查資料是否存在且非空字串
+    if (charData && charData.trim() !== "") {
+        boxEl.style.display = "block"; // 顯示區塊
+        imgEl.src = charData;
+        if (labelEl) labelEl.innerText = labelText;
+        // 綁定點擊放大功能
+        boxEl.onclick = () => openLightbox(charData);
+    } else {
+        boxEl.style.display = "none"; // 隱藏區塊，讓 Grid 自動重排
+    }
+}
+
+function updateRadarChart(char, labels) {
     const values = labels.map(l => parseInt(char[l]) || 0);
-
-    if (myRadarChart) myRadarChart.destroy();
-
     const ctx = document.getElementById('radarChart').getContext('2d');
+    
+    if (myRadarChart) myRadarChart.destroy();
+    
     myRadarChart = new Chart(ctx, {
         type: 'radar',
         data: {
             labels: labels,
             datasets: [{
-                label: '能力數值',
                 data: values,
                 backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                borderColor: 'rgba(52, 152, 219, 1)',
+                borderColor: '#3498db',
                 borderWidth: 2,
-                pointBackgroundColor: 'rgba(52, 152, 219, 1)'
+                pointBackgroundColor: '#3498db',
+                pointRadius: 3
             }]
         },
         options: {
-            scales: {
-                r: {
-                    suggestedMin: 0,
-                    suggestedMax: 20,
-                    ticks: { display: false }
-                }
-            }
+            responsive: true,
+            maintainAspectRatio: true,
+            scales: { 
+                r: { 
+                    suggestedMin: 0, 
+                    suggestedMax: 20, 
+                    ticks: { display: false },
+                    grid: { color: '#e1e8ed' },
+                    angleLines: { color: '#e1e8ed' }
+                } 
+            },
+            plugins: { legend: { display: false } }
         }
     });
 }
 
 function openLightbox(src) {
-    if (!src) return;
     const lb = document.getElementById('lightbox');
     const lbImg = document.getElementById('lightboxImg');
     lbImg.src = src;

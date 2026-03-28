@@ -1,33 +1,68 @@
-body { font-family: "Microsoft JhengHei", sans-serif; display: flex; height: 100vh; margin: 0; background: #f0f2f5; color: #333; overflow: hidden; }
+/* 基礎設定 */
+body { font-family: "Microsoft JhengHei", sans-serif; display: flex; height: 100vh; margin: 0; background: #f4f7f9; color: #333; }
 
-/* 側欄 */
-.sidebar { width: 280px; background: #2c3e50; color: white; display: flex; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
-.sidebar h2 { padding: 25px 20px; background: #1a252f; margin: 0; font-size: 1.2rem; text-align: center; border-bottom: 1px solid #2c3e50; }
-#status { padding: 10px; font-size: 0.8rem; color: #95a5a6; text-align: center; background: #1a252f; border-bottom: 1px solid #3e4f5f; }
-
-/* 名單列表 */
+/* 側邊欄 */
+.sidebar { width: 260px; background: #2c3e50; color: white; display: flex; flex-direction: column; flex-shrink: 0; }
+.sidebar h2 { padding: 25px 20px; background: #1a252f; margin: 0; font-size: 1.2rem; text-align: center; }
+#status { padding: 10px; font-size: 0.8rem; color: #95a5a6; text-align: center; border-bottom: 1px solid #3e4f5f; }
 #nameList { flex: 1; overflow-y: auto; }
-.name-item { padding: 18px 25px; cursor: pointer; border-bottom: 1px solid #34495e; transition: 0.2s; font-size: 1rem; }
+.name-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; transition: 0.2s; }
 .name-item:hover { background: #34495e; }
-.name-item.active { background: #3498db; font-weight: bold; border-left: 6px solid #fff; }
+.name-item.active { background: #3498db; font-weight: bold; border-left: 5px solid #fff; }
 
-/* 主內容區 */
+/* 主區域 */
 .main-content { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-.card { background: white; width: 100%; max-width: 900px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); padding: 35px; display: none; align-self: flex-start; }
-.char-layout { display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap; }
+.card { display: none; background: white; width: 100%; max-width: 950px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); align-self: flex-start; }
 
-/* 角色資訊 */
-.info-side { flex: 1; min-width: 280px; }
-.char-icon { width: 180px; height: 180px; border-radius: 12px; object-fit: cover; border: 4px solid #f8f9fa; cursor: pointer; transition: transform 0.2s; background: #eee; }
-.char-icon:hover { transform: scale(1.03); }
-.attr-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-.attr-table td { padding: 12px; border-bottom: 1px solid #eee; }
-.attr-label { color: #7f8c8d; font-weight: bold; width: 100px; }
+/* 圖片展示區：使用 Grid 達成自動填滿與隱藏後的重排 */
+.image-gallery { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    gap: 20px; 
+    margin-bottom: 35px; 
+}
+.img-box { 
+    height: 220px; 
+    position: relative; 
+    border-radius: 10px; 
+    overflow: hidden; 
+    background: #f8f9fa; 
+    border: 1px solid #e1e8ed; 
+    display: none; /* 預設隱藏，由 JS 判斷顯示 */
+}
+.img-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: contain; /* 關鍵：等比例縮放，不裁切圖片 */
+    transition: transform 0.3s; 
+}
+.img-box:hover img { transform: scale(1.05); }
+.img-label { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.6); color: white; font-size: 0.8rem; text-align: center; padding: 6px 0; pointer-events: none; }
+.clickable { cursor: pointer; }
+
+/* 中間區塊：名字與雷達圖 */
+.mid-section { display: flex; gap: 40px; margin-bottom: 35px; align-items: flex-start; }
+.text-info { flex: 1; }
+#displayName { margin: 0 0 8px 0; font-size: 2.4rem; color: #1a252f; }
+.job-tag { color: #7f8c8d; font-size: 1.1rem; margin-bottom: 25px; font-weight: 500; }
+
+/* 屬性網格 */
+.attr-grid { border: 1px solid #e1e8ed; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.grid-header, .grid-body { display: grid; grid-template-columns: repeat(8, 1fr); text-align: center; }
+.grid-header { background: #f0f3f5; font-size: 0.85rem; font-weight: bold; padding: 12px 0; border-bottom: 1px solid #e1e8ed; color: #5a6a7a; }
+.grid-body { padding: 20px 0; font-weight: bold; font-size: 1.2rem; background: #fff; color: #333; }
 
 /* 雷達圖容器 */
-.chart-side { flex: 1.2; min-width: 350px; }
+.chart-container { width: 340px; flex-shrink: 0; }
+
+/* 下方文字區：延伸寬度 */
+.bottom-section { border-top: 1px solid #eee; padding-top: 30px; width: 100%; }
+.detail-row { display: flex; margin-bottom: 25px; line-height: 1.8; }
+.detail-label { width: 90px; font-weight: bold; color: #95a5a6; flex-shrink: 0; padding-top: 2px; }
+.detail-value { flex: 1; color: #2c3e50; font-size: 1rem; }
+.quote { font-style: italic; color: #34495e; font-size: 1.15rem; border-left: 4px solid #3498db; padding-left: 15px; }
+.summary { white-space: normal; } /* 因為改用 HTML 語法，建議設為 normal 以免跟 <br> 衝突 */
 
 /* 燈箱 */
-.lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; cursor: zoom-out; }
-.lightbox img { max-width: 90%; max-height: 85%; border-radius: 8px; }
-.lightbox p { color: white; margin-top: 15px; }
+.lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 10000; justify-content: center; align-items: center; cursor: zoom-out; }
+.lightbox img { max-width: 95%; max-height: 95%; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
