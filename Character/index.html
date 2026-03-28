@@ -1,8 +1,47 @@
-<div class="sidebar">
-    <h2>角色資料庫</h2>
-    <div class="search-area">
-        <input type="text" id="searchInput" placeholder="搜尋角色名稱...">
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRPG 角色資料庫</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>角色名單</h2>
+        <div id="status">正在載入資料...</div>
+        <div id="nameList"></div>
     </div>
-    <div id="status">正在載入...</div>
-    <div id="nameList"></div>
-</div>
+
+    <div class="main-content">
+        <div id="welcome">
+            <h2>資料庫已就緒</h2>
+            <p>請從左側點選角色以查看數值與立繪</p>
+        </div>
+        
+        <div id="detailCard" class="card">
+            <div class="char-layout">
+                <div class="info-side">
+                    <img id="displayIcon" class="char-icon" src="" title="點擊放大">
+                    <h1 id="displayName"></h1>
+                    <table class="attr-table" id="attrTable"></table>
+                </div>
+                
+                <div class="chart-side">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lightbox" class="lightbox" onclick="this.style.display='none'">
+        <img id="lightboxImg" src="">
+        <p>點擊任何處關閉</p>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
