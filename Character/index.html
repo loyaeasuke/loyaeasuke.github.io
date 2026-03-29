@@ -2,8 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRPG 角色資料庫</title>
+    <title>角色資訊資料庫</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -12,62 +11,62 @@
 
     <div class="sidebar">
         <h2>角色名單</h2>
-        <div id="status">正在載入資料...</div>
+        <div id="status">載入中...</div>
         <div id="nameList"></div>
     </div>
 
     <div class="main-content">
         <div id="welcome">
-            <h2>資料庫已就緒</h2>
-            <p>請從左側點選角色以查看詳細資料</p>
+            <h1>請選擇一位角色以檢視詳情</h1>
         </div>
-        
-        <div id="detailCard" class="card">
-            <div class="image-gallery">
-                <div class="img-box clickable">
-                    <img id="imgIcon" src="" alt="頭像">
-                    <div class="img-label">頭像</div>
-                </div>
-                <div class="img-box clickable">
-                    <img id="imgFull" src="" alt="全身圖">
-                    <div class="img-label">全身圖</div>
-                </div>
-                <div class="img-box clickable">
-                    <img id="imgHalf" src="" alt="半身/背景">
-                    <div class="img-label">圖片 3</div>
-                </div>
-            </div>
 
-            <div class="mid-section">
-                <div class="text-info">
-                    <h1 id="displayName"></h1>
-                    <div id="displayJob" class="job-tag"></div>
-                    
-                    <div class="attr-grid">
-                        <div class="grid-header">
-                            <div>STR</div><div>CON</div><div>POW</div><div>DEX</div>
-                            <div>APP</div><div>SIZ</div><div>INT</div><div>EDU</div>
-                        </div>
-                        <div id="gridValues" class="grid-body">
-                            </div>
+        <div id="detailCard" class="card">
+            <div id="cardContent" class="card-content-wrapper">
+                
+                <div id="cardBgLayer" class="card-bg-layer"></div>
+
+                <div class="image-gallery">
+                    <div class="img-box">
+                        <img id="imgIcon" src="" alt="頭像">
+                        <div class="img-label">頭像</div>
+                    </div>
+                    <div class="img-box">
+                        <img id="imgExpressions" src="" alt="表情差分">
+                        <div class="img-label">表情差分</div>
                     </div>
                 </div>
-                
-                <div class="chart-container">
-                    <canvas id="radarChart"></canvas>
-                </div>
-            </div>
 
-            <div class="bottom-section">
-                <div class="detail-row">
-                    <div class="detail-label">台詞</div>
-                    <div id="displayQuote" class="detail-value quote"></div>
+                <div class="mid-section">
+                    <div class="text-info">
+                        <h1 id="displayName"></h1>
+                        <div id="displayJob" class="job-tag"></div>
+                        
+                        <div class="attr-grid">
+                            <div class="grid-header">
+                                <div>STR</div><div>CON</div><div>POW</div><div>DEX</div>
+                                <div>APP</div><div>SIZ</div><div>INT</div><div>EDU</div>
+                            </div>
+                            <div id="gridValues" class="grid-body"></div>
+                        </div>
+
+                        <div class="quote-container">
+                            <div id="displayQuote" class="quote"></div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
                 </div>
-                <div class="detail-row">
-                    <div class="detail-label">概要</div>
-                    <div id="displaySummary" class="detail-value summary"></div>
+
+                <div class="bottom-section">
+                    <span class="summary-label">概要</span>
+                    <div id="displaySummary" class="summary"></div>
+
+                    <span class="summary-label">經歷</span>
+                    <div id="displayHistory" class="summary"></div>
                 </div>
-            </div>
+            </div> 
         </div>
     </div>
 
