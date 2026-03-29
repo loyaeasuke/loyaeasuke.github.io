@@ -1,0 +1,43 @@
+方法一：使用 VS Code 的 Live Server（最推薦）
+如果你是用 VS Code 寫程式，這是最專業也最方便的方法。
+
+開啟 VS Code，點選左側邊欄的 Extensions（擴充功能） 圖示（或是按 Ctrl+Shift+X）。
+
+搜尋 「Live Server」 並安裝（作者是 Ritwick Dey）。
+
+安裝好後，回到你的 index.html 畫面。
+
+在編輯器右下角會出現一個 「Go Live」 的小按鈕，點下去。
+
+瀏覽器會自動彈出，網址會變成 http://127.0.0.1:5500/index.html。
+
+優點： 只要你存檔（Ctrl+S），網頁會自動刷新，立刻看到結果。
+
+方法二：使用 Python (免安裝軟體)
+如果你電腦裡已經有裝 Python（很多開發者環境都有），這是一行指令就能解決的事。
+
+在你的專案資料夾（有 index.html 的那個）空白處，按住 Shift + 滑鼠右鍵。
+
+選擇 「在此處開啟 PowerShell 視窗」 或 「命令提示字元」。
+
+輸入以下指令並按 Enter：
+
+Bash
+python -m http.server 8000
+打開瀏覽器，網址輸入：localhost:8000。
+
+優點： 不需要安裝任何編輯器插件，快速直接。
+
+方法三：使用 Web Server for Chrome (最直覺)
+如果你不想用指令，也不想用 VS Code，可以使用 Chrome 的擴充外掛。
+
+到 Chrome 線上應用程式商店搜尋 「Web Server for Chrome」 並安裝。
+
+啟動該 App 後，點擊 「CHOOSE FOLDER」 選擇你的專案資料夾。
+
+點擊下方提供的連結（例如 http://127.0.0.1:8887）。
+
+優點： 全介面操作，適合不習慣看程式碼視窗的人。
+
+為什麼這能解決「Failed to fetch」？
+當你使用上述方法時，網址會從 file:/// 變成 http://。這告訴瀏覽器：「這是一個正式的網頁環境」，這時 fetch('data.csv') 就會被允許執行，就像在 GitHub Pages 上一樣。
