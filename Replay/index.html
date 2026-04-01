@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>團錄系統導覽</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">團錄清單</div>
+            <div id="menu-container">
+                <div class="loading">正在載入清單...</div>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div id="placeholder-text" class="placeholder">
+                <p>點選左側團錄後，顯示指定連結頁面</p>
+            </div>
+            <iframe id="content-frame" name="content-frame" src=""></iframe>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

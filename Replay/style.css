@@ -1,0 +1,140 @@
+/* 基本重置 */
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* --- 左側側邊欄 --- */
+.sidebar {
+    width: 350px;
+    background-color: #1a1a4b;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+.sidebar-header {
+    padding: 30px 20px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#menu-container {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+/* --- 分類標題樣式 --- */
+.category-title {
+    background-color: #ffffff;
+    color: #1a1a4b;
+    padding: 12px 20px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between; /* 讓文字與箭頭分居兩端 */
+    align-items: center;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.category-title:hover {
+    background-color: #f0f0f0;
+}
+
+/* 右側小箭頭圖示 */
+.category-title::after {
+    content: '▲';
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+/* 當處於收合狀態時，箭頭旋轉 */
+.category-title.collapsed::after {
+    transform: rotate(180deg);
+}
+
+/* --- 分類項目容器 (收合核心) --- */
+.category-group {
+    max-height: 1000px; /* 給予足夠大的高度以利動畫展現 */
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0, 1, 0, 1); /* 平滑收合動畫 */
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* 隱藏狀態 */
+.category-group.is-hidden {
+    max-height: 0;
+}
+
+/* --- 選單項目按鈕 --- */
+.menu-item {
+    padding: 12px 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 1rem;
+    border-left: 4px solid transparent;
+}
+
+.menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.menu-item.active {
+    background-color: #2e2e6e;
+    color: white;
+    font-weight: bold;
+    border-left: 4px solid #ffffff;
+}
+
+/* --- 右側內容區 --- */
+.main-content {
+    flex-grow: 1;
+    background-color: #ffffff;
+    position: relative;
+}
+
+#content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: none;
+}
+
+.placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #1a1a4b;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+/* 捲軸美化 */
+#menu-container::-webkit-scrollbar { width: 5px; }
+#menu-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
