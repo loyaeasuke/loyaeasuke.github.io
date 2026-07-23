@@ -387,10 +387,9 @@ function avatarHTML(s, cls, override){
   const url = (override && override.trim()) || (s && s['頭像網址']) || '';
   const nm  = (s && (s['顯示名稱']||s['發言人'])) || '';
   const col = (s && s['代表色']) || '#888888';
-  const ini = esc(nm.slice(0,1));
-  if(url) return `<img class="avatar ${cls}" src="${esc(url)}" alt="${esc(nm)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ph ${cls}',style:'background:${col}',textContent:'${ini}'}))">`;
+  if(url) return `<img class="avatar ${cls}" src="${esc(url)}" alt="${esc(nm)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ph ${cls}',style:'background:${col}'}))">`;
   if(!s) return '';
-  return `<span class="avatar ph ${cls}" style="background:${esc(col)}">${ini}</span>`;
+  return `<span class="avatar ph ${cls}" style="background:${esc(col)}"></span>`;
 }
 
 function render(){
