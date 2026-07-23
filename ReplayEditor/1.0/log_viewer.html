@@ -17,6 +17,9 @@
   --pc:#355a7a; --pc-bg:#eef2f6; --pc-line:#c3d0dd; --pc-accent:#b98a2e;
   --battle:#a83232; --battle-bg:#f6e9e7; --battle-end:#5a6472; --battle-end-bg:#eceef1;
   --epi:#8a6d3b; --epi-bg:#f5f0e5; --epi-line:#d9cca9;
+  --pro:#46707f; --pro-bg:#e9f0f2; --pro-line:#b5cdd5;
+  --round:#8c3d3d; --round-bg:#f7ecea;
+  --hidden:#2b2b38; --hidden-ink:#d8d4e2; --hidden-accent:#9d8fc4;
   --radius:3px;
   --mono:"Roboto Mono","DejaVu Sans Mono",ui-monospace,"Noto Sans TC",monospace;
   --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
@@ -204,8 +207,41 @@ input[type=search],select{font-family:var(--sans);font-size:13px;padding:5px 9px
 .epilogue.start{border-top:3px double var(--epi)}
 .epilogue.end{border-bottom:3px double var(--epi)}
 
-.sys{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;margin:6px 0;
-  border-top:1px dotted var(--line);border-bottom:1px dotted var(--line);padding:3px 0}
+/* 前日談：與後日談對稱，改用晨青色調 */
+.prologue{margin:52px auto;max-width:74%;text-align:center;padding:18px 26px;background:var(--pro-bg);
+  border:1px solid var(--pro-line);border-radius:2px;color:var(--pro)}
+.prologue .orn{font-size:16px;letter-spacing:.5em;text-indent:.5em;display:block;opacity:.85}
+.prologue .txt{font-family:var(--serif);font-size:clamp(18px,3.2vw,23px);
+  letter-spacing:.34em;text-indent:.34em;display:block;margin:8px 0}
+.prologue .en{font-family:var(--mono);font-size:10px;letter-spacing:.42em;text-indent:.42em;opacity:.75;display:block}
+.prologue.start{border-top:3px double var(--pro)}
+.prologue.end{border-bottom:3px double var(--pro)}
+
+/* 回合標示 */
+.round{display:flex;align-items:center;gap:12px;margin:22px 0 14px}
+.round .ln{flex:1;height:1px;background:var(--round);opacity:.28}
+.round .pill{flex:0 0 auto;display:inline-flex;align-items:baseline;gap:9px;padding:4px 15px;
+  background:var(--round-bg);border:1px solid var(--round);border-radius:999px}
+.round .pill .t{font-family:var(--serif);font-size:14px;letter-spacing:.2em;color:var(--round);font-weight:700}
+.round .pill .n{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--round);opacity:.7}
+
+/* 隱藏資訊：團務當下玩家看不到的幕後情報 */
+.hidden-info{display:flex;align-items:flex-start;gap:12px;margin:10px 0;padding:9px 14px;font-size:13px;
+  background:var(--hidden);border-left:3px solid var(--hidden-accent);border-radius:var(--radius);
+  background-image:repeating-linear-gradient(135deg,rgba(157,143,196,.10) 0 7px,transparent 7px 14px)}
+.hidden-info .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--hidden);
+  background:var(--hidden-accent);padding:2px 7px;border-radius:2px;flex:0 0 auto;
+  line-height:1.4;margin-top:3px}
+.hidden-info .lb{font-family:var(--mono);letter-spacing:.12em;color:var(--hidden-accent);
+  flex:0 0 auto;line-height:1.75}
+.hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:1.75;
+  color:var(--hidden-ink);white-space:pre-wrap;word-break:break-word}
+
+.sys{display:flex;align-items:flex-start;gap:12px;font-family:var(--mono);font-size:13px;
+  color:var(--muted);margin:6px 0;border-top:1px dotted var(--line);border-bottom:1px dotted var(--line);
+  padding:4px 14px}
+.sys .lb{flex:0 0 auto;letter-spacing:.12em;font-weight:700}
+.sys .tx{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word}
 
 .line.info{background:var(--info-bg);border:1px solid #e0cfa8;border-left:3px solid var(--info);
   font-family:var(--serif);padding:16px 20px;margin:20px 0}
@@ -308,6 +344,38 @@ const state={f:{main:1,other:1,info:1,secret:1,dice:1},who:'',q:''};
 const spkMap=()=>Object.fromEntries(SPK.map(s=>[s['發言人'],s]));
 const esc=s=>(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 
+const CN_NUM='零一二三四五六七八九';
+function cnNum(n){
+  n=parseInt(n,10);
+  if(isNaN(n)) return '';
+  if(n<0) return String(n);
+  if(n<=10) return n===10?'十':CN_NUM[n];
+  if(n<20) return '十'+(n%10?CN_NUM[n%10]:'');
+  if(n<100){ const t=Math.floor(n/10), o=n%10; return CN_NUM[t]+'十'+(o?CN_NUM[o]:''); }
+  return String(n);
+}
+function lightenFor(hex,minL){
+  let h=(hex||'').trim().replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return '';
+  let r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  const lum=()=>(0.299*r+0.587*g+0.114*b)/255;
+  let guard=0;
+  while(lum()<minL && guard++<24){ r=Math.round(r+(255-r)*0.18); g=Math.round(g+(255-g)*0.18); b=Math.round(b+(255-b)*0.18); }
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+// 從內容開頭抓出 [ 名字 ]，回傳 [名字, 其餘內容]
+function splitBracketName(text){
+  const m=String(text||'').match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
+  return m ? [m[1].trim(), String(text).slice(m[0].length)] : ['', String(text||'')];
+}
+function roundNo(text){
+  const s=String(text||'');
+  const arrow=s.match(/(-?\d+)\s*(?:→|->|＞|=>)\s*(-?\d+)/);   // 「回合 : 1 → 2」取箭頭後
+  if(arrow) return parseInt(arrow[2],10);
+  const m=s.match(/(-?\d+)/);                                  // 否則取第一個數字
+  return m?parseInt(m[1],10):null;
+}
 function resultClass(w){
   if(/決定性|大成功|critical/i.test(w)) return 'crit';
   if(/致命|大失敗|fumble/i.test(w)) return 'fumble';
@@ -330,7 +398,8 @@ function render(){
   for(const r of LOG){
     const type=r['類型']||'talk', ch=r['頻道']||'main';
     const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret')?'secret':ch;
-    if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
+    if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
+        'prologue_start','prologue_end','round','hidden'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
     else if(!state.f[kind]) continue;
     else if(kind==='dice' && ch==='secret' && !state.f.secret) continue;
     if(state.who && r['發言人']!==state.who && type!=='scene') continue;
@@ -366,7 +435,44 @@ function render(){
         <span class="en">AFTER STORY ／ END</span><span class="orn">❦</span></section>`);
       continue;
     }
-    if(type==='system'){ out.push(`<div class="sys">${esc(r['內容'])}</div>`); continue; }
+    if(type==='prologue_start'){
+      out.push(`<section class="prologue start"><span class="orn">❖</span>
+        <span class="txt">${esc(r['內容']||'前日談開始')}</span>
+        <span class="en">PROLOGUE</span></section>`);
+      continue;
+    }
+    if(type==='prologue_end'){
+      out.push(`<section class="prologue end"><span class="txt">${esc(r['內容']||'前日談結束')}</span>
+        <span class="en">PROLOGUE ／ END</span><span class="orn">❖</span></section>`);
+      continue;
+    }
+    if(type==='round'){
+      const no=roundNo(r['內容']);
+      const label=(no!==null&&!isNaN(no))?`第${cnNum(no)}回合`:(String(r['內容']||'').trim()||'回合');
+      out.push(`<section class="round"><span class="ln"></span>
+        <span class="pill"><span class="t">${esc(label)}</span>
+        ${(no!==null&&!isNaN(no))?`<span class="n">ROUND ${String(no).padStart(2,'0')}</span>`:''}</span>
+        <span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='hidden'){
+      let hn=r['發言人']||'', hb=r['內容']||'';
+      if(!hn){ const sp=splitBracketName(hb); hn=sp[0]; hb=sp[1]; }
+      const hc=lightenFor((M[hn]&&M[hn]['代表色'])||'',0.62);
+      out.push(`<div class="hidden-info"><span class="mk">HIDDEN</span>
+        ${hn?`<span class="lb" style="${hc?`color:${esc(hc)}`:''}">${esc((M[hn]&&M[hn]['顯示名稱'])||hn)}</span>`:''}
+        <span class="tx">${esc(hb)}</span></div>`);
+      continue;
+    }
+    if(type==='system'){
+      let nm=r['發言人']||'', body=r['內容']||'';
+      if(!nm){ const sp=splitBracketName(body); nm=sp[0]; body=sp[1]; }
+      const sc=(M[nm]&&M[nm]['代表色'])||'';
+      out.push(`<div class="sys">
+        ${nm?`<span class="lb" style="${sc?`color:${esc(sc)}`:''}">${esc((M[nm]&&M[nm]['顯示名稱'])||nm)}</span>`:''}
+        <span class="tx">${esc(body)}</span></div>`);
+      continue;
+    }
     if(type==='end'){
       out.push(`<section class="endmark"><div class="rules"></div>
         <span class="word">SESSION END</span>
@@ -568,8 +674,12 @@ function convertLog(htmlText){
     else if(inner){ target=inner; }
 
     const flat = text.replace(/\n/g,'');
-    let type='talk', content=text;
-    if(name==='system'){ type='system'; }
+    let type='talk', content=text, sysName='';
+    if(name==='system'){
+      type=/回合/.test(text) ? 'round' : 'system';
+      const m=text.match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
+      if(m){ sysName=m[1].trim(); content=text.slice(m[0].length); }
+    }
     else if(SEP.test(flat) || (flat.split('─').length-1)>=4){
       type='scene';
       content = flat.replace(/[\s\u3000─—–\-]+/g,' ').trim();
@@ -577,9 +687,10 @@ function convertLog(htmlText){
     else if(DICE.test(text) && (text.includes('＞')||text.includes('>'))){ type='dice'; }
     else if(channel==='info'){ type='info'; }
 
-    if(name && name!=='system'){ (colors[name]=colors[name]||{})[color]=(colors[name][color]||0)+1; }
+    const cname = name==='system' ? sysName : name;
+    if(cname){ (colors[cname]=colors[cname]||{})[color]=(colors[cname][color]||0)+1; }
     rows.push({'序號':i+1,'類型':type,'頻道':channel,'秘匿對象':target,
-               '發言人':name==='system'?'':name,'頭像':'','內容':content,'備註':''});
+               '發言人':name==='system'?sysName:name,'頭像':'','內容':content,'備註':''});
   });
 
   const prev = Object.fromEntries(SPK.map(s=>[s['發言人'],s]));   // 保留既有頭像設定
