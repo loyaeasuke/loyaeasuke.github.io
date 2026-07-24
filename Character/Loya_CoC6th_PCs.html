@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>洛雅的CoC 6th PC一覽</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Oswald:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --ink:#12141a;
+  --ink-soft:#1b1f28;
+  --ink-line:#2b3140;
+  --paper:#e6e8ec;
+  --card:#ffffff;
+  --text:#171a21;
+  --text-mid:#5c6371;
+  --text-dim:#8b919d;
+  --hair:#dcdfe6;
+  --accent:#c0392b;
+  --accent-rgb:192,57,43;
+  --accent-text:#a8321f;
+  --sans:"Noto Sans TC","Hiragino Sans","Microsoft JhengHei",system-ui,sans-serif;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --serif-name:"Noto Serif JP","Noto Serif TC","Hiragino Mincho ProN","Yu Mincho",
+               "YuMincho","MS Mincho","Songti TC","PMingLiU",serif;
+  --util:"Oswald","Noto Sans TC",sans-serif;
+  --sidebar-w:268px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--paper);color:var(--text);
+  font-family:var(--sans);font-weight:400;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+}
+button{font-family:inherit;color:inherit}
+img{display:block}
+
+/* ── 工具列（匯出後不存在） ───────────────────────── */
+#toolbar{
+  position:sticky;top:0;z-index:60;
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  padding:10px 16px;background:var(--ink);color:#e7e9ee;
+  border-bottom:1px solid #000;
+}
+#toolbar .brand{
+  font-family:var(--serif);font-weight:700;font-size:13.5px;letter-spacing:.04em;
+  color:#dfe3ea;margin-right:6px;padding-right:12px;
+  border-right:1px solid #39404f;white-space:nowrap;
+}
+.tbtn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;border:1px solid #39404f;border-radius:2px;
+  background:#1e2330;color:#e7e9ee;font-size:13px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.tbtn:hover{background:#2a3140;border-color:#525c70}
+.tbtn.primary{background:#e7e9ee;color:#12141a;border-color:#e7e9ee;font-weight:500}
+.tbtn.primary:hover{background:#fff}
+.tbtn:disabled{opacity:.4;cursor:not-allowed}
+#titleInput{
+  padding:7px 10px;border:1px solid #39404f;border-radius:2px;
+  background:#1e2330;color:#e7e9ee;font-size:13px;width:230px;font-family:inherit;
+}
+#titleInput:focus{outline:none;border-color:#7c88a3}
+.tswitch{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#a9b0be;cursor:pointer}
+#status{font-size:12.5px;color:#8b93a3;margin-left:auto}
+#status b{color:#e7e9ee;font-weight:500}
+.hint{
+  padding:10px 16px;background:#191d27;color:#8b93a3;font-size:12.5px;
+  border-bottom:1px solid #000;line-height:1.7;
+}
+.hint code{font-family:var(--util);color:#c7cddb;background:#242a37;padding:1px 5px;border-radius:2px}
+
+/* ── 版面 ─────────────────────────────────────── */
+#toolbar,.hint{flex:none}
+#root{display:flex;flex:1 1 auto;min-height:0}
+
+/* 側欄 */
+#side{
+  width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+  background:var(--ink);color:#cfd4de;
+  display:flex;flex-direction:column;min-height:0;
+  box-shadow:1px 0 0 rgba(0,0,0,.35);
+}
+#sideHead{padding:20px 20px 16px;border-bottom:1px solid var(--ink-line)}
+#sideTitle{
+  font-family:var(--serif);font-weight:700;font-size:17px;line-height:1.4;
+  color:#fff;letter-spacing:.02em;margin:0 0 12px;
+}
+#search{
+  width:100%;padding:8px 10px;font-size:13px;font-family:inherit;
+  background:var(--ink-soft);border:1px solid var(--ink-line);
+  border-radius:2px;color:#e7e9ee;
+}
+#search::placeholder{color:#5d6579}
+#homeBtn{
+  width:100%;margin-top:9px;padding:8px 10px;font-size:12.5px;font-family:inherit;
+  display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;
+  background:var(--ink-soft);border:1px solid var(--ink-line);border-radius:2px;
+  color:#aeb6c4;transition:background .14s,color .14s,border-color .14s;
+}
+#homeBtn svg{flex:none;opacity:.8}
+#homeBtn:hover,#homeBtn[aria-current="true"]{background:#252b39;color:#fff;border-color:#4a5364}
+#homeBtn:focus-visible{outline:2px solid #7c88a3;outline-offset:1px}
+#search:focus{outline:none;border-color:#7c88a3}
+#list{flex:1;overflow-y:auto;padding-bottom:24px;scrollbar-width:thin}
+#list::-webkit-scrollbar{width:8px}
+#list::-webkit-scrollbar-thumb{background:#333a49;border-radius:4px}
+#sideFoot{
+  flex:none;padding:13px 20px;border-top:1px solid var(--ink-line);
+  font-size:10.5px;line-height:1.65;letter-spacing:.03em;color:#5f6879;
+}
+.grp{
+  display:flex;align-items:center;gap:8px;
+  padding:20px 20px 8px;font-family:var(--util);font-size:11px;
+  letter-spacing:.22em;text-transform:uppercase;color:#6d768a;
+}
+.grp::after{content:"";flex:1;height:1px;background:var(--ink-line)}
+.grp .n{letter-spacing:.05em;color:#4f5768}
+.item{
+  display:block;width:100%;text-align:left;border:0;background:none;
+  padding:9px 20px 9px 20px;font-size:14px;color:#b9c0cd;cursor:pointer;
+  position:relative;line-height:1.5;transition:color .12s,background .12s;
+}
+.item:hover{background:var(--ink-soft);color:#fff}
+.item::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--c,#7a8397);opacity:0;transition:opacity .12s;
+}
+.item:hover::before{opacity:.55}
+.item[aria-current="true"]{background:var(--ink-soft);color:#fff;font-weight:500}
+.item[aria-current="true"]::before{opacity:1}
+.item .meta{
+  display:flex;align-items:baseline;margin-bottom:2px;line-height:1.45;
+}
+.item .log{
+  font-size:10.5px;color:#6c7488;flex:1 1 auto;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.item .ho{                       /* flex:0 0 auto：永遠不被壓縮或截斷 */
+  font-family:var(--util);font-size:10.5px;letter-spacing:.12em;
+  color:var(--c,#7a8397);filter:brightness(1.5);flex:0 0 auto;white-space:nowrap;
+}
+.item .log + .ho::before{content:"·";margin:0 6px;color:#464e60}
+.item:hover .log{color:#8d95a6}
+.item[aria-current="true"] .log{color:#99a1b2}
+.item:focus-visible{outline:2px solid #7c88a3;outline-offset:-2px}
+.empty-list{padding:24px 20px;color:#5d6579;font-size:13px;line-height:1.8}
+
+/* 主區 */
+#main{flex:1;min-width:0;overflow-y:auto;padding:34px 40px 80px}
+#backBtn{display:none}
+
+/* 空狀態 */
+.blank{
+  height:100%;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;color:var(--text-dim);gap:14px;
+  min-height:60vh;
+}
+.blank .mark{
+  width:46px;height:46px;border:1px solid var(--hair);border-radius:50%;
+  display:grid;place-items:center;font-family:var(--serif);font-size:20px;color:#b6bcc7;
+}
+.blank p{margin:0;font-size:15px;letter-spacing:.04em}
+.blank small{font-size:12.5px;color:#a3a9b5}
+
+/* ── 縮圖展示頁 ─────────────────────────────── */
+.gp{max-width:1040px;margin:0 auto;animation:rise .3s cubic-bezier(.2,.7,.3,1) both}
+.gp-head{text-align:center;margin:6px 0 42px}
+.gp-head h2{
+  font-family:var(--serif-name);font-weight:900;font-size:40px;
+  letter-spacing:.1em;margin:0;line-height:1.2;
+}
+.gp-head p{
+  margin:12px 0 0;font-family:var(--util);font-size:11.5px;
+  letter-spacing:.26em;color:var(--text-dim);
+}
+.gp-cat{
+  display:flex;align-items:center;gap:14px;margin:0 0 26px;
+  font-family:var(--util);font-size:11.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--text-mid);
+}
+.gp-cat::after{content:"";flex:1;height:1px;background:var(--hair)}
+.gp-cat .n{letter-spacing:.06em;color:#b0b6c1}
+.gp-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+  gap:32px 24px;margin:0 0 50px;
+}
+.gp-card{
+  display:flex;flex-direction:column;align-items:center;
+  background:none;border:0;padding:0;cursor:pointer;text-align:center;
+}
+.gp-card .pic{
+  width:100%;aspect-ratio:1/1;border:1px solid var(--hair);border-radius:2px;
+  background:rgba(var(--c-rgb),.06);overflow:hidden;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.gp-card:hover .pic{
+  transform:translateY(-3px);border-color:var(--c);
+  box-shadow:0 12px 24px -14px rgba(20,24,35,.55);
+}
+.gp-card:focus-visible{outline:none}
+.gp-card:focus-visible .pic{outline:2px solid var(--c);outline-offset:2px}
+.gp-card img{width:100%;height:100%;object-fit:cover}
+.gp-card .fb{
+  width:100%;height:100%;display:grid;place-items:center;
+  font-family:var(--serif);font-size:42px;color:rgba(var(--c-rgb),.45);
+}
+.gp-card .nm{
+  margin-top:13px;font-family:var(--serif-name);font-weight:700;
+  font-size:15px;line-height:1.4;color:var(--c-text);letter-spacing:.03em;
+}
+.gp-card .rd{
+  margin-top:4px;font-size:11px;letter-spacing:.1em;color:var(--text-dim);
+  min-height:15px;line-height:15px;
+}
+.gp-card .jb{                       /* 沒填也保留一行，卡片高度一致 */
+  margin-top:3px;font-size:12px;color:var(--text-mid);
+  min-height:17px;line-height:17px;
+}
+.gp-card .ho-blk{                   /* 只有填了 HO 的角色才出現 */
+  width:100%;margin-top:9px;padding-top:8px;border-top:1px solid var(--hair);
+}
+.gp-card .lg{
+  display:block;max-width:100%;font-size:10.5px;line-height:1.5;
+  color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.gp-card .ho{
+  display:block;margin-top:2px;font-family:var(--util);font-size:11px;
+  letter-spacing:.12em;color:var(--c-text);
+}
+
+/* ── 角色卡 ──────────────────────────────────── */
+.sheet{
+  position:relative;max-width:1040px;margin:0 auto;background:var(--card);
+  border:1px solid var(--hair);border-radius:3px;overflow:hidden;
+  box-shadow:0 1px 2px rgba(20,24,35,.05),0 12px 34px -18px rgba(20,24,35,.35);
+  animation:rise .32s cubic-bezier(.2,.7,.3,1) both;
+}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sheet::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--accent);z-index:3;
+}
+.art{
+  position:absolute;top:0;right:0;height:100%;width:52%;
+  pointer-events:none;z-index:0;overflow:hidden;
+}
+.art img{
+  height:100%;width:100%;object-fit:contain;object-position:right top;
+  opacity:.15;filter:grayscale(.15);
+  -webkit-mask-image:linear-gradient(to left,#000 30%,transparent 92%);
+  mask-image:linear-gradient(to left,#000 30%,transparent 92%);
+}
+.sheet-in{position:relative;z-index:2;padding:34px 38px 40px}
+
+/* 圖片列 */
+.gallery{display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
+.gcol{display:flex;flex-direction:column;gap:8px}
+.glabel{
+  font-family:var(--util);font-size:10.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--text-dim);text-align:center;
+}
+.icon-frame{
+  width:132px;height:132px;border:1px solid var(--hair);border-radius:2px;
+  background:rgba(var(--accent-rgb),.05);overflow:hidden;cursor:zoom-in;
+  padding:0;display:block;
+}
+.icon-frame img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.icon-fallback{
+  width:100%;height:100%;display:grid;place-items:center;
+  font-family:var(--serif);font-size:44px;color:rgba(var(--accent-rgb),.45);
+}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;max-width:420px}
+.thumb{
+  width:76px;height:100px;border:1px solid var(--hair);border-radius:2px;
+  overflow:hidden;background:#f6f7f9;cursor:zoom-in;padding:0;
+  transition:border-color .15s,transform .15s;
+}
+.thumb:hover{border-color:var(--accent);transform:translateY(-2px)}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top;image-rendering:auto}
+.full-link{
+  align-self:flex-start;margin-top:2px;background:none;border:0;padding:4px 0;
+  font-size:12.5px;line-height:18px;min-height:18px;color:var(--accent-text);
+  cursor:pointer;border-bottom:1px solid rgba(var(--accent-rgb),.35);
+}
+.full-link:hover{border-bottom-color:var(--accent)}
+.full-link.is-empty{        /* 沒有全身圖時仍佔住同樣高度 */
+  border-bottom-color:transparent;pointer-events:none;cursor:default;
+}
+
+/* 標題 */
+.headline .ho{
+  font-family:var(--util);font-size:15px;letter-spacing:.16em;
+  color:var(--accent-text);margin:0 0 6px;display:flex;align-items:center;gap:9px;
+  min-height:22px;line-height:22px;
+}
+.headline .ho .sw{width:9px;height:9px;background:var(--accent);flex:none}
+.name{
+  font-family:var(--serif-name);font-weight:900;font-size:44px;line-height:1.15;
+  margin:0;letter-spacing:.02em;
+}
+.headline .reading{        /* 沒填也保留一行，職業不會往上跑 */
+  margin:6px 0 0;font-size:12.5px;letter-spacing:.14em;color:var(--text-dim);
+  min-height:18px;line-height:18px;
+}
+.job{
+  margin:4px 0 0;font-size:14px;color:var(--text-mid);letter-spacing:.08em;
+}
+.headline{margin-bottom:20px}
+
+/* 主欄＋雷達 */
+.body-grid{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px}
+.col-main{flex:1 1 460px;min-width:300px}
+table.stat{width:100%;border-collapse:collapse;table-layout:fixed}
+table.stat th{
+  font-family:var(--util);font-weight:400;font-size:12.5px;letter-spacing:.12em;
+  color:var(--accent-text);background:rgba(var(--accent-rgb),.10);
+  padding:9px 4px;border-bottom:1px solid rgba(var(--accent-rgb),.28);
+}
+table.stat td{
+  font-family:var(--util);font-weight:300;font-size:25px;text-align:center;
+  padding:13px 4px;border-bottom:1px solid var(--hair);
+  font-variant-numeric:tabular-nums;
+}
+.derived{
+  display:flex;gap:20px;flex-wrap:wrap;margin-top:13px;
+  font-size:12.5px;color:var(--text-mid);
+}
+.derived b{font-family:var(--util);font-weight:400;font-size:15px;color:var(--text);margin-left:5px}
+.radar{flex:0 0 306px;margin:28px auto 0}
+.radar svg{width:306px;height:auto;overflow:visible}
+.radar .axis{stroke:#c9cdd6;stroke-width:1}
+.radar .web{fill:none;stroke:#dfe2e8;stroke-width:1}
+.radar .web.outer{stroke:#aeb4c0}
+.radar .lab{
+  font-family:var(--util);font-size:12px;letter-spacing:.09em;fill:var(--text);
+}
+.radar .tick{font-family:var(--util);font-size:8.5px;fill:#a8aeba}
+.radar .poly{fill:rgba(var(--accent-rgb),.22);stroke:var(--accent);stroke-width:1.6;stroke-linejoin:round}
+.radar .dot{fill:var(--accent)}
+
+/* 台詞 */
+.quote{
+  margin:20px 0 0;padding:3px 0 3px 20px;border-left:3px solid var(--accent);
+  font-family:var(--serif);font-style:italic;font-size:17px;line-height:1.85;
+  color:#2c3140;max-width:620px;white-space:pre-line;
+}
+
+/* 段落 */
+.block{padding-top:20px;border-top:1px solid var(--hair);margin-top:20px}
+.block h3{
+  font-family:var(--util);font-weight:400;font-size:11.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--text-dim);margin:0 0 12px;
+}
+.block p{margin:0;font-size:14.5px;line-height:2.05;color:#333844;white-space:pre-line;max-width:720px}
+.logs{list-style:none;margin:0;padding:0;max-width:720px}
+.logs li{
+  position:relative;padding:8px 0 8px 20px;font-size:14.5px;line-height:1.75;
+  border-bottom:1px dashed var(--hair);color:#333844;
+}
+.logs li:last-child{border-bottom:0}
+.logs li::before{
+  content:"";position:absolute;left:2px;top:16px;width:6px;height:6px;
+  background:var(--accent);transform:rotate(45deg);
+}
+
+/* 燈箱 */
+#lightbox{
+  position:fixed;inset:0;z-index:200;background:rgba(12,14,20,.93);
+  display:none;align-items:center;justify-content:center;padding:36px;
+}
+#lightbox.on{display:flex}
+#lightbox img{max-width:92vw;max-height:88vh;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#lightbox .lb-btn{
+  position:absolute;background:none;border:1px solid rgba(255,255,255,.3);
+  color:#fff;width:44px;height:44px;font-size:20px;cursor:pointer;border-radius:50%;
+  display:grid;place-items:center;transition:background .15s;
+}
+#lightbox .lb-btn:hover{background:rgba(255,255,255,.14)}
+#lbPrev{left:22px;top:50%;transform:translateY(-50%)}
+#lbNext{right:22px;top:50%;transform:translateY(-50%)}
+#lbClose{right:22px;top:22px}
+#lbCount{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  color:#9aa2b2;font-family:var(--util);font-size:12px;letter-spacing:.18em;
+}
+
+@media (max-width:900px){
+  :root{--sidebar-w:100%}
+  html,body{height:auto;min-height:100%}
+  #root{flex-direction:column}
+  #side{height:auto;max-height:46vh}
+  #main{padding:20px 16px 60px}
+  .sheet-in{padding:24px 20px 30px}
+  .name{font-size:34px}
+  .art{width:70%;opacity:.8}
+  .gp-head{margin-bottom:30px}
+  .gp-head h2{font-size:30px}
+  .gp-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:24px 16px}
+  .gp-card .nm{font-size:13.5px;margin-top:10px}
+  .radar{flex:1 1 100%;margin:16px auto 0}
+  .radar svg{width:100%;max-width:340px;height:auto}
+  #root.show-detail #side{display:none}
+  #root.show-detail #backBtn{
+    display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;
+    background:none;border:1px solid var(--hair);border-radius:2px;
+    padding:7px 12px;font-size:13px;cursor:pointer;color:var(--text-mid);
+  }
+  table.stat td{font-size:20px}
+  #status{width:100%;margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+@media print{
+  #side,#toolbar,.hint{display:none}
+  #main{overflow:visible;padding:0}
+  .sheet{box-shadow:none;border:0}
+}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>window.__PCDATA__ = {"title":"洛雅的CoC 6th PC一覽","chars":[{"category":"通常PC","name":"野良 朱音子","ho":"","reading":"のら あかねこ","job":"內科醫生","color":"#FF0033","icon":"https://static.wixstatic.com/media/690716_e4c7c6388fea4740b5da32433a89213f~mv2.png","full":"","variants":[],"stats":{"STR":11,"CON":14,"POW":16,"DEX":13,"APP":16,"SIZ":16,"INT":12,"EDU":19},"san":80,"quote":"「若是為了那孩子，我或許可以獻上全世界。」","summary":"因為名字諧音的緣故，外號「紅貓」。總是笑臉迎人，並且憑藉漂亮的容貌周旋在異性之間的優雅美女，然而因為家庭失和之故，連帶影響其無法信任他人的心理。\n幼時在父母離異前與同父異母的妹妹相識，為了保護體弱多病的妹妹而付出許多努力，走上醫學之路的契機也是由此而來。在父母離異後與妹妹吵過一架，雖然表面上姊妹關係決裂，私底下仍非常擔心妹妹的狀況，時不時就會打聽妹妹的現況，並設法尋求令妹妹的身體變得健康的方法。對自己而言妹妹可以等於是全世界。所有將會危害到妹妹的存在都應該要排除。","logs":["瓶詰母子","もう寝なさい(請上床睡覺)"]},{"category":"通常PC","name":"天宮 浩美","ho":"","reading":"あまみや ひろみ","job":"鋼琴家","color":"#73A5F9","icon":"https://static.wixstatic.com/media/690716_a366affaa95547ce89e2482a4f8300b7~mv2.png","full":"https://static.wixstatic.com/media/690716_95a8ba601f5f4dfbaec73d11b9ee49d1~mv2.png","variants":["https://static.wixstatic.com/media/690716_04a49d1f77c24643a7365c6fd7de52d1~mv2.png"],"stats":{"STR":9,"CON":11,"POW":11,"DEX":14,"APP":15,"SIZ":11,"INT":12,"EDU":16},"san":55,"quote":"「用音樂吐槽是什麼東西啦，這奇怪的點子是誰提的？」","summary":"天宮國廣的妹妹。雖然是妹妹，卻很擅長模仿哥哥的樣子，兄妹倆身材相近，外貌也相去不遠，連熟人都很難一眼看出差異。因為喜歡模仿哥哥的關係，對變裝有了幾乎是專家的造詣。面對哥哥的時候比較會露出頑皮的一面，但平時是相當冷靜乖巧的女孩子。因為護短的性格，重要的親友遭遇危險的時候甚至願意涉險相救。在危急關頭反而容易忘記自身安危。","logs":["絶望の孤島(絕望的孤島)","イエロウ・ウインド(Yellow・Wind)","さよなら天国、またきて地獄(永別了天國、再會了地獄)","履き捨てろよ、ハイヒール(穿過便扔了吧，高跟鞋)"]},{"category":"通常PC","name":"雨宮 霧華","ho":"","reading":"あまみや きりは","job":"婚紗設計師","color":"#B39484","icon":"https://static.wixstatic.com/media/690716_834ece494dfd4a0faea5382de66270aa~mv2.png","full":"","variants":[],"stats":{"STR":7,"CON":5,"POW":14,"DEX":10,"APP":15,"SIZ":12,"INT":14,"EDU":17},"san":70,"quote":"「要獲得自己的幸福不需要得到外人的允許，那又不關他們的事情。」","summary":"名門企業「雨宮財團」的繼承人。是家族唯一的正式繼承人，但本人對家裡的企業一點興趣也沒有，現在與家裡斷絕往來，以設計服裝為業自立自強。目前是小有名氣的婚紗設計師，常常受邀訪談與為了展示新作而上節目。\n服裝設計的理念主要是「幸福」、「祝福」與「自由」：祈禱獲得幸福、留下最美好的回憶；祝福能夠攜手長伴；希望不會受到社會價值觀的束縛而失去自由（暗示同性戀情）。","logs":["猫の絵描きさん(貓咪的畫家)"]},{"category":"通常PC","name":"松尾 克己","ho":"","reading":"まつお かつみ","job":"天文學家助理","color":"#654F43","icon":"https://static.wixstatic.com/media/690716_eb600d19290843bf8ed30fb581f4f822~mv2.png","full":"","variants":[],"stats":{"STR":13,"CON":9,"POW":14,"DEX":9,"APP":14,"SIZ":11,"INT":15,"EDU":12},"san":70,"quote":"「學經營也滿有趣的……不過我還是喜歡天文學。」","summary":"從小就是一般定義上乖巧懂事的好學生，對誰都很和善，看起來沒什麼脾氣，並且因為外貌關係相當受到異性喜愛。\n對神話、神秘現象的話題相當有興趣，喜歡傳承或是神秘感豐富的現象。\n大學時因為學科考歪了結果跑去經濟學部，最後還把四年學程讀完了。現在做為天文學家的助理活動中。","logs":["闇を呼ぶメロディー(呼喚黑暗的梅洛蒂)","この雨が止む前に(雨停之前)"]},{"category":"通常PC","name":"有泉 秀","ho":"","reading":"ありいずみ しゅう","job":"男公關店酒保","color":"#3D85C6","icon":"https://static.wixstatic.com/media/690716_000e39501be24870a473ba351588fdc5~mv2.png","full":"","variants":[],"stats":{"STR":18,"CON":15,"POW":13,"DEX":12,"APP":16,"SIZ":14,"INT":16,"EDU":14},"san":65,"quote":"「……我還會再成長的。」","summary":"上層資產階級家族出身，但本身沒什麼有錢人的高傲氣息，反而因為表現得太普通而常被當成窮人家的小孩。不過本人倒是無所謂，不會馬上被看出是有錢人家的小孩可以省去很多麻煩。\n希望自己可以看起來很成熟，偏偏是個童顏而遲遲無法如願。認為直到三十歲之前都是成長期，一定可以看起來是個成熟的大人，但身高已經超過了170公分了……。","logs":["生きられない(活不下去了)","きさらぎ駅(如月車站)","ケーキインドリーム(夢中的蛋糕)"]},{"category":"通常PC","name":"若月 小戀","ho":"","reading":"わかづき ここ","job":"夜店女郎","color":"#BD7793","icon":"https://static.wixstatic.com/media/690716_98d534e2d9324055bc4e1d2ee89c972c~mv2.png","full":"","variants":[],"stats":{"STR":13,"CON":14,"POW":13,"DEX":15,"APP":18,"SIZ":13,"INT":18,"EDU":12},"san":65,"quote":"「管不住自己小頭的男人，我就幫他們永遠省去這個煩惱。」","summary":"從小便展現過人的才能，也被學校師長問過跳級或是參與資優班。不過在自己興致缺缺、父母也以自己的選擇為重的情況下，只是普通正常的一路上學到大學畢業。在學校時對於未來沒什麼方向，畢業後的某天走在路上受到夜店的公關招募，對這份高薪並且對於自己的世界來說相當獨特的職業產生濃厚的興趣，之後更是因為其貌美與能使客人掏錢買酒的高明話術，一躍成為該夜店的當紅招牌。父母雖然沒有多加干涉女兒的興趣與選擇的工作，但顯然對女兒現在的職業不太滿意，現在沒有頻繁的連絡。","logs":["沼男は誰だ？(沼澤人是誰？)"]},{"category":"通常PC","name":"明智 一語","ho":"","reading":"あけち せつな","job":"編輯","color":"#7D5B45","icon":"https://static.wixstatic.com/media/690716_8076ad11c4664d4783c62660d79cb504~mv2.png","full":"","variants":[],"stats":{"STR":11,"CON":13,"POW":14,"DEX":10,"APP":16,"SIZ":12,"INT":14,"EDU":17},"san":70,"quote":"「做人需要誠信，尤其最需要守時喔。」","summary":"出版社的編輯，講求守時也擅長規劃作業進度。負責的作者幾乎都不（無）會（法）拖欠稿子。\n孤兒院出身，在孤兒院生活的時期開始就懂得察言觀色，擅長洞察他人心理。幸運遇上了現在的養父母，過著普通衣食無缺的生活，也因此得以讀到大學、並在養父母的支持下走在自己喜歡的路上。\n平常對人溫和有禮，會將失禮的想法全部藏在心底，不過也會有「不小心」說出真心話的時候。基本上不討厭笨蛋，但是討厭不守承諾的笨蛋。\n雖然戴著眼鏡，其實沒有近視，單純做為裝飾。興趣是收藏眼鏡，家中有專門放置各種眼鏡的櫥櫃。","logs":["盲信者\u003cbr>Logged Chocolate","迷い猫に缶切りひとつ(給迷路的貓貓開罐器)"]},{"category":"通常PC","name":"月見里 月戶","ho":"","reading":"やまなし つきと","job":"神祕學家","color":"#4F536B","icon":"https://static.wixstatic.com/media/690716_5efd5456c4a04adfb6f11dad1dcb9505~mv2.png","full":"","variants":[],"stats":{"STR":14,"CON":14,"POW":15,"DEX":14,"APP":11,"SIZ":13,"INT":18,"EDU":14},"san":75,"quote":"「科技的新玩意好像很討厭我呢，怎麼又變成自拍模式了？」","summary":"從小身邊就容易發生稀奇古怪之事，或許是因為有過人的運氣，最少到大學畢業為止那些脫離常識的怪談從未將月戶捲入。\n喜歡脫離常識的稀奇怪談，認為那些超出常人可以理解之事都有其存在的真實性，也因此對神祕學有很大的興趣。","logs":["はなひらり(花瓣飛舞)","緋色の慟哭(緋色的慟哭)","闇暗山"]},{"category":"通常PC","name":"月見里 沙彌加","ho":"","reading":"やまなし さやか","job":"小學生","color":"#576278","icon":"https://static.wixstatic.com/media/690716_6da0f8afdfc34ef59bfba8d6dbbd7afb~mv2.png","full":"","variants":[],"stats":{"STR":7,"CON":6,"POW":16,"DEX":11,"APP":14,"SIZ":5,"INT":13,"EDU":6},"san":80,"quote":"「呼啊……我累了。今天運動量已經夠了吧？我要休息了。」","summary":"個性有些古怪的女孩，喜歡靜靜地待在角落。但是因為可愛的外貌，在班上的人緣不差，同學會主動前來搭話，從來沒有在分組活動落單過。儘管討厭做事（特別是力氣活），該做的事情還是會好好完成，也因此沒受到排擠過。\n討厭運動，體育課時會盡可能鑽空子去蔭涼處休息。\n非常喜歡草莓牛奶，每天不能沒喝到草莓牛奶。","logs":["真綿のクベース(真綿的培育床)"]},{"category":"通常PC","name":"菊一 紀香","ho":"","reading":"きくいち のりか","job":"萬事屋（偵探）","color":"#ECE580","icon":"https://static.wixstatic.com/media/690716_7192bfeb5bd14f8b8b018ec9a6ffea83~mv2.png","full":"","variants":[],"stats":{"STR":11,"CON":10,"POW":12,"DEX":12,"APP":15,"SIZ":15,"INT":14,"EDU":16},"san":60,"quote":"「有事相求嗎？說來聽聽吧。價碼都好談。」","summary":"萬事屋「菊屋」的店主。對外宣稱包辦各種疑難雜症，話雖如此，本業其實是偵探。\u003cbr>健談，個性外向，擅長用話術打聽消息。莫名喜歡老人冷笑話，特別擅長與高齡人士打成一片，反而有點難以融入年輕族群。習慣性會稱呼年下的人「少年」、「女孩」，並非因年齡而輕視對方，單純是覺得這樣叫很親切可愛。是家長的視角。如果發現因此引起對方不快，也會誠懇道歉。","logs":["ここで長く生きて(望君長留)","その家は震えている(那棟住宅震顫不止)","シンガロンズオーバー(Sing Along's Over)"]},{"category":"通常PC","name":"桐生 長義","ho":"","reading":"きりゅう ながよし","job":"刑事搜查官","color":"#4F7ABF","icon":"","full":"","variants":[],"stats":{"STR":10,"CON":18,"POW":17,"DEX":10,"APP":14,"SIZ":12,"INT":18,"EDU":15},"san":85,"quote":"「優等生？我只是普通的優良刑警。」","summary":"義日混血，母親是義大利人。不過因為日本土生土長，所以沒有待過自然學習義大利文的環境。\n刑事搜查官，不過直屬上司的檢察官不常出勤（常常出國），所以實務上主要在搜查一課進行活動。\n腦筋非常好，在學業上幾乎沒有困擾的事情。當初會考警校也不是志願當警察，只是練個手，最後就順水推舟進去就讀，還以優秀的成績畢業了。不過報考警校的契機是高中同窗，動機是想要幫助自己觸手可及的對象。","logs":["君におはようと言えたら(若能和你說聲早安的話)","闇をゆく者達の宴(行走在黑暗中的人們的宴會)","メーデー、電子の戦場より。(Mayday，自電子的戰場。)","甘に宿鳥(甜蜜的宿鳥)","Myrtle","死は口ほどに愛を語る(死亡比言語更能訴說愛)"]},{"category":"通常PC","name":"長船 龍華","ho":"","reading":"おさふね りゅうげ","job":"空自隊員（飛行員）","color":"#583896","icon":"","full":"","variants":[],"stats":{"STR":11,"CON":13,"POW":12,"DEX":13,"APP":18,"SIZ":12,"INT":17,"EDU":14},"san":60,"quote":"「在空中飛翔的感覺很不錯喔。希望哪天也可以開到能飛上天的車子呢。」","summary":"遺傳自母方出眾外貌的血統。似乎有西方血統，不過本人沒有在意。在學期間的外語成績是吊車尾跟被當邊緣低空飛過的。\n學生時代就喜歡能飛在天空的各種交通工具，曾經的夢想是成為飛行船駕駛員。加入空自隊並且取得直升機駕駛執照也算是成就夢想了。除了喜歡駕駛直升機，其他時候也樂於開車載人。不過跟駕駛直升機相比，開車時因為熱衷於飆車而不太安定。也或許是因為駕駛汽車時並非工作狀態，態度相對不嚴謹之故。","logs":["何かが潜んでいる(有什麼東西在那裡)"]},{"category":"通常PC","name":"凱洛德‧入江","ho":"","reading":"クロード＝イリエ","job":"探險家","color":"#D5819F","icon":"","full":"","variants":[],"stats":{"STR":10,"CON":6,"POW":14,"DEX":12,"APP":12,"SIZ":11,"INT":14,"EDU":14},"san":70,"quote":"「嗚嗚、等一下，剛才的話題先讓我消化一下，壓力一大胃就開始痛了……」","summary":"法日混血，母親是日本人，父親是法國人。名字是英日組合，因為祖母是英國人而被要求以凱洛德(Cloud)命名。由於這個名字常被誤會不是法國血統。腸胃不好，緊張帶起的壓力都會引起胃痛。運動時也缺乏持久力。\n國中時曾因父母的工作搬到日本短暫居住就學，高中後回到法國繼續學業。大學畢業後因為想和留日時的朋友繼續維持交流而搬到日本。高中時是弓道社員，曾參加十字弓世界錦標賽擠進前十六強，但因過度緊張的壓力引起胃痛導致中途棄權，沒能進入決賽。十字弓技能是當時留下的專業能力。\n大學以後發掘對旅行跟探險的興趣，在學期間便發展人脈、與相關民間組織交流學習，畢業後無縫接軌成職業探險家到各地冒險。每到新的地方也會固定跟家人與親友保持聯繫。熱愛冒險，但不打算死在冒險旅途上。","logs":["遺願肅清陣列"]},{"category":"通常PC","name":"天宮 國廣","ho":"","reading":"あまみや くにひろ","job":"小說家","color":"#9CCC8C","icon":"https://static.wixstatic.com/media/690716_cb52c84df57b4ec49b21376f3cb38034~mv2.png","full":"https://static.wixstatic.com/media/690716_8c9043b9d1ad47558a8f30c9608482c6~mv2.png","variants":[],"stats":{"STR":10,"CON":11,"POW":12,"DEX":13,"APP":14,"SIZ":12,"INT":13,"EDU":15},"san":60,"quote":"「自己創作的世界是不會背叛自己的。」","summary":"知名奇幻類小說作家「蛋殼帽」，出道作是名為【八百萬世界的少女】的奇幻小說。在學時期就因興趣在創作奇幻小說，大學時投稿到出版社後意外成名出道。筆名由來是撰寫【八百萬世界的少女】時吃到一半的水煮蛋蛋殼，抱著隨便的心情寫下的筆名卻意外正式成名。雖然想過更換筆名，但跟妹妹浩美商量之下發現兄妹倆一點命名sense都沒有，最終將就著繼續使用「蛋殼帽」作為筆名。","logs":["初恋性ストックホルム症候群(初戀性斯德哥摩爾症候群)","你眼中的世界","スーサイデッドメアリンク(英雄主義者)","リンクヴェルトゲンガー(鏡像連結)","泡沫の夢に踊れ(在泡沫之夢中起舞)","やさしいじごくのつくりかた(溫柔地獄的創造方法)","28時のサクラメント(28點的聖禮)","Little My Partner","腕に刻まれる死(刻在手腕上的死)","煙に抱かせてやるものか(怎能被煙劫走)"]},{"category":"通常PC","name":"神山 歌奈","ho":"","reading":"かみやま かな","job":"程式設計師兼英文家教","color":"#1732B6","icon":"","full":"","variants":["https://static.wixstatic.com/media/690716_4b4633b7e8f54759ac574fde17ad8b91~mv2.png"],"stats":{"STR":12,"CON":14,"POW":13,"DEX":10,"APP":14,"SIZ":12,"INT":13,"EDU":18},"san":65,"quote":"「不努力就什麼都不會得到。雖然還是有無論怎麼努力都得不到的⋯⋯」","summary":"遺傳父方的銀髮藍眼。努力型天才，曾在音樂方面有過人表現，卻在一次音樂演出中被頂替自己上場臨演丹紅搶過風采，周遭人開始拿妹妹跟自己比較，連雙親的愛與注目都全數轉移到妹妹身上，從此開始厭惡妹妹。因不敵丹紅的天份與周遭的言論壓力，最終選擇放棄音樂之路。現在從事程式設計工作，兼職英文家教。","logs":["鏡屋敷の神隠し(鏡子屋的神隱)"]},{"category":"通常PC","name":"神山 丹紅","ho":"","reading":"かみやま にく","job":"鋼琴家教","color":"#AD4646","icon":"","full":"","variants":["https://static.wixstatic.com/media/690716_29f1559a473a4c389504bb869eeb7aad~mv2.png"],"stats":{"STR":14,"CON":10,"POW":12,"DEX":16,"APP":16,"SIZ":12,"INT":17,"EDU":17},"san":60,"quote":"「音樂？⋯⋯那種東西，是詛咒喔。」","summary":"遺傳母方的金髮紅眼。真正意義的音樂天才。小時候跟歌奈感情相當好，在一次代替歌奈的音樂演出會嶄露自己的音樂天賦，得到雙親的重視與觀眾的喝采，無意間搶過了歌奈的舞台與雙親的愛。一直想跟歌奈和好卻總是只會刺激到對方而往往以吵架收場，因此養成少話內向的性格，也連帶不喜歡受到矚目。\n至今仍以音樂為職業並非喜歡音樂，只是認為若是捨棄從歌奈手中搶走的音樂才是真正背叛對方的行為。對丹紅來說，音樂不是幸福也並非興趣，而是造成自己與歌奈如此痛苦且憎恨的詛咒。討厭人群與聚光燈，若非演出絕不在人群前出現。隱性病嬌姊控。","logs":["鏡屋敷の神隠し(鏡子屋的神隱)"]},{"category":"通常PC","name":"白鳥 晴華","ho":"","reading":"しらとり はるか","job":"外科醫生","color":"#C48080","icon":"https://static.wixstatic.com/media/690716_fa940260ae8a468e9b42655408d5e304~mv2.png","full":"","variants":[],"stats":{"STR":9,"CON":12,"POW":14,"DEX":15,"APP":15,"SIZ":12,"INT":15,"EDU":20},"san":70,"quote":"「只要還有希望，就不想放棄任何一條生命，這不是理所當然的心情嗎？」","summary":"對外一般自稱EMT(緊急救護技術員)。正確來說是擁有EMT資格的外科醫生。主要的工作集中在急救中心的緊急手術，是急救現場受到同僚信賴的重心人物。現在於某醫大附屬醫院任職。\n以救人為己任，視甦生醫療為挑戰。只要有機會救活的性命就絕對不會放棄，但若判斷救活了也不會讓情況好轉、甚至只會讓患者更痛苦的話，也會乾脆放棄救治。醫療過失的糾紛？要告就來啊誰怕你啊。的態度。","logs":["52光年先のあなたへ(致52光年外的你)","フノスのプルイルス・アーク(赫諾絲之虹)"]},{"category":"通常PC","name":"渡邊 一緣","ho":"","reading":"わたなべ いより","job":"業餘藝術愛好者","color":"#7A495B","icon":"https://static.wixstatic.com/media/690716_d7df484412e9421fa81fcf296e3c2d19~mv2.png","full":"","variants":[],"stats":{"STR":12,"CON":13,"POW":12,"DEX":8,"APP":15,"SIZ":13,"INT":10,"EDU":15},"san":60,"quote":"「如果這是椋生希望的話……嗯，我沒關係喔。」","summary":"？？？？？？","logs":["ぎこちない同居(生硬的同居)","天球廃墟に双つ月(天球廢墟中的雙月)","その手にナイフを、あなたに×を。(用手上的刀子，給予你×。)","雲をこの目に写すまで(直到雲映入這雙眼中)","セイント・ナイト・アバンギャルド(前衛聖夜)","甘に宿鳥(甜蜜的宿鳥)","渚に届くラブレター(寄到海岸的情書)"]},{"category":"通常PC","name":"小華和 昴","ho":"","reading":"こはなわ さばる","job":"鑑識科刑警","color":"#3A5C12","icon":"https://static.wixstatic.com/media/690716_a5148cadc42146448cbf3a09e65abb42~mv2.png","full":"","variants":[],"stats":{"STR":10,"CON":16,"POW":12,"DEX":11,"APP":14,"SIZ":13,"INT":13,"EDU":16},"san":60,"quote":"「今天睜眼又是美好的一天……人為什麼要活這麼久。」","summary":"鑑識科的刑警。習慣位於支援他人的立場。生平無大志，最近有點感覺人生沒有什麼趣味，思考著人活這麼久要做什麼啊？","logs":["メーデー、電子の戦場より。(Mayday，自電子的戰場。)"]},{"category":"通常PC","name":"來山 惠","ho":"","reading":"きやま けい","job":"高中老師","color":"#95B55B","icon":"https://static.wixstatic.com/media/690716_650d2f43ee0146829846ea81f2d3f844~mv2.png","full":"https://static.wixstatic.com/media/690716_e7d3dc3c9b8b4523b6cfeb6ba53c890b~mv2.png","variants":[],"stats":{"STR":13,"CON":13,"POW":16,"DEX":16,"APP":13,"SIZ":14,"INT":17,"EDU":16},"san":80,"quote":"「有什麼不懂的地方，儘管問我。解答學生的疑問是老師的工作。」","summary":"學生時代是學校足球隊一軍，高中畢業後沒有繼續走職業選手的路，普通地讀完大學，現在就任高中老師。曾有過遠渡海外留學的經驗，所以有相當的英文能力。\n很容易和學生打成一片的性格，面對年紀比自己小的對象很有耐心，或許也因如此而容易吃虧。很寵表妹紀美子，曾開玩笑說過想追求紀美子的人需要先過自己這一關……或許這並不只是玩笑。","logs":["傀逅"]},{"category":"通常PC","name":"長月 時葉","ho":"","reading":"ながつき ときは","job":"兒童圖文作家","color":"#757D9C","icon":"https://static.wixstatic.com/media/690716_bfdc9eb4c9224856bafabcc8dfbfa5ee~mv2.png","full":"https://static.wixstatic.com/media/690716_5e641d6eabdd40f5a7973ecd57717265~mv2.png","variants":["https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/b7e37f38a5d4e71994d31beeb8488f42e89bc4e1f7722e1303165d4bbe9578c3?t=1763105173549","https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/aeec4ca52def791e928902cdae8240550e663ba95687fdbdafb91cec63144d1e?t=1765032022034"],"stats":{"STR":11,"CON":16,"POW":10,"DEX":16,"APP":12,"SIZ":12,"INT":15,"EDU":15},"san":50,"quote":"「我販賣的是夢想，負責買單的是家長。」\n「你已經是成年人了，請到一邊自己玩沙去。」","summary":"給人的第一印象是性格溫柔、很有耐心。然而時葉的耐心只會用在小孩子身上。若面對的是平輩或者並非尊敬的年長者，則沒有與人長時間交流的耐性，會找各種藉口提早離開現場。沒有多少交心的朋友，但會珍惜關係穩定的交流對象。即使對方是損友……應該也是一樣的吧。","logs":["スーサイデッドメアリンク(英雄主義者)","リンクヴェルトゲンガー(鏡像連結)","泡沫の夢に踊れ(在泡沫之夢中起舞)","やさしいじごくのつくりかた(溫柔地獄的創造方法)","煙に抱かせてやるものか(怎能被煙劫走)","28時のサクラメント(28點的聖禮)","最弱のかみさま(最弱的神明)","PULP LOOP","猫のお宿(貓旅館)","そのチンアナゴはKPCです(那條花園鰻是KPC)"]},{"category":"通常PC","name":"淺日 薰","ho":"","reading":"あさひ かおる","job":"牙科醫生","color":"#C8836B","icon":"https://static.wixstatic.com/media/690716_7c95a1247a15427989c5b7c6acdeeb86~mv2.png","full":"","variants":[],"stats":{"STR":12,"CON":12,"POW":13,"DEX":14,"APP":16,"SIZ":12,"INT":18,"EDU":14},"san":65,"quote":"「我找到了不錯的好地方，要不要一起去玩一玩？行程可以交給我來規劃！」","summary":"神宮寺蒔夏的學弟。非常崇拜彌，尤其在彌跑去當牛郎的時候因為「學長這樣看起來超級帥的！」這種膚淺到不行的理由就跟著跑去當牛郎了。在彌從牛郎店辭職後還沮喪了好一陣，直到發現對方回去醫療老本行，便跟著鬼轉進同一間醫院任職牙科門診了。\n交往過幾任女友，但持續時間都不長。原因是女方們皆認為「雖然在一起很開心也很放心，但有時候有點可怕……」而被分手。本人對這個評價不置可否，也沒有要解釋的意思。","logs":["君におはようと言えたら(若能和你說聲早安的話)","SANTA回復シナリオ(SANTA回復劇本)"]},{"category":"指定HO劇本PC","name":"杉野 桐光","ho":"HO3A 見證傳說之人","reading":"すぎの きりみつ","job":"山岳攝影師","color":"#B4AC9F","icon":"https://static.wixstatic.com/media/690716_7912134f61d947a2b284fb780929a072~mv2.png","full":"","variants":[],"stats":{"STR":11,"CON":13,"POW":16,"DEX":10,"APP":15,"SIZ":14,"INT":11,"EDU":16},"san":80,"quote":"「能拍下名留青史的畫面，這不是普遍攝影人的目標嗎？」","summary":"父親是有名的風景攝影師，受父親影響對攝影有相當的天賦與濃厚的興趣。\n相較於拍攝美麗風景，更鍾情於拍攝值得紀念傳頌的瞬間。基本上常駐於體育系比賽的拍攝，近期轉向跟隨登山隊紀錄征服攻頂之時。喜歡用自己的雙手捕捉人類、或者該說事物最光輝耀眼的瞬間。","logs":["狂気の峰へ(狂氣之峰)"]},{"category":"指定HO劇本PC","name":"亞克賽爾","ho":"HO3 鬼","reading":"Axel","job":"殺手","color":"#BC6868","icon":"https://static.wixstatic.com/media/690716_8fac6ea0af82434384ffa08d2950b20d~mv2.png","full":"https://static.wixstatic.com/media/690716_5b3c0a6aafc041ec909dbc21af809b57~mv2.png","variants":["https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/5ef862c5505f77c609f4c1bc2643fcff924543bd1e1d743cdfad9ce4d5cdee13","https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/4aacbedbc13fc42ba83697a03f74e5d25f6f37746424d954ef8435047c2ddcf8","https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/26e06e3a15b2ca8e318efb144cfa4b3cae7133cc6fea4762e7caa6d0ba9b7f1d","https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/ad0a86f353edeccfbc0287697410f9dbc3f4c4457514658380b9fb0addd638dc","https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/a4825334809ec677c4e66a83922f15d1c979eb7420bdd7e8de2e7ef2e55bfcc0"],"stats":{"STR":17,"CON":12,"POW":12,"DEX":15,"APP":13,"SIZ":14,"INT":16,"EDU":8},"san":60,"quote":"「先告訴我任務內容是什麼。」","summary":"在教堂中長大的孤兒。基本上不信任人類。\n拒絕任何對自己的身體不利的工作，除此之外的命令跟任務會全力以赴。","logs":["かいぶつたちとマホラカルト(怪物們與綺想教團)","黎明前的寂靜","亡靈與詛咒的遺產","煙に抱かせてやるものか(怎能被煙劫走)","わたしのかわいいハーメルン(我可愛的哈梅爾)","無辜なきかいぶつたちのカオス(絕非無辜的怪物們的混沌)","咎送りの徒花(咎送的徒花)","花間の丹(花間之丹)","夏の病葉(夏之病葉)","黃泉孕み(孕育黃泉)","お前が好きなのは俺の筈だろ(你喜歡的明明該是我吧)","死は口ほどに愛を語る(死亡比言語更能訴說愛)","こくこく(刻刻)","ワンルームナイトメア(一室惡夢)"]},{"category":"指定HO劇本PC","name":"鳥羽 奏","ho":"HO2 鳥","reading":"とりは かな","job":"刑警","color":"#C93044","icon":"https://static.wixstatic.com/media/690716_6334512616c94d96b3f2d97b94713399~mv2.png","full":"https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/1f859fbb5a004b477e602c78a4d6f960d21a2ee1587733dc09d509a006985ece","variants":["https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/130979c866cb15cad6f4db2896d8ea50934c2718ba21bbb6c3704931949947e0","https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/d6247ff2daa1160cb9abdadf26d71cfa9d5c2e3403db4e91f09bfbf742e593fe"],"stats":{"STR":20,"CON":9,"POW":16,"DEX":15,"APP":12,"SIZ":13,"INT":12,"EDU":13},"san":80,"quote":"「輪到菜鳥大展身手的機會在哪裡呀？」","summary":"選用了速度不快、但殺傷力最強的大太刀作為主武器，力求一招制敵。也專門學習過近身格鬥的相關課程，具備擒拿活捉目標的進階能力。不分季節穿著長袖外套與黑手套，有潔癖症的樣子，絕對不會脫下手套或長袖外衣。和鑑識課的同僚有些交流，學習過藥學相關的知識，有還算堪用的藥學判斷能力。","logs":["快刀乱魔(快刀亂魔)","もふれ！毛布(摸摸吧！毯子)"]},{"category":"指定HO劇本PC","name":"艾爾涅斯特‧費里尼","ho":"HO1兄","reading":"Ernest Ferrini","job":"殺手","color":"#A8A8A8","icon":"https://static.wixstatic.com/media/690716_003580d9678a4aafbd2371607b03ac25~mv2.png","full":"https://static.wixstatic.com/media/690716_ce68cb0a966f49fc809a772319836177~mv2.png","variants":[],"stats":{"STR":10,"CON":11,"POW":10,"DEX":17,"APP":15,"SIZ":13,"INT":17,"EDU":12},"san":50,"quote":"「嘛，為了生存，有很多事情是得做，而不是要不要做的問題。」","summary":"和孿生弟弟以兩人一組的殺手進行活動。手腳靈活，習慣隱身於昏暗處行動，「順便」把看起來用得上的東西一起順走。只要不說話就可以改變外貌騙過人，有時也會偽裝成柔弱女子欺騙目標放下警戒心。沒有近視，眼鏡是平光眼鏡，最初是偽裝用，後來因為便於搭配裝扮而變成固定裝備。個性沉穩溫和，儘管面帶微笑卻給人一種疏遠感。不會對外人敞開心扉，放在心上的唯有孿生弟弟一人。","logs":["Battito del diavolo(惡魔的心跳)"]},{"category":"指定HO劇本PC","name":"神崎 優幻","ho":"HO2 殺人鬼","reading":"かみざき ゆめ","job":"？？？","color":"#A0B2C0","icon":"https://static.wixstatic.com/media/690716_724bf70836f64f91b2ca9caf31e40a9e~mv2.png","full":"https://static.wixstatic.com/media/690716_ca3eb197d9f64ea4a91846127fa9192e~mv2.png","variants":[],"stats":{"STR":0,"CON":0,"POW":0,"DEX":0,"APP":0,"SIZ":0,"INT":0,"EDU":0},"san":null,"quote":"？？？","summary":"？？？？？？","logs":["片鱗"]},{"category":"指定HO劇本PC","name":"鬼柳 綾女","ho":"HO1 届人","reading":"きやなぎ あやめ","job":"女僕店店員／遺書屋","color":"#5171AB","icon":"https://static.wixstatic.com/media/690716_6c49b0d178cc4d81a2db601b51f8f52a~mv2.png","full":"https://static.wixstatic.com/media/690716_2e24bfe56a714a96bafe215166e800c0~mv2.png","variants":[],"stats":{"STR":14,"CON":15,"POW":15,"DEX":15,"APP":15,"SIZ":12,"INT":12,"EDU":13},"san":75,"quote":"「人會把真心留在遺書裡，也把最殘酷的現實留在遺書裡。」","summary":"家中獨生女。在出生後母親即衰弱死亡。由於雙親一直希望有個兒子，沒有再婚打算的父親便將綾女當作男性撫養。一直以來都走在父親期望道路上的綾女，某日回家時發現父親因為給朋友作保人而被黑幫找上門討債，遭毆打幾乎致死。父親在將草草寫下的遺書交給綾女後斷氣。在辦理好葬禮等手續後，綾女搬離原本的住處，也與過往的交際圈斷絕聯繫。","logs":["Dropout Despair"]},{"category":"指定HO劇本PC","name":"時永 久","ho":"HO2 贗作師","reading":"ときなが ひさし","job":"臨摹師","color":"#8E8C82","icon":"https://static.wixstatic.com/media/690716_c309de51fcdf40eeb3096291d7ac0242~mv2.png","full":"https://static.wixstatic.com/media/690716_361d85862eb34a009b300ff583fb21d8~mv2.png","variants":[],"stats":{"STR":11,"CON":8,"POW":12,"DEX":15,"APP":18,"SIZ":13,"INT":14,"EDU":16},"san":60,"quote":"「只是模仿的話，很簡單的。」","summary":"在地下社會以「臨摹師」聞名。只要是看過的畫作，幾乎可以沒有破綻地模仿。情緒反應平靜穩定到接近冷淡，唯獨對三日月會有比較多樣的情緒反應。但更多時候或許是被氣出來的。","logs":["レプリカントの葬列(複製人的葬列)","Princess Hugging Race !!!"]},{"category":"指定HO劇本PC","name":"海堂 澪真","ho":"HO1 經營者兼主廚","reading":"ｶｲﾄﾞｳ ﾚｲﾏ","job":"甜點主廚","color":"#455C92","icon":"https://static.wixstatic.com/media/690716_3ea63b88b40d46f5a07b17e5226deb94~mv2.png","full":"https://static.wixstatic.com/media/690716_5506289d4b7343e2a2d98e1e118a893a~mv2.png","variants":[],"stats":{"STR":12,"CON":11,"POW":18,"DEX":16,"APP":13,"SIZ":13,"INT":16,"EDU":22},"san":90,"quote":"「歡迎光臨。今天想來點什麼甜點？」\n「廁所不外借。如果不是客人請立刻給我滾出去謝謝您。」","summary":"因最近製作了很有人氣的美味點心而遠近馳名的優秀甜點主廚。在城市一隅經營可愛小店舖「Honeyveil（蜂蜜的薄紗）」，開張日3月8日。\n最喜歡見到的是客人的笑容。但對於不是顧客、只是來店裡鬧事的人，會毫不留情地將對方掃地出門。","logs":["愛罠蜂"]},{"category":"指定HO劇本PC","name":"赤羽 凪","ho":"HO1 父親","reading":"ｱｶﾈﾊﾞ ﾅｷﾞ","job":"科學搜查研究員","color":"#8C9FCC","icon":"https://static.wixstatic.com/media/690716_6e9bfc617da54da5bdeb70a047723813~mv2.png","full":"https://static.wixstatic.com/media/690716_cd44cf54b12046f6b5b736d87d58cfc0~mv2.png","variants":[],"stats":{"STR":11,"CON":8,"POW":18,"DEX":8,"APP":16,"SIZ":11,"INT":16,"EDU":20},"san":90,"quote":"「只要是我辦得到的事情，儘管跟我說。」\n「我的家人今天也是世界第一的可愛！」","summary":"生長在經濟富裕的家庭，從小沒什麼煩惱，人生過得相當順遂。才華優異、腦筋優秀，凪自認為除了讀書之外沒什麼長處。對影集中的科學搜查相當有興趣，遂而輾轉成為了科學搜查研究員。在學生時代追求當時的對象即現在的妻子柚花之過程或許是凪人生中最大的難關。","logs":["とある幸せな家族の話(某個幸福家庭的故事)"]},{"category":"指定HO劇本PC","name":"打它 空央","ho":"HO2 刑警","reading":"うた くお","job":"刑警","color":"#929AAC","icon":"","full":"","variants":[],"stats":{"STR":10,"CON":14,"POW":11,"DEX":11,"APP":17,"SIZ":10,"INT":16,"EDU":18},"san":55,"quote":"「有時候還是會覺得，我是不是不該當刑警啊……」","summary":"警部補。學生時代曾經遭到綁架，當時被警方順利救出，空央很感謝當初幫助自己的刑警，於是立志成為刑警，也如願就任。\n認為對於眼前需要幫助的人就該伸出援手，就像當初幫助自己的刑警那樣，疼痛與傷害會因為得不到幫助而蔓延，空央並不喜歡這樣。\n喜歡玩智慧鎖一類的上鎖謎題，甚至一度沉迷到偷偷拿鐵絲去開鄰居家門的事都幹過。不過那都是當上刑警之前的事了。","logs":["胡桃炸裂症候群(核桃炸裂症候群)"]},{"category":"指定HO劇本PC","name":"七五三 輝璃","ho":"HO2 柊","reading":"しり きめ","job":"教徒","color":"#5260A9","icon":"","full":"","variants":[],"stats":{"STR":12,"CON":8,"POW":12,"DEX":11,"APP":17,"SIZ":13,"INT":17,"EDU":15},"san":60,"quote":"「心誠則靈。教主大人就是現人神存在的證明！」","summary":"","logs":["鰯と柊(鰯與柊)"]},{"category":"指定HO劇本PC","name":"永久 陽炎","ho":"HO1 前輩","reading":"ながひさ かげろう","job":"監察官","color":"#FFA061","icon":"","full":"","variants":[],"stats":{"STR":18,"CON":13,"POW":10,"DEX":16,"APP":12,"SIZ":12,"INT":15,"EDU":21},"san":50,"quote":"「我還滿不喜歡被算計的吧，如果你想利用我，記得先爭取我的同意。」","summary":"","logs":["Dear flip-flop"]}]};</script>
+<script>
+
+(function(){
+"use strict";
+
+/* ══════════════════════════════════════════════════════════
+   資料模型
+   ══════════════════════════════════════════════════════════ */
+var STAT_KEYS = ["STR","CON","POW","DEX","APP","SIZ","INT","EDU"];
+
+var ALIAS = {
+  "分類":"category","類別":"category","群組":"category","category":"category","group":"category",
+  "名字":"name","名稱":"name","姓名":"name","name":"name",
+  "ho":"ho","HO":"ho","秘密":"ho","handout":"ho",
+  "拼音":"reading","讀音":"reading","讀法":"reading","唸法":"reading","假名":"reading",
+  "ふりがな":"reading","よみ":"reading","reading":"reading","kana":"reading","romaji":"reading","ruby":"reading",
+  "職業":"job","job":"job","occupation":"job",
+  "代表色":"color","顏色":"color","色碼":"color","color":"color",
+  "頭像":"icon","icon":"icon","大頭":"icon","頭像圖片":"icon",
+  "全身圖":"full","立繪":"full","full":"full","fullbody":"full",
+  "差分":"variants","差分圖":"variants","variants":"variants",
+  "SAN":"san","san":"san","理智":"san","理智值":"san","初始SAN":"san","SAN值":"san",
+  "台詞":"quote","台詞台本":"quote","quote":"quote","line":"quote",
+  "概要":"summary","簡介":"summary","設定":"summary","summary":"summary",
+  "經歷":"logs","團務":"logs","通過團務":"logs","logs":"logs","history":"logs"
+};
+
+function normKey(k){
+  var t = String(k||"").replace(/^\uFEFF/,"").trim();
+  if(ALIAS[t]) return ALIAS[t];
+  var up = t.toUpperCase();
+  if(STAT_KEYS.indexOf(up)>=0) return up;
+  if(ALIAS[t.toLowerCase()]) return ALIAS[t.toLowerCase()];
+  return t;
+}
+
+/* RFC4180 CSV 解析（支援引號內的逗號與換行） */
+function parseCSV(text){
+  text = String(text).replace(/^\uFEFF/,"").replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+  var rows=[], row=[], val="", q=false, i=0;
+  while(i<text.length){
+    var c=text[i];
+    if(q){
+      if(c==='"'){
+        if(text[i+1]==='"'){ val+='"'; i+=2; continue; }
+        q=false; i++; continue;
+      }
+      val+=c; i++; continue;
+    }
+    if(c==='"'){ q=true; i++; continue; }
+    if(c===','){ row.push(val); val=""; i++; continue; }
+    if(c==='\n'){ row.push(val); rows.push(row); row=[]; val=""; i++; continue; }
+    val+=c; i++;
+  }
+  row.push(val); rows.push(row);
+  return rows.filter(function(r){ return r.some(function(x){ return String(x).trim()!==""; }); });
+}
+
+function splitList(v){
+  return String(v||"").split(/[|\n]/).map(function(s){return s.trim();}).filter(Boolean);
+}
+
+function recordsFromCSV(text){
+  var rows = parseCSV(text);
+  if(!rows.length) return [];
+  var head = rows[0].map(normKey);
+  var out = [];
+  for(var r=1;r<rows.length;r++){
+    var o={};
+    for(var c=0;c<head.length;c++) o[head[c]] = (rows[r][c]!==undefined?String(rows[r][c]).trim():"");
+    if(!o.name) continue;
+    var stats={};
+    STAT_KEYS.forEach(function(k){
+      var n = parseFloat(o[k]);
+      stats[k] = isFinite(n) ? n : 0;
+    });
+    var sanRaw = parseFloat(o.san);
+    out.push({
+      category: o.category || "未分類",
+      name: o.name,
+      ho: o.ho || "",
+      reading: o.reading || "",
+      job: o.job || "",
+      color: cleanColor(o.color),
+      icon: o.icon || "",
+      full: o.full || "",
+      variants: splitList(o.variants),
+      stats: stats,
+      san: isFinite(sanRaw) ? sanRaw : null,
+      quote: (o.quote||"").replace(/\\n/g,"\n").replace(/\|/g,"\n"),
+      summary: (o.summary||"").replace(/\\n/g,"\n"),
+      logs: splitList(o.logs)
+    });
+  }
+  return out;
+}
+
+function cleanColor(v){
+  v = String(v||"").trim();
+  if(!v) return "#5a6273";
+  if(/^[0-9a-f]{6}$/i.test(v) || /^[0-9a-f]{3}$/i.test(v)) v = "#"+v;
+  return v;
+}
+
+/* ══════════════════════════════════════════════════════════
+   顏色工具
+   ══════════════════════════════════════════════════════════ */
+function toRGB(hex){
+  var h = String(hex||"").trim().replace("#","");
+  if(h.length===3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  if(!/^[0-9a-f]{6}$/i.test(h)) h = "5a6273";
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function lum(rgb){
+  var a = rgb.map(function(v){ v/=255; return v<=.03928? v/12.92 : Math.pow((v+.055)/1.055,2.4); });
+  return .2126*a[0]+.7152*a[1]+.0722*a[2];
+}
+/* 淺色代表色在白底上會看不清，文字用調暗後的版本 */
+function readable(rgb){
+  var r=rgb.slice(), guard=0;
+  while(lum(r) > 0.34 && guard++ < 40){ r = r.map(function(v){ return Math.round(v*0.9); }); }
+  return "rgb("+r.join(",")+")";
+}
+
+/* ══════════════════════════════════════════════════════════
+   狀態
+   ══════════════════════════════════════════════════════════ */
+var VIEW_ONLY = !!window.__PCDATA__;
+var state = {
+  title: (window.__PCDATA__ && window.__PCDATA__.title) || "CoC 6th PC 一覽",
+  chars: (window.__PCDATA__ && window.__PCDATA__.chars) || [],
+  filter: "",
+  sel: -1
+};
+var imgFiles = {};   /* 檔名 → File（本機資料夾） */
+var imgURLs  = {};   /* 檔名 → object URL */
+
+function resolveImg(v){
+  v = String(v||"").trim();
+  if(!v) return "";
+  if(/^(https?:|data:|blob:)/i.test(v)) return v;
+  var base = v.split(/[\\/]/).pop();
+  if(imgURLs[v]) return imgURLs[v];
+  if(imgURLs[base]) return imgURLs[base];
+  return v;                       /* 相對路徑，交給瀏覽器解析 */
+}
+
+/* ══════════════════════════════════════════════════════════
+   骨架
+   ══════════════════════════════════════════════════════════ */
+var SHELL =
+  '<aside id="side">'+
+    '<div id="sideHead">'+
+      '<h1 id="sideTitle"></h1>'+
+      '<input id="search" type="search" placeholder="搜尋名字、拼音、職業、HO" aria-label="搜尋">'+
+      '<button id="homeBtn" type="button">'+
+        '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">'+
+          '<rect x="0" y="0" width="4" height="4" fill="currentColor"/>'+
+          '<rect x="6" y="0" width="4" height="4" fill="currentColor"/>'+
+          '<rect x="0" y="6" width="4" height="4" fill="currentColor"/>'+
+          '<rect x="6" y="6" width="4" height="4" fill="currentColor"/>'+
+        '</svg>回到縮圖展示頁</button>'+
+    '</div>'+
+    '<nav id="list" aria-label="PC 清單"></nav>'+
+    '<footer id="sideFoot"></footer>'+
+  '</aside>'+
+  '<main id="main"><button id="backBtn" type="button">← 返回清單</button><div id="detail"></div></main>';
+
+var LB =
+  '<div id="lightbox" role="dialog" aria-modal="true" aria-label="放大檢視">'+
+    '<img id="lbImg" alt="">'+
+    '<button class="lb-btn" id="lbPrev" aria-label="上一張">‹</button>'+
+    '<button class="lb-btn" id="lbNext" aria-label="下一張">›</button>'+
+    '<button class="lb-btn" id="lbClose" aria-label="關閉">✕</button>'+
+    '<span id="lbCount"></span>'+
+  '</div>';
+
+var root = document.getElementById("root");
+root.innerHTML = SHELL;
+document.body.insertAdjacentHTML("beforeend", LB);
+
+var $ = function(id){ return document.getElementById(id); };
+
+/* 匯出的純檢視網頁在側欄底部標註來源 */
+if(VIEW_ONLY){ $("sideFoot").textContent = "使用神貓卓CoC 6th PC一覽編輯器匯出檢視"; }
+else { $("sideFoot").style.display = "none"; }
+
+/* ══════════════════════════════════════════════════════════
+   繪製：側欄
+   ══════════════════════════════════════════════════════════ */
+function esc(s){
+  return String(s==null?"":s).replace(/[&<>"']/g,function(m){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];
+  });
+}
+
+function visibleChars(){
+  var q = state.filter.toLowerCase();
+  return state.chars.map(function(c,i){ return {c:c,i:i}; }).filter(function(o){
+    if(!q) return true;
+    var c=o.c;
+    return (c.name+" "+(c.reading||"")+" "+c.job+" "+c.ho+" "+c.category+" "+(c.logs||[]).join(" ")).toLowerCase().indexOf(q)>=0;
+  });
+}
+
+function renderSide(){
+  $("sideTitle").textContent = state.title;
+  document.title = state.title;
+  $("homeBtn").setAttribute("aria-current", state.sel<0 ? "true" : "false");
+  var shown = visibleChars();
+  var list = $("list");
+  if(!state.chars.length){
+    list.innerHTML = '<p class="empty-list">'+(VIEW_ONLY
+      ? "這份名冊還沒有資料。"
+      : "還沒有資料。<br>點上方「載入 CSV」開始，或先下載 CSV 範本。")+'</p>';
+    return;
+  }
+  if(!shown.length){ list.innerHTML = '<p class="empty-list">找不到符合「'+esc(state.filter)+'」的 PC。</p>'; return; }
+
+  var html="", lastCat=null, counts={};
+  shown.forEach(function(o){ counts[o.c.category]=(counts[o.c.category]||0)+1; });
+  shown.forEach(function(o){
+    if(o.c.category!==lastCat){
+      lastCat=o.c.category;
+      html += '<div class="grp">'+esc(lastCat)+'<span class="n">'+counts[lastCat]+'</span></div>';
+    }
+    var firstLog = (o.c.logs && o.c.logs.length) ? o.c.logs[0] : "";
+    var meta = o.c.ho
+      ? '<span class="meta">'+
+        (firstLog ? '<span class="log" title="'+esc(firstLog)+'">'+esc(firstLog)+'</span>' : '')+
+        '<span class="ho">'+esc(o.c.ho)+'</span>'+
+        '</span>'
+      : '';
+    html += '<button class="item" type="button" data-i="'+o.i+'" style="--c:'+esc(o.c.color)+'"'+
+            (o.i===state.sel?' aria-current="true"':'')+'>'+
+            meta + esc(o.c.name)+'</button>';
+  });
+  list.innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════════════════
+   繪製：雷達圖
+   ══════════════════════════════════════════════════════════ */
+function radarSVG(stats){
+  var vals = STAT_KEYS.map(function(k){ return stats[k]||0; });
+  var top = Math.max(21, Math.ceil(Math.max.apply(null,vals)/3)*3);
+  var cx=170, cy=168, R=104, N=8;
+  function pt(i,rad){
+    var a = -Math.PI/2 + i*(2*Math.PI/N);
+    return [cx + Math.cos(a)*rad, cy + Math.sin(a)*rad];
+  }
+  function ring(rad){
+    return STAT_KEYS.map(function(_,i){ var p=pt(i,rad); return p[0].toFixed(1)+","+p[1].toFixed(1); }).join(" ");
+  }
+  var s = '<svg viewBox="8 26 324 284" role="img" aria-label="能力值雷達圖">';
+  for(var t=3;t<=top;t+=3){
+    var rr = R*t/top;
+    s += '<polygon class="web'+(t===top?" outer":"")+'" points="'+ring(rr)+'"/>';
+  }
+  for(var i=0;i<N;i++){
+    var e=pt(i,R);
+    s += '<line class="axis" x1="'+cx+'" y1="'+cy+'" x2="'+e[0].toFixed(1)+'" y2="'+e[1].toFixed(1)+'"/>';
+  }
+  for(var t2=3;t2<=top;t2+=3){
+    s += '<text class="tick" x="'+(cx+4)+'" y="'+(cy - R*t2/top + 3).toFixed(1)+'">'+t2+'</text>';
+  }
+  var pts = vals.map(function(v,i){
+    var p = pt(i, R*Math.min(v,top)/top); return p[0].toFixed(1)+","+p[1].toFixed(1);
+  });
+  s += '<polygon class="poly" points="'+pts.join(" ")+'"/>';
+  pts.forEach(function(p){
+    var xy=p.split(",");
+    s += '<circle class="dot" cx="'+xy[0]+'" cy="'+xy[1]+'" r="2.6"/>';
+  });
+  STAT_KEYS.forEach(function(k,i){
+    var p = pt(i, R+24), anchor="middle";
+    if(p[0] > cx+6) anchor="start";
+    else if(p[0] < cx-6) anchor="end";
+    s += '<text class="lab" x="'+p[0].toFixed(1)+'" y="'+(p[1]+4).toFixed(1)+'" text-anchor="'+anchor+'">'+k+'</text>';
+  });
+  return s+'</svg>';
+}
+
+/* CoC 6th 傷害加值。STR 與 SIZ 都沒填時不套表，直接顯示 0 */
+function dmgBonus(str, siz){
+  if(!str && !siz) return "0";
+  var sum = str + siz;
+  if(sum<=12) return "-1D6";
+  if(sum<=16) return "-1D4";
+  if(sum<=24) return "±0";
+  if(sum<=32) return "+1D4";
+  if(sum<=40) return "+1D6";
+  return "+"+(2+Math.floor(Math.max(0,sum-41)/16))+"D6";
+}
+
+/* ══════════════════════════════════════════════════════════
+   縮圖：逐步減半縮放，避免瀏覽器一次縮太多產生鋸齒顆粒
+   ══════════════════════════════════════════════════════════ */
+var thumbCache = {};
+
+function canvasOf(w,h){
+  var cv = document.createElement("canvas");
+  cv.width = w; cv.height = h;
+  var g = cv.getContext("2d");
+  g.imageSmoothingEnabled = true;
+  if("imageSmoothingQuality" in g) g.imageSmoothingQuality = "high";
+  return [cv,g];
+}
+
+function makeThumb(src, boxW, boxH, cb){
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var tw = Math.round(boxW*dpr), th = Math.round(boxH*dpr);
+  var key = src+"@"+tw+"x"+th;
+  if(thumbCache[key]!==undefined){ if(thumbCache[key]) cb(thumbCache[key]); return; }
+
+  var img = new Image();
+  if(!/^(data:|blob:)/i.test(src)) img.crossOrigin = "anonymous";
+  img.onerror = function(){ thumbCache[key] = null; };
+  img.onload = function(){
+    var sw = img.naturalWidth || img.width, sh = img.naturalHeight || img.height;
+    /* 原圖沒有大很多就不必重製 */
+    var scale = Math.max(tw/sw, th/sh);
+    if(!sw || !sh || scale > 0.85){ thumbCache[key] = null; return; }
+    try{
+      var cw = sw, ch = sh, pair = canvasOf(cw, ch);
+      pair[1].drawImage(img, 0, 0);
+      var cur = pair[0];
+      var fw = Math.max(1, Math.round(sw*scale)), fh = Math.max(1, Math.round(sh*scale));
+      /* 每次最多縮一半，逐級逼近目標尺寸 */
+      while(cw > fw*2 && ch > fh*2){
+        cw = Math.max(fw, Math.round(cw/2));
+        ch = Math.max(fh, Math.round(ch/2));
+        var step = canvasOf(cw, ch);
+        step[1].drawImage(cur, 0, 0, cw, ch);
+        cur = step[0];
+      }
+      var out = canvasOf(fw, fh);
+      out[1].drawImage(cur, 0, 0, fw, fh);
+      var url = out[0].toDataURL("image/webp", 0.92);
+      if(url.indexOf("data:image/webp")!==0) url = out[0].toDataURL("image/png");
+      thumbCache[key] = url;
+      cb(url);
+    }catch(err){
+      /* 跨網域或 file:// 會污染 canvas，維持原圖即可 */
+      thumbCache[key] = null;
+    }
+  };
+  img.src = src;
+}
+
+function smoothThumbs(scope){
+  var list = scope.querySelectorAll("img[data-tw]");
+  Array.prototype.forEach.call(list, function(im){
+    var src = im.getAttribute("src");
+    if(!src) return;
+    makeThumb(src, parseInt(im.dataset.tw,10), parseInt(im.dataset.th,10), function(url){
+      if(im.isConnected && im.getAttribute("src")===src) im.src = url;
+    });
+  });
+}
+
+/* ══════════════════════════════════════════════════════════
+   繪製：縮圖展示頁（預設畫面）
+   ══════════════════════════════════════════════════════════ */
+function galleryPage(){
+  if(!state.chars.length){
+    return '<div class="blank"><span class="mark">◈</span>'+
+           '<p>'+(VIEW_ONLY?"這份名冊還沒有資料":"載入 CSV 後，這裡會顯示所有 PC 的縮圖")+'</p></div>';
+  }
+  var shown = visibleChars();
+  if(!shown.length){
+    return '<div class="blank"><span class="mark">◈</span>'+
+           '<p>找不到符合「'+esc(state.filter)+'」的 PC</p></div>';
+  }
+
+  var counts={}, lastCat=null;
+  shown.forEach(function(o){ counts[o.c.category]=(counts[o.c.category]||0)+1; });
+
+  var h = '<div class="gp"><div class="gp-head"><h2>探索者一覽</h2><p>全 '+shown.length+' 名</p></div>';
+  shown.forEach(function(o,idx){
+    if(o.c.category!==lastCat){
+      if(lastCat!==null) h += '</div>';
+      lastCat = o.c.category;
+      h += '<div class="gp-cat">'+esc(lastCat)+'<span class="n">'+counts[lastCat]+'</span></div><div class="gp-grid">';
+    }
+    var c = o.c, rgb = toRGB(c.color);
+    var src = resolveImg(c.icon);
+    var firstLog = (c.logs && c.logs.length) ? c.logs[0] : "";
+    var vars = '--c:'+esc(c.color)+';--c-rgb:'+rgb.join(",")+';--c-text:'+readable(rgb)+';';
+    h += '<button class="gp-card" type="button" data-go="'+o.i+'" style="'+vars+'">'+
+         '<span class="pic">'+
+           (src
+             ? '<img src="'+esc(src)+'" data-tw="150" data-th="150" alt="'+esc(c.name)+'" loading="lazy"'+
+               ' onerror="this.outerHTML=\'<span class=&quot;fb&quot;>'+esc(c.name.charAt(0))+'</span>\'">'
+             : '<span class="fb">'+esc(c.name.charAt(0))+'</span>')+
+         '</span>'+
+         '<span class="nm">'+esc(c.name)+'</span>'+
+         '<span class="rd">'+esc(c.reading||"")+'</span>'+
+         '<span class="jb">'+esc(c.job||"")+'</span>'+
+         (c.ho
+           ? '<span class="ho-blk">'+
+             (firstLog ? '<span class="lg" title="'+esc(firstLog)+'">'+esc(firstLog)+'</span>' : '')+
+             '<span class="ho">'+esc(c.ho)+'</span></span>'
+           : '')+
+         '</button>';
+  });
+  return h+'</div></div>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   繪製：詳情
+   ══════════════════════════════════════════════════════════ */
+var galleryImgs = [];
+
+function renderDetail(){
+  var box = $("detail");
+  var c = state.chars[state.sel];
+  if(!c){
+    galleryImgs = [];
+    box.innerHTML = galleryPage();
+    smoothThumbs(box);
+    $("main").scrollTop = 0;
+    return;
+  }
+  var rgb = toRGB(c.color);
+  var vars = '--accent:'+esc(c.color)+';--accent-rgb:'+rgb.join(",")+';--accent-text:'+readable(rgb)+';';
+
+  var iconSrc = resolveImg(c.icon);
+  var fullSrc = resolveImg(c.full);
+  var varSrcs = c.variants.map(resolveImg);
+
+  galleryImgs = [];
+  if(iconSrc) galleryImgs.push(iconSrc);
+  if(fullSrc) galleryImgs.push(fullSrc);
+  varSrcs.forEach(function(v){ galleryImgs.push(v); });
+
+  var h = '';
+  h += '<article class="sheet" style="'+vars+'">';
+  if(fullSrc) h += '<div class="art"><img src="'+esc(fullSrc)+'" alt="" onerror="this.parentNode.style.display=\'none\'"></div>';
+  h += '<div class="sheet-in">';
+
+  /* 圖片列 */
+  h += '<div class="gallery">';
+  h += '<div class="gcol"><button class="icon-frame" type="button" data-img="'+(iconSrc?0:-1)+'" aria-label="放大頭像">'+
+       (iconSrc
+         ? '<img src="'+esc(iconSrc)+'" data-tw="132" data-th="132" alt="'+esc(c.name)+' 頭像" onerror="this.outerHTML=\'<span class=&quot;icon-fallback&quot;>'+esc(c.name.charAt(0))+'</span>\'">'
+         : '<span class="icon-fallback">'+esc(c.name.charAt(0))+'</span>')+
+       '</button><span class="glabel">頭像</span>';
+  h += fullSrc
+     ? '<button class="full-link" type="button" data-img="'+(iconSrc?1:0)+'">檢視全身圖</button>'
+     : '<span class="full-link is-empty" aria-hidden="true"></span>';
+  h += '</div>';
+  if(varSrcs.length){
+    var offset = (iconSrc?1:0)+(fullSrc?1:0);
+    h += '<div class="gcol"><div class="thumbs">';
+    varSrcs.forEach(function(v,i){
+      h += '<button class="thumb" type="button" data-img="'+(offset+i)+'" aria-label="放大差分 '+(i+1)+'">'+
+           '<img src="'+esc(v)+'" data-tw="76" data-th="100" alt="差分 '+(i+1)+'" loading="lazy"></button>';
+    });
+    h += '</div><span class="glabel">差分 · 點擊放大</span></div>';
+  }
+  h += '</div>';
+
+  /* 標題 */
+  h += '<div class="body-grid"><div class="col-main">';
+  h += '<header class="headline">';
+  h += c.ho ? '<p class="ho"><span class="sw"></span>'+esc(c.ho)+'</p>' : '<p class="ho" aria-hidden="true"></p>';
+  h += '<h2 class="name">'+esc(c.name)+'</h2>';
+  h += c.reading ? '<p class="reading">'+esc(c.reading)+'</p>'
+                 : '<p class="reading" aria-hidden="true"></p>';
+  if(c.job) h += '<p class="job">'+esc(c.job)+'</p>';
+  h += '</header>';
+
+  /* 數值 */
+  h += '<table class="stat"><thead><tr>';
+  STAT_KEYS.forEach(function(k){ h += '<th scope="col">'+k+'</th>'; });
+  h += '</tr></thead><tbody><tr>';
+  STAT_KEYS.forEach(function(k){ h += '<td>'+(c.stats[k]||0)+'</td>'; });
+  h += '</tr></tbody></table>';
+
+  var st=c.stats;
+  var hp = Math.ceil((st.CON+st.SIZ)/2), mp = st.POW;
+  h += '<div class="derived">'+
+       '<span>HP<b>'+hp+'</b></span><span>MP<b>'+mp+'</b></span>'+
+       '<span>SAN<b>'+(c.san!=null?c.san:st.POW*5)+'</b></span>'+
+       '<span>幸運<b>'+(st.POW*5)+'</b></span><span>DB<b>'+dmgBonus(st.STR, st.SIZ)+'</b></span>'+
+       '<span>靈感<b>'+(st.INT*5)+'</b></span><span>知識<b>'+(st.EDU*5)+'</b></span>'+
+       '</div>';
+
+  /* 台詞 */
+  if(c.quote) h += '<blockquote class="quote">'+esc(c.quote)+'</blockquote>';
+  h += '</div><div class="radar">'+radarSVG(c.stats)+'</div></div>';
+
+  /* 概要 */
+  if(c.summary) h += '<section class="block"><h3>概要</h3><p>'+esc(c.summary)+'</p></section>';
+
+  /* 經歷 */
+  if(c.logs.length){
+    h += '<section class="block"><h3>經歷</h3><ul class="logs">';
+    c.logs.forEach(function(l){ h += '<li>'+esc(l)+'</li>'; });
+    h += '</ul></section>';
+  }
+
+  h += '</div></article>';
+  box.innerHTML = h;
+  smoothThumbs(box);
+  $("main").scrollTop = 0;
+}
+
+function render(){ renderSide(); renderDetail(); }
+
+/* ══════════════════════════════════════════════════════════
+   互動
+   ══════════════════════════════════════════════════════════ */
+function select(i){
+  state.sel = i;
+  root.classList.add("show-detail");
+  render();
+  var el = $("list").querySelector('.item[data-i="'+i+'"]');
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
+
+function goHome(){
+  state.sel = -1;
+  root.classList.add("show-detail");
+  render();
+}
+
+$("list").addEventListener("click", function(e){
+  var b = e.target.closest(".item");
+  if(b) select(parseInt(b.dataset.i,10));
+});
+
+$("homeBtn").addEventListener("click", goHome);
+$("search").addEventListener("input", function(e){
+  state.filter = e.target.value;
+  renderSide();
+  if(state.sel<0) renderDetail();     /* 展示頁跟著篩選 */
+});
+$("backBtn").addEventListener("click", function(){
+  root.classList.remove("show-detail");
+});
+
+/* 燈箱 */
+var lbIdx = 0;
+function openLB(i){
+  if(!galleryImgs.length) return;
+  lbIdx = Math.max(0, Math.min(i, galleryImgs.length-1));
+  $("lbImg").src = galleryImgs[lbIdx];
+  $("lbCount").textContent = (lbIdx+1)+" / "+galleryImgs.length;
+  $("lightbox").classList.add("on");
+  $("lbClose").focus();
+}
+function closeLB(){ $("lightbox").classList.remove("on"); $("lbImg").src=""; }
+function stepLB(d){ openLB((lbIdx+d+galleryImgs.length)%galleryImgs.length); }
+
+$("detail").addEventListener("click", function(e){
+  var card = e.target.closest("[data-go]");
+  if(card){ select(parseInt(card.dataset.go,10)); return; }
+  var b = e.target.closest("[data-img]");
+  if(!b) return;
+  var i = parseInt(b.dataset.img,10);
+  if(i>=0) openLB(i);
+});
+$("lbClose").addEventListener("click", closeLB);
+$("lbPrev").addEventListener("click", function(){ stepLB(-1); });
+$("lbNext").addEventListener("click", function(){ stepLB(1); });
+$("lightbox").addEventListener("click", function(e){ if(e.target===this) closeLB(); });
+document.addEventListener("keydown", function(e){
+  if(!$("lightbox").classList.contains("on")) return;
+  if(e.key==="Escape") closeLB();
+  if(e.key==="ArrowLeft") stepLB(-1);
+  if(e.key==="ArrowRight") stepLB(1);
+});
+
+/* ══════════════════════════════════════════════════════════
+   工具列（純檢視版不會有這些元素）
+   ══════════════════════════════════════════════════════════ */
+var toolbar = document.getElementById("toolbar");
+if(toolbar && !VIEW_ONLY){
+  var titleInput = $("titleInput");
+  state.title = titleInput.value;
+  titleInput.addEventListener("input", function(){ state.title = titleInput.value || "CoC 6th PC 一覽"; renderSide(); });
+
+  $("btnCsv").addEventListener("click", function(){ $("csvFile").click(); });
+  $("btnImgs").addEventListener("click", function(){ $("imgFiles").click(); });
+
+  $("csvFile").addEventListener("change", function(e){
+    var f = e.target.files[0]; if(!f) return;
+    var fr = new FileReader();
+    fr.onload = function(){
+      var buf = fr.result, text;
+      try{ text = new TextDecoder("utf-8",{fatal:true}).decode(buf); }
+      catch(err){
+        try{ text = new TextDecoder("big5").decode(buf); }
+        catch(e2){ text = new TextDecoder("utf-8").decode(buf); }
+      }
+      try{
+        state.chars = recordsFromCSV(text);
+        state.sel = -1;
+        render();
+        $("btnExport").disabled = !state.chars.length;
+        setStatus(state.chars.length ? "已載入 <b>"+state.chars.length+"</b> 位 PC　·　"+esc(f.name)
+                                     : "CSV 讀到了，但沒有任何一列有「名字」");
+      }catch(err){
+        setStatus("CSV 解析失敗：檢查欄位標題與引號是否成對");
+      }
+      e.target.value = "";
+    };
+    fr.readAsArrayBuffer(f);
+  });
+
+  $("imgFiles").addEventListener("change", function(e){
+    var files = Array.prototype.slice.call(e.target.files||[]);
+    Object.keys(imgURLs).forEach(function(k){ URL.revokeObjectURL(imgURLs[k]); });
+    imgFiles={}; imgURLs={};
+    files.forEach(function(f){
+      if(!/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(f.name)) return;
+      var rel = (f.webkitRelativePath || f.name);
+      var relNoRoot = rel.split("/").slice(1).join("/") || f.name;
+      var url = URL.createObjectURL(f);
+      [rel, relNoRoot, f.name, "./"+relNoRoot].forEach(function(k){
+        if(k){ imgURLs[k]=url; imgFiles[k]=f; }
+      });
+    });
+    var n = files.filter(function(f){ return /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(f.name); }).length;
+    setStatus("已對應 <b>"+n+"</b> 張圖片"+(state.chars.length?"　·　"+state.chars.length+" 位 PC":""));
+    render();
+    e.target.value = "";
+  });
+
+  $("btnSample").addEventListener("click", function(){
+    download("PC範本.csv", "\uFEFF"+SAMPLE_CSV, "text/csv;charset=utf-8");
+  });
+
+  $("btnExport").addEventListener("click", function(){
+    $("btnExport").disabled = true;
+    setStatus("正在打包…");
+    buildExport().then(function(html){
+      download((state.title||"PC一覽")+".html", html, "text/html;charset=utf-8");
+      setStatus("已匯出 <b>"+state.chars.length+"</b> 位 PC 的純檢視網頁");
+      $("btnExport").disabled = false;
+    }).catch(function(err){
+      setStatus("匯出失敗："+(err && err.message ? err.message : err));
+      $("btnExport").disabled = false;
+    });
+  });
+}
+
+function setStatus(html){ var s=$("status"); if(s) s.innerHTML = html; }
+
+function download(filename, content, mime){
+  var blob = new Blob([content], {type:mime});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+/* ── 匯出 ─────────────────────────────────────── */
+function fileToDataURL(file){
+  return new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onload = function(){ res(fr.result); };
+    fr.onerror = function(){ rej(new Error("讀取圖片失敗："+file.name)); };
+    fr.readAsDataURL(file);
+  });
+}
+
+function buildExport(){
+  var embed = $("embedImgs") && $("embedImgs").checked;
+  var chars = JSON.parse(JSON.stringify(state.chars));
+  var jobs = [];
+
+  if(embed){
+    var cache = {};
+    var swap = function(obj, key){
+      var v = obj[key]; if(!v) return;
+      var base = String(v).split(/[\\/]/).pop();
+      var file = imgFiles[v] || imgFiles[base];
+      if(!file) return;
+      if(!cache[v]) cache[v] = fileToDataURL(file);
+      jobs.push(cache[v].then(function(d){ obj[key] = d; }));
+    };
+    chars.forEach(function(c){
+      swap(c,"icon"); swap(c,"full");
+      c.variants.forEach(function(v,i){
+        var o = {v:v};
+        var base = String(v).split(/[\\/]/).pop();
+        var file = imgFiles[v] || imgFiles[base];
+        if(!file) return;
+        if(!cache[v]) cache[v] = fileToDataURL(file);
+        jobs.push(cache[v].then(function(d){ c.variants[i] = d; }));
+      });
+    });
+  }
+
+  return Promise.all(jobs).then(function(){
+    var css = document.getElementById("app-style").textContent;
+    var js  = document.getElementById("app-script").textContent;
+    var data = JSON.stringify({title: state.title, chars: chars})
+                 .replace(/</g,"\\u003c").replace(/\u2028/g,"\\u2028").replace(/\u2029/g,"\\u2029");
+    var S = "<"+"script>", E = "<\/script>";
+    return '<!DOCTYPE html>\n'+
+      '<html lang="zh-Hant">\n<head>\n<meta charset="utf-8">\n'+
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n'+
+      '<title>'+esc(state.title)+'</title>\n'+
+      '<link rel="preconnect" href="https://fonts.googleapis.com">\n'+
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'+
+      '<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700;900&family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Oswald:wght@300;400;500&display=swap" rel="stylesheet">\n'+
+      '<style>\n'+css+'\n</style>\n</head>\n<body>\n<div id="root"></div>\n'+
+      S+'window.__PCDATA__ = '+data+';'+E+'\n'+
+      S+'\n'+js+'\n'+E+'\n</body>\n</html>';
+  });
+}
+
+/* ── CSV 範本 ─────────────────────────────────── */
+var SAMPLE_CSV = [
+'分類,名字,拼音,HO,職業,代表色,頭像,全身圖,差分,STR,CON,POW,DEX,APP,SIZ,INT,EDU,SAN,台詞,概要,經歷',
+'通常PC,天宮 浩美,あまみや ひろみ,,大學生,#3f7fb5,images/hiromi_icon.png,images/hiromi_full.png,images/hiromi_a.png|images/hiromi_b.png,11,13,14,12,15,11,16,17,70,「總會有辦法的，先別急。」,"在都內就讀民俗學系的二年級生。個性溫和但好奇心過剩，總是最先走進不該走進的房間。",初次見面的怪異|夏日祭典的邀請函',
+'通常PC,雨宮 霧華,あまみや きりは,,記者,#6b5b95,images/kiruha_icon.png,images/kiruha_full.png,,10,12,15,14,16,10,17,16,75,「我只是想知道真相而已。」,"跑社會線的自由記者。追一則失蹤案追進了不該碰的領域。","雨夜的來信"',
+'指定HO劇本PC,亞克賽爾,Axel,HO3 鬼,殺手,#c0392b,images/axel_icon.png,images/axel_full.png,images/axel_a.png|images/axel_b.png|images/axel_c.png,17,12,12,15,13,14,16,8,44,「先告訴我任務內容是什麼。」|「……可以，我接了。」,"在教堂中長大的孤兒。基本上不信任人類。拒絕任何對自己的身體不利的工作，除此之外的命令跟任務會全力以赴。",かいぶつたちとマホラカルト(怪物們與綺想教團)'
+].join("\n");
+
+/* 首次繪製 */
+render();
+
+})();
+
+</script>
+</body>
+</html>
