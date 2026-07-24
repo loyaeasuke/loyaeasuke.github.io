@@ -132,6 +132,70 @@ input[type=search],select{font-family:var(--sans);font-size:13px;padding:5px 9px
 .note .text{white-space:pre-wrap;word-break:break-word;padding:14px 22px 18px;color:var(--note-ink);
   font-family:var(--serif);line-height:2}
 
+/* ── 目錄（右側固定面板）──────────────────── */
+html{scroll-behavior:smooth}
+#toc{margin:18px 0 8px}
+.toc-box{position:relative;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+  transition:transform .22s ease,opacity .18s ease}
+.toc-head{display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:12.5px;letter-spacing:.14em;color:var(--ink);user-select:none}
+.toc-head .n{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.toc-toggle{border:0;background:none;cursor:pointer;padding:0 2px;color:var(--muted);
+  font-family:var(--mono);font-size:12px;line-height:1}
+.toc-toggle:hover{color:var(--ink)}
+/* 收合把手（收起後出現在右緣） */
+.toc-tab{display:none;position:fixed;right:0;top:96px;z-index:16;cursor:pointer;
+  border:1px solid var(--line);border-right:0;border-radius:var(--radius) 0 0 var(--radius);
+  background:var(--panel);color:var(--ink);font-family:var(--mono);font-size:11px;letter-spacing:.2em;
+  padding:11px 6px;writing-mode:vertical-rl;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.toc-tab:hover{background:var(--paper)}
+/* 拖曳寬度的握把 */
+.toc-grip{position:absolute;left:-5px;top:0;bottom:0;width:10px;cursor:col-resize;touch-action:none}
+.toc-grip::before{content:"";position:absolute;left:4px;top:50%;transform:translateY(-50%);
+  width:2px;height:26px;border-radius:2px;background:var(--line)}
+.toc-grip:hover::before{background:var(--muted)}
+body.tocdrag{user-select:none;cursor:col-resize}
+.toc-list{padding:5px;display:flex;flex-direction:column;gap:1px}
+.toc-list a{display:block;padding:3px 7px;border-radius:2px;text-decoration:none;color:var(--ink);
+  border-left:2px solid transparent;line-height:1.35}
+.toc-list a:hover{background:var(--paper);border-left-color:var(--ink)}
+.toc-list a .k{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.18em;opacity:.8}
+.toc-list a .t{display:block;font-size:12px;letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc-list a.k-scene .k{color:var(--muted)}
+.toc-list a.k-pro .k{color:var(--pro)}
+.toc-list a.k-epi .k{color:var(--epi)}
+.toc-list a.k-rwd .k{color:var(--reward)}
+.toc-list a.k-pro:hover{border-left-color:var(--pro)}
+.toc-list a.k-epi:hover{border-left-color:var(--epi)}
+.toc-list a.k-rwd:hover{border-left-color:var(--reward)}
+[data-anchor]{scroll-margin-top:96px}
+
+/* 捲軸：項目過多時明顯提示可上下拖拉 */
+.toc-list{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
+.toc-list::-webkit-scrollbar{width:9px}
+.toc-list::-webkit-scrollbar-track{background:var(--paper);border-radius:9px}
+.toc-list::-webkit-scrollbar-thumb{background:var(--muted);border-radius:9px;
+  border:2px solid var(--panel)}
+.toc-list::-webkit-scrollbar-thumb:hover{background:var(--ink)}
+
+/* 寬螢幕：釘在右側，不隨捲動移動 */
+@media (min-width:1220px){
+  #toc{position:fixed;top:96px;right:22px;width:var(--tocw,208px);margin:0;z-index:15}
+  .toc-box{box-shadow:0 1px 8px rgba(0,0,0,.06)}
+  .toc-list{max-height:calc(100vh - 176px)}
+  #toc.collapsed .toc-box{transform:translateX(calc(100% + 26px));opacity:0;pointer-events:none}
+  #toc.collapsed .toc-tab{display:block}
+}
+/* 窄螢幕：回到內文流，避免蓋住團錄；不提供拖曳寬度 */
+@media (max-width:1219px){
+  .toc-list{max-height:46vh}
+  .toc-grip{display:none}
+  #toc.collapsed .toc-box{display:none}
+  #toc.collapsed .toc-tab{display:inline-block;position:static;writing-mode:horizontal-tb;
+    border-right:1px solid var(--line);border-radius:var(--radius);padding:6px 12px}
+}
+
 /* ── PC 隊伍資訊 ─────────────────────────── */
 #pcs{margin:26px 0 8px}
 .pc-section{border:1px solid var(--pc-line);border-radius:var(--radius);background:var(--panel)}
@@ -295,6 +359,8 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
 
   <section id="pcs"></section>
 
+  <nav id="toc"></nav>
+
   <main id="log"></main>
 </div>
 
@@ -392,8 +458,50 @@ function avatarHTML(s, cls, override){
   return `<span class="avatar ph ${cls}" style="background:${esc(col)}"></span>`;
 }
 
+const TOC_KEY={scene:'SCENE',pro:'PROLOGUE',epi:'AFTER STORY',rwd:'REWARD'};
+let tocOpen=true, tocWidth=0;   // tocWidth 僅存在本次瀏覽，重新開啟即回預設
+function renderTOC(items){
+  const host=document.getElementById('toc');
+  if(!items || !items.length){ host.innerHTML=''; host.className=''; return; }
+  const rows=items.map(it=>`<a href="#${it.id}" class="k-${it.kind}">
+      <span class="k">${TOC_KEY[it.kind]||''}</span>
+      <span class="t">${esc(it.label)}</span></a>`).join('');
+  host.className = tocOpen ? '' : 'collapsed';
+  if(tocWidth) host.style.setProperty('--tocw', tocWidth+'px'); else host.style.removeProperty('--tocw');
+  host.innerHTML=`<div class="toc-box">
+      <div class="toc-grip" title="拖曳調整寬度"></div>
+      <div class="toc-head"><button class="toc-toggle" title="收起目錄">›</button>目錄<span class="n">${items.length} 項</span></div>
+      <div class="toc-list">${rows}</div>
+    </div>
+    <button class="toc-tab" title="展開目錄">目錄 ‹</button>`;
+
+  host.querySelector('.toc-toggle').onclick=()=>{ tocOpen=false; host.className='collapsed'; };
+  host.querySelector('.toc-tab').onclick=()=>{ tocOpen=true; host.className=''; };
+
+  const grip=host.querySelector('.toc-grip');
+  grip.addEventListener('pointerdown', ev=>{
+    ev.preventDefault();
+    const startX=ev.clientX, startW=host.getBoundingClientRect().width;
+    grip.setPointerCapture(ev.pointerId);
+    document.body.classList.add('tocdrag');
+    const move=e=>{
+      const w=Math.min(460, Math.max(140, startW-(e.clientX-startX)));  // 往左拖變寬
+      tocWidth=Math.round(w);
+      host.style.setProperty('--tocw', tocWidth+'px');
+    };
+    const up=()=>{
+      grip.removeEventListener('pointermove',move);
+      grip.removeEventListener('pointerup',up);
+      document.body.classList.remove('tocdrag');
+    };
+    grip.addEventListener('pointermove',move);
+    grip.addEventListener('pointerup',up);
+  });
+}
+
 function render(){
-  const M=spkMap(), out=[]; let shown=0, sceneNo=0, prevSecret='';
+  const M=spkMap(), out=[], toc=[]; let shown=0, sceneNo=0, prevSecret='', anchorNo=0;
+  const anchor=(kind,label)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label}); return id; };
   for(const r of LOG){
     const type=r['類型']||'talk', ch=r['頻道']||'main';
     const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret')?'secret':ch;
@@ -407,7 +515,8 @@ function render(){
 
     if(type==='scene'){
       sceneNo++;
-      out.push(`<section class="scene"><span class="idx">SCENE ${String(sceneNo).padStart(2,'0')}</span>
+      const sid=anchor('scene',`SCENE ${String(sceneNo).padStart(2,'0')}　${r['內容']||''}`.trim());
+      out.push(`<section class="scene" id="${sid}" data-anchor><span class="idx">SCENE ${String(sceneNo).padStart(2,'0')}</span>
         <div class="bar"><span class="label">${esc(r['內容']||'◆')}</span></div></section>`);
       continue;
     }
@@ -424,7 +533,8 @@ function render(){
       continue;
     }
     if(type==='epilogue_start'){
-      out.push(`<section class="epilogue start"><span class="orn">❧</span>
+      const eid=anchor('epi', r['內容']||'後日談');
+      out.push(`<section class="epilogue start" id="${eid}" data-anchor><span class="orn">❧</span>
         <span class="txt">${esc(r['內容']||'後日談')}</span>
         <span class="en">AFTER STORY</span></section>`);
       continue;
@@ -435,7 +545,8 @@ function render(){
       continue;
     }
     if(type==='prologue_start'){
-      out.push(`<section class="prologue start"><span class="orn">❖</span>
+      const pid=anchor('pro', r['內容']||'前日談開始');
+      out.push(`<section class="prologue start" id="${pid}" data-anchor><span class="orn">❖</span>
         <span class="txt">${esc(r['內容']||'前日談開始')}</span>
         <span class="en">PROLOGUE</span></section>`);
       continue;
@@ -480,7 +591,8 @@ function render(){
       continue;
     }
     if(type==='reward'){
-      out.push(`<section class="reward"><div class="head">
+      const rid=anchor('rwd', r['發言人']||'通關報酬');
+      out.push(`<section class="reward" id="${rid}" data-anchor><div class="head">
         <span class="badge">REWARD</span>
         <span class="ttl">${esc(r['發言人']||'通關報酬')}</span></div>
         <div class="text">${esc(r['內容'])}</div></section>`);
@@ -523,6 +635,7 @@ function render(){
       </div></div>`);
   }
   document.getElementById('log').innerHTML=out.join('');
+  renderTOC(toc);
   document.getElementById('count').textContent=`${shown} / ${LOG.length} 行`;
 }
 
