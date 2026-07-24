@@ -97,6 +97,15 @@ img{display:block}
   border-radius:2px;color:#e7e9ee;
 }
 #search::placeholder{color:#5d6579}
+#homeBtn{
+  width:100%;margin-top:9px;padding:8px 10px;font-size:12.5px;font-family:inherit;
+  display:flex;align-items:center;gap:8px;cursor:pointer;text-align:left;
+  background:var(--ink-soft);border:1px solid var(--ink-line);border-radius:2px;
+  color:#aeb6c4;transition:background .14s,color .14s,border-color .14s;
+}
+#homeBtn svg{flex:none;opacity:.8}
+#homeBtn:hover,#homeBtn[aria-current="true"]{background:#252b39;color:#fff;border-color:#4a5364}
+#homeBtn:focus-visible{outline:2px solid #7c88a3;outline-offset:1px}
 #search:focus{outline:none;border-color:#7c88a3}
 #list{flex:1;overflow-y:auto;padding-bottom:24px;scrollbar-width:thin}
 #list::-webkit-scrollbar{width:8px}
@@ -158,6 +167,72 @@ img{display:block}
 }
 .blank p{margin:0;font-size:15px;letter-spacing:.04em}
 .blank small{font-size:12.5px;color:#a3a9b5}
+
+/* ── 縮圖展示頁 ─────────────────────────────── */
+.gp{max-width:1040px;margin:0 auto;animation:rise .3s cubic-bezier(.2,.7,.3,1) both}
+.gp-head{text-align:center;margin:6px 0 42px}
+.gp-head h2{
+  font-family:var(--serif-name);font-weight:900;font-size:40px;
+  letter-spacing:.1em;margin:0;line-height:1.2;
+}
+.gp-head p{
+  margin:12px 0 0;font-family:var(--util);font-size:11.5px;
+  letter-spacing:.26em;color:var(--text-dim);
+}
+.gp-cat{
+  display:flex;align-items:center;gap:14px;margin:0 0 26px;
+  font-family:var(--util);font-size:11.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--text-mid);
+}
+.gp-cat::after{content:"";flex:1;height:1px;background:var(--hair)}
+.gp-cat .n{letter-spacing:.06em;color:#b0b6c1}
+.gp-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));
+  gap:32px 24px;margin:0 0 50px;
+}
+.gp-card{
+  display:flex;flex-direction:column;align-items:center;
+  background:none;border:0;padding:0;cursor:pointer;text-align:center;
+}
+.gp-card .pic{
+  width:100%;aspect-ratio:1/1;border:1px solid var(--hair);border-radius:2px;
+  background:rgba(var(--c-rgb),.06);overflow:hidden;
+  transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.gp-card:hover .pic{
+  transform:translateY(-3px);border-color:var(--c);
+  box-shadow:0 12px 24px -14px rgba(20,24,35,.55);
+}
+.gp-card:focus-visible{outline:none}
+.gp-card:focus-visible .pic{outline:2px solid var(--c);outline-offset:2px}
+.gp-card img{width:100%;height:100%;object-fit:cover}
+.gp-card .fb{
+  width:100%;height:100%;display:grid;place-items:center;
+  font-family:var(--serif);font-size:42px;color:rgba(var(--c-rgb),.45);
+}
+.gp-card .nm{
+  margin-top:13px;font-family:var(--serif-name);font-weight:700;
+  font-size:15px;line-height:1.4;color:var(--c-text);letter-spacing:.03em;
+}
+.gp-card .rd{
+  margin-top:4px;font-size:11px;letter-spacing:.1em;color:var(--text-dim);
+  min-height:15px;line-height:15px;
+}
+.gp-card .jb{                       /* 沒填也保留一行，卡片高度一致 */
+  margin-top:3px;font-size:12px;color:var(--text-mid);
+  min-height:17px;line-height:17px;
+}
+.gp-card .ho-blk{                   /* 只有填了 HO 的角色才出現 */
+  width:100%;margin-top:9px;padding-top:8px;border-top:1px solid var(--hair);
+}
+.gp-card .lg{
+  display:block;max-width:100%;font-size:10.5px;line-height:1.5;
+  color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.gp-card .ho{
+  display:block;margin-top:2px;font-family:var(--util);font-size:11px;
+  letter-spacing:.12em;color:var(--c-text);
+}
 
 /* ── 角色卡 ──────────────────────────────────── */
 .sheet{
@@ -324,6 +399,10 @@ table.stat td{
   .sheet-in{padding:24px 20px 30px}
   .name{font-size:34px}
   .art{width:70%;opacity:.8}
+  .gp-head{margin-bottom:30px}
+  .gp-head h2{font-size:30px}
+  .gp-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:24px 16px}
+  .gp-card .nm{font-size:13.5px;margin-top:10px}
   .radar{flex:1 1 100%;margin:16px auto 0}
   .radar svg{width:100%;max-width:340px;height:auto}
   #root.show-detail #side{display:none}
@@ -503,7 +582,14 @@ var SHELL =
   '<aside id="side">'+
     '<div id="sideHead">'+
       '<h1 id="sideTitle"></h1>'+
-      '<input id="search" type="search" placeholder="搜尋名字、職業、HO" aria-label="搜尋">'+
+      '<input id="search" type="search" placeholder="搜尋名字、拼音、職業、HO" aria-label="搜尋">'+
+      '<button id="homeBtn" type="button">'+
+        '<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">'+
+          '<rect x="0" y="0" width="4" height="4" fill="currentColor"/>'+
+          '<rect x="6" y="0" width="4" height="4" fill="currentColor"/>'+
+          '<rect x="0" y="6" width="4" height="4" fill="currentColor"/>'+
+          '<rect x="6" y="6" width="4" height="4" fill="currentColor"/>'+
+        '</svg>回到縮圖展示頁</button>'+
     '</div>'+
     '<nav id="list" aria-label="PC 清單"></nav>'+
     '<footer id="sideFoot"></footer>'+
@@ -538,15 +624,20 @@ function esc(s){
   });
 }
 
-function renderSide(){
-  $("sideTitle").textContent = state.title;
-  document.title = state.title;
+function visibleChars(){
   var q = state.filter.toLowerCase();
-  var shown = state.chars.map(function(c,i){ return {c:c,i:i}; }).filter(function(o){
+  return state.chars.map(function(c,i){ return {c:c,i:i}; }).filter(function(o){
     if(!q) return true;
     var c=o.c;
     return (c.name+" "+(c.reading||"")+" "+c.job+" "+c.ho+" "+c.category+" "+(c.logs||[]).join(" ")).toLowerCase().indexOf(q)>=0;
   });
+}
+
+function renderSide(){
+  $("sideTitle").textContent = state.title;
+  document.title = state.title;
+  $("homeBtn").setAttribute("aria-current", state.sel<0 ? "true" : "false");
+  var shown = visibleChars();
   var list = $("list");
   if(!state.chars.length){
     list.innerHTML = '<p class="empty-list">'+(VIEW_ONLY
@@ -699,6 +790,54 @@ function smoothThumbs(scope){
 }
 
 /* ══════════════════════════════════════════════════════════
+   繪製：縮圖展示頁（預設畫面）
+   ══════════════════════════════════════════════════════════ */
+function galleryPage(){
+  if(!state.chars.length){
+    return '<div class="blank"><span class="mark">◈</span>'+
+           '<p>'+(VIEW_ONLY?"這份名冊還沒有資料":"載入 CSV 後，這裡會顯示所有 PC 的縮圖")+'</p></div>';
+  }
+  var shown = visibleChars();
+  if(!shown.length){
+    return '<div class="blank"><span class="mark">◈</span>'+
+           '<p>找不到符合「'+esc(state.filter)+'」的 PC</p></div>';
+  }
+
+  var counts={}, lastCat=null;
+  shown.forEach(function(o){ counts[o.c.category]=(counts[o.c.category]||0)+1; });
+
+  var h = '<div class="gp"><div class="gp-head"><h2>探索者一覽</h2><p>全 '+shown.length+' 名</p></div>';
+  shown.forEach(function(o,idx){
+    if(o.c.category!==lastCat){
+      if(lastCat!==null) h += '</div>';
+      lastCat = o.c.category;
+      h += '<div class="gp-cat">'+esc(lastCat)+'<span class="n">'+counts[lastCat]+'</span></div><div class="gp-grid">';
+    }
+    var c = o.c, rgb = toRGB(c.color);
+    var src = resolveImg(c.icon);
+    var firstLog = (c.logs && c.logs.length) ? c.logs[0] : "";
+    var vars = '--c:'+esc(c.color)+';--c-rgb:'+rgb.join(",")+';--c-text:'+readable(rgb)+';';
+    h += '<button class="gp-card" type="button" data-go="'+o.i+'" style="'+vars+'">'+
+         '<span class="pic">'+
+           (src
+             ? '<img src="'+esc(src)+'" data-tw="150" data-th="150" alt="'+esc(c.name)+'" loading="lazy"'+
+               ' onerror="this.outerHTML=\'<span class=&quot;fb&quot;>'+esc(c.name.charAt(0))+'</span>\'">'
+             : '<span class="fb">'+esc(c.name.charAt(0))+'</span>')+
+         '</span>'+
+         '<span class="nm">'+esc(c.name)+'</span>'+
+         '<span class="rd">'+esc(c.reading||"")+'</span>'+
+         '<span class="jb">'+esc(c.job||"")+'</span>'+
+         (c.ho
+           ? '<span class="ho-blk">'+
+             (firstLog ? '<span class="lg" title="'+esc(firstLog)+'">'+esc(firstLog)+'</span>' : '')+
+             '<span class="ho">'+esc(c.ho)+'</span></span>'
+           : '')+
+         '</button>';
+  });
+  return h+'</div></div>';
+}
+
+/* ══════════════════════════════════════════════════════════
    繪製：詳情
    ══════════════════════════════════════════════════════════ */
 var galleryImgs = [];
@@ -707,12 +846,10 @@ function renderDetail(){
   var box = $("detail");
   var c = state.chars[state.sel];
   if(!c){
-    box.innerHTML =
-      '<div class="blank"><span class="mark">◈</span>'+
-      '<p>'+(state.chars.length?"從左側選擇一位 PC，這裡會顯示他的檔案":"載入 CSV 後，這裡會顯示 PC 檔案")+'</p>'+
-      (state.chars.length?'<small>共 '+state.chars.length+' 位探索者</small>':'')+
-      '</div>';
     galleryImgs = [];
+    box.innerHTML = galleryPage();
+    smoothThumbs(box);
+    $("main").scrollTop = 0;
     return;
   }
   var rgb = toRGB(c.color);
@@ -805,15 +942,30 @@ function render(){ renderSide(); renderDetail(); }
 /* ══════════════════════════════════════════════════════════
    互動
    ══════════════════════════════════════════════════════════ */
-$("list").addEventListener("click", function(e){
-  var b = e.target.closest(".item");
-  if(!b) return;
-  state.sel = parseInt(b.dataset.i,10);
+function select(i){
+  state.sel = i;
   root.classList.add("show-detail");
   render();
+  var el = $("list").querySelector('.item[data-i="'+i+'"]');
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest"});
+}
+
+function goHome(){
+  state.sel = -1;
+  root.classList.add("show-detail");
+  render();
+}
+
+$("list").addEventListener("click", function(e){
+  var b = e.target.closest(".item");
+  if(b) select(parseInt(b.dataset.i,10));
 });
+
+$("homeBtn").addEventListener("click", goHome);
 $("search").addEventListener("input", function(e){
-  state.filter = e.target.value; renderSide();
+  state.filter = e.target.value;
+  renderSide();
+  if(state.sel<0) renderDetail();     /* 展示頁跟著篩選 */
 });
 $("backBtn").addEventListener("click", function(){
   root.classList.remove("show-detail");
@@ -833,6 +985,8 @@ function closeLB(){ $("lightbox").classList.remove("on"); $("lbImg").src=""; }
 function stepLB(d){ openLB((lbIdx+d+galleryImgs.length)%galleryImgs.length); }
 
 $("detail").addEventListener("click", function(e){
+  var card = e.target.closest("[data-go]");
+  if(card){ select(parseInt(card.dataset.go,10)); return; }
   var b = e.target.closest("[data-img]");
   if(!b) return;
   var i = parseInt(b.dataset.img,10);
