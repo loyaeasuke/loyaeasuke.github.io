@@ -1,0 +1,8 @@
+﻿分類,名字,拼音,HO,職業,代表色,頭像,全身圖,差分,STR,CON,POW,DEX,APP,SIZ,INT,EDU,SAN,台詞,概要,經歷
+通常PC,天宮 浩美,あまみや ひろみ,,大學生,#3f7fb5,images/hiromi_icon.png,images/hiromi_full.png,images/hiromi_a.png|images/hiromi_b.png,11,13,14,12,15,11,16,17,70,「總會有辦法的，先別急。」,"在都內就讀民俗學系的二年級生。個性溫和但好奇心過剩，總是最先走進不該走進的房間。
+家中經營老舊書店，從小把地方志當童話讀，因此對怪談的細節記得比誰都清楚。",初次見面的怪異|夏日祭典的邀請函|圖書館的第十三個書架
+通常PC,雨宮 霧華,あまみや きりは,,記者,#6b5b95,images/kiruha_icon.png,images/kiruha_full.png,images/kiruha_a.png|images/kiruha_b.png|images/kiruha_c.png,10,12,15,14,16,10,17,16,75,「我只是想知道真相而已。」,跑社會線的自由記者。追一則失蹤案追進了不該碰的領域，從此再也沒能停下來。,雨夜的來信|無人生還的取材
+通常PC,松尾 克己,まつお かつみ,,刑警,#2f7a63,images/katsumi_icon.png,,,15,14,11,13,10,15,13,14,52,「證據會說話，人不會。」,任職所轄署二十年的老刑警。不信怪力亂神，卻總被分配到怪力亂神的案子。,深夜的第七通報案
+指定HO劇本PC,亞克賽爾,Axel,HO3 鬼,殺手,#c0392b,images/axel_icon.png,images/axel_full.png,images/axel_a.png|images/axel_b.png|images/axel_c.png,17,12,12,15,13,14,16,8,44,「先告訴我任務內容是什麼。」|「……可以，我接了。」,"在教堂中長大的孤兒。基本上不信任人類。
+拒絕任何對自己的身體不利的工作，除此之外的命令跟任務會全力以赴。",かいぶつたちとマホラカルト(怪物們與綺想教團)
+指定HO劇本PC,鳥羽 奏,とば かなで,HO1 歌,鋼琴家,#c98b1f,images/kanade_icon.png,images/kanade_full.png,images/kanade_a.png|images/kanade_b.png,9,11,16,14,17,12,15,15,63,「這首曲子，我還沒彈完。」,十六歲出道的鋼琴家。在一次演奏會之後失去了聽力的一半，卻仍聽得見不該聽見的聲音。,無聲的協奏曲|第二樂章
