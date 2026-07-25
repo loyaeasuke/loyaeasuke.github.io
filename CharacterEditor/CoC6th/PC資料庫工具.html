@@ -194,9 +194,18 @@ img{display:block}
   background:none;border:0;padding:0;cursor:pointer;text-align:center;
 }
 .gp-card .pic{
+  position:relative;                 /* 讓標籤能絕對定位在圖上 */
   width:100%;aspect-ratio:1/1;border:1px solid var(--hair);border-radius:2px;
   background:rgba(var(--c-rgb),.06);overflow:hidden;
   transition:transform .16s,border-color .16s,box-shadow .16s;
+}
+.gp-card .tag{
+  position:absolute;bottom:6px;right:6px;z-index:2;
+  padding:2px 7px;border-radius:2px;
+  font-family:var(--util);font-size:10px;font-weight:500;letter-spacing:.08em;
+  line-height:1.4;color:#fff;background:var(--c);
+  box-shadow:0 1px 3px rgba(20,24,35,.35);
+  pointer-events:none;white-space:nowrap;
 }
 .gp-card:hover .pic{
   transform:translateY(-3px);border-color:var(--c);
@@ -299,9 +308,16 @@ img{display:block}
   min-height:22px;line-height:22px;
 }
 .headline .ho .sw{width:9px;height:9px;background:var(--accent);flex:none}
+.name-row{display:flex;align-items:baseline;flex-wrap:wrap;gap:12px}
 .name{
   font-family:var(--serif-name);font-weight:900;font-size:44px;line-height:1.15;
   margin:0;letter-spacing:.02em;
+}
+.name-tag{
+  flex:none;padding:3px 9px;border-radius:2px;
+  font-family:var(--util);font-size:11px;font-weight:500;letter-spacing:.1em;
+  line-height:1.5;color:#fff;background:var(--accent);
+  box-shadow:0 1px 3px rgba(20,24,35,.28);white-space:nowrap;
 }
 .headline .reading{        /* 沒填也保留一行，職業不會往上跑 */
   margin:6px 0 0;font-size:12.5px;letter-spacing:.14em;color:var(--text-dim);
@@ -438,7 +454,7 @@ table.stat td{
   <input type="file" id="imgFiles" webkitdirectory directory multiple hidden>
 </div>
 <div class="hint tool-only" id="hintBar">
-  CSV 欄位：<code>分類,名字,拼音,HO,職業,代表色,頭像,全身圖,差分,STR,CON,POW,DEX,APP,SIZ,INT,EDU,SAN,台詞,概要,經歷</code>　·　
+  CSV 欄位：<code>分類,名字,拼音,HO,職業,代表色,關係,頭像,全身圖,差分,STR,CON,POW,DEX,APP,SIZ,INT,EDU,SAN,台詞,概要,經歷</code>　·　
   <code>差分</code> 與 <code>經歷</code> 以 <code>|</code> 分隔多筆，<code>台詞</code> 以 <code>|</code> 換行　·　<code>代表色</code> 填 <code>#c0392b</code> 這類色碼　·　請存成 UTF-8 編碼的 CSV。
 </div>
 
@@ -465,6 +481,7 @@ var ALIAS = {
   "全身圖":"full","立繪":"full","full":"full","fullbody":"full",
   "差分":"variants","差分圖":"variants","variants":"variants",
   "SAN":"san","san":"san","理智":"san","理智值":"san","初始SAN":"san","SAN值":"san",
+  "關係":"relation","关系":"relation","羈絆":"relation","relation":"relation","うちよそ":"relation",
   "台詞":"quote","台詞台本":"quote","quote":"quote","line":"quote",
   "概要":"summary","簡介":"summary","設定":"summary","summary":"summary",
   "經歷":"logs","團務":"logs","通過團務":"logs","logs":"logs","history":"logs"
@@ -529,6 +546,7 @@ function recordsFromCSV(text){
       color: cleanColor(o.color),
       icon: o.icon || "",
       full: o.full || "",
+      relation: (o.relation||"").trim(),
       variants: splitList(o.variants),
       stats: stats,
       san: isFinite(sanRaw) ? sanRaw : null,
@@ -831,9 +849,10 @@ function galleryPage(){
     var c = o.c, rgb = toRGB(c.color);
     var src = resolveImg(c.icon);
     var firstLog = (c.logs && c.logs.length) ? c.logs[0] : "";
+    var relTag = c.relation ? '<span class="tag">うちよそ</span>' : '';
     var vars = '--c:'+esc(c.color)+';--c-rgb:'+rgb.join(",")+';--c-text:'+readable(rgb)+';';
     h += '<button class="gp-card" type="button" data-go="'+o.i+'" style="'+vars+'">'+
-         '<span class="pic">'+
+         '<span class="pic">'+ relTag +
            (src
              ? '<img src="'+esc(src)+'" data-tw="150" data-th="150" alt="'+esc(c.name)+'" loading="lazy"'+
                ' onerror="this.outerHTML=\'<span class=&quot;fb&quot;>'+esc(c.name.charAt(0))+'</span>\'">'
@@ -910,7 +929,9 @@ function renderDetail(){
   h += '<div class="body-grid"><div class="col-main">';
   h += '<header class="headline">';
   h += c.ho ? '<p class="ho"><span class="sw"></span>'+esc(c.ho)+'</p>' : '<p class="ho" aria-hidden="true"></p>';
-  h += '<h2 class="name">'+esc(c.name)+'</h2>';
+  h += '<div class="name-row"><h2 class="name">'+esc(c.name)+'</h2>'+
+       (c.relation ? '<span class="name-tag">うちよそ</span>' : '')+
+       '</div>';
   h += c.reading ? '<p class="reading">'+esc(c.reading)+'</p>'
                  : '<p class="reading" aria-hidden="true"></p>';
   if(c.job) h += '<p class="job">'+esc(c.job)+'</p>';
@@ -1162,10 +1183,10 @@ function buildExport(){
 
 /* ── CSV 範本 ─────────────────────────────────── */
 var SAMPLE_CSV = [
-'分類,名字,拼音,HO,職業,代表色,頭像,全身圖,差分,STR,CON,POW,DEX,APP,SIZ,INT,EDU,SAN,台詞,概要,經歷',
-'通常PC,天宮 浩美,あまみや ひろみ,,大學生,#3f7fb5,images/hiromi_icon.png,images/hiromi_full.png,images/hiromi_a.png|images/hiromi_b.png,11,13,14,12,15,11,16,17,70,「總會有辦法的，先別急。」,"在都內就讀民俗學系的二年級生。個性溫和但好奇心過剩，總是最先走進不該走進的房間。",初次見面的怪異|夏日祭典的邀請函',
-'通常PC,雨宮 霧華,あまみや きりは,,記者,#6b5b95,images/kiruha_icon.png,images/kiruha_full.png,,10,12,15,14,16,10,17,16,75,「我只是想知道真相而已。」,"跑社會線的自由記者。追一則失蹤案追進了不該碰的領域。","雨夜的來信"',
-'指定HO劇本PC,亞克賽爾,Axel,HO3 鬼,殺手,#c0392b,images/axel_icon.png,images/axel_full.png,images/axel_a.png|images/axel_b.png|images/axel_c.png,17,12,12,15,13,14,16,8,44,「先告訴我任務內容是什麼。」|「……可以，我接了。」,"在教堂中長大的孤兒。基本上不信任人類。拒絕任何對自己的身體不利的工作，除此之外的命令跟任務會全力以赴。",かいぶつたちとマホラカルト(怪物們與綺想教團)'
+'分類,名字,拼音,HO,職業,代表色,關係,頭像,全身圖,差分,STR,CON,POW,DEX,APP,SIZ,INT,EDU,SAN,台詞,概要,經歷',
+'通常PC,天宮 浩美,あまみや ひろみ,,大學生,#3f7fb5,有,images/hiromi_icon.png,images/hiromi_full.png,images/hiromi_a.png|images/hiromi_b.png,11,13,14,12,15,11,16,17,70,「總會有辦法的，先別急。」,在都內就讀民俗學系的二年級生。個性溫和但好奇心過剩，總是最先走進不該走進的房間。,初次見面的怪異|夏日祭典的邀請函',
+'通常PC,雨宮 霧華,あまみや きりは,,記者,#6b5b95,,images/kiruha_icon.png,images/kiruha_full.png,,10,12,15,14,16,10,17,16,75,「我只是想知道真相而已。」,跑社會線的自由記者。追一則失蹤案追進了不該碰的領域。,雨夜的來信',
+'指定HO劇本PC,亞克賽爾,Axel,HO3 鬼,殺手,#c0392b,有,images/axel_icon.png,images/axel_full.png,images/axel_a.png|images/axel_b.png|images/axel_c.png,17,12,12,15,13,14,16,8,44,「先告訴我任務內容是什麼。」|「……可以，我接了。」,在教堂中長大的孤兒。基本上不信任人類。拒絕任何對自己的身體不利的工作，除此之外的命令跟任務會全力以赴。,かいぶつたちとマホラカルト(怪物們與綺想教團)'
 ].join("\n");
 
 /* 首次繪製 */
