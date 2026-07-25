@@ -503,12 +503,14 @@ function render(){
   const M=spkMap(), out=[], toc=[]; let shown=0, sceneNo=0, prevSecret='', anchorNo=0;
   const anchor=(kind,label)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label}); return id; };
   for(const r of LOG){
-    const type=r['類型']||'talk', ch=r['頻道']||'main';
-    const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret')?'secret':ch;
+    const type=r['類型']||'talk', ch=(r['頻道']||'main').trim();
+    const isHO = ch!=='secret' && /ho/i.test(ch);   // 非 secret 但名稱含 HO（不分大小寫）
+    const secTarget = isHO ? ch : (r['秘匿對象']||'');  // HO 的秘匿對象＝頻道名
+    const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret'||isHO)?'secret':ch;
     if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
         'prologue_start','prologue_end','round','hidden'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
     else if(!state.f[kind]) continue;
-    else if(kind==='dice' && ch==='secret' && !state.f.secret) continue;
+    else if(kind==='dice' && (ch==='secret'||isHO) && !state.f.secret) continue;
     if(state.who && r['發言人']!==state.who && type!=='scene') continue;
     if(state.q && !(r['內容']||'').includes(state.q) && !(r['發言人']||'').includes(state.q)) continue;
     shown++;
@@ -608,19 +610,19 @@ function render(){
 
     const s=M[r['發言人']];
     if(type==='dice'){
-      const sec = ch==='secret';
+      const sec = ch==='secret'||isHO;
       const parts=(r['內容']||'').split(/＞|=>/).map(x=>x.trim());
       const last=parts.length>1?parts.pop():'';
       out.push(`<div class="dice ${sec?'sec':''}">
         ${sec?`<span class="tag">秘匿</span>`:''}
         ${r['發言人']?`<span class="who">${esc((s&&s['顯示名稱'])||r['發言人'])}</span>`:''}
         <span class="expr">${esc(parts.join(' ＞ '))}</span>
-        ${sec&&r['秘匿對象']?`<span class="whisper">${esc(r['秘匿對象'])}</span>`:''}
+        ${sec&&secTarget?`<span class="whisper">${esc(secTarget)}</span>`:''}
         ${last?`<span class="res ${resultClass(last)}">${esc(last)}</span>`:''}</div>`);
       continue;
     }
 
-    const pair = (r['秘匿對象']||'秘匿').replace(/^(秘匿|秘密)/,'');
+    const pair = (secTarget||'秘匿').replace(/^(秘匿|秘密)/,'');
     const runStart = kind==='secret' && prevSecret !== pair;
     prevSecret = kind==='secret' ? pair : '';
     const nameless=!r['發言人'];
@@ -630,7 +632,7 @@ function render(){
       ${avatarHTML(s,'',r['頭像'])}
       <div class="body">
         ${r['發言人']?`<div class="name" style="${color?`color:${esc(color)}`:''}">${esc((s&&s['顯示名稱'])||r['發言人'])}
-          ${kind==='secret'&&r['秘匿對象']?`<span class="target">→ ${esc(r['秘匿對象'])}</span>`:''}</div>`:''}
+          ${kind==='secret'&&secTarget?`<span class="target">→ ${esc(secTarget)}</span>`:''}</div>`:''}
         <div class="text">${esc(r['內容'])}</div>
       </div></div>`);
   }
@@ -783,6 +785,7 @@ function convertLog(htmlText){
     let channel='other', target='';
     if(/^(秘匿|秘密)/.test(inner)){ channel='secret'; target=inner; }
     else if(['main','other','info'].includes(inner)){ channel=inner; }
+    else if(/ho/i.test(inner)){ channel=inner; }   // 標籤含 HO → 直接當成 HO 頻道名
     else if(inner){ target=inner; }
 
     const flat = text.replace(/\n/g,'');
