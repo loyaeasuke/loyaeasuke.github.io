@@ -106,12 +106,15 @@ input[type=search],select{font-family:var(--sans);font-size:13px;padding:5px 9px
 .dice.sec .whisper{font-family:var(--mono);font-size:10px;color:var(--secret);opacity:.85;flex:0 0 auto}
 .res.good{color:#0d6b3a}.res.bad{color:#a02020}.res.crit{color:#0b5fa5}.res.fumble{color:#6a0d0d}
 
-.endmark{margin:64px 0 56px;text-align:center}
-.endmark .rules{border-top:2px solid var(--ink);border-bottom:1px solid var(--ink);height:5px;margin-bottom:22px}
-.endmark .word{font-family:var(--mono);font-size:11px;letter-spacing:.55em;text-indent:.55em;color:var(--muted);display:block}
-.endmark .label{font-family:var(--serif);font-size:clamp(20px,3.4vw,26px);letter-spacing:.42em;text-indent:.42em;
-  color:var(--ink);display:block;margin-top:10px}
-.endmark .rules.b{margin:22px 0 0;border-top:1px solid var(--ink);border-bottom:2px solid var(--ink)}
+.sessionmark{margin:60px 0 54px;text-align:center}
+.sessionmark .frame{border-top:3px double var(--ink);border-bottom:3px double var(--ink);padding:18px 12px}
+.sessionmark .glyph{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.5em;text-indent:.5em;
+  color:var(--muted)}
+.sessionmark .word{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.55em;text-indent:.55em;
+  color:var(--muted);margin-top:6px}
+.sessionmark .label{display:block;font-family:var(--serif);font-size:clamp(20px,3.4vw,26px);
+  letter-spacing:.42em;text-indent:.42em;color:var(--ink);margin-top:10px}
+/* start：三角朝下（團務由此展開）；end：三角朝上（收束上方內容） */
 
 .reward{margin:26px 0;padding:18px 22px;background:var(--reward-bg);
   border:1px solid var(--reward-line);box-shadow:inset 0 0 0 3px var(--reward-bg),inset 0 0 0 4px var(--reward-line)}
@@ -228,9 +231,9 @@ body.tocdrag{user-select:none;cursor:col-resize}
 .pc-card[open]>summary .tri{transform:rotate(90deg)}
 
 .pc-body{display:flex;gap:16px;padding:14px;border-top:1px dashed var(--cline,var(--pc-line));align-items:flex-start}
-.pc-portrait{flex:0 0 150px;width:150px;border-radius:4px;border:1px solid var(--cline,var(--pc-line));
+.pc-portrait{flex:0 0 150px;width:150px;border-radius:4px;border:1px solid var(--cline,var(--pc-line));cursor:zoom-in;
   background:var(--panel) center/cover;display:block}
-.pc-portrait.ph{aspect-ratio:3/5;display:flex;align-items:center;justify-content:center;
+.pc-portrait.ph{aspect-ratio:3/5;cursor:default;display:flex;align-items:center;justify-content:center;
   font-family:var(--serif);font-size:13px;color:var(--muted);text-align:center;padding:8px}
 .pc-detail{flex:1;min-width:0}
 .pc-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:10px;font-size:13px}
@@ -532,7 +535,8 @@ function render(){
     const secTarget = isHO ? ch : (r['秘匿對象']||'');  // HO 的秘匿對象＝頻道名
     const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret'||isHO)?'secret':ch;
     if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
-        'prologue_start','prologue_end','round','hidden','image'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
+        'prologue_start','prologue_end','round','hidden','image',
+        'session_start','session_end','start'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
     else if(!state.f[kind]) continue;
     else if(kind==='dice' && (ch==='secret'||isHO) && !state.f.secret) continue;
     if(state.who && r['發言人']!==state.who && type!=='scene') continue;
@@ -619,11 +623,18 @@ function render(){
         <span class="tx">${esc(body)}</span></div>`);
       continue;
     }
-    if(type==='end'){
-      out.push(`<section class="endmark"><div class="rules"></div>
+    if(type==='session_start' || type==='start'){
+      out.push(`<section class="sessionmark start"><div class="frame">
+        <span class="glyph">▽　▽　▽</span>
+        <span class="word">SESSION START</span>
+        <span class="label">${esc(r['內容']||'團務開始')}</span></div></section>`);
+      continue;
+    }
+    if(type==='end' || type==='session_end'){
+      out.push(`<section class="sessionmark end"><div class="frame">
+        <span class="label">${esc(r['內容']||'團務結束')}</span>
         <span class="word">SESSION END</span>
-        ${r['內容']?`<span class="label">${esc(r['內容'])}</span>`:''}
-        <div class="rules b"></div></section>`);
+        <span class="glyph">△　△　△</span></div></section>`);
       continue;
     }
     if(type==='reward'){
@@ -696,6 +707,7 @@ function chipRow(line, cls){
 }
 function pcPortrait(p){
   if(p['立繪']) return `<img class="pc-portrait" src="${esc(p['立繪'])}" alt="${esc(p['PC']||'')}"
+    data-full="${esc(p['立繪'])}" data-cap="${esc(p['PC']||'')}"
     onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪\n(圖片無法載入)';">`;
   return `<div class="pc-portrait ph">立繪<br>（在 pcs.csv 的「立繪」欄填圖片網址）</div>`;
 }
@@ -942,8 +954,8 @@ document.getElementById('dlgSave').onclick=()=>{
 
 (function(){
   const lb=document.getElementById('lightbox'), lbi=document.getElementById('lbimg'), lbc=document.getElementById('lbcap');
-  document.getElementById('log').addEventListener('click',e=>{
-    const img=e.target.closest('img'); if(!img||!img.closest('.figure')||!img.dataset.full) return;
+  document.addEventListener('click',e=>{
+    const img=e.target.closest('.figure img, img.pc-portrait'); if(!img||!img.dataset.full) return;
     lbi.src=img.dataset.full; lbi.alt=img.dataset.cap||''; lbc.textContent=img.dataset.cap||'';
     lb.classList.add('on');
   });
