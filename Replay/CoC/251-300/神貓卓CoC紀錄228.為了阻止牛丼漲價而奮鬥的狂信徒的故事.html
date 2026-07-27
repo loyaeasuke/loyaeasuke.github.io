@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>神貓卓CoC紀錄228.為了阻止牛丼漲價而奮鬥的狂信徒的故事</title>
+<style>
+:root{
+  --paper:#e7e9ef; --panel:#fbfcfe; --ink:#191d29; --ink-2:#3c4considered;
+  --muted:#6d7689; --line:#c9cedb;
+  --secret:#6a4b9c; --secret-bg:#efeaf7; --secret-line:#b9a5d8;
+  --dice:#0e6a66; --dice-bg:#e6f1f0;
+  --info:#8a5a12; --info-bg:#f6efe2;
+  --other:#7a8194;
+  --reward:#2f6b45; --reward-bg:#eaf2ec; --reward-line:#a9c6b4;
+  --note:#a24a6d; --note-bg:#f7eef2; --note-line:#dcbccb; --note-ink:#4a2233;
+  --pc:#355a7a; --pc-bg:#eef2f6; --pc-line:#c3d0dd; --pc-accent:#b98a2e;
+  --battle:#a83232; --battle-bg:#f6e9e7; --battle-end:#5a6472; --battle-end-bg:#eceef1;
+  --epi:#8a6d3b; --epi-bg:#f5f0e5; --epi-line:#d9cca9;
+  --pro:#46707f; --pro-bg:#e9f0f2; --pro-line:#b5cdd5;
+  --round:#8c3d3d; --round-bg:#f7ecea;
+  --hidden:#2b2b38; --hidden-ink:#d8d4e2; --hidden-accent:#9d8fc4;
+  --radius:3px;
+  --mono:"Roboto Mono","DejaVu Sans Mono",ui-monospace,"Noto Sans TC",monospace;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85;
+  background-image:linear-gradient(var(--paper),var(--paper)),repeating-linear-gradient(0deg,rgba(0,0,0,.02) 0 1px,transparent 1px 4px);}
+.wrap{max-width:920px;margin:0 auto;padding:0 18px 120px}
+
+/* ── header ───────────────────────────────── */
+header.mast{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+.mast .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;color:var(--muted);text-transform:uppercase}
+.mast h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5.5vw,46px);letter-spacing:.14em;margin:.28em 0 .1em}
+.mast .sub{color:var(--muted);font-size:13px;letter-spacing:.1em;display:flex;flex-wrap:wrap;gap:14px;align-items:baseline}
+.mast .stat{font-family:var(--mono);font-size:11px;opacity:.75}
+[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text}
+[contenteditable]:hover{border-bottom-color:var(--line)}
+[contenteditable]:focus{border-bottom-color:var(--ink);background:rgba(255,255,255,.5)}
+[contenteditable][data-ph]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.55}
+
+/* ── toolbar ──────────────────────────────── */
+.bar{position:sticky;top:0;z-index:20;background:rgba(231,233,239,.93);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:26px}
+.bar .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font-family:var(--mono);font-size:12px;letter-spacing:.08em;padding:5px 11px;border:1px solid var(--line);
+  background:var(--panel);color:var(--muted);border-radius:var(--radius);cursor:pointer}
+.chip[aria-pressed="true"]{color:var(--panel);background:var(--ink);border-color:var(--ink)}
+.chip.k-secret[aria-pressed="true"]{background:var(--secret);border-color:var(--secret)}
+.chip.k-dice[aria-pressed="true"]{background:var(--dice);border-color:var(--dice)}
+.chip.k-info[aria-pressed="true"]{background:var(--info);border-color:var(--info)}
+input[type=search],select{font-family:var(--sans);font-size:13px;padding:5px 9px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);border-radius:var(--radius);min-width:150px}
+.count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+
+/* ── log rows ─────────────────────────────── */
+.line{display:flex;gap:12px;padding:9px 0 9px 14px;border-left:3px solid transparent;position:relative}
+.line + .line{margin-top:2px}
+.line.main{border-left-color:var(--ink)}
+.line.other{border-left-color:transparent;color:var(--other);font-size:13.5px;line-height:1.6}
+.line.other .name{color:var(--other)}
+.avatar{flex:0 0 46px;width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid var(--line);
+  background:var(--panel);margin-top:2px}
+.avatar.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:17px;color:var(--panel)}
+.line.other .avatar{flex-basis:28px;width:28px;height:28px}
+.body{flex:1;min-width:0}
+.name{font-weight:700;font-size:13px;letter-spacing:.06em;margin-bottom:1px}
+.text{white-space:pre-wrap;word-break:break-word}
+.line.nameless .text{padding-left:0}
+
+/* ── secret ───────────────────────────────── */
+.line.secret{background:
+    repeating-linear-gradient(135deg,rgba(106,75,156,.055) 0 6px,transparent 6px 12px),var(--secret-bg);
+  border-left:3px solid var(--secret);border-right:1px solid var(--secret-line);
+  border-top:1px solid var(--secret-line);border-bottom:1px solid var(--secret-line);
+  padding:11px 14px 11px 16px;margin-top:4px}
+.seal{position:absolute;top:-1px;right:-1px;background:var(--secret);color:#fff;font-family:var(--mono);
+  font-size:10px;letter-spacing:.22em;padding:2px 7px}
+.line.secret .name{color:var(--secret)}
+.target{font-family:var(--mono);font-size:10.5px;color:var(--secret);opacity:.8;letter-spacing:.05em}
+
+/* ── scene / dice / system / info ─────────── */
+.scene{margin:46px 0 32px;text-align:center}
+.scene .idx{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--muted);display:block;margin-bottom:12px}
+.scene .bar{display:flex;align-items:center;gap:18px}
+.scene .bar::before,.scene .bar::after{content:"";flex:1;height:1px;background:var(--line)}
+.scene .label{font-family:var(--serif);font-size:15px;letter-spacing:.5em;text-indent:.5em;color:var(--ink);
+  flex:0 1 auto;max-width:70%}
+
+.dice{display:flex;gap:10px;align-items:baseline;font-family:var(--mono);font-size:13px;
+  background:var(--dice-bg);border-left:3px solid var(--dice);padding:7px 12px;margin:6px 0}
+.dice .who{color:var(--dice);font-weight:700;flex:0 0 auto}
+.dice .expr{flex:1;word-break:break-all;color:#33414a}
+.dice .res{font-weight:700;padding:1px 8px;border:1px solid currentColor;white-space:nowrap}
+.dice.sec{background:
+    repeating-linear-gradient(135deg,rgba(106,75,156,.06) 0 6px,transparent 6px 12px),var(--secret-bg);
+  border-left-color:var(--secret);border-top:1px dashed var(--secret-line);
+  border-bottom:1px dashed var(--secret-line);border-right:1px dashed var(--secret-line)}
+.dice.sec .who{color:var(--secret)}
+.dice.sec .expr{color:#4a4159}
+.dice .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:#fff;background:var(--secret);
+  padding:1px 6px;flex:0 0 auto;align-self:center}
+.dice.sec .whisper{font-family:var(--mono);font-size:10px;color:var(--secret);opacity:.85;flex:0 0 auto}
+.res.good{color:#0d6b3a}.res.bad{color:#a02020}.res.crit{color:#0b5fa5}.res.fumble{color:#6a0d0d}
+
+.sessionmark{margin:60px 0 54px;text-align:center}
+.sessionmark .frame{border-top:3px double var(--ink);border-bottom:3px double var(--ink);padding:18px 12px}
+.sessionmark .glyph{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.5em;text-indent:.5em;
+  color:var(--muted)}
+.sessionmark .word{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.55em;text-indent:.55em;
+  color:var(--muted);margin-top:6px}
+.sessionmark .label{display:block;font-family:var(--serif);font-size:clamp(20px,3.4vw,26px);
+  letter-spacing:.42em;text-indent:.42em;color:var(--ink);margin-top:10px}
+/* start：三角朝下（團務由此展開）；end：三角朝上（收束上方內容） */
+
+.reward{margin:26px 0;padding:18px 22px;background:var(--reward-bg);
+  border:1px solid var(--reward-line);box-shadow:inset 0 0 0 3px var(--reward-bg),inset 0 0 0 4px var(--reward-line)}
+.reward .head{display:flex;align-items:baseline;gap:12px;margin-bottom:10px;
+  border-bottom:1px dotted var(--reward-line);padding-bottom:7px}
+.reward .badge{font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--reward);
+  border:1px solid var(--reward);padding:1px 7px}
+.reward .ttl{font-family:var(--serif);font-size:16px;letter-spacing:.18em;color:var(--reward)}
+.reward .text{white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+
+.note{margin:24px 0;background:var(--note-bg);border:1px solid var(--note-line);border-radius:var(--radius);
+  position:relative;overflow:hidden}
+.note::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--note);
+  background-image:repeating-linear-gradient(0deg,var(--note) 0 8px,transparent 8px 12px)}
+.note .cap{display:flex;align-items:center;gap:10px;padding:11px 20px 9px;border-bottom:1px dashed var(--note-line)}
+.note .cap .mk{font-family:var(--mono);font-size:10px;letter-spacing:.26em;color:#fff;background:var(--note);padding:2px 8px}
+.note .cap .who{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--note)}
+.note .text{white-space:pre-wrap;word-break:break-word;padding:14px 22px 18px;color:var(--note-ink);
+  font-family:var(--serif);line-height:2}
+
+/* ── 目錄（右側固定面板）──────────────────── */
+html{scroll-behavior:smooth}
+#toc{margin:18px 0 8px}
+.toc-box{position:relative;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+  transition:transform .22s ease,opacity .18s ease}
+.toc-head{display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:12.5px;letter-spacing:.14em;color:var(--ink);user-select:none}
+.toc-head .n{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.toc-toggle{border:0;background:none;cursor:pointer;padding:0 2px;color:var(--muted);
+  font-family:var(--mono);font-size:12px;line-height:1}
+.toc-toggle:hover{color:var(--ink)}
+/* 收合把手（收起後出現在右緣） */
+.toc-tab{display:none;position:fixed;right:0;top:96px;z-index:16;cursor:pointer;
+  border:1px solid var(--line);border-right:0;border-radius:var(--radius) 0 0 var(--radius);
+  background:var(--panel);color:var(--ink);font-family:var(--mono);font-size:11px;letter-spacing:.2em;
+  padding:11px 6px;writing-mode:vertical-rl;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.toc-tab:hover{background:var(--paper)}
+/* 拖曳寬度的握把 */
+.toc-grip{position:absolute;left:-5px;top:0;bottom:0;width:10px;cursor:col-resize;touch-action:none}
+.toc-grip::before{content:"";position:absolute;left:4px;top:50%;transform:translateY(-50%);
+  width:2px;height:26px;border-radius:2px;background:var(--line)}
+.toc-grip:hover::before{background:var(--muted)}
+body.tocdrag{user-select:none;cursor:col-resize}
+.toc-list{padding:5px;display:flex;flex-direction:column;gap:1px}
+.toc-list a{display:block;padding:3px 7px;border-radius:2px;text-decoration:none;color:var(--ink);
+  border-left:2px solid transparent;line-height:1.35}
+.toc-list a:hover{background:var(--paper);border-left-color:var(--ink)}
+.toc-list a .k{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.18em;opacity:.8}
+.toc-list a .t{display:block;font-size:12px;letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc-list a.k-scene .k{color:var(--muted)}
+.toc-list a.k-pro .k{color:var(--pro)}
+.toc-list a.k-epi .k{color:var(--epi)}
+.toc-list a.k-rwd .k{color:var(--reward)}
+.toc-list a.k-pro:hover{border-left-color:var(--pro)}
+.toc-list a.k-epi:hover{border-left-color:var(--epi)}
+.toc-list a.k-rwd:hover{border-left-color:var(--reward)}
+[data-anchor]{scroll-margin-top:96px}
+
+/* 捲軸：項目過多時明顯提示可上下拖拉 */
+.toc-list{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
+.toc-list::-webkit-scrollbar{width:9px}
+.toc-list::-webkit-scrollbar-track{background:var(--paper);border-radius:9px}
+.toc-list::-webkit-scrollbar-thumb{background:var(--muted);border-radius:9px;
+  border:2px solid var(--panel)}
+.toc-list::-webkit-scrollbar-thumb:hover{background:var(--ink)}
+
+/* 寬螢幕：釘在右側，不隨捲動移動 */
+@media (min-width:1220px){
+  #toc{position:fixed;top:96px;right:22px;width:var(--tocw,208px);margin:0;z-index:15}
+  .toc-box{box-shadow:0 1px 8px rgba(0,0,0,.06)}
+  .toc-list{max-height:calc(100vh - 176px)}
+  #toc.collapsed .toc-box{transform:translateX(calc(100% + 26px));opacity:0;pointer-events:none}
+  #toc.collapsed .toc-tab{display:block}
+}
+/* 窄螢幕：回到內文流，避免蓋住團錄；不提供拖曳寬度 */
+@media (max-width:1219px){
+  .toc-list{max-height:46vh}
+  .toc-grip{display:none}
+  #toc.collapsed .toc-box{display:none}
+  #toc.collapsed .toc-tab{display:inline-block;position:static;writing-mode:horizontal-tb;
+    border-right:1px solid var(--line);border-radius:var(--radius);padding:6px 12px}
+}
+
+/* ── PC 隊伍資訊 ─────────────────────────── */
+#pcs{margin:26px 0 8px}
+.pc-section{border:1px solid var(--pc-line);border-radius:var(--radius);background:var(--panel)}
+.pc-section>summary{list-style:none;cursor:pointer;padding:12px 18px;display:flex;align-items:center;gap:12px;
+  font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--pc);
+  border-bottom:1px solid transparent;user-select:none}
+.pc-section[open]>summary{border-bottom-color:var(--pc-line)}
+.pc-section>summary::-webkit-details-marker{display:none}
+.pc-section>summary .tri{font-family:var(--mono);font-size:11px;transition:transform .15s;color:var(--pc)}
+.pc-section[open]>summary .tri{transform:rotate(90deg)}
+.pc-section>summary .n{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);margin-left:auto}
+
+.pc-grid{padding:14px;display:grid;gap:14px}
+
+
+.pc-card{border:1px solid var(--cline,var(--pc-line));border-radius:var(--radius);
+  background:var(--cbg,var(--pc-bg));overflow:hidden}
+.pc-card>summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:center;gap:12px;
+  padding:11px 15px;border-left:3px solid var(--c,var(--pc))}
+.pc-card>summary::-webkit-details-marker{display:none}
+.pc-card>summary .thumb{flex:0 0 40px;width:40px;height:40px;border-radius:4px;object-fit:cover;
+  border:1px solid var(--pc-line);background:var(--panel)}
+.pc-card>summary .thumb.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);
+  font-size:16px;color:#fff;background:var(--pc)}
+.pc-card>summary .id{min-width:0}
+.pc-card>summary .id .nm{font-family:var(--serif);font-size:16px;letter-spacing:.1em;color:var(--c,var(--pc));font-weight:700}
+.pc-card>summary .id .sub{font-size:11.5px;color:var(--muted);letter-spacing:.04em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-card>summary .tri{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--c,var(--pc));transition:transform .15s}
+.pc-card[open]>summary .tri{transform:rotate(90deg)}
+
+.pc-body{display:flex;gap:16px;padding:14px;border-top:1px dashed var(--cline,var(--pc-line));align-items:flex-start}
+.pc-portrait{flex:0 0 150px;width:150px;border-radius:4px;border:1px solid var(--cline,var(--pc-line));cursor:zoom-in;
+  background:var(--panel) center/cover;display:block}
+.pc-portrait.ph{aspect-ratio:3/5;cursor:default;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:13px;color:var(--muted);text-align:center;padding:8px}
+.pc-detail{flex:1;min-width:0}
+.pc-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:10px;font-size:13px}
+.pc-meta b{color:var(--c,var(--pc));font-weight:700;letter-spacing:.05em}
+.pc-block{margin-top:12px}
+.pc-block .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--c,var(--pc-accent));
+  border-bottom:1px solid var(--cline,var(--pc-line));padding-bottom:3px;margin-bottom:8px}
+.pc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pc-chip{font-size:12px;font-family:var(--mono);background:var(--panel);border:1px solid var(--cline,var(--pc-line));
+  border-radius:3px;padding:2px 8px;white-space:nowrap}
+.pc-chip .k{color:var(--muted);margin-right:5px}
+.pc-chip .v{color:var(--ink);font-weight:700}
+.pc-chip.skill .v{color:var(--c,var(--pc))}
+.pc-items{font-size:13px;line-height:1.9;color:var(--ink);white-space:pre-wrap}
+@media (max-width:560px){.pc-body{flex-direction:column}.pc-portrait{width:60%;max-width:180px;margin:0 auto}}
+
+.battle{display:flex;align-items:center;gap:14px;margin:30px 0;padding:9px 16px;border-radius:var(--radius)}
+.battle .en{font-family:var(--mono);font-size:10px;letter-spacing:.3em;flex:0 0 auto}
+.battle .txt{font-family:var(--serif);font-size:15px;letter-spacing:.4em;text-indent:.4em;flex:0 0 auto}
+.battle .ln{flex:1;height:1px}
+.battle.start{background:
+    repeating-linear-gradient(135deg,rgba(168,50,50,.10) 0 8px,transparent 8px 16px),var(--battle-bg);
+  border-left:4px solid var(--battle);border-right:1px solid var(--battle)}
+.battle.start .txt,.battle.start .en,.battle.start .mk{color:var(--battle)}
+.battle.start .ln{background:linear-gradient(90deg,var(--battle),transparent);opacity:.4}
+.battle.end{background:var(--battle-end-bg);border-left:4px solid var(--battle-end);
+  border-right:1px solid var(--battle-end)}
+.battle.end .txt,.battle.end .en,.battle.end .mk{color:var(--battle-end)}
+.battle.end .ln{background:var(--battle-end);opacity:.3}
+.battle .mk{font-size:15px;flex:0 0 auto}
+
+.epilogue{margin:52px auto;max-width:74%;text-align:center;padding:18px 26px;background:var(--epi-bg);
+  border:1px solid var(--epi-line);border-radius:2px;color:var(--epi)}
+.epilogue .orn{font-size:17px;letter-spacing:.5em;text-indent:.5em;display:block;opacity:.85}
+.epilogue .txt{font-family:var(--serif);font-style:italic;font-size:clamp(18px,3.2vw,23px);
+  letter-spacing:.34em;text-indent:.34em;display:block;margin:8px 0}
+.epilogue .en{font-family:var(--mono);font-size:10px;letter-spacing:.42em;text-indent:.42em;opacity:.75;display:block}
+.epilogue.start{border-top:3px double var(--epi)}
+.epilogue.end{border-bottom:3px double var(--epi)}
+
+/* 前日談：與後日談對稱，改用晨青色調 */
+.prologue{margin:52px auto;max-width:74%;text-align:center;padding:18px 26px;background:var(--pro-bg);
+  border:1px solid var(--pro-line);border-radius:2px;color:var(--pro)}
+.prologue .orn{font-size:16px;letter-spacing:.5em;text-indent:.5em;display:block;opacity:.85}
+.prologue .txt{font-family:var(--serif);font-size:clamp(18px,3.2vw,23px);
+  letter-spacing:.34em;text-indent:.34em;display:block;margin:8px 0}
+.prologue .en{font-family:var(--mono);font-size:10px;letter-spacing:.42em;text-indent:.42em;opacity:.75;display:block}
+.prologue.start{border-top:3px double var(--pro)}
+.prologue.end{border-bottom:3px double var(--pro)}
+
+/* 回合標示 */
+.round{display:flex;align-items:center;gap:12px;margin:22px 0 14px}
+.round .ln{flex:1;height:1px;background:var(--round);opacity:.28}
+.round .pill{flex:0 0 auto;display:inline-flex;align-items:baseline;gap:9px;padding:4px 15px;
+  background:var(--round-bg);border:1px solid var(--round);border-radius:999px}
+.round .pill .t{font-family:var(--serif);font-size:14px;letter-spacing:.2em;color:var(--round);font-weight:700}
+.round .pill .n{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--round);opacity:.7}
+
+/* 隱藏資訊：團務當下玩家看不到的幕後情報 */
+.hidden-info{display:flex;align-items:flex-start;gap:12px;margin:10px 0;padding:9px 14px;font-size:13px;
+  background:var(--hidden);border-left:3px solid var(--hidden-accent);border-radius:var(--radius);
+  background-image:repeating-linear-gradient(135deg,rgba(157,143,196,.10) 0 7px,transparent 7px 14px)}
+.hidden-info .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--hidden);
+  background:var(--hidden-accent);padding:2px 7px;border-radius:2px;flex:0 0 auto;
+  line-height:1.4;margin-top:3px}
+.hidden-info .lb{font-family:var(--mono);letter-spacing:.12em;color:var(--hidden-accent);
+  flex:0 0 auto;line-height:1.75}
+.hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:1.75;
+  color:var(--hidden-ink);white-space:pre-wrap;word-break:break-word}
+
+/* 圖片：CG／地圖／道具等 */
+.figure{margin:26px auto;text-align:center;max-width:100%}
+.figure img{max-width:min(560px,100%);max-height:60vh;width:auto;height:auto;border-radius:var(--radius);
+  border:1px solid var(--line);cursor:zoom-in;display:inline-block;background:var(--panel)}
+.figure img:hover{filter:brightness(.96)}
+.figure figcaption{margin-top:8px;font-size:12.5px;color:var(--muted);letter-spacing:.06em;font-family:var(--serif)}
+.figure .ph{display:inline-flex;align-items:center;justify-content:center;min-width:220px;min-height:130px;
+  border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted);font-size:12.5px;
+  font-family:var(--mono);padding:20px;background:var(--panel)}
+
+.lightbox{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+  background:rgba(20,22,30,.88);cursor:zoom-out;padding:24px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:96vw;max-height:92vh;width:auto;height:auto;border-radius:2px;
+  box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.lightbox .cap{position:fixed;left:0;right:0;bottom:18px;text-align:center;color:#e8e8ef;
+  font-family:var(--serif);font-size:13px;letter-spacing:.08em;pointer-events:none}
+.lightbox .x{position:fixed;top:16px;right:22px;color:#e8e8ef;font-family:var(--mono);font-size:22px;
+  line-height:1;cursor:pointer;opacity:.8}
+.lightbox .x:hover{opacity:1}
+
+.sys{display:flex;align-items:flex-start;gap:12px;font-family:var(--mono);font-size:13px;
+  color:var(--muted);margin:6px 0;border-top:1px dotted var(--line);border-bottom:1px dotted var(--line);
+  padding:4px 14px}
+.sys .lb{flex:0 0 auto;letter-spacing:.12em;font-weight:700}
+.sys .tx{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word}
+
+.line.info{background:var(--info-bg);border:1px solid #e0cfa8;border-left:3px solid var(--info);
+  font-family:var(--serif);padding:16px 20px;margin:20px 0}
+.line.info .name{color:var(--info);font-family:var(--mono)}
+
+/* ── avatar editor ────────────────────────── */
+dialog{border:1px solid var(--line);background:var(--panel);max-width:560px;width:92%;padding:0;border-radius:var(--radius)}
+dialog h2{font-family:var(--serif);font-size:17px;margin:0;padding:16px 20px;border-bottom:1px solid var(--line);letter-spacing:.1em}
+.editor{max-height:60vh;overflow:auto;padding:12px 20px}
+.erow{display:grid;grid-template-columns:40px 1fr 1.4fr;gap:8px;align-items:center;padding:5px 0}
+.erow input{width:100%;font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:var(--radius)}
+dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line)}
+@media (max-width:560px){.avatar{flex-basis:36px;width:36px;height:36px}.erow{grid-template-columns:32px 1fr}.erow input.url{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow" id="eyebrow">CALL OF CTHULHU TRPG ／ SESSION LOG</div>
+    <h1 id="title">神貓卓CoC紀錄228.為了阻止牛丼漲價而奮鬥的狂信徒的故事</h1>
+    <div class="sub"><span id="subtitle">KP：洛雅　｜　PL：ㄇㄙ</span><span class="stat" id="meta"></span></div>
+  </header>
+
+  <div class="bar">
+    <div class="row">
+      <button class="chip" data-f="main" aria-pressed="true">main</button>
+      <button class="chip" data-f="other" aria-pressed="true">other</button>
+      <button class="chip k-info" data-f="info" aria-pressed="true">info</button>
+      <button class="chip k-secret" data-f="secret" aria-pressed="true">秘匿</button>
+      <button class="chip k-dice" data-f="dice" aria-pressed="true">擲骰</button>
+      <select id="who"><option value="">全部發言人</option><option value="KP">KP</option><option value="荻原 大和">荻原 大和</option><option value="警察的聲音？">警察的聲音？</option><option value="狂熱的男人">狂熱的男人</option><option value="牛丼狂熱者">牛丼狂熱者</option><option value="體格壯碩的男子">體格壯碩的男子</option></select>
+      <input type="search" id="q" placeholder="搜尋內容…" value="">
+      <span class="count" id="count">212 / 212 行</span>
+    </div>
+    
+  </div>
+
+  <section id="pcs"><details class="pc-section" open="">
+    <summary><span class="tri">▶</span>PC資訊<span class="n">1 名探索者</span></summary>
+    <div class="pc-grid"><details class="pc-card" open="" style="--c:#d9ab42;--cbg:rgba(217,171,66,0.09);--cline:rgba(217,171,66,0.38);">
+      <summary>
+        <span class="id"><span class="nm">荻原 大和</span>
+          <span class="sub">PL ㄇㄙ</span></span>
+        <span class="tri">▶</span></summary>
+      <div class="pc-body">
+        <img class="pc-portrait" src="https://loyaeasuke.github.io/Character/pics/ogihara_v.png" alt="荻原 大和" data-full="https://loyaeasuke.github.io/Character/pics/ogihara_v.png" data-cap="荻原 大和" onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪
+(圖片無法載入)';">
+        <div class="pc-detail">
+          <div class="pc-meta">
+            <span><b>職業</b> 幼兒園老師</span>
+            <span><b>年齡</b> 24</span>
+            <span><b>性別</b> 男</span>
+          </div>
+          <div class="pc-block"><div class="h">STATUS</div><div class="pc-chips"><span class="pc-chip "><span class="k">HP</span><span class="v">12</span></span><span class="pc-chip "><span class="k">MP</span><span class="v">13</span></span><span class="pc-chip "><span class="k">SAN</span><span class="v">65／99</span></span><span class="pc-chip "><span class="k">DB</span><span class="v">+1D4</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">STR</span><span class="v">15</span></span><span class="pc-chip "><span class="k">CON</span><span class="v">11</span></span><span class="pc-chip "><span class="k">DEX</span><span class="v">15</span></span><span class="pc-chip "><span class="k">APP</span><span class="v">14</span></span><span class="pc-chip "><span class="k">POW</span><span class="v">13</span></span><span class="pc-chip "><span class="k">SIZ</span><span class="v">13</span></span><span class="pc-chip "><span class="k">INT</span><span class="v">13</span></span><span class="pc-chip "><span class="k">EDU</span><span class="v">16</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">幸運</span><span class="v">65</span></span><span class="pc-chip "><span class="k">知識</span><span class="v">80</span></span><span class="pc-chip "><span class="k">靈感</span><span class="v">65</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">年收</span><span class="v">700万</span></span><span class="pc-chip "><span class="k">財產</span><span class="v">3500万</span></span></div></div>
+          <div class="pc-block"><div class="h">SKILLS</div><div class="pc-chips"><span class="pc-chip skill"><span class="k">信用</span><span class="v">35</span></span><span class="pc-chip skill"><span class="k">說服</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">心理學</span><span class="v">65</span></span><span class="pc-chip skill"><span class="k">聆聽</span><span class="v">61</span></span><span class="pc-chip skill"><span class="k">圖書館</span><span class="v">65</span></span><span class="pc-chip skill"><span class="k">偵查</span><span class="v">70</span></span><span class="pc-chip skill"><span class="k">醫學</span><span class="v">30</span></span><span class="pc-chip skill"><span class="k">英文</span><span class="v">36</span></span><span class="pc-chip skill"><span class="k">歷史</span><span class="v">30</span></span><span class="pc-chip skill"><span class="k">博物學</span><span class="v">40</span></span><span class="pc-chip skill"><span class="k">法律</span><span class="v">25</span></span><span class="pc-chip skill"><span class="k">人類學</span><span class="v">61</span></span><span class="pc-chip skill"><span class="k">電器維修</span><span class="v">40</span></span><span class="pc-chip skill"><span class="k">藝術【戲劇】</span><span class="v">25</span></span></div></div>
+          <div class="pc-block"><div class="h">ITEMS</div><div class="pc-items">手機、皮夾、紙巾、小動物OK繃、藍芽耳機</div></div>
+          <div class="pc-block"><div class="h">NOTE</div><div class="pc-items">家境不錯，是家中的么子，從小在家人的呵護下長大但並未被寵壞，對家務和電器用品相當熟悉，獨立出去生活也沒問題。性格直率爽朗，對他人的變化很敏銳，會主動關心身邊的人。
+喜歡熱鬧的場合，只要處得來就會當對方是朋友。高中和大學都有被告白過，然而都沒有心動的感覺。
+
+對背誦科目得心應手，然而真正感興趣的是表演藝術。本想報考相關科系，但考慮再三後最終選擇投身於教育事業。由於喜歡小孩子，工作時很能樂在其中，對現狀並未有什麼不滿。對孩子們說故事時會非常認真地扮演故事中的角色，浮誇的表演方式深受孩子們喜愛。</div></div>
+        </div>
+      </div></details></div>
+  </details></section>
+
+  <nav id="toc" class=""><div class="toc-box">
+      <div class="toc-grip" title="拖曳調整寬度"></div>
+      <div class="toc-head"><button class="toc-toggle" title="收起目錄">›</button>目錄<span class="n">3 項</span></div>
+      <div class="toc-list"><a href="#sec-1" class="k-scene">
+      <span class="k">SCENE</span>
+      <span class="t">SCENE 01　─本篇─</span></a><a href="#sec-2" class="k-scene">
+      <span class="k">SCENE</span>
+      <span class="t">SCENE 02</span></a><a href="#sec-3" class="k-rwd">
+      <span class="k">REWARD</span>
+      <span class="t">通關報酬</span></a></div>
+    </div>
+    <button class="toc-tab" title="展開目錄">目錄 ‹</button></nav>
+
+  <main id="log"></main>
+
+  <div class="lightbox" id="lightbox"><span class="x">✕</span>
+    <img id="lbimg" alt="荻原 大和"><div class="cap" id="lbcap">荻原 大和</div></div>
+</div>
+
+
+
+<script>
+/*DATA_START*/let LOG = [{"序號":"1","類型":"start","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"","備註":""},{"序號":"2","類型":"scene","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"─本篇─","備註":""},{"序號":"3","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"20xx年，日本國民陷入震撼。","備註":""},{"序號":"4","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"突然間，這項消息傳遍全國。","備註":""},{"序號":"5","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"「牛丼，要漲價了。」","備註":""},{"序號":"6","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"播報員聲音顫抖地念著稿子。","備註":""},{"序號":"7","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"在家中客廳、在學校、在職場、在家電賣場。","備註":""},{"序號":"8","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"聽到這消息的人們因過度震驚而呆立當場，無法再繼續手上的工作。","備註":""},{"序號":"9","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"而你，荻原大和，好不容易結束了一天辛勞的工作，為了犒勞自己，更重要的是要滿足胃袋，今天是吃牛丼的心情──在經過電視牆的時候，也聽見了這樣令人震撼的新聞。","備註":""},{"序號":"10","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"怎麼會……不可能……那個平價好吃、出餐快速的牛丼……怎麼可以漲價……！","備註":""},{"序號":"11","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"SANC 1/1D3。","備註":""},{"序號":"12","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"(大笑","備註":""},{"序號":"13","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"我沒想到WWWW會是這種風格的開場WWWWWW","備註":""},{"序號":"14","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"一陣子沒開場了我現在也在笑","備註":""},{"序號":"15","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"但是好貼時事ㄛ(幹","備註":""},{"序號":"16","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"貼時事www時事是豬肉(幹","備註":""},{"序號":"17","類型":"dice","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"CCB<=63 SANC (1D100<=63) ＞ 21 ＞ 成功","備註":""},{"序號":"18","類型":"system","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"SAN : 63 → 62","備註":""},{"序號":"19","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一旦狂亂的齒輪開始轉動便無法停止，對日本經濟造成了巨大的打擊。","備註":""},{"序號":"20","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"股價大跌，這一事件後來被某位藝人的發言調侃為「哞～烈，只有丼飯～震撼事件」。","備註":""},{"序號":"21","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這個話題甚至被帶進國會，在新聞上還能看到「非得是牛不可嗎？豬不行嗎？」的質詢發言，想必這個荒謬的質詢會讓你記憶猶新。","備註":""},{"序號":"22","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"有名的牛丼連鎖店湧入大量顧客，人們邊吃著牛丼邊流淚，彷彿在向它道別。","備註":""},{"序號":"23","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"為什麼，這種事情怎麼可能被允許。","備註":""},{"序號":"24","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"但不景氣也是沒辦法的。可是、但是……。","備註":""},{"序號":"25","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"話雖如此，你還是會去吃牛丼吧。","備註":""},{"序號":"26","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"當然必須要吃的！","備註":""},{"序號":"27","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"下定決心後，你不知道是心累還是真的人很累，總之你踩著有些沉重的步伐，緩緩走向店家的方向。","備註":""},{"序號":"28","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"正當你緩慢前行，宛如牛步時，一道龐大的黑影從你們身旁掠過。","備註":""},{"序號":"29","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"來個🎲POW×５。","備註":""},{"序號":"30","類型":"dice","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"CCB<=13*5 POW×5 (1D100<=65) ＞ 7 ＞ 特殊","備註":""},{"序號":"31","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"儘管疲憊，你很快回過神來，轉頭看向那道龐大黑影。","備註":""},{"序號":"32","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那影子朝你的方向「噗哧噗哧」地重重噴氣，搖晃著臉盯著你看。","備註":""},{"序號":"33","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那是隻巨大的……牛。","備註":""},{"序號":"34","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"而且還不只一隻。","備註":""},{"序號":"35","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"？？？？？？","備註":""},{"序號":"36","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"靠你超近的牛舔了一下你的臉。嗚哇好臭。","備註":""},{"序號":"37","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"這是可以在路上隨便撞見的東西嗎","備註":""},{"序號":"38","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"這裡是市區呢","備註":""},{"序號":"39","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你清楚地意識到，這並非你想像出來的幻覺，而是真實存在於現實的生物。","備註":""},{"序號":"40","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「──哇啊？！牛、牛……什麼情況？為什麼路上會有牛啊很危險的啊！！」","備註":""},{"序號":"41","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"當然肯定不只你這麼想。街上行人紛紛走避。而且，牛還不只你眼前的這幾隻。","備註":""},{"序號":"42","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"從道路盡頭又冒出一頭、再來一頭……。","備註":""},{"序號":"43","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一頭接著一頭，就像迴轉壽司的輸送帶般接連出現。","備註":""},{"序號":"44","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"看到這些牛，你在震驚之中仍感到它們比你印象中的牛還大得多。","備註":""},{"序號":"45","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"來個🎲生物學或知識。","備註":""},{"序號":"46","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「這個要報警吧……還是要打給消防隊？完全搞不懂……」握著手機還在震驚。","備註":""},{"序號":"47","類型":"dice","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"CCB<=16*5 知識 (1D100<=80) ＞ 4 ＞ 決定性的成功/特殊","備註":""},{"序號":"48","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"？","備註":""},{"序號":"49","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"我要笑死","備註":""},{"序號":"50","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"老ㄙ有點太努力","備註":""},{"序號":"51","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你看出牠們屬於名為非洲水牛的種類。棲息於非洲的物種，以大型群體集體移動而聞名。雖然具有攻擊性，但眼前這些牛卻溫順地行走，沒有任何暴躁的舉動。","備註":""},{"序號":"52","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"或許是這些牛牛列隊意外和平，你不知不覺都跟著冷靜了。","備註":""},{"序號":"53","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"對於這些明顯不是美國品種、卻接連出現的巨牛，會有強烈違和感。……更何況竟然還是在大街上看到一群水牛列隊。","備註":""},{"序號":"54","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"啊……是那個吧。獅○王裡出現的牛群。","備註":""},{"序號":"55","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"左看右看，這群水牛似乎沒有立即性的危險，稍微冷靜了一點。拿起手機打算先報警再說。","備註":""},{"序號":"56","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"接聽電話的是個聽起來沒有認真上班的警察的聲音。","備註":""},{"序號":"57","類型":"talk","頻道":"main","秘匿對象":"","發言人":"警察的聲音？","頭像":"","內容":"「喂喂～OO派出所你好～現在值班警察外出吃牛丼所以不在～請稍後再撥～」","備註":""},{"序號":"58","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"然後電話就掛了。","備註":""},{"序號":"59","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"唉不是欸，這明明就不是電話答錄的聲音！","備註":""},{"序號":"60","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"幹ＷＷＷＷＷＷ","備註":""},{"序號":"61","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"做事啊","備註":""},{"序號":"62","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"跑去吃牛丼","備註":""},{"序號":"63","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「哎、等等──」這就掛了？！警察叔叔！！！","備註":""},{"序號":"64","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"是個沒用的大人呢。這個警察。","備註":""},{"序號":"65","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"受到打擊，有點沮喪地垂下肩。看著眼前排成一排的水牛，不禁往他們前進的方向看去。","備註":""},{"序號":"66","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「……說起來，這群水牛要去哪裡啊？」","備註":""},{"序號":"67","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這些牛到底是哪來的呢……放眼望去，牛群移動的隊伍超級長，並且牛群出現的方向依然源源不絕地有一頭又一頭的牛走過來。","備註":""},{"序號":"68","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"往牠們移動的方向看去，那個方向正好和牛丼店是同方向呢……","備註":""},{"序號":"69","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"……？不只鴨子會拿蔥，牛牛也會自己走進牛丼店了嗎？不可能吧……","備註":""},{"序號":"70","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"拿起手機把眼前不可思議的景象拍下來，猶豫了一會後還是跟著牛群往他們的目的地前進。","備註":""},{"序號":"71","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"跟著牛群移動……你還真的來到了牛丼店外。","備註":""},{"序號":"72","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"店員們努力地維持秩序，店內竟然還有客人在用餐，人類的食慾真是不容小覷。","備註":""},{"序號":"73","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"可以聽見裡面的店員在喊著「這群牛到底是哪裡來的！？」「我們沒有人手去確認啊！」「快點打電話給總公司！」「牛的價格有救了嗎？」「誰先來拯救我們的過勞啦！」","備註":""},{"序號":"74","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一片混亂。","備註":""},{"序號":"75","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你可以無視這一切，排隊等入店去吃你的牛丼。或是……去看看這群牛到底打哪來的？","備註":""},{"序號":"76","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"居然還有直接坐下開吃的選項ＷＷＷＷＷ","備註":""},{"序號":"77","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「哇啊……」再這麼下去會越來越混亂的吧。這些水牛就這樣莫名其妙出現還沒人管理嗎？","備註":""},{"序號":"78","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"一臉擔心的左右張望了一會，最後看向牛丼店裡忙得要死要活的店員們，默默在心裡喊了句「加油喔！（握拳）」，然後小跑步往牛群出現的方向移動。","備註":""},{"序號":"79","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"加油喔！（握拳）wwwwwwww","備註":""},{"序號":"80","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"除了加油並不能幹嘛","備註":""},{"序號":"81","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你沿著牛群來時的方向前進。最後，你抵達附近的公園。","備註":""},{"序號":"82","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那裡有些小孩正目瞪口呆地望著某個方向。","備註":""},{"序號":"83","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"朝他們的視線方向看去，什麼都沒有。就在這麼想的時候……","備註":""},{"序號":"84","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"有一處的空間如海市蜃樓般微微扭曲、閃爍著。","備註":""},{"序號":"85","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你抱持困惑，仔細端詳，突然看到那個空間一陣歪斜，接著，一頭牛「滑溜溜」地探出頭來。","備註":""},{"序號":"86","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"然後牠就像什麼都沒發生一樣，悠然自得地踏出步伐。","備註":""},{"序號":"87","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"不要拿門來傳送牛牛ＷＷＷＷ幹ＷＷＷＷＷＷ","備註":""},{"序號":"88","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"目睹這詭異的景象，SANC 0/1。","備註":""},{"序號":"89","類型":"dice","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"CCB<=62 SANC (1D100<=62) ＞ 62 ＞ 成功","備註":""},{"序號":"90","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"總覺得發生什麼都不奇怪了。","備註":""},{"序號":"91","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"習慣了(不要這種","備註":""},{"序號":"92","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"唉──？\n歪著腦袋看著水牛就這麼憑空出現，目瞪口呆。","備註":""},{"序號":"93","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"難道是有什麼人把水牛們送到這裡來……？邊想邊慢慢地靠近那個空間扭曲的地方。","備註":""},{"序號":"94","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你在意著這扭曲的空間，稍微靠近一點點……在這過程之中牛還不斷從那個空間一個個探頭出來。","備註":""},{"序號":"95","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"在逆牛而上時，好像不知不覺間走入那片微微搖擺的空間之中了，你的視野開始扭曲變形。","備註":""},{"序號":"96","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你回過神來一看，是一望無際的大地。舉目所見，只有樹木、矮草與牛群。","備註":""},{"序號":"97","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"就在這時，你突然聽到一道男性的呼喊聲。","備註":""},{"序號":"98","類型":"talk","頻道":"main","秘匿對象":"","發言人":"狂熱的男人","頭像":"","內容":"「走吧，快去！！很好，乖孩子！！」","備註":""},{"序號":"99","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一名男子正在非洲被牛群包圍，似乎在鼓勵牠們，並將牠們引導進那扭曲的空間，也就是那扇門。","備註":""},{"序號":"100","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"有怪人！！！！！！","備註":""},{"序號":"101","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"超怪ㄉ人","備註":""},{"序號":"102","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"是的，你同時意識到，這裡似乎是以前電視上看到的非洲草原景色。","備註":""},{"序號":"103","類型":"talk","頻道":"main","秘匿對象":"","發言人":"狂熱的男人","頭像":"","內容":"「……呼。這樣就差不多吧……」","備註":""},{"序號":"104","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"他似乎剛忙完一輪，還鬆了口氣。","備註":""},{"序號":"105","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「嗯？……這是哪裡？咦？草原？！」大傻眼。","備註":""},{"序號":"106","類型":"talk","頻道":"main","秘匿對象":"","發言人":"狂熱的男人","頭像":"","內容":"「哇！？誰！？」","備註":""},{"序號":"107","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"眨眨眼睛回過神來，將目光轉向在場的另一人。\n「呃、那個，您好，我叫荻原。」反射性乖乖地自報門戶。「這位先生，請問街上出現的那些牛群……是你做的嗎？」","備註":""},{"序號":"108","類型":"talk","頻道":"main","秘匿對象":"","發言人":"狂熱的男人","頭像":"","內容":"「喔喔！我叫什麼不重要，不過你可以稱我為牛丼狂熱者！」男人握著拳，很像下一秒要擺出勝利姿勢的樣子。「你說街上……啊！我知道了！你是從門那邊過來的對吧！沒錯！就是我做的！你也看過新聞了吧！？聽說牛丼要漲價！我怎麼坐得住啊！當然要立刻行動啦！！」","備註":""},{"序號":"109","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「但現在已經沒問題了！！你看，我用門把非洲和日本連起來了！我現在可是很努力的啊！」","備註":""},{"序號":"110","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"一臉聽不懂這人在公三小的表情。","備註":""},{"序號":"111","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"金毛今天是不是沒有驚嚇以外的表情","備註":""},{"序號":"112","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"太匪夷所思ㄌ","備註":""},{"序號":"113","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「……牛丼狂熱者先生。這樣不好喔，會造成大家的困擾的。那些牛牛雖然現在沒有亂衝，但要是被嚇到說不定會造成什麼事故喔。很危險的。」深吸一口氣，調整一下表情，像在跟小孩子說話那樣勸說。","備註":""},{"序號":"114","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「事故？沒事啦沒事啦！我有好好控制牠們的啦！牠們會自動走去牛丼店的啦！而且啊，只要牛變多，牛丼的價格就會下來對吧！？所以啦！這是不得不做的事對吧！？」","備註":""},{"序號":"115","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"他一面慷慨激昂地高聲說道，還一面往你步步逼近。","備註":""},{"序號":"116","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"幹嘛！！！！你不要過來！！！！","備註":""},{"序號":"117","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「你知道嗎？那些議員真是不懂欸！什麼叫做『豬不行嗎？』豬當然不行啦！我現在就是想吃牛啊！豬是適合吃豬肉的時候再吃！但現在就是牛的時間啊！你一定懂這個感受吧！對吧！？我跟你說，想當年我對牛丼……」開始滔滔不絕。","備註":""},{"序號":"118","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"要是不打斷他，大概會沒完沒了。","備註":""},{"序號":"119","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"哇哇……這個人真的很喜歡牛丼耶。呆望著對方不禁這麼感嘆。","備註":""},{"序號":"120","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「牛丼狂熱者先生，我也很喜歡牛丼喔。常去的那家食堂阿姨都會放很多甜甜的洋蔥，很美味呢。」","備註":""},{"序號":"121","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「我可以理解你的心情，可是這樣是行不通的啊。雖然我對畜牧業不太了解……但是我可以確定，非洲水牛是不能作為肉牛使用的吧。」","備註":""},{"序號":"122","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「怎麼會！？牠們同為牛，就是可以吃的好牛吧！！牠們看起來有這麼多肉！！」震驚。","備註":""},{"序號":"123","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「啊哈哈，我懂我懂。小朋友們也常常會把圖鑑上的動物搞混呢。指著鱷魚說是大蜥蜴什麼的。」","備註":""},{"序號":"124","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「……既然知道的話，就請你停手吧。然後我必須請你去一趟警察局為你做的壞事付出代價。抱歉了喔。」","備註":""},{"序號":"125","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「欸欸～我還以為是個好點子呢……怎麼這樣啊……」","備註":""},{"序號":"126","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「啊不過我才不要去警察局。我又沒做壞事。」","備註":""},{"序號":"127","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「不不不，你違反了道路安全條例、任意將國外的動物帶進國內，要是弄個不好說不定還會帶來傳染病喔。這些應該是身為大人該有的常識吧？」","備註":""},{"序號":"128","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「才不要哩！哼哼！既然你是透過門過來的，就要靠我開門讓你回去吧！要是你不答應放我一馬，就和我一起在這片非洲大草原生活吧！」","備註":""},{"序號":"129","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"竟然還跟你談起條件來了。","備註":""},{"序號":"130","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"哪來的臉啊可惡ＷＷＷＷ","備註":""},{"序號":"131","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「咦……我才不要。這樣太狡猾了吧。」","備註":""},{"序號":"132","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「哈哈哈～怎麼樣？放過我吧～」沾沾自喜。","備註":""},{"序號":"133","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「……唔嗯，不行，至少要把你送過去的那些水牛叫回來。」雙手抱胸思考，然後指著對方的鼻子一臉認真。","備註":""},{"序號":"134","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「唉……好啦……我懂啦，叫回來就是了……」","備註":""},{"序號":"135","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「所以不能抓我去警察局喔……」","備註":""},{"序號":"136","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「你們回來吧，快回來……」","備註":""},{"序號":"137","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"男人朝通道的方向招招手，你看到水牛一頭又一頭從那個扭曲的空間回來。","備註":""},{"序號":"138","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"好乖ㄉ牛牛們","備註":""},{"序號":"139","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"乖巧歸來","備註":""},{"序號":"140","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"在這群移動的牛群之中，男人身旁站著一頭神情不安（？）的牛。","備註":""},{"序號":"141","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「是啊……你們也不想突然就被變成食物吧……我光顧著想自己的事了。」","備註":""},{"序號":"142","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「對不起，今後我會懷著更多感恩的心來面對食物。」","備註":""},{"序號":"143","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「有在反省了啊？很好很好，下次不要再這麼亂來了喔。」","備註":""},{"序號":"144","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「你也不會要就這樣待在草原吧。一起回去？」朝對方伸手。","備註":""},{"序號":"145","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「喔──真是友善的人！從今天起你就是我的牛丼之友了！走走走我來開門！」","備註":""},{"序號":"146","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"怎麼會用到這個表情","備註":""},{"序號":"147","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"怎ＷＷＷ麼ＷＷＷ會ＷＷＷＷＷＷＷ","備註":""},{"序號":"148","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"金毛：我要把你就這樣帶去警察局\n怪人：今天起我們就４朋友ㄌ","備註":""},{"序號":"149","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"抱歉ㄌ新朋友","備註":""},{"序號":"150","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"突然友善→好碰友","備註":""},{"序號":"151","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"結果還是帶去警局（笑死","備註":""},{"序號":"152","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"當然，做ㄌ就是做ㄌ","備註":""},{"序號":"153","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"老ㄙ很認真的（？？？","備註":""},{"序號":"154","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「嗯嗯，走吧走吧。」看著對方這麼開心的樣子，總覺得，有點抱歉啊……","備註":""},{"序號":"155","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"於是就這樣，男人回收了牛群，關閉了通往非洲的門，你也回到了日本……還盤算著要就這樣把人抓去警局。","備註":""},{"序號":"156","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"「哇 ！這啥 ！！！」「好大 ！！！」","備註":""},{"序號":"157","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一返回公園，你就被孩子們的大聲叫喊嚇到，而不禁朝他們看去。","備註":""},{"序號":"158","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"映入眼簾的是牛群留下的紀念品，一坨非比尋常巨大的便便，就那樣靜靜地留在那裡。","備註":""},{"序號":"159","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"……","備註":""},{"序號":"160","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"幹ＷＷＷＷＷ","備註":""},{"序號":"161","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"還是去吃牛丼吧？吃嗎？","備註":""},{"序號":"162","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"……看了一眼便便，看著身旁的男人，用力指著。一臉「你會負責的對吧」。","備註":""},{"序號":"163","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「？」完全沒GET到的表情。","備註":""},{"序號":"164","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「你造成的。你要負責清。」","備註":""},{"序號":"165","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「怎麼可以這樣說呢！這是自然現象吧！」","備註":""},{"序號":"166","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「五歲小孩都知道要自己收拾玩具。你要是不負責到底，我現在就送你去警察局。」","備註":""},{"序號":"167","類型":"talk","頻道":"main","秘匿對象":"","發言人":"牛丼狂熱者","頭像":"","內容":"「這是要怎麼負責啊啊啊啊啊！」","備註":""},{"序號":"168","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"後來你還是把人抓去警察局了。但很可惜的是，由於沒有證據可以證明是這個男人把水牛從非洲送過來，所以只被當作惡作劇檢舉，人就這樣放走了。","備註":""},{"序號":"169","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"警察辦事不力","備註":""},{"序號":"170","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"這本的警察完全沒有發揮作用，還廢上一層樓","備註":""},{"序號":"171","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"最後，你在晚餐的牛丼下結束這荒謬的一天。……應該是牛丼吧？","備註":""},{"序號":"172","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"所以最後是吃牛丼嗎（怎還在問這個","備註":""},{"序號":"173","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"吃！！！","備註":""},{"序號":"174","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"吃ｗｗｗ","備註":""},{"序號":"175","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"唉……經歷了這堆莫名其妙的事情，飯還沒吃上啊。今天肯定要吃牛丼，還要肉量加倍！","備註":""},{"序號":"176","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"吃飽！開心！","備註":""},{"序號":"177","類型":"scene","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"","備註":""},{"序號":"178","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"時光飛逝。","備註":""},{"序號":"179","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"經濟逐漸恢復穩定，一度上漲的牛丼價格也重新回到了從前的水準。","備註":""},{"序號":"180","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"人們再次對牛丼的便宜、快速、美味心懷感恩，並由衷地說出「我開動了」。","備註":""},{"序號":"181","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"當你像往常一樣，準備去熟悉的店家用餐時，在你的眼前突然出現一個男人。","備註":""},{"序號":"182","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那是個膚色黝黑、體格壯碩的男子。","備註":""},{"序號":"183","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"他露出潔白牙齒，燦爛地笑著。","備註":""},{"序號":"184","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"然後用非常洪亮的聲音向你搭話。","備註":""},{"序號":"185","類型":"talk","頻道":"main","秘匿對象":"","發言人":"體格壯碩的男子","頭像":"","內容":"「喲！！！那時候真是謝啦！！！！！！！」","備註":""},{"序號":"186","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"他的聲音大到附近的鳥都受驚起飛了。","備註":""},{"序號":"187","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"？？？？？","備註":""},{"序號":"188","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"搞啥啊這個男的……你壓根沒印象。","備註":""},{"序號":"189","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"「不好意思……請問您哪位？」一臉問號。啥啊這人。","備註":""},{"序號":"190","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"看到你一臉矇，男人也露出吃驚的表情。","備註":""},{"序號":"191","類型":"talk","頻道":"main","秘匿對象":"","發言人":"體格壯碩的男子","頭像":"","內容":"「啊啊！！！！看不出來嗎！！？！？？！」","備註":""},{"序號":"192","類型":"talk","頻道":"main","秘匿對象":"","發言人":"體格壯碩的男子","頭像":"","內容":"「我是那時被你救了一命的牛啦！！！！！！」","備註":""},{"序號":"193","類型":"end","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"～fin～","備註":""},{"序號":"194","類型":"reward","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"生還報酬\n・SAN値回復：1d3\n・獲得獨一無二的朋友「牛田」","備註":""},{"序號":"195","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"？？？？？？","備註":""},{"序號":"196","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"蛤","備註":""},{"序號":"197","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"我以為是那個怪人大改造了","備註":""},{"序號":"198","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"結果是牛","備註":""},{"序號":"199","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"牛？？？","備註":""},{"序號":"201","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"牛。","備註":""},{"序號":"202","類型":"dice","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"1D3 (1D3) ＞ 2","備註":""},{"序號":"203","類型":"system","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"SAN : 62 → 64","備註":""},{"序號":"204","類型":"talk","頻道":"main","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"得到了SAN跟朋友。","備註":""},{"序號":"205","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"你是第一個把人抓去警察局的人呢(幹","備註":""},{"序號":"206","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"大家都放過他了嗎WWWW","備註":""},{"序號":"207","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"一般來說是會跟他去吃飯...?","備註":""},{"序號":"208","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"好像有人跟他去吃飯ㄅ，但他威脅不把你送回去的時候，其實你只要說他待在非洲也沒有牛丼可以吃，他就會哭哭啼啼跟你回去了(幹","備註":""},{"序號":"209","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"哭哭啼啼WWWW","備註":""},{"序號":"210","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"好好笑","備註":""},{"序號":"211","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"不算壞人就是有點怪有點笨(幹","備註":""},{"序號":"212","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"新鮮嗎(幹超廢本","備註":""},{"序號":"213","類型":"talk","頻道":"other","秘匿對象":"","發言人":"荻原 大和","頭像":"","內容":"好好笑謝謝招待WWWW","備註":""}];
+let SPK = [{"發言人":"KP","顯示名稱":"KP","頭像網址":"https://loyaeasuke.github.io/Character/pics/KPLoya_s.png","代表色":"#222222"},{"發言人":"荻原 大和","顯示名稱":"荻原 大和","頭像網址":"https://loyaeasuke.github.io/Character/pics/ogihara_s.png","代表色":"#d9ab42"},{"發言人":"警察的聲音？","顯示名稱":"警察的聲音？","頭像網址":"","代表色":"#888888"},{"發言人":"狂熱的男人","顯示名稱":"狂熱的男人","頭像網址":"","代表色":"#79797b"},{"發言人":"牛丼狂熱者","顯示名稱":"牛丼狂熱者","頭像網址":"","代表色":"#79797b"},{"發言人":"體格壯碩的男子","顯示名稱":"體格壯碩的男子","頭像網址":"","代表色":"#888888"}];
+let META = {"眉標":"CALL OF CTHULHU TRPG ／ SESSION LOG","標題":"神貓卓CoC紀錄228.為了阻止牛丼漲價而奮鬥的狂信徒的故事","副標題":"KP：洛雅　｜　PL：ㄇㄙ"};
+let PCS = [{"序":"1","PC":"荻原 大和","PL":"ㄇㄙ","職業":"幼兒園老師","年齡":"24","性別":"男","立繪":"https://loyaeasuke.github.io/Character/pics/ogihara_v.png","數值":"HP 12　MP 13　SAN 65／99　DB +1D4\nSTR 15　CON 11　DEX 15　APP 14　POW 13　SIZ 13　INT 13　EDU 16\n幸運 65　知識 80　靈感 65\n年收：700万　財產：3500万","技能":"信用：35　說服：50　心理學：65　聆聽：61　圖書館：65　偵查：70　醫學：30　英文：36　歷史：30　博物學：40　法律：25　人類學：61　電器維修：40　藝術【戲劇】：25","持有物品":"手機、皮夾、紙巾、小動物OK繃、藍芽耳機","備註":"家境不錯，是家中的么子，從小在家人的呵護下長大但並未被寵壞，對家務和電器用品相當熟悉，獨立出去生活也沒問題。性格直率爽朗，對他人的變化很敏銳，會主動關心身邊的人。\n喜歡熱鬧的場合，只要處得來就會當對方是朋友。高中和大學都有被告白過，然而都沒有心動的感覺。\n\n對背誦科目得心應手，然而真正感興趣的是表演藝術。本想報考相關科系，但考慮再三後最終選擇投身於教育事業。由於喜歡小孩子，工作時很能樂在其中，對現狀並未有什麼不滿。對孩子們說故事時會非常認真地扮演故事中的角色，浮誇的表演方式深受孩子們喜愛。"}];/*DATA_END*/
+
+/* ── CSV ─────────────────────────────────── */
+function parseCSV(t){
+  t = t.replace(/^\uFEFF/,'');
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<t.length;i++){
+    const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(cell); cell=''; }
+    else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+    else if(c!=='\r') cell+=c;
+  }
+  if(cell||row.length){ row.push(cell); rows.push(row); }
+  const head=rows.shift().map(h=>h.trim());
+  return rows.filter(r=>r.some(v=>v!=='')).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??'').trim()])));
+}
+function toCSV(objs, cols){
+  const esc=v=>{v=(v??'')+''; return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  return '\uFEFF'+[cols.join(',')].concat(objs.map(o=>cols.map(c=>esc(o[c])).join(','))).join('\r\n');
+}
+function download(name, text){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ── render ──────────────────────────────── */
+const state={f:{main:1,other:1,info:1,secret:1,dice:1},who:'',q:''};
+const spkMap=()=>Object.fromEntries(SPK.map(s=>[s['發言人'],s]));
+const esc=s=>(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+const CN_NUM='零一二三四五六七八九';
+function cnNum(n){
+  n=parseInt(n,10);
+  if(isNaN(n)) return '';
+  if(n<0) return String(n);
+  if(n<=10) return n===10?'十':CN_NUM[n];
+  if(n<20) return '十'+(n%10?CN_NUM[n%10]:'');
+  if(n<100){ const t=Math.floor(n/10), o=n%10; return CN_NUM[t]+'十'+(o?CN_NUM[o]:''); }
+  return String(n);
+}
+function lightenFor(hex,minL){
+  let h=(hex||'').trim().replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return '';
+  let r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  const lum=()=>(0.299*r+0.587*g+0.114*b)/255;
+  let guard=0;
+  while(lum()<minL && guard++<24){ r=Math.round(r+(255-r)*0.18); g=Math.round(g+(255-g)*0.18); b=Math.round(b+(255-b)*0.18); }
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+// 從內容開頭抓出 [ 名字 ]，回傳 [名字, 其餘內容]
+function splitBracketName(text){
+  const m=String(text||'').match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
+  return m ? [m[1].trim(), String(text).slice(m[0].length)] : ['', String(text||'')];
+}
+function roundNo(text){
+  const s=String(text||'');
+  const arrow=s.match(/(-?\d+)\s*(?:→|->|＞|=>)\s*(-?\d+)/);   // 「回合 : 1 → 2」取箭頭後
+  if(arrow) return parseInt(arrow[2],10);
+  const m=s.match(/(-?\d+)/);                                  // 否則取第一個數字
+  return m?parseInt(m[1],10):null;
+}
+function resultClass(w){
+  if(/決定性|大成功|critical/i.test(w)) return 'crit';
+  if(/致命|大失敗|fumble/i.test(w)) return 'fumble';
+  if(/成功|success/i.test(w)) return 'good';
+  if(/失敗|failure/i.test(w)) return 'bad';
+  return '';
+}
+function avatarHTML(s, cls, override){
+  const url = (override && override.trim()) || (s && s['頭像網址']) || '';
+  const nm  = (s && (s['顯示名稱']||s['發言人'])) || '';
+  const col = (s && s['代表色']) || '#888888';
+  if(url) return `<img class="avatar ${cls}" src="${esc(url)}" alt="${esc(nm)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ph ${cls}',style:'background:${col}'}))">`;
+  if(!s) return '';
+  return `<span class="avatar ph ${cls}" style="background:${esc(col)}"></span>`;
+}
+
+const TOC_KEY={scene:'SCENE',pro:'PROLOGUE',epi:'AFTER STORY',rwd:'REWARD'};
+let tocOpen=true, tocWidth=0;   // tocWidth 僅存在本次瀏覽，重新開啟即回預設
+function renderTOC(items){
+  const host=document.getElementById('toc');
+  if(!items || !items.length){ host.innerHTML=''; host.className=''; return; }
+  const rows=items.map(it=>`<a href="#${it.id}" class="k-${it.kind}">
+      <span class="k">${TOC_KEY[it.kind]||''}</span>
+      <span class="t">${esc(it.label)}</span></a>`).join('');
+  host.className = tocOpen ? '' : 'collapsed';
+  if(tocWidth) host.style.setProperty('--tocw', tocWidth+'px'); else host.style.removeProperty('--tocw');
+  host.innerHTML=`<div class="toc-box">
+      <div class="toc-grip" title="拖曳調整寬度"></div>
+      <div class="toc-head"><button class="toc-toggle" title="收起目錄">›</button>目錄<span class="n">${items.length} 項</span></div>
+      <div class="toc-list">${rows}</div>
+    </div>
+    <button class="toc-tab" title="展開目錄">目錄 ‹</button>`;
+
+  host.querySelector('.toc-toggle').onclick=()=>{ tocOpen=false; host.className='collapsed'; };
+  host.querySelector('.toc-tab').onclick=()=>{ tocOpen=true; host.className=''; };
+
+  const grip=host.querySelector('.toc-grip');
+  grip.addEventListener('pointerdown', ev=>{
+    ev.preventDefault();
+    const startX=ev.clientX, startW=host.getBoundingClientRect().width;
+    grip.setPointerCapture(ev.pointerId);
+    document.body.classList.add('tocdrag');
+    const move=e=>{
+      const w=Math.min(460, Math.max(140, startW-(e.clientX-startX)));  // 往左拖變寬
+      tocWidth=Math.round(w);
+      host.style.setProperty('--tocw', tocWidth+'px');
+    };
+    const up=()=>{
+      grip.removeEventListener('pointermove',move);
+      grip.removeEventListener('pointerup',up);
+      document.body.classList.remove('tocdrag');
+    };
+    grip.addEventListener('pointermove',move);
+    grip.addEventListener('pointerup',up);
+  });
+}
+
+function render(){
+  const M=spkMap(), out=[], toc=[]; let shown=0, sceneNo=0, prevSecret='', anchorNo=0;
+  const anchor=(kind,label)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label}); return id; };
+  for(const r of LOG){
+    const type=r['類型']||'talk', ch=(r['頻道']||'main').trim();
+    const isHO = ch!=='secret' && /ho/i.test(ch);   // 非 secret 但名稱含 HO（不分大小寫）
+    const secTarget = isHO ? ch : (r['秘匿對象']||'');  // HO 的秘匿對象＝頻道名
+    const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret'||isHO)?'secret':ch;
+    if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
+        'prologue_start','prologue_end','round','hidden','image',
+        'session_start','session_end','start'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
+    else if(!state.f[kind]) continue;
+    else if(kind==='dice' && (ch==='secret'||isHO) && !state.f.secret) continue;
+    if(state.who && r['發言人']!==state.who && type!=='scene') continue;
+    if(state.q && !(r['內容']||'').includes(state.q) && !(r['發言人']||'').includes(state.q)) continue;
+    shown++;
+
+    if(type==='scene'){
+      sceneNo++;
+      const sid=anchor('scene',`SCENE ${String(sceneNo).padStart(2,'0')}　${r['內容']||''}`.trim());
+      out.push(`<section class="scene" id="${sid}" data-anchor><span class="idx">SCENE ${String(sceneNo).padStart(2,'0')}</span>
+        <div class="bar"><span class="label">${esc(r['內容']||'◆')}</span></div></section>`);
+      continue;
+    }
+    if(type==='battle_start'){
+      out.push(`<section class="battle start"><span class="mk">⚔</span>
+        <span class="txt">${esc(r['內容']||'戰鬥開始')}</span>
+        <span class="en">BATTLE START</span><span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='battle_end'){
+      out.push(`<section class="battle end"><span class="mk">▣</span>
+        <span class="txt">${esc(r['內容']||'戰鬥結束')}</span>
+        <span class="en">BATTLE END</span><span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='epilogue_start'){
+      const eid=anchor('epi', r['內容']||'後日談');
+      out.push(`<section class="epilogue start" id="${eid}" data-anchor><span class="orn">❧</span>
+        <span class="txt">${esc(r['內容']||'後日談')}</span>
+        <span class="en">AFTER STORY</span></section>`);
+      continue;
+    }
+    if(type==='epilogue_end'){
+      out.push(`<section class="epilogue end"><span class="txt">${esc(r['內容']||'後日談　完')}</span>
+        <span class="en">AFTER STORY ／ END</span><span class="orn">❦</span></section>`);
+      continue;
+    }
+    if(type==='prologue_start'){
+      const pid=anchor('pro', r['內容']||'前日談開始');
+      out.push(`<section class="prologue start" id="${pid}" data-anchor><span class="orn">❖</span>
+        <span class="txt">${esc(r['內容']||'前日談開始')}</span>
+        <span class="en">PROLOGUE</span></section>`);
+      continue;
+    }
+    if(type==='prologue_end'){
+      out.push(`<section class="prologue end"><span class="txt">${esc(r['內容']||'前日談結束')}</span>
+        <span class="en">PROLOGUE ／ END</span><span class="orn">❖</span></section>`);
+      continue;
+    }
+    if(type==='round'){
+      const no=roundNo(r['內容']);
+      const label=(no!==null&&!isNaN(no))?`第${cnNum(no)}回合`:(String(r['內容']||'').trim()||'回合');
+      out.push(`<section class="round"><span class="ln"></span>
+        <span class="pill"><span class="t">${esc(label)}</span>
+        ${(no!==null&&!isNaN(no))?`<span class="n">ROUND ${String(no).padStart(2,'0')}</span>`:''}</span>
+        <span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='image'){
+      const src=(r['頭像']||r['內容']||'').trim();   // 圖片網址：優先取「頭像」欄，其次「內容」
+      const cap=(r['頭像']&&r['內容'])?r['內容'].trim():(r['發言人']||'').trim();
+      out.push(`<figure class="figure">
+        ${src?`<img src="${esc(src)}" alt="${esc(cap)}" data-full="${esc(src)}" data-cap="${esc(cap)}"
+            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',textContent:'圖片無法載入：'+this.getAttribute('src')}))">`
+          :`<div class="ph">在「頭像」或「內容」欄填圖片網址</div>`}
+        ${cap?`<figcaption>${esc(cap)}</figcaption>`:''}</figure>`);
+      continue;
+    }
+    if(type==='hidden'){
+      let hn=r['發言人']||'', hb=r['內容']||'';
+      if(!hn){ const sp=splitBracketName(hb); hn=sp[0]; hb=sp[1]; }
+      const hc=lightenFor((M[hn]&&M[hn]['代表色'])||'',0.62);
+      out.push(`<div class="hidden-info"><span class="mk">HIDDEN</span>
+        ${hn?`<span class="lb" style="${hc?`color:${esc(hc)}`:''}">${esc((M[hn]&&M[hn]['顯示名稱'])||hn)}</span>`:''}
+        <span class="tx">${esc(hb)}</span></div>`);
+      continue;
+    }
+    if(type==='system'){
+      let nm=r['發言人']||'', body=r['內容']||'';
+      if(!nm){ const sp=splitBracketName(body); nm=sp[0]; body=sp[1]; }
+      const sc=(M[nm]&&M[nm]['代表色'])||'';
+      out.push(`<div class="sys">
+        ${nm?`<span class="lb" style="${sc?`color:${esc(sc)}`:''}">${esc((M[nm]&&M[nm]['顯示名稱'])||nm)}</span>`:''}
+        <span class="tx">${esc(body)}</span></div>`);
+      continue;
+    }
+    if(type==='session_start' || type==='start'){
+      out.push(`<section class="sessionmark start"><div class="frame">
+        <span class="glyph">▽　▽　▽</span>
+        <span class="word">SESSION START</span>
+        <span class="label">${esc(r['內容']||'團務開始')}</span></div></section>`);
+      continue;
+    }
+    if(type==='end' || type==='session_end'){
+      out.push(`<section class="sessionmark end"><div class="frame">
+        <span class="label">${esc(r['內容']||'團務結束')}</span>
+        <span class="word">SESSION END</span>
+        <span class="glyph">△　△　△</span></div></section>`);
+      continue;
+    }
+    if(type==='reward'){
+      const rid=anchor('rwd', r['發言人']||'通關報酬');
+      out.push(`<section class="reward" id="${rid}" data-anchor><div class="head">
+        <span class="badge">REWARD</span>
+        <span class="ttl">${esc(r['發言人']||'通關報酬')}</span></div>
+        <div class="text">${esc(r['內容'])}</div></section>`);
+      continue;
+    }
+    if(type==='note'){
+      out.push(`<section class="note"><div class="cap">
+        <span class="mk">COMMENT</span>
+        <span class="who">${esc(r['發言人']||'心得')}</span></div>
+        <div class="text">${esc(r['內容'])}</div></section>`);
+      continue;
+    }
+
+    const s=M[r['發言人']];
+    if(type==='dice'){
+      const sec = ch==='secret'||isHO;
+      const parts=(r['內容']||'').split(/＞|=>/).map(x=>x.trim());
+      const last=parts.length>1?parts.pop():'';
+      out.push(`<div class="dice ${sec?'sec':''}">
+        ${sec?`<span class="tag">秘匿</span>`:''}
+        ${r['發言人']?`<span class="who">${esc((s&&s['顯示名稱'])||r['發言人'])}</span>`:''}
+        <span class="expr">${esc(parts.join(' ＞ '))}</span>
+        ${sec&&secTarget?`<span class="whisper">${esc(secTarget)}</span>`:''}
+        ${last?`<span class="res ${resultClass(last)}">${esc(last)}</span>`:''}</div>`);
+      continue;
+    }
+
+    const pair = (secTarget||'秘匿').replace(/^(秘匿|秘密)/,'');
+    const runStart = kind==='secret' && prevSecret !== pair;
+    prevSecret = kind==='secret' ? pair : '';
+    const nameless=!r['發言人'];
+    const color=(s&&s['代表色'])||'';
+    out.push(`<div class="line ${kind} ${nameless?'nameless':''}">
+      ${runStart?`<span class="seal">秘匿</span>`:''}
+      ${avatarHTML(s,'',r['頭像'])}
+      <div class="body">
+        ${r['發言人']?`<div class="name" style="${color?`color:${esc(color)}`:''}">${esc((s&&s['顯示名稱'])||r['發言人'])}
+          ${kind==='secret'&&secTarget?`<span class="target">→ ${esc(secTarget)}</span>`:''}</div>`:''}
+        <div class="text">${esc(r['內容'])}</div>
+      </div></div>`);
+  }
+  document.getElementById('log').innerHTML=out.join('');
+  renderTOC(toc);
+  document.getElementById('count').textContent=`${shown} / ${LOG.length} 行`;
+}
+
+const TITLE_ROW = r => (r['類型']||'')==='title';
+
+const PC_COLS = ['序','PC','PL','職業','年齡','性別','立繪','數值','技能','持有物品','備註'];
+function statPairs(line){
+  line = line.trim(); if(!line) return [];
+  if(line.indexOf('：')>-1 || line.indexOf(':')>-1){
+    return line.split(/[\s\u3000]+/).filter(Boolean).map(p=>{
+      const m=p.split(/[：:]/); return [m[0], m.slice(1).join(':')];
+    });
+  }
+  const tk=line.split(/[\s\u3000]+/).filter(Boolean), out=[];
+  for(let i=0;i<tk.length;i+=2) out.push([tk[i], tk[i+1]||'']);
+  return out;
+}
+function chipRow(line, cls){
+  const ch = statPairs(line).map(([k,v])=>
+    `<span class="pc-chip ${cls||''}"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></span>`).join('');
+  return ch ? `<div class="pc-chips">${ch}</div>` : '';
+}
+function pcPortrait(p){
+  if(p['立繪']) return `<img class="pc-portrait" src="${esc(p['立繪'])}" alt="${esc(p['PC']||'')}"
+    data-full="${esc(p['立繪'])}" data-cap="${esc(p['PC']||'')}"
+    onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪\n(圖片無法載入)';">`;
+  return `<div class="pc-portrait ph">立繪<br>（在 pcs.csv 的「立繪」欄填圖片網址）</div>`;
+}
+function pcThumb(p){
+  if(p['立繪']) return `<img class="thumb" src="${esc(p['立繪'])}" alt=""
+    onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='${esc((p['PC']||'?').slice(0,1))}';">`;
+  return `<span class="thumb ph">${esc((p['PC']||'?').slice(0,1))}</span>`;
+}
+function hexRGBA(hex,a){
+  let h=(hex||'').trim().replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return '';
+  const n=parseInt(h,16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+function renderPCs(){
+  const host=document.getElementById('pcs');
+  const SM=spkMap();
+  const list=(PCS||[]).filter(p=>p && (p['PC']||p['PL']||p['數值']||p['技能']||p['立繪']));
+  if(!list.length){ host.innerHTML=''; return; }
+  const cards=list.map(p=>{
+    const sub=p['PL']?'PL '+p['PL']:'';
+    const stat=(p['數值']||'').split('\n').map(l=>chipRow(l,'')).filter(Boolean).join('');
+    const skill=(p['技能']||'').split('\n').map(l=>chipRow(l,'skill')).filter(Boolean).join('');
+    const items=(p['持有物品']||'').trim();
+    const note=(p['備註']||'').trim();
+    const col=(SM[p['PC']]&&SM[p['PC']]['代表色'])||'';
+    const bg=hexRGBA(col,0.09), ln=hexRGBA(col,0.38);
+    const cstyle=col?`style="--c:${esc(col)};${bg?`--cbg:${bg};`:''}${ln?`--cline:${ln};`:''}"`:'';
+    return `<details class="pc-card" open ${cstyle}>
+      <summary>
+        <span class="id"><span class="nm">${esc(p['PC']||'（未命名）')}</span>
+          ${sub?`<span class="sub">${esc(sub)}</span>`:''}</span>
+        <span class="tri">▶</span></summary>
+      <div class="pc-body">
+        ${pcPortrait(p)}
+        <div class="pc-detail">
+          <div class="pc-meta">
+            ${p['職業']?`<span><b>職業</b> ${esc(p['職業'])}</span>`:''}
+            ${p['年齡']?`<span><b>年齡</b> ${esc(p['年齡'])}</span>`:''}
+            ${p['性別']?`<span><b>性別</b> ${esc(p['性別'])}</span>`:''}
+          </div>
+          ${stat?`<div class="pc-block"><div class="h">STATUS</div>${stat}</div>`:''}
+          ${skill?`<div class="pc-block"><div class="h">SKILLS</div>${skill}</div>`:''}
+          ${items?`<div class="pc-block"><div class="h">ITEMS</div><div class="pc-items">${esc(items)}</div></div>`:''}
+          ${note?`<div class="pc-block"><div class="h">NOTE</div><div class="pc-items">${esc(note)}</div></div>`:''}
+        </div>
+      </div></details>`;
+  }).join('');
+  host.innerHTML = `<details class="pc-section" open>
+    <summary><span class="tri">▶</span>PC資訊<span class="n">${list.length} 名探索者</span></summary>
+    <div class="pc-grid">${cards}</div>
+  </details>`;
+}
+
+function applyMeta(forExport){
+  document.getElementById('eyebrow').textContent = META['眉標']||'';
+  document.getElementById('title').textContent   = META['標題']||'';
+  document.getElementById('subtitle').textContent= META['副標題']||'';
+  document.title = META['標題'] || '神貓卓團錄編輯器1.0版';
+  document.getElementById('meta').textContent =
+    (EDITABLE && !forExport) ? `共 ${LOG.filter(r=>!TITLE_ROW(r)).length} 行 ／ ${SPK.length} 位發言人` : '';
+}
+function pullTitleRows(){                       // CSV 裡的 title 列 → 標題設定
+  const t = LOG.find(TITLE_ROW);
+  if(t){
+    META['標題']   = t['內容'] || META['標題'];
+    META['副標題'] = t['備註'] || '';
+    META['眉標']   = t['秘匿對象'] || META['眉標'];
+  }
+  LOG = LOG.filter(r=>!TITLE_ROW(r));
+}
+function logForCSV(){                           // 匯出時把標題寫回第一列
+  return [{'序號':0,'類型':'title','頻道':'','秘匿對象':META['眉標']||'','發言人':'',
+           '頭像':'','內容':META['標題']||'','備註':META['副標題']||''}].concat(LOG);
+}
+function fillSpeakers(){
+  const sel=document.getElementById('who'), cur=sel.value;
+  sel.innerHTML='<option value="">全部發言人</option>'+
+    SPK.map(s=>`<option value="${esc(s['發言人'])}">${esc(s['顯示名稱']||s['發言人'])}</option>`).join('');
+  sel.value=cur;
+  applyMeta();
+}
+
+/* ── controls ────────────────────────────── */
+document.querySelectorAll('.chip[data-f]').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.f, v=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',v); state.f[k]=v?1:0; render();
+});
+document.getElementById('who').onchange=e=>{state.who=e.target.value;render();};
+document.getElementById('q').oninput=e=>{state.q=e.target.value.trim();render();};
+const EDITABLE = !!document.getElementById('expHtml');
+if(EDITABLE){
+/* ── 原始 ccfolia LOG.html → CSV 資料 ─────── */
+function convertLog(htmlText){
+  const doc = new DOMParser().parseFromString(htmlText,'text/html');
+  const grab = el => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = el.innerHTML.replace(/<br\s*\/?>/gi,'\n');
+    return (tmp.textContent||'').replace(/\u00a0/g,' ').trim();
+  };
+  const DICE = /(CCB?<?=|choice\[|\d+[dDbB]\d+|1D100)/;
+  const SEP  = /^[\s\u3000─—–\-=＝_]*$/;
+  const rows = [], colors = {};
+
+  [...doc.querySelectorAll('p')].forEach((p,i)=>{
+    const spans = [...p.querySelectorAll('span')];
+    if(!spans.length) return;
+    const cm = /color\s*:\s*([^;"']+)/i.exec(p.getAttribute('style')||'');
+    let color = cm ? cm[1].trim() : ((p.style && p.style.color) || '#888888');
+    const rgb = /^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/i.exec(color);
+    if(rgb) color = '#'+[1,2,3].map(i=>(+rgb[i]).toString(16).padStart(2,'0')).join('');
+    if(/^#[0-9a-f]{3}$/i.test(color)) color = '#'+color.slice(1).split('').map(c=>c+c).join('');
+    color = color.toLowerCase();
+    const tag  = spans[0] ? grab(spans[0]) : '';
+    const name = spans[1] ? grab(spans[1]) : '';
+    const text = spans[2] ? grab(spans[2]) : (spans[1] ? '' : grab(spans[0]));
+    if(!(tag||name||text)) return;
+
+    const inner = tag.replace(/^\[|\]$/g,'');
+    let channel='other', target='';
+    if(/^(秘匿|秘密)/.test(inner)){ channel='secret'; target=inner; }
+    else if(['main','other','info'].includes(inner)){ channel=inner; }
+    else if(/ho/i.test(inner)){ channel=inner; }   // 標籤含 HO → 直接當成 HO 頻道名
+    else if(inner){ target=inner; }
+
+    const flat = text.replace(/\n/g,'');
+    let type='talk', content=text, sysName='';
+    if(name==='system'){
+      type=/回合/.test(text) ? 'round' : 'system';
+      const m=text.match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
+      if(m){ sysName=m[1].trim(); content=text.slice(m[0].length); }
+    }
+    else if(SEP.test(flat) || (flat.split('─').length-1)>=4){
+      type='scene';
+      content = flat.replace(/[\s\u3000─—–\-]+/g,' ').trim();
+    }
+    else if(DICE.test(text) && (text.includes('＞')||text.includes('>'))){ type='dice'; }
+    else if(channel==='info'){ type='info'; }
+
+    const cname = name==='system' ? sysName : name;
+    if(cname){ (colors[cname]=colors[cname]||{})[color]=(colors[cname][color]||0)+1; }
+    rows.push({'序號':i+1,'類型':type,'頻道':channel,'秘匿對象':target,
+               '發言人':name==='system'?sysName:name,'頭像':'','內容':content,'備註':''});
+  });
+
+  const prev = Object.fromEntries(SPK.map(s=>[s['發言人'],s]));   // 保留既有頭像設定
+  const spk = Object.keys(colors).map(n=>({
+    '發言人':n,
+    '顯示名稱':(prev[n]&&prev[n]['顯示名稱'])||n,
+    '頭像網址':(prev[n]&&prev[n]['頭像網址'])||'',
+    '代表色':Object.entries(colors[n]).sort((a,b)=>b[1]-a[1])[0][0]
+  }));
+  return {rows, spk};
+}
+
+document.getElementById('fHtml').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const {rows,spk}=convertLog(rd.result);
+    if(!rows.length){ alert('這個檔案裡沒有找到對話行。請確認是 ccfolia 匯出的 LOG.html。'); return; }
+    LOG=rows; SPK=spk; applyMeta(); fillSpeakers(); render(); renderPCs();
+    download('log.csv', toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
+    download('speakers.csv', toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
+  };
+  rd.readAsText(f,'utf-8');
+  e.target.value='';
+};
+
+document.getElementById('fLog').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{LOG=parseCSV(rd.result);pullTitleRows();fillSpeakers();render();};rd.readAsText(f,'utf-8');};
+document.getElementById('fSpk').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{SPK=parseCSV(rd.result);fillSpeakers();render();};rd.readAsText(f,'utf-8');};
+document.getElementById('fPcs').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{PCS=parseCSV(rd.result);renderPCs();};rd.readAsText(f,'utf-8');};
+document.getElementById('expLog').onclick=()=>download('log.csv',toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
+document.getElementById('expSpk').onclick=()=>download('speakers.csv',toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
+document.getElementById('expPcs').onclick=()=>download('pcs.csv',toCSV(PCS,PC_COLS));
+
+document.getElementById('expHtml').onclick=()=>{
+  const logEl=document.getElementById('log'), edEl=document.getElementById('editor'),
+        whoEl=document.getElementById('who'), qEl=document.getElementById('q'),
+        chips=[...document.querySelectorAll('.chip[data-f]')];
+  const keepLog=logEl.innerHTML, keepEd=edEl.innerHTML, keepWho=whoEl.value, keepQ=qEl.value,
+        keepChips=chips.map(c=>c.getAttribute('aria-pressed'));
+  // 匯出乾淨版本：清掉畫面上的暫存狀態，只留資料
+  const heads=['eyebrow','title','subtitle'].map(id=>document.getElementById(id));
+  logEl.innerHTML=''; edEl.innerHTML=''; whoEl.selectedIndex=0; qEl.setAttribute('value','');
+  chips.forEach(c=>c.setAttribute('aria-pressed','true'));
+  heads.forEach(e=>{e.removeAttribute('contenteditable');e.removeAttribute('data-ph');});
+  applyMeta(true);
+  let html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  logEl.innerHTML=keepLog; edEl.innerHTML=keepEd; whoEl.value=keepWho;
+  qEl.setAttribute('value',keepQ); chips.forEach((c,i)=>c.setAttribute('aria-pressed',keepChips[i]));
+  heads.forEach((e,i)=>{e.setAttribute('contenteditable','plaintext-only');
+    e.setAttribute('data-ph',['CALL OF CTHULHU TRPG','（標題）','（副標題，可留空）'][i]);});
+  applyMeta();
+
+  const a=html.indexOf('/*DATA_START*/'), b=html.indexOf('/*DATA_END*/');
+  if(a<0||b<0){ alert('匯出失敗：找不到資料區塊，請改用原始檔重新載入 CSV。'); return; }
+  const j=o=>JSON.stringify(o).replace(/<\//g,'<\\/');
+  const data='/*DATA_START*/let LOG = '+j(LOG)+';\nlet SPK = '+j(SPK)+';\nlet META = '+j(META)+';\nlet PCS = '+j(PCS)+';';
+  html = html.slice(0,a) + data + html.slice(b);
+  // 匯出版為純閱讀：移除所有編輯用介面
+  const M1='<!'+'--EDIT_START-->', M2='<!'+'--EDIT_END-->';
+  html = html.replace(new RegExp(M1+'[\\s\\S]*?'+M2,'g'),'');
+
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  const dateStr=`${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`;
+  // 標題文字 + 今天日期；標題留空時退回 log
+  const rawTitle=(META['標題']||'').trim();
+  const safeTitle=rawTitle.replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,'_');
+  const name=(safeTitle?safeTitle+'_':'log_')+dateStr+'.html';
+  const el=document.createElement('a');
+  el.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+  el.download=name; el.click(); URL.revokeObjectURL(el.href);
+};
+
+[['eyebrow','眉標','CALL OF CTHULHU TRPG'],['title','標題','（標題）'],['subtitle','副標題','（副標題，可留空）']]
+  .forEach(([id,key,ph])=>{
+    const el=document.getElementById(id);
+    el.setAttribute('contenteditable','plaintext-only');
+    el.setAttribute('data-ph',ph);
+    el.addEventListener('input',()=>{ META[key]=el.textContent.trim(); document.title=META['標題']||'神貓卓團錄編輯器1.0版'; });
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();el.blur();} });
+  });
+
+const dlg=document.getElementById('dlg');
+document.getElementById('btnAvatar').onclick=()=>{
+  document.getElementById('editor').innerHTML=SPK.map((s,i)=>`<div class="erow">
+    ${avatarHTML(s,'')}
+    <input data-i="${i}" data-k="顯示名稱" value="${esc(s['顯示名稱']||s['發言人'])}" />
+    <input class="url" data-i="${i}" data-k="頭像網址" placeholder="貼上圖片網址" value="${esc(s['頭像網址'])}" />
+  </div>`).join('');
+  dlg.showModal();
+};
+document.getElementById('dlgClose').onclick=()=>dlg.close();
+document.getElementById('dlgSave').onclick=()=>{
+  document.querySelectorAll('#editor input').forEach(i=>{SPK[+i.dataset.i][i.dataset.k]=i.value.trim();});
+  dlg.close(); fillSpeakers(); render();
+};
+} // /EDITABLE
+
+(function(){
+  const lb=document.getElementById('lightbox'), lbi=document.getElementById('lbimg'), lbc=document.getElementById('lbcap');
+  document.addEventListener('click',e=>{
+    const img=e.target.closest('.figure img, img.pc-portrait'); if(!img||!img.dataset.full) return;
+    lbi.src=img.dataset.full; lbi.alt=img.dataset.cap||''; lbc.textContent=img.dataset.cap||'';
+    lb.classList.add('on');
+  });
+  const close=()=>{ lb.classList.remove('on'); lbi.removeAttribute('src'); };
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+})();
+
+fillSpeakers(); render(); renderPCs();
+</script>
+
+
+</body></html>
