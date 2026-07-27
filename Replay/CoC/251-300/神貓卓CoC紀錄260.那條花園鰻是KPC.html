@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>神貓卓CoC紀錄260.那條花園鰻是KPC</title>
+<style>
+:root{
+  --paper:#e7e9ef; --panel:#fbfcfe; --ink:#191d29; --ink-2:#3c4considered;
+  --muted:#6d7689; --line:#c9cedb;
+  --secret:#6a4b9c; --secret-bg:#efeaf7; --secret-line:#b9a5d8;
+  --dice:#0e6a66; --dice-bg:#e6f1f0;
+  --info:#8a5a12; --info-bg:#f6efe2;
+  --other:#7a8194;
+  --reward:#2f6b45; --reward-bg:#eaf2ec; --reward-line:#a9c6b4;
+  --note:#a24a6d; --note-bg:#f7eef2; --note-line:#dcbccb; --note-ink:#4a2233;
+  --pc:#355a7a; --pc-bg:#eef2f6; --pc-line:#c3d0dd; --pc-accent:#b98a2e;
+  --battle:#a83232; --battle-bg:#f6e9e7; --battle-end:#5a6472; --battle-end-bg:#eceef1;
+  --epi:#8a6d3b; --epi-bg:#f5f0e5; --epi-line:#d9cca9;
+  --pro:#46707f; --pro-bg:#e9f0f2; --pro-line:#b5cdd5;
+  --round:#8c3d3d; --round-bg:#f7ecea;
+  --hidden:#2b2b38; --hidden-ink:#d8d4e2; --hidden-accent:#9d8fc4;
+  --radius:3px;
+  --mono:"Roboto Mono","DejaVu Sans Mono",ui-monospace,"Noto Sans TC",monospace;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.85;
+  background-image:linear-gradient(var(--paper),var(--paper)),repeating-linear-gradient(0deg,rgba(0,0,0,.02) 0 1px,transparent 1px 4px);}
+.wrap{max-width:920px;margin:0 auto;padding:0 18px 120px}
+
+/* ── header ───────────────────────────────── */
+header.mast{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+.mast .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;color:var(--muted);text-transform:uppercase}
+.mast h1{font-family:var(--serif);font-weight:700;font-size:var(--title-size,clamp(30px,5.5vw,46px));
+  letter-spacing:.14em;margin:.28em 0 .1em;white-space:nowrap;overflow:hidden}
+.mast .sub{color:var(--muted);font-size:13px;letter-spacing:.1em;display:flex;flex-wrap:wrap;gap:14px;align-items:baseline}
+.mast .stat{font-family:var(--mono);font-size:11px;opacity:.75}
+[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text}
+[contenteditable]:hover{border-bottom-color:var(--line)}
+[contenteditable]:focus{border-bottom-color:var(--ink);background:rgba(255,255,255,.5)}
+[contenteditable][data-ph]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.55}
+
+/* ── toolbar ──────────────────────────────── */
+.bar{position:sticky;top:0;z-index:20;background:rgba(231,233,239,.93);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:26px}
+.bar .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{font-family:var(--mono);font-size:12px;letter-spacing:.08em;padding:5px 11px;border:1px solid var(--line);
+  background:var(--panel);color:var(--muted);border-radius:var(--radius);cursor:pointer}
+.chip[aria-pressed="true"]{color:var(--panel);background:var(--ink);border-color:var(--ink)}
+.chip.k-secret[aria-pressed="true"]{background:var(--secret);border-color:var(--secret)}
+.chip.k-dice[aria-pressed="true"]{background:var(--dice);border-color:var(--dice)}
+.chip.k-info[aria-pressed="true"]{background:var(--info);border-color:var(--info)}
+input[type=search],select{font-family:var(--sans);font-size:13px;padding:5px 9px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);border-radius:var(--radius);min-width:150px}
+.count{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+
+/* ── log rows ─────────────────────────────── */
+.line{display:flex;gap:12px;padding:9px 0 9px 14px;border-left:3px solid transparent;position:relative}
+.line + .line{margin-top:2px}
+.line.main{border-left-color:var(--ink)}
+.line.other{border-left-color:transparent;color:var(--other);font-size:13.5px;line-height:1.6}
+.line.other .name{color:var(--other)}
+.avatar{flex:0 0 46px;width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid var(--line);
+  background:var(--panel);margin-top:2px}
+.avatar.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:17px;color:var(--panel)}
+.line.other .avatar{flex-basis:28px;width:28px;height:28px}
+.body{flex:1;min-width:0}
+.name{font-weight:700;font-size:13px;letter-spacing:.06em;margin-bottom:1px}
+.text{white-space:pre-wrap;word-break:break-word}
+.line.nameless .text{padding-left:0}
+
+/* ── secret ───────────────────────────────── */
+.line.secret{background:
+    repeating-linear-gradient(135deg,rgba(106,75,156,.055) 0 6px,transparent 6px 12px),var(--secret-bg);
+  border-left:3px solid var(--secret);border-right:1px solid var(--secret-line);
+  border-top:1px solid var(--secret-line);border-bottom:1px solid var(--secret-line);
+  padding:11px 14px 11px 16px;margin-top:4px}
+.seal{position:absolute;top:-1px;right:-1px;background:var(--secret);color:#fff;font-family:var(--mono);
+  font-size:10px;letter-spacing:.22em;padding:2px 7px}
+.line.secret .name{color:var(--secret)}
+.target{font-family:var(--mono);font-size:10.5px;color:var(--secret);opacity:.8;letter-spacing:.05em}
+
+/* ── scene / dice / system / info ─────────── */
+.scene{margin:46px 0 32px;text-align:center}
+.scene .idx{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--muted);display:block;margin-bottom:12px}
+.scene .bar{display:flex;align-items:center;gap:18px}
+.scene .bar::before,.scene .bar::after{content:"";flex:1;height:1px;background:var(--line)}
+.scene .label{font-family:var(--serif);font-size:15px;letter-spacing:.5em;text-indent:.5em;color:var(--ink);
+  flex:0 1 auto;max-width:70%}
+
+.dice{display:flex;gap:10px;align-items:baseline;font-family:var(--mono);font-size:13px;
+  background:var(--dice-bg);border-left:3px solid var(--dice);padding:7px 12px;margin:6px 0}
+.dice .who{color:var(--dice);font-weight:700;flex:0 0 auto}
+.dice .expr{flex:1;word-break:break-all;color:#33414a}
+.dice .res{font-weight:700;padding:1px 8px;border:1px solid currentColor;white-space:nowrap}
+.dice.sec{background:
+    repeating-linear-gradient(135deg,rgba(106,75,156,.06) 0 6px,transparent 6px 12px),var(--secret-bg);
+  border-left-color:var(--secret);border-top:1px dashed var(--secret-line);
+  border-bottom:1px dashed var(--secret-line);border-right:1px dashed var(--secret-line)}
+.dice.sec .who{color:var(--secret)}
+.dice.sec .expr{color:#4a4159}
+.dice .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:#fff;background:var(--secret);
+  padding:1px 6px;flex:0 0 auto;align-self:center}
+.dice.sec .whisper{font-family:var(--mono);font-size:10px;color:var(--secret);opacity:.85;flex:0 0 auto}
+.res.good{color:#0d6b3a}.res.bad{color:#a02020}.res.crit{color:#0b5fa5}.res.fumble{color:#6a0d0d}
+
+.sessionmark{margin:60px 0 54px;text-align:center}
+.sessionmark .frame{border-top:3px double var(--ink);border-bottom:3px double var(--ink);padding:18px 12px}
+.sessionmark .glyph{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.5em;text-indent:.5em;
+  color:var(--muted)}
+.sessionmark .word{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.55em;text-indent:.55em;
+  color:var(--muted);margin-top:6px}
+.sessionmark .label{display:block;font-family:var(--serif);font-size:clamp(20px,3.4vw,26px);
+  letter-spacing:.42em;text-indent:.42em;color:var(--ink);margin-top:10px}
+/* start：三角朝下（團務由此展開）；end：三角朝上（收束上方內容） */
+
+.reward{margin:26px 0;padding:18px 22px;background:var(--reward-bg);
+  border:1px solid var(--reward-line);box-shadow:inset 0 0 0 3px var(--reward-bg),inset 0 0 0 4px var(--reward-line)}
+.reward .head{display:flex;align-items:baseline;gap:12px;margin-bottom:10px;
+  border-bottom:1px dotted var(--reward-line);padding-bottom:7px}
+.reward .badge{font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--reward);
+  border:1px solid var(--reward);padding:1px 7px}
+.reward .ttl{font-family:var(--serif);font-size:16px;letter-spacing:.18em;color:var(--reward)}
+.reward .text{white-space:pre-wrap;word-break:break-word;color:var(--ink)}
+
+.note{margin:24px 0;background:var(--note-bg);border:1px solid var(--note-line);border-radius:var(--radius);
+  position:relative;overflow:hidden}
+.note::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--note);
+  background-image:repeating-linear-gradient(0deg,var(--note) 0 8px,transparent 8px 12px)}
+.note .cap{display:flex;align-items:center;gap:10px;padding:11px 20px 9px;border-bottom:1px dashed var(--note-line)}
+.note .cap .mk{font-family:var(--mono);font-size:10px;letter-spacing:.26em;color:#fff;background:var(--note);padding:2px 8px}
+.note .cap .who{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--note)}
+.note .text{white-space:pre-wrap;word-break:break-word;padding:14px 22px 18px;color:var(--note-ink);
+  font-family:var(--serif);line-height:2}
+
+/* ── 目錄（右側固定面板）──────────────────── */
+html{scroll-behavior:smooth}
+#toc{margin:18px 0 8px}
+.toc-box{position:relative;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);
+  transition:transform .22s ease,opacity .18s ease}
+.toc-head{display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:1px solid var(--line);
+  font-family:var(--serif);font-size:12.5px;letter-spacing:.14em;color:var(--ink);user-select:none}
+.toc-head .n{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.toc-toggle{border:0;background:none;cursor:pointer;padding:0 2px;color:var(--muted);
+  font-family:var(--mono);font-size:12px;line-height:1}
+.toc-toggle:hover{color:var(--ink)}
+/* 收合把手（收起後出現在右緣） */
+.toc-tab{display:none;position:fixed;right:0;top:96px;z-index:16;cursor:pointer;
+  border:1px solid var(--line);border-right:0;border-radius:var(--radius) 0 0 var(--radius);
+  background:var(--panel);color:var(--ink);font-family:var(--mono);font-size:11px;letter-spacing:.2em;
+  padding:11px 6px;writing-mode:vertical-rl;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.toc-tab:hover{background:var(--paper)}
+/* 拖曳寬度的握把 */
+.toc-grip{position:absolute;left:-5px;top:0;bottom:0;width:10px;cursor:col-resize;touch-action:none}
+.toc-grip::before{content:"";position:absolute;left:4px;top:50%;transform:translateY(-50%);
+  width:2px;height:26px;border-radius:2px;background:var(--line)}
+.toc-grip:hover::before{background:var(--muted)}
+body.tocdrag{user-select:none;cursor:col-resize}
+.toc-list{padding:5px;display:flex;flex-direction:column;gap:1px}
+.toc-list a{display:block;padding:3px 7px;border-radius:2px;text-decoration:none;color:var(--ink);
+  border-left:2px solid transparent;line-height:1.35}
+.toc-list a:hover{background:var(--paper);border-left-color:var(--ink)}
+.toc-list a .k{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.18em;opacity:.8}
+.toc-list a .t{display:block;font-size:12px;letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc-list a.k-scene .k{color:var(--muted)}
+.toc-list a.k-pro .k{color:var(--pro)}
+.toc-list a.k-epi .k{color:var(--epi)}
+.toc-list a.k-rwd .k{color:var(--reward)}
+.toc-list a.k-pro:hover{border-left-color:var(--pro)}
+.toc-list a.k-epi:hover{border-left-color:var(--epi)}
+.toc-list a.k-rwd:hover{border-left-color:var(--reward)}
+[data-anchor]{scroll-margin-top:96px}
+
+/* 捲軸：項目過多時明顯提示可上下拖拉 */
+.toc-list{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
+.toc-list::-webkit-scrollbar{width:9px}
+.toc-list::-webkit-scrollbar-track{background:var(--paper);border-radius:9px}
+.toc-list::-webkit-scrollbar-thumb{background:var(--muted);border-radius:9px;
+  border:2px solid var(--panel)}
+.toc-list::-webkit-scrollbar-thumb:hover{background:var(--ink)}
+
+/* 寬螢幕：釘在右側，不隨捲動移動 */
+@media (min-width:1220px){
+  #toc{position:fixed;top:96px;right:22px;width:var(--tocw,208px);margin:0;z-index:15}
+  .toc-box{box-shadow:0 1px 8px rgba(0,0,0,.06)}
+  .toc-list{max-height:calc(100vh - 176px)}
+  #toc.collapsed .toc-box{transform:translateX(calc(100% + 26px));opacity:0;pointer-events:none}
+  #toc.collapsed .toc-tab{display:block}
+}
+/* 窄螢幕：回到內文流，避免蓋住團錄；不提供拖曳寬度 */
+@media (max-width:1219px){
+  .toc-list{max-height:46vh}
+  .toc-grip{display:none}
+  #toc.collapsed .toc-box{display:none}
+  #toc.collapsed .toc-tab{display:inline-block;position:static;writing-mode:horizontal-tb;
+    border-right:1px solid var(--line);border-radius:var(--radius);padding:6px 12px}
+}
+
+/* ── PC 隊伍資訊 ─────────────────────────── */
+#pcs{margin:26px 0 8px}
+.pc-section{border:1px solid var(--pc-line);border-radius:var(--radius);background:var(--panel)}
+.pc-section>summary{list-style:none;cursor:pointer;padding:12px 18px;display:flex;align-items:center;gap:12px;
+  font-family:var(--serif);font-size:15px;letter-spacing:.18em;color:var(--pc);
+  border-bottom:1px solid transparent;user-select:none}
+.pc-section[open]>summary{border-bottom-color:var(--pc-line)}
+.pc-section>summary::-webkit-details-marker{display:none}
+.pc-section>summary .tri{font-family:var(--mono);font-size:11px;transition:transform .15s;color:var(--pc)}
+.pc-section[open]>summary .tri{transform:rotate(90deg)}
+.pc-section>summary .n{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);margin-left:auto}
+
+.pc-grid{padding:14px;display:grid;gap:14px}
+
+
+.pc-card{border:1px solid var(--cline,var(--pc-line));border-radius:var(--radius);
+  background:var(--cbg,var(--pc-bg));overflow:hidden}
+.pc-card>summary{list-style:none;cursor:pointer;user-select:none;display:flex;align-items:center;gap:12px;
+  padding:11px 15px;border-left:3px solid var(--c,var(--pc))}
+.pc-card>summary::-webkit-details-marker{display:none}
+.pc-card>summary .thumb{flex:0 0 40px;width:40px;height:40px;border-radius:4px;object-fit:cover;
+  border:1px solid var(--pc-line);background:var(--panel)}
+.pc-card>summary .thumb.ph{display:flex;align-items:center;justify-content:center;font-family:var(--serif);
+  font-size:16px;color:#fff;background:var(--pc)}
+.pc-card>summary .id{min-width:0}
+.pc-card>summary .id .nm{font-family:var(--serif);font-size:16px;letter-spacing:.1em;color:var(--c,var(--pc));font-weight:700}
+.pc-card>summary .id .sub{font-size:11.5px;color:var(--muted);letter-spacing:.04em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-card>summary .tri{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--c,var(--pc));transition:transform .15s}
+.pc-card[open]>summary .tri{transform:rotate(90deg)}
+
+.pc-body{display:flex;gap:16px;padding:14px;border-top:1px dashed var(--cline,var(--pc-line));align-items:flex-start}
+.pc-portrait{flex:0 0 150px;width:150px;border-radius:4px;border:1px solid var(--cline,var(--pc-line));cursor:zoom-in;
+  background:var(--panel) center/cover;display:block}
+.pc-portrait.ph{aspect-ratio:3/5;cursor:default;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-size:13px;color:var(--muted);text-align:center;padding:8px}
+.pc-detail{flex:1;min-width:0}
+.pc-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:10px;font-size:13px}
+.pc-meta b{color:var(--c,var(--pc));font-weight:700;letter-spacing:.05em}
+.pc-block{margin-top:12px}
+.pc-block .h{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--c,var(--pc-accent));
+  border-bottom:1px solid var(--cline,var(--pc-line));padding-bottom:3px;margin-bottom:8px}
+.pc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.pc-chip{font-size:12px;font-family:var(--mono);background:var(--panel);border:1px solid var(--cline,var(--pc-line));
+  border-radius:3px;padding:2px 8px;white-space:nowrap}
+.pc-chip .k{color:var(--muted);margin-right:5px}
+.pc-chip .v{color:var(--ink);font-weight:700}
+.pc-chip.skill .v{color:var(--c,var(--pc))}
+.pc-items{font-size:13px;line-height:1.9;color:var(--ink);white-space:pre-wrap}
+@media (max-width:560px){.pc-body{flex-direction:column}.pc-portrait{width:60%;max-width:180px;margin:0 auto}}
+
+.battle{display:flex;align-items:center;gap:14px;margin:30px 0;padding:9px 16px;border-radius:var(--radius)}
+.battle .en{font-family:var(--mono);font-size:10px;letter-spacing:.3em;flex:0 0 auto}
+.battle .txt{font-family:var(--serif);font-size:15px;letter-spacing:.4em;text-indent:.4em;flex:0 0 auto}
+.battle .ln{flex:1;height:1px}
+.battle.start{background:
+    repeating-linear-gradient(135deg,rgba(168,50,50,.10) 0 8px,transparent 8px 16px),var(--battle-bg);
+  border-left:4px solid var(--battle);border-right:1px solid var(--battle)}
+.battle.start .txt,.battle.start .en,.battle.start .mk{color:var(--battle)}
+.battle.start .ln{background:linear-gradient(90deg,var(--battle),transparent);opacity:.4}
+.battle.end{background:var(--battle-end-bg);border-left:4px solid var(--battle-end);
+  border-right:1px solid var(--battle-end)}
+.battle.end .txt,.battle.end .en,.battle.end .mk{color:var(--battle-end)}
+.battle.end .ln{background:var(--battle-end);opacity:.3}
+.battle .mk{font-size:15px;flex:0 0 auto}
+
+.epilogue{margin:52px auto;max-width:74%;text-align:center;padding:18px 26px;background:var(--epi-bg);
+  border:1px solid var(--epi-line);border-radius:2px;color:var(--epi)}
+.epilogue .orn{font-size:17px;letter-spacing:.5em;text-indent:.5em;display:block;opacity:.85}
+.epilogue .txt{font-family:var(--serif);font-style:italic;font-size:clamp(18px,3.2vw,23px);
+  letter-spacing:.34em;text-indent:.34em;display:block;margin:8px 0}
+.epilogue .en{font-family:var(--mono);font-size:10px;letter-spacing:.42em;text-indent:.42em;opacity:.75;display:block}
+.epilogue.start{border-top:3px double var(--epi)}
+.epilogue.end{border-bottom:3px double var(--epi)}
+
+/* 前日談：與後日談對稱，改用晨青色調 */
+.prologue{margin:52px auto;max-width:74%;text-align:center;padding:18px 26px;background:var(--pro-bg);
+  border:1px solid var(--pro-line);border-radius:2px;color:var(--pro)}
+.prologue .orn{font-size:16px;letter-spacing:.5em;text-indent:.5em;display:block;opacity:.85}
+.prologue .txt{font-family:var(--serif);font-size:clamp(18px,3.2vw,23px);
+  letter-spacing:.34em;text-indent:.34em;display:block;margin:8px 0}
+.prologue .en{font-family:var(--mono);font-size:10px;letter-spacing:.42em;text-indent:.42em;opacity:.75;display:block}
+.prologue.start{border-top:3px double var(--pro)}
+.prologue.end{border-bottom:3px double var(--pro)}
+
+/* 回合標示 */
+.round{display:flex;align-items:center;gap:12px;margin:22px 0 14px}
+.round .ln{flex:1;height:1px;background:var(--round);opacity:.28}
+.round .pill{flex:0 0 auto;display:inline-flex;align-items:baseline;gap:9px;padding:4px 15px;
+  background:var(--round-bg);border:1px solid var(--round);border-radius:999px}
+.round .pill .t{font-family:var(--serif);font-size:14px;letter-spacing:.2em;color:var(--round);font-weight:700}
+.round .pill .n{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--round);opacity:.7}
+
+/* 隱藏資訊：團務當下玩家看不到的幕後情報 */
+.hidden-info{display:flex;align-items:flex-start;gap:12px;margin:10px 0;padding:9px 14px;font-size:13px;
+  background:var(--hidden);border-left:3px solid var(--hidden-accent);border-radius:var(--radius);
+  background-image:repeating-linear-gradient(135deg,rgba(157,143,196,.10) 0 7px,transparent 7px 14px)}
+.hidden-info .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;color:var(--hidden);
+  background:var(--hidden-accent);padding:2px 7px;border-radius:2px;flex:0 0 auto;
+  line-height:1.4;margin-top:3px}
+.hidden-info .lb{font-family:var(--mono);letter-spacing:.12em;color:var(--hidden-accent);
+  flex:0 0 auto;line-height:1.75}
+.hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:1.75;
+  color:var(--hidden-ink);white-space:pre-wrap;word-break:break-word}
+
+/* 圖片：CG／地圖／道具等 */
+.figure{margin:26px auto;text-align:center;max-width:100%}
+.figure img{max-width:min(560px,100%);max-height:60vh;width:auto;height:auto;border-radius:var(--radius);
+  border:1px solid var(--line);cursor:zoom-in;display:inline-block;background:var(--panel)}
+.figure img:hover{filter:brightness(.96)}
+.figure figcaption{margin-top:8px;font-size:12.5px;color:var(--muted);letter-spacing:.06em;font-family:var(--serif)}
+.figure .ph{display:inline-flex;align-items:center;justify-content:center;min-width:220px;min-height:130px;
+  border:1px dashed var(--line);border-radius:var(--radius);color:var(--muted);font-size:12.5px;
+  font-family:var(--mono);padding:20px;background:var(--panel)}
+
+.lightbox{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+  background:rgba(20,22,30,.88);cursor:zoom-out;padding:24px}
+.lightbox.on{display:flex}
+.lightbox img{max-width:96vw;max-height:92vh;width:auto;height:auto;border-radius:2px;
+  box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.lightbox .cap{position:fixed;left:0;right:0;bottom:18px;text-align:center;color:#e8e8ef;
+  font-family:var(--serif);font-size:13px;letter-spacing:.08em;pointer-events:none}
+.lightbox .x{position:fixed;top:16px;right:22px;color:#e8e8ef;font-family:var(--mono);font-size:22px;
+  line-height:1;cursor:pointer;opacity:.8}
+.lightbox .x:hover{opacity:1}
+
+.sys{display:flex;align-items:flex-start;gap:12px;font-family:var(--mono);font-size:13px;
+  color:var(--muted);margin:6px 0;border-top:1px dotted var(--line);border-bottom:1px dotted var(--line);
+  padding:4px 14px}
+.sys .lb{flex:0 0 auto;letter-spacing:.12em;font-weight:700}
+.sys .tx{flex:1;min-width:0;white-space:pre-wrap;word-break:break-word}
+
+.line.info{background:var(--info-bg);border:1px solid #e0cfa8;border-left:3px solid var(--info);
+  font-family:var(--serif);padding:16px 20px;margin:20px 0}
+.line.info .name{color:var(--info);font-family:var(--mono)}
+
+/* ── avatar editor ────────────────────────── */
+dialog{border:1px solid var(--line);background:var(--panel);max-width:560px;width:92%;padding:0;border-radius:var(--radius)}
+dialog h2{font-family:var(--serif);font-size:17px;margin:0;padding:16px 20px;border-bottom:1px solid var(--line);letter-spacing:.1em}
+.editor{max-height:60vh;overflow:auto;padding:12px 20px}
+.erow{display:grid;grid-template-columns:40px 1fr 1.4fr;gap:8px;align-items:center;padding:5px 0}
+.erow input{width:100%;font-size:12px;padding:4px 6px;border:1px solid var(--line);border-radius:var(--radius)}
+dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;border-top:1px solid var(--line)}
+@media (max-width:560px){.avatar{flex-basis:36px;width:36px;height:36px}.erow{grid-template-columns:32px 1fr}.erow input.url{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="eyebrow" id="eyebrow">CALL OF CTHULHU TRPG ／ SESSION LOG</div>
+    <h1 id="title" style="font-size: 43px;">神貓卓CoC紀錄260.那條花園鰻是KPC</h1>
+    <div class="sub"><span id="subtitle">KP：洛雅　｜　PL：程暮</span><span class="stat" id="meta"></span></div>
+  </header>
+
+  <div class="bar">
+    <div class="row">
+      <button class="chip" data-f="main" aria-pressed="true">main</button>
+      <button class="chip" data-f="other" aria-pressed="true">other</button>
+      <button class="chip k-info" data-f="info" aria-pressed="true">info</button>
+      <button class="chip k-secret" data-f="secret" aria-pressed="true">秘匿</button>
+      <button class="chip k-dice" data-f="dice" aria-pressed="true">擲骰</button>
+      <select id="who"><option value="">全部發言人</option><option value="御子柴 誠">御子柴 誠</option><option value="KP">KP</option><option value="長月 時葉">長月 時葉</option><option value="嬌小的女孩">嬌小的女孩</option><option value="男人的聲音">男人的聲音</option><option value="魚男">魚男</option></select>
+      <input type="search" id="q" placeholder="搜尋內容…" value="">
+      <span class="count" id="count">376 / 376 行</span>
+    </div>
+    
+  </div>
+
+  <section id="pcs"><details class="pc-section" open="">
+    <summary><span class="tri">▶</span>PC資訊<span class="n">2 名探索者</span></summary>
+    <div class="pc-grid"><details class="pc-card" open="" style="--c:#b26d47;--cbg:rgba(178,109,71,0.09);--cline:rgba(178,109,71,0.38);">
+      <summary>
+        <span class="id"><span class="nm">御子柴 誠</span>
+          <span class="sub">PL 程暮</span></span>
+        <span class="tri">▶</span></summary>
+      <div class="pc-body">
+        <img class="pc-portrait" src="https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/d7a2c51e241285f41a5256bd556e9b9c115bf10d6f93b4ce3628c17f8c39e046" alt="御子柴 誠" data-full="https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/d7a2c51e241285f41a5256bd556e9b9c115bf10d6f93b4ce3628c17f8c39e046" data-cap="御子柴 誠" onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪
+(圖片無法載入)';">
+        <div class="pc-detail">
+          <div class="pc-meta">
+            <span><b>職業</b> 廚師</span>
+            <span><b>年齡</b> 29</span>
+            <span><b>性別</b> 男</span>
+          </div>
+          <div class="pc-block"><div class="h">STATUS</div><div class="pc-chips"><span class="pc-chip "><span class="k">HP</span><span class="v">12</span></span><span class="pc-chip "><span class="k">MP</span><span class="v">10</span></span><span class="pc-chip "><span class="k">SAN</span><span class="v">68／74</span></span><span class="pc-chip "><span class="k">DB</span><span class="v">+1D4</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">STR</span><span class="v">12</span></span><span class="pc-chip "><span class="k">CON</span><span class="v">10</span></span><span class="pc-chip "><span class="k">DEX</span><span class="v">15</span></span><span class="pc-chip "><span class="k">APP</span><span class="v">14</span></span><span class="pc-chip "><span class="k">POW</span><span class="v">10</span></span><span class="pc-chip "><span class="k">SIZ</span><span class="v">13</span></span><span class="pc-chip "><span class="k">INT</span><span class="v">13</span></span><span class="pc-chip "><span class="k">EDU</span><span class="v">18</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">幸運</span><span class="v">50</span></span><span class="pc-chip "><span class="k">知識</span><span class="v">90</span></span><span class="pc-chip "><span class="k">靈感</span><span class="v">65</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">年收</span><span class="v">900万</span></span><span class="pc-chip "><span class="k">財產</span><span class="v">4500万</span></span></div></div>
+          <div class="pc-block"><div class="h">SKILLS</div><div class="pc-chips"><span class="pc-chip skill"><span class="k">信用</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">心理學</span><span class="v">52</span></span><span class="pc-chip skill"><span class="k">議價</span><span class="v">55</span></span><span class="pc-chip skill"><span class="k">聆聽</span><span class="v">73</span></span><span class="pc-chip skill"><span class="k">圖書館</span><span class="v">62</span></span><span class="pc-chip skill"><span class="k">偵查</span><span class="v">92</span></span><span class="pc-chip skill"><span class="k">急救</span><span class="v">52</span></span><span class="pc-chip skill"><span class="k">英文</span><span class="v">46</span></span><span class="pc-chip skill"><span class="k">博物學</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">生物學</span><span class="v">51</span></span><span class="pc-chip skill"><span class="k">電器維修</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">踢擊</span><span class="v">45</span></span><span class="pc-chip skill"><span class="k">切肉菜刀</span><span class="v">70</span></span><span class="pc-chip skill"><span class="k">製作【料理】</span><span class="v">70</span></span><span class="pc-chip skill"><span class="k">克蘇魯神話</span><span class="v">27</span></span></div></div>
+          
+          <div class="pc-block"><div class="h">NOTE</div><div class="pc-items">於高中機械科畢業後就一邊就學一邊協助家裡餐館的事業。店裡的電器壞了都是自己修理，省錢。
+跟著父親經營餐館、一邊學習料理，在大學畢業後父親退休，繼承了日式餐館，並且研發出一套年輕人的特色料理。
+
+喜歡特攝電影，餐廳有安排一個大螢幕，不是撥放球賽、就是在撥特攝片。
+因為喜歡特攝片，在學期間曾經學過些許防身術，但因為繼承家業放棄了特攝演員的夢想。
+從特攝片裡得到了快樂和信心，希望自己的料理也能給人帶來這樣的感受，只要有人心情不好，都會免費送上一道小菜。</div></div>
+        </div>
+      </div></details><details class="pc-card" open="">
+      <summary>
+        <span class="id"><span class="nm">長月 時葉(KPC)</span>
+          <span class="sub">PL 洛雅</span></span>
+        <span class="tri">▶</span></summary>
+      <div class="pc-body">
+        <img class="pc-portrait" src="https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/556dcc92f5de01c41919df205732796479650468f6266ae1b3868cb4bcc3ecc8" alt="長月 時葉(KPC)" data-full="https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/556dcc92f5de01c41919df205732796479650468f6266ae1b3868cb4bcc3ecc8" data-cap="長月 時葉(KPC)" onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪
+(圖片無法載入)';">
+        <div class="pc-detail">
+          <div class="pc-meta">
+            <span><b>職業</b> 兒童圖文作家</span>
+            <span><b>年齡</b> 29</span>
+            <span><b>性別</b> 男</span>
+          </div>
+          <div class="pc-block"><div class="h">STATUS</div><div class="pc-chips"><span class="pc-chip "><span class="k">HP</span><span class="v">14</span></span><span class="pc-chip "><span class="k">MP</span><span class="v">10</span></span><span class="pc-chip "><span class="k">SAN</span><span class="v">52／79</span></span><span class="pc-chip "><span class="k">DB</span><span class="v">0</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">STR</span><span class="v">11</span></span><span class="pc-chip "><span class="k">CON</span><span class="v">16</span></span><span class="pc-chip "><span class="k">DEX</span><span class="v">16</span></span><span class="pc-chip "><span class="k">APP</span><span class="v">12</span></span><span class="pc-chip "><span class="k">POW</span><span class="v">10</span></span><span class="pc-chip "><span class="k">SIZ</span><span class="v">12</span></span><span class="pc-chip "><span class="k">INT</span><span class="v">15</span></span><span class="pc-chip "><span class="k">EDU</span><span class="v">15</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">幸運</span><span class="v">50</span></span><span class="pc-chip "><span class="k">知識</span><span class="v">75</span></span><span class="pc-chip "><span class="k">靈感</span><span class="v">75</span></span></div><div class="pc-chips"><span class="pc-chip "><span class="k">年收</span><span class="v">700万</span></span><span class="pc-chip "><span class="k">財產</span><span class="v">3500万</span></span></div></div>
+          <div class="pc-block"><div class="h">SKILLS</div><div class="pc-chips"><span class="pc-chip skill"><span class="k">說服</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">心理學</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">聆聽</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">圖書館</span><span class="v">70</span></span><span class="pc-chip skill"><span class="k">偵查</span><span class="v">64</span></span><span class="pc-chip skill"><span class="k">駕駛汽車</span><span class="v">50</span></span><span class="pc-chip skill"><span class="k">英文</span><span class="v">46</span></span><span class="pc-chip skill"><span class="k">生物學</span><span class="v">30</span></span><span class="pc-chip skill"><span class="k">天文學</span><span class="v">30</span></span><span class="pc-chip skill"><span class="k">神秘學</span><span class="v">38</span></span><span class="pc-chip skill"><span class="k">電腦使用</span><span class="v">36</span></span><span class="pc-chip skill"><span class="k">藝術【插圖】</span><span class="v">55</span></span><span class="pc-chip skill"><span class="k">製作【手工藝】</span><span class="v">46</span></span><span class="pc-chip skill"><span class="k">克蘇魯神話</span><span class="v">22</span></span></div></div>
+          
+          <div class="pc-block"><div class="h">NOTE</div><div class="pc-items">給人的第一印象是性格溫柔、很有耐心。然而時葉的耐心只會用在小孩子身上。若面對的是平輩或者並非尊敬的年長者，則沒有與人長時間交流的耐性，會找各種藉口提早離開現場。沒有多少交心的朋友，但會珍惜關係穩定的交流對象。即使對方是損友……應該也是一樣的吧。
+對御子柴誠毫不客氣，認為這個人一點禮貌也沒有。然而不知道是否習慣了這種常常鬥嘴吵鬧的相處模式，從來沒有真正想把誠拒之門外。即使發生冷戰可能也無法超過兩天，估計不是時葉做手工飾品或擺飾當賠禮送給誠，就是誠跑來給時葉做飯當賠禮吧。（歸根究柢他們應該常常互坑搞到彼此吧）
+原生家庭生活並不美滿。幼時親生父母常常吵架。母親甚至常對時葉說「就是因為你沒用才留不住那個人的心」，當初生下時葉的目的似乎是認為這樣就能獲得父親所有的關注，殊不知父親早已對母親感到厭倦。最後因為母親發現父親外遇，歇斯底里至發狂之際手持菜刀將父親捅死。因為吵架聲引來鄰居關注報警，母親也立即遭到逮捕入獄。後來時葉被送進機構，輾轉遇見現在的養父母，被收養後也隨養父母姓，拋棄本來的姓氏。若問起時葉的舊姓，他會一概回覆「不記得」「不重要」。不會特別隱瞞與現在的父母沒有血緣關係的事實，若被問起為何與雙親長得不像，會乾脆承認是收養關係。
+過去在原生家庭受過的創傷在和養父母一同生活以後受到了良好的照料，長成健康的心理狀態。時葉認為自己是幸運的，因為現在有真正愛著他的家人。會定期和養父母規劃旅遊計劃，主動開車載家人出遊。
+因為感謝曾待過的機構很照顧他的院長與職員們，現在會定期去機構陪小孩子玩，有時也會捐款給機構。
+自目睹母親持刀刺殺父親的那一幕以來，時葉就對長度超過15公分的刀具懷有恐懼。若真有需要使用刀具，水果刀是極限。
+
+目前和御子柴誠同居，未公開交往關係。</div></div>
+        </div>
+      </div></details></div>
+  </details></section>
+
+  <nav id="toc" class=""><div class="toc-box">
+      <div class="toc-grip" title="拖曳調整寬度"></div>
+      <div class="toc-head"><button class="toc-toggle" title="收起目錄">›</button>目錄<span class="n">5 項</span></div>
+      <div class="toc-list"><a href="#sec-1" class="k-scene">
+      <span class="k">SCENE</span>
+      <span class="t">SCENE 01　導入</span></a><a href="#sec-2" class="k-scene">
+      <span class="k">SCENE</span>
+      <span class="t">SCENE 02</span></a><a href="#sec-3" class="k-scene">
+      <span class="k">SCENE</span>
+      <span class="t">SCENE 03</span></a><a href="#sec-4" class="k-scene">
+      <span class="k">SCENE</span>
+      <span class="t">SCENE 04</span></a><a href="#sec-5" class="k-rwd">
+      <span class="k">REWARD</span>
+      <span class="t">通關報酬</span></a></div>
+    </div>
+    <button class="toc-tab" title="展開目錄">目錄 ‹</button></nav>
+
+  <main id="log"></main>
+
+  <div class="lightbox" id="lightbox"><span class="x">✕</span>
+    <img id="lbimg" alt=""><div class="cap" id="lbcap"></div></div>
+</div>
+
+
+
+<script>
+/*DATA_START*/let LOG = [{"序號":"1","類型":"image","頻道":"","秘匿對象":"","發言人":"","頭像":"https://loyaeasuke.github.io/Replay/CoC/cover/260.png","內容":"","備註":""},{"序號":"2","類型":"info","頻道":"info","秘匿對象":"","發言人":"","頭像":"","內容":"◆◆事前問卷◆◆\n不管是PL還是PC的回答都可以。\n請用誠實的心情回答。\n\nQ1\n請以1到99的數字表示對KPC的感受。即使不是好意也無妨。\nA1\n為什麼是1到99 100呢\n\nQ2\n請列舉與KPC的印象深刻的回憶。即使不是好的回憶也無妨。\n（可回答複數）\nA2\n小時候的公園大概會一起玩躲貓貓？堆沙堡？然後拿假面騎士扮家家酒\n馬鈴薯燉肉\n量身高（？）\n第一次收到飾品耳環\n不知道會不會發生但是有想看進路調查的時候誠說不上學了時葉是什麼反應\n摩天輪（英雄主義者）\n祭典煙火告白\n收到項圈\n繩子不見（欸）\n海灘哭哭（泡沫）\n戒菸過程（煙劫）\n聖禮親親\n跟博美吃醋\n\nQ3\n當KPC變成花園鰻時，您能不拋棄他嗎？\nA3\n既然知道是時葉了怎麼能拋棄呢","備註":""},{"序號":"3","類型":"start","頻道":"","秘匿對象":"","發言人":"","頭像":"","內容":"","備註":""},{"序號":"4","類型":"scene","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"導入","備註":""},{"序號":"5","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"今天是沒有營業的日子。你跟時葉出門購物……本來應該是為了買對方需要的手工材料才出門的，不知道為什麼去百貨公司轉了轉，逛了一圈有賣假◯騎士周邊的商店，還被時葉順手買了幾包卡包塞給你，搞到後來彷彿你們本來就是為了逛假◯騎士出門的。當然時葉要買的東西也沒有忘記就是了。","備註":""},{"序號":"6","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"為什麼阿","備註":""},{"序號":"7","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"為什麼呢","備註":""},{"序號":"8","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"買都買了，來個幸運吧。","備註":""},{"序號":"9","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"卡包有開到金卡嗎","備註":""},{"序號":"10","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=10*5 幸運 (1D100<=50) ＞ 71 ＞ 失敗","備註":""},{"序號":"11","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"沒有開到呢","備註":""},{"序號":"12","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"都是普卡。","備註":""},{"序號":"13","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「你的運氣用光了嗎？」走在旁邊也拿了一包來開。","備註":""},{"序號":"14","類型":"dice","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"CCB<=10*5 幸運 (1D100<=50) ＞ 45 ＞ 成功","備註":""},{"序號":"15","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「啊，閃卡。」","備註":""},{"序號":"16","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"還在鬱悶自己手上的都是普卡，甚至有幾張是重複的，聽見時葉的發言愣了愣：「啊？」","備註":""},{"序號":"17","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「這算是新手（？）運嗎……」明明時葉沒有像自己這樣子熱衷於假Ｏ騎士啊。","備註":""},{"序號":"18","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"他都幫誠收藏過一本收藏冊了，不能算新手運了吧（？）","備註":""},{"序號":"19","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"新手運www","備註":""},{"序號":"20","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"老手運","備註":""},{"序號":"21","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「喏。」遞過去。","備註":""},{"序號":"22","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「閃卡欸，不自己收著？」雖然反問了但還是收下。","備註":""},{"序號":"23","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「放我這裡也不能幹嘛吧。你拿去店裡裱框啊。」","備註":""},{"序號":"24","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「好主意，羨慕死他們。」把閃卡收回卡包裡面之後、又用錢包把卡包夾在中間。「得去買個框，去一趟Ｏ創嗎？」","備註":""},{"序號":"25","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"還真的啊……略感無言地眨了眨眼。「喔，走啊。」","備註":""},{"序號":"26","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這個時候，有一個拿著一疊紙張的小女生靠近你們。","備註":""},{"序號":"27","類型":"talk","頻道":"main","秘匿對象":"","發言人":"嬌小的女孩","頭像":"","內容":"「不好意思，可以幫忙填一下問卷嗎？」","備註":""},{"序號":"28","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"說著，她將一張紙遞給你。","備註":""},{"序號":"29","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"問卷內容就是你事前拿到的那個。(這邊可以適當RP個寫寫帶過)","備註":""},{"序號":"30","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"好像是個奇妙的問卷。","備註":""},{"序號":"31","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"助人為快樂之本。接過問卷，本來以為是什麼愛護動物組織之類的，沒想到……這題目怎麼看都不正常吧？\n\n眨了眨眼，看向時葉。","備註":""},{"序號":"32","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「你有筆嗎？」","備註":""},{"序號":"33","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"我剛剛滑到誠身上想說他有帶筆嗎","備註":""},{"序號":"34","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"然後想起來我沒寫攜帶物（還是沒寫","備註":""},{"序號":"35","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"沒有也能活（？","備註":""},{"序號":"36","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「小女生手上有筆喔。」指指女孩子拿著筆想遞過來的手。","備註":""},{"序號":"37","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「啊、抱歉。」從小女生手上接過了筆，幾乎是沒有猶豫的就寫下了答案，第二題寫得特別久也特別長，幾乎要把白色的紙張寫滿。","備註":""},{"序號":"38","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"要把問卷遞回去給小女孩時，好奇問了句：「話說，這是用在哪裡的問卷調查？水族館的親子體驗活動嗎？」","備註":""},{"序號":"39","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「太多了吧有這麼多東西可以寫嗎？」在旁邊都看傻了。","備註":""},{"序號":"40","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"時葉有寫問卷嗎？","備註":""},{"序號":"41","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"沒有，他在旁邊看。","備註":""},{"序號":"42","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「就……真的很多啊。」","備註":""},{"序號":"43","類型":"talk","頻道":"main","秘匿對象":"","發言人":"嬌小的女孩","頭像":"","內容":"「謝謝你！帥氣的大哥哥！可以換更多糖果了！」","備註":""},{"序號":"44","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"小女生接過寫好的問卷，滿心滿眼吃糖果，沒有注意到你的問句，開開心心地跑掉了。","備註":""},{"序號":"45","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「好奇怪的問卷。」一邊無言地說著一邊揮手。「嘛，能幫上忙就好。」","備註":""},{"序號":"46","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「那去Ｏ創吧。之後還有要去哪嗎？」","備註":""},{"序號":"47","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「之後喔……啊，去一趟書局，我有一本預約的書要拿。」","備註":""},{"序號":"48","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「什麼預約的書我怎麼沒聽說……」這人居然會買書……","備註":""},{"序號":"49","類型":"dice","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"choice 時葉的新書 假Ｏ騎士的限量收藏設定集 (choice 時葉的新書 假O騎士的限量收藏設定集) ＞ 時葉的新書","備註":""},{"序號":"50","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「……呃。」眼神轉了一圈，小小聲的，一邊往Ｏ創的方向走去。\n\n「你的新書……」","備註":""},{"序號":"51","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"體會一下拿新書在作者面前拆開的心情嘛","備註":""},{"序號":"52","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"這是什麼心情啊（","備註":""},{"序號":"53","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"總是從時葉手裡拿到！","備註":""},{"序號":"54","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"就是想試試看其他方式拿到時葉的書嘛！","備註":""},{"序號":"55","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「…………啊？」這傢伙在說什麼啊。眨眨眼。","備註":""},{"序號":"56","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「有一天下班看到路過的書店在打廣告，就走進去了。」聳聳肩膀，又提了一下手上的假Ｏ騎士周邊。「走出來的時候發現手上就拿著預約單了。」","備註":""},{"序號":"57","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「……你真的會被詐騙吧……」誠心誠意的擔憂。叔叔是不是也被詐騙過啊……","備註":""},{"序號":"58","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"御子柴正義：被騙過喔","備註":""},{"序號":"59","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"笑死","備註":""},{"序號":"60","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「不會吧，店就在那裡也跑不掉啊。」","備註":""},{"序號":"61","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「不是那個意……算了。」反正也不至於被騙個大的吧……頂多只有假◯騎士騙得了他吧。","備註":""},{"序號":"62","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"情侶套票可能也騙的了喔","備註":""},{"序號":"63","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"商店街那種轉輪盤的抽獎","備註":""},{"序號":"64","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"雙人溫泉旅行之類的","備註":""},{"序號":"65","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"真好騙(X","備註":""},{"序號":"66","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"商店街老闆一定很喜歡誠","備註":""},{"序號":"67","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「那快走吧。啊……我順便買個包裝袋，過幾天去機構順便帶上。」","備註":""},{"序號":"68","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「要辦什麼活動嗎？」","備註":""},{"序號":"69","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「有新的小朋友進機構了，院長想做歡迎晚會。不知道能不能稍微打開心房吧。」","備註":""},{"序號":"70","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「喔——要幫忙嗎？」","備註":""},{"序號":"71","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「幫我看家。」","備註":""},{"序號":"72","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"PC：要幫忙嗎\nPL：你是能幫什麼忙","備註":""},{"序號":"73","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"時葉：你看家","備註":""},{"序號":"74","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"做出一個敬禮的手勢：「好的遵命，看家附贈晚膳服務。」","備註":""},{"序號":"75","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「我隔天回家啦，你不要乾等喔。」手刀敲一下誠的頭。","備註":""},{"序號":"76","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「啊痛、好啦……」","備註":""},{"序號":"77","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"好委屈","備註":""},{"序號":"78","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"好委屈","備註":""},{"序號":"79","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"想貼貼男朋友不讓跟","備註":""},{"序號":"80","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"還要被敲腦袋","備註":""},{"序號":"81","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這樣的日常。一成不變的每一天。出門逛街、買東西，回家煮飯、吃東西，晚上膩在一起。真是和平。","備註":""},{"序號":"82","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"膩在一起","備註":""},{"序號":"83","類型":"scene","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"","備註":""},{"序號":"84","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"然而，在幾天之後。","備註":""},{"序號":"85","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"早晨。被朝陽喚醒的你。","備註":""},{"序號":"86","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你的枕邊出現了一個陌生的水族箱。","備註":""},{"序號":"87","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"水族箱裡，有一條在清澈的水中搖曳的花園鰻。","備註":""},{"序號":"88","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"？？？？？？？？？？？","備註":""},{"序號":"89","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"有一張便條紙壓在水族箱下。","備註":""},{"序號":"90","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"上面寫著這樣一句話。","備註":""},{"序號":"91","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"『那條花園鰻是長月時葉』","備註":""},{"序號":"92","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"在種種不可理解的情況下，你感到極度困惑。SANc0/1。","備註":""},{"序號":"93","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"我也好困惑","備註":""},{"序號":"94","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=68 SANC (1D100<=68) ＞ 95 ＞ 失敗","備註":""},{"序號":"95","類型":"system","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"SAN : 68 → 67","備註":""},{"序號":"96","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"什麼狀況。你滿頭問號。你記得昨天時葉去了機構一趟，所以晚上不在家……這箱水族箱究竟是什麼跟什麼？","備註":""},{"序號":"97","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"【可探索項目】\n花園鰻 水族箱 陌生的袋子","備註":""},{"序號":"98","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"先不論花園鰻，這個水族箱是怎麼放到自己枕邊的？也不可能是時葉自己搬進來的吧，最近也沒聽時葉說想要養花園鰻啊……\n\n總之，先看看花園鰻，活著吧？","備註":""},{"序號":"99","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"要是死了怎辦（","備註":""},{"序號":"100","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"試試看CPR","備註":""},{"序號":"101","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"對花園鰻嗎？？","備註":""},{"序號":"102","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"問一下估狗…","備註":""},{"序號":"103","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"怎麼救活花園鰻","備註":""},{"序號":"104","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"白色的身體上有黑色斑點的生物。當你注視時，它會「嗖」的一聲躲入沙子中。當你遠離時，它會「嗖」的一聲探出來，輕輕搖曳。","備註":""},{"序號":"105","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「……」看著水缸裡的生物，不免想到了前幾日在路上填的那個問卷，手指指尖輕輕抵在水族箱，敲敲。\n\n「時葉？」","備註":""},{"序號":"106","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"在你敲敲水族箱的時候，花園鰻「嗖」的一聲躲入沙子中了。","備註":""},{"序號":"107","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「咦…………」","備註":""},{"序號":"108","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"看著鑽入沙子裡的花園鰻，無可奈何。\n想要知道水族箱裏面的花園鰻真的是時葉嗎、但是又該用什麼樣的方法去確認這件事？\n\n抱著不如試試看吧的心情、找出自己的手機打電話給時葉看看。","備註":""},{"序號":"109","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"都敲水族箱了，應該等於也有觀察到水族箱的外觀，所以這邊給一下資訊。\n高約30㎝的長方形水族箱。底部鋪著約15㎝的沙子。上方裝有照明，內部被藍色光照亮。","備註":""},{"序號":"110","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"打電話給時葉……但是電話關機，打不通。","備註":""},{"序號":"111","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"聽著手機裡傳來冷冰冰的電子機械聲，嘆了口氣掛掉電話，坐在床上跟水族箱裡的花園鰻乾瞪眼。\n\n拿起手機拍了一張照片。","備註":""},{"序號":"112","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"然後拉長了身子把對自己來說挺陌生的袋子拿過來看了一眼，不至於是魚飼料吧？說起來，花園鰻吃什麼啊？","備註":""},{"序號":"113","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"被隨意放在床邊地上的袋子。打開往裡面看，有一套時葉平時穿的衣服，從貼身衣物到外套都有。此外，還有一個手掌大小的銀色袋子。包裝上寫著『深潛特製鹽水蝦卵』……。","備註":""},{"序號":"114","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"另外還有一個稍大的箱子。箱子裡面有塑膠器具、滴管等各種東西。","備註":""},{"序號":"115","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「不會吧，你是經歷了什麼變成這樣啊……」不知如何表達，有些傻眼的眼神看著水族箱裡的花園鰻。\n一個一個把神秘袋子和箱子裡的東西拿出來擺在桌上，大概……是養殖用品？","備註":""},{"序號":"116","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"在你確認一輪後，你的手機響了。拿起來一看，畫面上顯示的是一個陌生的號碼。","備註":""},{"序號":"117","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"可是自己一點養殖花園鰻的知識都沒有……正當這麼想的時候就被放在腳邊震動的手機嚇了一跳。\n\n「嚇死我了……」拿起手機看一眼，看看花園鰻，看看手機，看看花園鰻，接電話。","備註":""},{"序號":"118","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「……喂？」","備註":""},{"序號":"119","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"接起來後，聽到一個應該是男人的聲音。","備註":""},{"序號":"120","類型":"talk","頻道":"main","秘匿對象":"","發言人":"男人的聲音","頭像":"","內容":"『花園鰻……不，長月君還好嗎？』","備註":""},{"序號":"121","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"皺眉。「你把時葉怎麼了？恢復的方法呢？」","備註":""},{"序號":"122","類型":"talk","頻道":"main","秘匿對象":"","發言人":"男人的聲音","頭像":"","內容":"『哈哈哈。對這個禮物不滿意嗎？只要你用愛心好好照顧，長月君一定會變回來的。』","備註":""},{"序號":"123","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"笑屁啊，好火大，知道電話對面的人可能是讓時葉變成這個樣子的人就按捺不住不悅的心情。\n\n「我是寫過時葉如果變成花園鰻我不會拋棄他這種話沒錯，但是把一個人類變成花園鰻是什麼惡作劇嗎……」","備註":""},{"序號":"124","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"校闢啊www","備註":""},{"序號":"125","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"真的是笑屁啊把時葉還給我","備註":""},{"序號":"126","類型":"talk","頻道":"main","秘匿對象":"","發言人":"男人的聲音","頭像":"","內容":"『是為了看看你是否真的會不拋棄變成這樣的長月君。只要你用愛心好好照顧，長月君一定會變回來的。』","備註":""},{"序號":"127","類型":"talk","頻道":"main","秘匿對象":"","發言人":"男人的聲音","頭像":"","內容":"『必需的飼養道具都給你了。那麼，請努力照顧好他吧。』","備註":""},{"序號":"128","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"男人說完就單方面把電話掛了。","備註":""},{"序號":"129","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「喂、等——可惡，沒禮貌的傢伙。」聽見嘟嘟聲，憤恨的把手機拋在床上。\n\n彎下腰來看著水族箱，一手撐著臉頰，時葉從沙子裡鑽出來了嗎？。","備註":""},{"序號":"130","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"水族箱裡的花園鰻探出頭來注視著你。仔細看，默默地感覺和時葉有些相似。","備註":""},{"序號":"131","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"莫名其妙的狀況。要照顧花園鰻嗎？","備註":""},{"序號":"132","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"說不上來是哪裡相似，但就是有一股相似的感覺，大概是眼神吧。\n既然電話裡那個男人說只要好好照顧時葉就會變回來，那現在的任務就是把花園鰻照顧好吧，畢竟現在除了這個線索以外、自己也別無他法。\n\n「肚子餓了嗎？」","備註":""},{"序號":"133","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"時葉是人類的時候：肚子餓了嗎\n時葉是花園鰻的時候：肚子餓了嗎","備註":""},{"序號":"134","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"沒別的了","備註":""},{"序號":"135","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"即使你心中還覺得這可能是個惡作劇，但你還是決定照顧他，畢竟也不知道時葉會怎麼樣吧。","備註":""},{"序號":"136","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"然而，如果你平時不是經常照顧花園鰻的人，可能並不了解怎麼照顧花園鰻。","備註":""},{"序號":"137","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"必須從找資料開始。進行【圖書館】判定５次，成功次數決定你獲得的情報數量。","備註":""},{"序號":"138","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=62 圖書館 (1D100<=62) ＞ 74 ＞ 失敗","備註":""},{"序號":"139","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=62 圖書館 (1D100<=62) ＞ 39 ＞ 成功","備註":""},{"序號":"140","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=62 圖書館 (1D100<=62) ＞ 31 ＞ 成功","備註":""},{"序號":"141","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=62 圖書館 (1D100<=62) ＞ 14 ＞ 成功","備註":""},{"序號":"142","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=62 圖書館 (1D100<=62) ＞ 2 ＞ 決定性的成功/特殊","備註":""},{"序號":"143","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"大成功那就全部給你吧！","備註":""},{"序號":"144","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"謝謝KP！","備註":""},{"序號":"145","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"想要拯救時葉的決心","備註":""},{"序號":"146","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"你充滿了決心","備註":""},{"序號":"147","類型":"talk","頻道":"other","秘匿對象":"","發言人":"","頭像":"","內容":"我該換BGM嗎","備註":""},{"序號":"148","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"ｗｗｗｗｗｗｗ","備註":""},{"序號":"149","類型":"info","頻道":"info","秘匿對象":"","發言人":"","頭像":"","內容":"◇關於飼養環境\n花園鰻可以在30㎝的小型水族箱中飼養。大致是30㎝水族箱可以養2條，45㎝水族箱可以養4條，60㎝水族箱可以養8條。因為它們群居生活，不推薦單獨飼養。\n過濾器應根據水族箱大小選擇，45㎝以下建議使用掛壁式過濾器，60㎝以上建議使用上部過濾器。\n砂子要選擇沒有尖角、顆粒細小的珊瑚砂，以防止傷到身體。厚度調整在15～20㎝較好。\n另外，它們無法在淡水中生存，所以需要製作人工海水。","備註":""},{"序號":"150","類型":"info","頻道":"info","秘匿對象":"","發言人":"","頭像":"","內容":"◇關於生態\n和名：花園鰻\n鰻鱺目康吉鰻科異康吉鰻亞科異康吉鰻屬\n學名：Heteroconger hassi（哈氏異康吉鰻）\n英名：Spotted Garden Eel\n\n花園鰻生活在熱帶溫暖的海洋中。通常在珊瑚礁周邊的沙底區域組成群落生活。此外，它們會從巢穴中探出半個身體，捕食隨海流而來的浮游生物。為了等待食物，它們都會朝向同一方向。\n康吉鰻的同伴通常是夜行性，但花園鰻是日行性。\n它們的巢穴不會崩塌，因為花園鰻的皮膚會分泌黏液，使砂子凝固。它們在沙中垂直居住。\n它們有時會吵架。這時它們會降低姿態，張大嘴巴互相威嚇。","備註":""},{"序號":"151","類型":"info","頻道":"info","秘匿對象":"","發言人":"","頭像":"","內容":"◇關於身體結構\n花園鰻可以成長到全長約40㎝，直徑約1.4㎝。雄性比雌性身體更大。此外，它們的視力很好，據說能分辨餌料的大小和敵人的種類。\n花園鰻有五個大黑斑點。身體兩側各有兩個斑點，上面的兩個斑點處有鰓和小胸鰭。腹部的黑斑點處有肛門。\n說到它們是否可食，因為體型太細，骨頭也多，不適合食用。唯一可能的是油炸，但從根本來說，亞科的「花園鰻」並不是可食用的康吉鰻科「星康吉鰻」，所以通常不會考慮食用。","備註":""},{"序號":"152","類型":"info","頻道":"info","秘匿對象":"","發言人":"","頭像":"","內容":"◇關於餌料\n花園鰻基本上是食用動物性浮游生物的食浮游生物動物。在水族箱環境中餵養鹽水蝦。鹽水蝦是一種生活在各地鹽水湖中的小型甲殼類，會產出長期休眠的乾燥耐久卵。\n這種卵需要人工孵化後餵養，由於花園鰻很少主動尋找食物，所以需要花點工夫。水族箱内內的水流應調整到足以捲起底部的餌料。\n死因多為餓死，所以需特別注意餵食餌料。","備註":""},{"序號":"153","類型":"info","頻道":"info","秘匿對象":"","發言人":"","頭像":"","內容":"◇關於注意事項\n花園鰻性格膽小。會從水族箱跳脫逃走，在旁邊變成魚乾。請務必蓋好水族箱的蓋子。","備註":""},{"序號":"154","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"……前期準備大致完成。接下來就是該實行餵養了吧。","備註":""},{"序號":"155","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"坐在水族箱旁邊，看著一隻白白的花園鰻在水裡朝著同一個方向搖去。\n箱子的大小和沙子的厚度都OK了，現在……要處理餌食吧。","備註":""},{"序號":"156","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"拿起了裝著卵的袋子，用手機查詢「鹽水蝦　餵養　花園鰻　飼料」。","備註":""},{"序號":"157","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你拿出手機準備查詢的時候，注意到箱子裡，會發現有放說明書。看來這是用來孵化鹽水蝦卵的機器。","備註":""},{"序號":"158","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"加入水，按說明書所寫加入適量的鹽，然後放入鹽水蝦卵。接著加入氣泵，將水溫設定為28度。這樣24小時後就會孵化完成了，但仔細查看你手上的鹽水蝦卵包裝，上面寫著『本來需要24小時的孵化時間，經過深潛技術改良，縮短至30分鐘即可孵化！』","備註":""},{"序號":"159","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"手機才按到一半，就看見箱子裡面有露出來一角的文件，寫著「說明書」三個字。\n放下手機，照著說明書把養鹽水蝦的機器安裝好之後……把蝦卵放進去。\n\n「把一天縮短成30分鐘，就像是給雛雞打生長劑啊……」","備註":""},{"序號":"160","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"生長激素wwww","備註":""},{"序號":"161","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"有這樣子做過呢炸雞店","備註":""},{"序號":"162","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"但也有聽說生長激素很貴根本不划算(ry","備註":""},{"序號":"163","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你按照步驟準備了鹽水，將蝦卵放入機器，做好設定。接著等待孵化。","備註":""},{"序號":"164","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一開始你靠近水族箱時，花園鰻會躲進沙子裡，但漸漸地你靠近時，它會搖曳著身體靠過來。","備註":""},{"序號":"165","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"不知怎地，你開始對這條花園鰻有一種難以形容的感情。這是你平常對待時葉抱有的感情。\n……嗯，好像哪裡怪怪的。","備註":""},{"序號":"166","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"你是說","備註":""},{"序號":"167","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"性慾嗎","備註":""},{"序號":"168","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"(不是","備註":""},{"序號":"169","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"？","備註":""},{"序號":"170","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"不好吧","備註":""},{"序號":"171","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"你好危險","備註":""},{"序號":"172","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"我也覺得不好吧","備註":""},{"序號":"173","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"緩緩靠近水族箱裡的花園鰻，眼睫緩慢眨動著。\n\n「……你真的是時葉吧？不如說，你聽的懂人類說話嗎……」等等，花園鰻會說話嗎？","備註":""},{"序號":"174","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"花園鰻會說話的話就要再扣SAN了吧","備註":""},{"序號":"175","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"你可以點頭啊(乾","備註":""},{"序號":"176","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"笑死","備註":""},{"序號":"177","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"30分鐘後，可以看到容器中有很多小東西在游動。將容器放到觀賞魚燈下，鹽水蝦會聚集到燈光處，你可以用滴管收集這些小東西。然後將這些餵給花園鰻即可。","備註":""},{"序號":"178","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"一邊觀察花園鰻，發現旁邊的蝦子已經孵化出來……還真的孵化出來了啊。\n小心翼翼的、把容器放到觀賞魚燈底下，雖然這也是和把菜切絲同樣精密的操作、但畢竟自己也是第一次養花園鰻，做起事來還是戰戰兢兢的。\n\n「滴管……」拿起自己放在床上的滴管，試圖收集那坨聚集起來的蝦子，抱歉啊，你們才剛出生就要被吃掉了。","備註":""},{"序號":"179","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"沙小啊廚師wwwwwwwwwwww","備註":""},{"序號":"180","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"誰會把剛出生的東西殺掉啊（幹","備註":""},{"序號":"181","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你取完鹽水蝦，往水族箱裡滴一點點進去。","備註":""},{"序號":"182","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"當你餵食時，花園鰻用小小的嘴巴一口一口吃著。看起來似乎很開心。","備註":""},{"序號":"183","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"看著花園鰻，你不禁回想起你跟時葉之間的過往。\n國小的初次見面、國中的再會、你第一次做的馬鈴薯燉肉。\n一起去遊樂園、去祭典看煙火、收到飾品、在海邊玩仙女棒、去美術館、暫時的養寵物……","備註":""},{"序號":"184","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"……感覺你和花園鰻之間有過許多的回憶。\n想到這裡，你搖了搖頭。不不不我沒有跟花園鰻共有的回憶。花園鰻不會去遊樂園，也不會去逛祭典，更不會玩仙女棒。","備註":""},{"序號":"185","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"……雖然如果這條花園鰻是時葉的話。那實質上好像也沒錯？","備註":""},{"序號":"186","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"看著花園鰻啵啵啵的吃著蝦子，不知道為什麼、懷念的心情油然而生。\n腦袋裡面那些和時葉一起相處的回憶像是跑馬燈一樣的在自己的腦袋撥放起來，彼此的相遇、好像不算是很愉快的再會、告白、送禮、還有更多更多……\n\n……咦，我不可能捧著一個水族箱去坐摩天輪吧。","備註":""},{"序號":"187","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"敲敲自己的腦袋，看看是不是壞掉了。","備註":""},{"序號":"188","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"而且不知道是不是你的錯覺，你總覺得盯著你看的花園鰻好像還歪了一下腦袋。\n……這是會歪頭的嗎？不過歪頭的時葉應該很可愛吧。一定超可愛吧。","備註":""},{"序號":"189","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"如果花園鰻真的是時葉的話，腦海中不免浮現了時葉歪頭的畫面。\n\n「好奇怪啊，就算是花園鰻還是覺得時葉很可愛。」喃喃自語著，一邊收拾自己放在床上的用具，也不知道要養多久，還是把工具收好比較不會有什麼差錯。","備註":""},{"序號":"190","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"就算是花園鰻","備註":""},{"序號":"191","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"就算是花園鰻","備註":""},{"序號":"192","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這麼說來，剛才那個奇怪電話的男人說了這條花園鰻就是時葉，那麼這句可愛不論是指眼前的花園鰻還是時葉，都沒有任何問題吧。","備註":""},{"序號":"193","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"因為眼前的花園鰻就是時葉嘛。","備註":""},{"序號":"194","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你們一起經歷過許多時間。\n你和這條花園鰻同甘共苦。\n你和這條花園鰻深深相愛。","備註":""},{"序號":"195","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"沒有錯，毫無疑問。","備註":""},{"序號":"196","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"從很久以前，與時葉相遇時，時葉就是花園鰻了。","備註":""},{"序號":"197","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這裡丟個1D100。","備註":""},{"序號":"198","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"1D100 (1D100) ＞ 65","備註":""},{"序號":"199","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你注視著花園鰻，突然感到怪異。不，哪裡不對。和花園鰻一起在外散步的記憶是真的發生過的嗎？","備註":""},{"序號":"200","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"（困惑）","備註":""},{"序號":"201","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"一個讓PLPC同步困惑的現場","備註":""},{"序號":"202","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"說到底花園鰻怎麼可能在大街上散步啊。","備註":""},{"序號":"203","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"就在這困惑的當下，又有一通來電。","備註":""},{"序號":"204","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"感覺腦袋裡的想法有些古怪，還來不及去探究那個違和感究竟是什麼、就又被手機來電的震動給打斷。\n\n「……喂？」","備註":""},{"序號":"205","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"『誠！』","備註":""},{"序號":"206","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一接起來就聽到時葉的聲音。嗯？","備註":""},{"序號":"207","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"『先好好聽我說，總之！──我不是花園鰻！』","備註":""},{"序號":"208","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"不是花園鰻？那麼眼前的時葉花園鰻是什麼？","備註":""},{"序號":"209","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「咦。」","備註":""},{"序號":"210","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"下意識發出了短促的疑問，轉頭看著水族箱裡面的花園鰻，眨了眨眼，然後用手掌遮住了自己的雙眼。\n\n是啊時葉怎麼可能是花園鰻呢時葉怎麼可能是……\n\n「……那你沒事嗎？你在哪裡？」","備註":""},{"序號":"211","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"『抱歉，會變成這樣可能是我的錯吧。我現在在──』報上一個離家裡不遠的地址。","備註":""},{"序號":"212","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"『那裏的──』","備註":""},{"序號":"213","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"時葉話說到一半，響起了雜亂的腳步聲，接著你聽見了像是男人的怒聲，然後電話被掛斷了。","備註":""},{"序號":"214","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「喂？喂，時葉！」","備註":""},{"序號":"215","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"聽見來自時葉手機裡面的男人的怒聲，腦海裡面浮現各式各樣危險的猜測，雙手都緊握成拳。","備註":""},{"序號":"216","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"電話裡傳來的男人的聲音、跟第一通接到的陌生電話是一樣的聲音嗎？","備註":""},{"序號":"217","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"聲音太模糊了，無法判斷。","備註":""},{"序號":"218","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"看了一眼花園鰻。\n餌食就放在這裡了，過濾器也開了，水流也能讓蝦子被捲起來……既然聽見了時葉的聲音，那麼這個花園鰻也確實不是時葉了吧。\n\n…………如果時葉知道自己真的把花園鰻當成他的話都不知道該怎麼謝罪，明明也不是第一次發生這樣的事情了。","備註":""},{"序號":"219","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"該怎麼謝罪wwwwwwwwwwwwww","備註":""},{"序號":"220","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"不可能以死謝罪吧","備註":""},{"序號":"221","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"把水族箱的蓋子蓋好，確定沒有花園鰻可以逃脫的空間便打算出門去時葉剛才說的地方找找。\n\n離開房間之前思考了一下，為什麼出現在水族箱旁邊的還有時葉的衣物？不可能時葉現在沒有穿衣服吧。\n\n……帶上好了。","備註":""},{"序號":"222","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"把時葉的衣服帶上（？），速速出門。","備註":""},{"序號":"223","類型":"scene","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"","備註":""},{"序號":"224","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你很快地來到了時葉所說的地址。這裡是一座不大、且一旦地震就有可能會立即倒塌的破舊大樓，乍看之下是三層樓。","備註":""},{"序號":"225","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"一樓看起來像是接待處，但沒有人在。","備註":""},{"序號":"226","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"【可探索地點】\n整體 牆壁 接待處","備註":""},{"序號":"227","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「之前有過這種地方嗎……」走進一樓，四處看看。","備註":""},{"序號":"228","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"來個偵查！","備註":""},{"序號":"229","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=92 偵查 (1D100<=92) ＞ 4 ＞ 決定性的成功/特殊","備註":""},{"序號":"230","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"整個地方看起來都破爛不堪，連備品也一樣。但近期似乎有整理過。應該有人在使用吧……？","備註":""},{"序號":"231","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"如果有人在使用……使用這裡的組織該不會是連購買大量新設備的預算都沒有……？","備註":""},{"序號":"232","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"隨意的拿起了幾個東西起來看，看起來不像是放很久的物品，但是……怎麼就如此破爛呢，連翻修都沒有的話看起來就是毫無人煙啊。\n\n走近接待處，看看有沒有在意的東西。","備註":""},{"序號":"233","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"破破爛爛的接待處。來個偵查！","備註":""},{"序號":"234","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=92 偵查 (1D100<=92) ＞ 62 ＞ 成功","備註":""},{"序號":"235","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"積了厚厚的灰塵的接待櫃台。這裡掛著一把鑰匙，上面掛著寫有「二樓」的牌子。","備註":""},{"序號":"236","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"把鑰匙拿下來，就這麼大方的擺在這裡，難怪這麼破爛啊……遭小偷都不意外，說起來，真的會有小偷闖進來嗎？","備註":""},{"序號":"237","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"打算走上樓時，往牆壁那裡瞄了一眼。","備註":""},{"序號":"238","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"往牆上看，貼著可疑的冒瀆招募海報。上面寫著各種宗教性文句，甚至還有你看不懂的文字，只是盯著看了一下就讓你感到不適。SANc0/1。","備註":""},{"序號":"239","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=67 SANC (1D100<=67) ＞ 30 ＞ 成功","備註":""},{"序號":"240","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"冷靜。","備註":""},{"序號":"241","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"海報可以撕下來嗎？","備註":""},{"序號":"242","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"可以，破破爛爛的……你想摸嗎？","備註":""},{"序號":"243","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"PL的本性告訴我不要摸，放棄。\n我RP一下！","備註":""},{"序號":"244","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"看著牆上的海報，忽地感到一絲不適。\n…………愈來愈擔心時葉的安危，沒有那個美國時間去管奇怪的海報了，上樓。","備註":""},{"序號":"245","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"走沒幾步路就看到樓梯。走上樓梯就會看到一扇門。看來是鎖著的。用手上的鑰匙就可以打開了。","備註":""},{"序號":"246","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"開門前聽聽看裡面有沒有聲音。","備註":""},{"序號":"247","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"聆聽。","備註":""},{"序號":"248","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=73 聆聽 (1D100<=73) ＞ 41 ＞ 成功","備註":""},{"序號":"249","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"裡面感覺沒有人。","備註":""},{"序號":"250","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"貼著門板聽，感覺內部沒有人。\n略顯失望的拿出鑰匙打開門。","備註":""},{"序號":"251","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"失望什麼(大笑","備註":""},{"序號":"252","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"有人的話說不定是時葉啊","備註":""},{"序號":"253","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你用鑰匙把門打開。","備註":""},{"序號":"254","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這裡也很破，但看起來像是一個監控室。在一張大螢幕前有幾張長桌。","備註":""},{"序號":"255","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"……螢幕上顯示的是你的寢室。","備註":""},{"序號":"256","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"當然，是在時葉家的寢室。","備註":""},{"序號":"257","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"我原本以為真的要開始養成遊戲","備註":""},{"序號":"258","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"大笑","備註":""},{"序號":"259","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"還能看到花園鰻在水族箱裡搖曳著。","備註":""},{"序號":"260","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"該不會一直被監視著吧？SANc0/1。","備註":""},{"序號":"261","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=67 SANC (1D100<=67) ＞ 11 ＞ 特殊","備註":""},{"序號":"262","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"環顧四週，還有一條往上的樓梯。","備註":""},{"序號":"263","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「……真噁心。」看著畫面上呈現的、自己在時葉那裡的房間，還有那擺在枕邊的水族箱。\n\n感覺自己的生活被一覽無遺，甚至有些反胃，仔細想想，今天醒來也沒有吃東西，就算吐出來也只是胃酸吧……","備註":""},{"序號":"264","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"環顧一圈，沒什麼太在意的就往上走了。","備註":""},{"序號":"265","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"還沒吃東西呢","備註":""},{"序號":"266","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"時葉：你為什麼又不吃飯","備註":""},{"序號":"267","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"接到你的電話都忘記吃飯ㄌ","備註":""},{"序號":"268","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"走上樓梯又是一扇門。即使不仔細傾聽，也能感覺門後有人在。要進去嗎？","備註":""},{"序號":"269","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"好像也只能進去了。","備註":""},{"序號":"270","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"打開門、走進去一看，裡面是一個開放空間，桌椅雜亂無章地堆在角落。","備註":""},{"序號":"271","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"首先映入眼簾的是被黑色長袍的人以納爾遜式鎖制伏、嘴裡塞了布、一臉一言難盡的時葉。周圍則圍繞著三個同樣穿黑色長袍的人。","備註":""},{"序號":"272","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"每個人都戴著兜帽，看不到臉。","備註":""},{"序號":"273","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"看到你闖了進來，黑色長袍的人們似乎相當困惑。其中一人走了出來，取下兜帽。","備註":""},{"序號":"274","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那是一個難以分辨是人還是魚的生物。","備註":""},{"序號":"275","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"什麼","備註":""},{"序號":"276","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"深潛者嗎！！！","備註":""},{"序號":"277","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"整體上，皮膚呈現灰綠色，但只有腹部是白色。背部隆起的部分被鱗片覆蓋著。有四肢，像人一樣用兩條腿站著，頭部是魚頭。沒有眼瞼的眼睛轉來轉去。頸部左右兩側的鰓不停張合。彎曲並列開的嘴部──無法認為是這個世界上的人。","備註":""},{"序號":"278","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"SANc0/1d6。","備註":""},{"序號":"279","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=67 SANC (1D100<=67) ＞ 44 ＞ 成功","備註":""},{"序號":"280","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"因為PL的喜好而堅強的PC？（並沒有）","備註":""},{"序號":"281","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"接著，那個生物開口了。","備註":""},{"序號":"282","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「你的戀人長月君，應該是在你家裏的花園鰻吧。你來這裡做什麼？」","備註":""},{"序號":"283","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"？","備註":""},{"序號":"284","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"你（立繪）怎麼長這樣……（失望小狗）","備註":""},{"序號":"285","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"啊就ㄎㄧㄤ本（","備註":""},{"序號":"286","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「…………」揉揉眼睛，自己應該沒有產生錯覺吧？眼前這個不是人類的東西，和魚有點像啊。\n甚至那個眼睛、很像自己在料理的時候會躺在砧板上的……魚頭的眼睛。\n\n無法理解眼前的生物究竟是什麼，但這個不重要，重要的是自己重要的戀人正被這奇怪的魚人綁在角落。","備註":""},{"序號":"287","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「不對，我的戀人是那邊那個長月時葉。」揚揚下巴，然後往前踏了兩步。\n\n「把我的時葉還給我。」","備註":""},{"序號":"288","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「唉？等等等等……這是人類喔～！不是花園鰻喔！這樣有點……」","備註":""},{"序號":"289","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"奇怪的男人跟黑袍的人們試圖阻擋你靠近，甚至還語氣平板哼著奇怪的歌曲。","備註":""},{"序號":"290","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"太尬了吧這些人……是人吧？","備註":""},{"序號":"291","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那個生物慌慌張張地在你眼前揮動肥棒的手臂。","備註":""},{"序號":"292","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「啊〜怎麼說呢，就是……啊～！對了！在這裡再施放一次咒文不就好了嗎？」","備註":""},{"序號":"293","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那個生物像是靈光一閃似地說。周圍的黑袍人也像是驚醒一樣的氛圍，紛紛低語說著確實、確實沒錯。","備註":""},{"序號":"294","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你可能會因為不好的預感而防備。但他們已經開始紡織奇怪的詞語，你的意識逐漸模糊。","備註":""},{"序號":"295","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"而在那裏的時葉，……時葉？時葉不是在你家裏的花園鰻嗎？和你一起度過過往一切的，不是那條白色與黑色的細長花園鰻嗎？","備註":""},{"序號":"296","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這裡進行1D100。","備註":""},{"序號":"297","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"1D100 (1D100) ＞ 55","備註":""},{"序號":"298","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"怎麼可能有這種事。","備註":""},{"序號":"299","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"怎麼可能有這種事啊。","備註":""},{"序號":"300","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"怎麼可能有這種事啊！","備註":""},{"序號":"301","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你搖搖頭，把這些想法從腦海中甩去。","備註":""},{"序號":"302","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你不記得和花園鰻有過那些經歷。不如說從物理上來說這是不可能的吧。","備註":""},{"序號":"303","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"──時葉不是花園鰻！","備註":""},{"序號":"304","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你清楚地意識到這個極其正常的事實。同時，你因為曾在一瞬間懷疑過時葉是否為花園鰻而動搖。SANc1/1d2。","備註":""},{"序號":"305","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=67 SANC (1D100<=67) ＞ 21 ＞ 成功","備註":""},{"序號":"306","類型":"system","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"SAN : 67 → 66","備註":""},{"序號":"307","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「你看〜是不是漸漸覺得花園鰻就是長月君，長月君就是花園鰻了？」","備註":""},{"序號":"308","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那個生物一臉自信滿滿。","備註":""},{"序號":"309","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"有什麼毛病啊？的臉看著眼前的魚人。\n「你說這話你自己相信嗎？」毫不猶豫地又往前走了幾步。「我的戀人是在那邊的長月時葉，怎麼可能是花園鰻。」","備註":""},{"序號":"310","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「咦？！為什麼？！」","備註":""},{"序號":"311","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那個生物看起來對於咒文失效的事情相當震驚。","備註":""},{"序號":"312","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「問我為什麼……你要不要看看花園鰻只有這樣？」用手比了短短的尺寸，再拉長到自己的身高。「我有這樣。」\n\n「好歹也用海豚或者白鯨一類的大小吧。」","備註":""},{"序號":"313","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"看你往前走，那些黑袍也刷刷刷地往旁邊閃開了。彷彿很驚恐。","備註":""},{"序號":"314","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"在經過魚人的時候小聲低語著：絕對要跟老爸學怎麼處理更多魚肉料理，然後直直往時葉那裡走去。","備註":""},{"序號":"315","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你連忙幫時葉鬆綁。被釋放的時葉一臉苦澀，在取下塞在嘴裡的布以後，他嘆了口氣，偏開視線。","備註":""},{"序號":"316","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「……抱歉。」","備註":""},{"序號":"317","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「他們沒對你怎樣吧？」查看時葉被綁住的地方，檢查時葉身上有沒有傷口。","備註":""},{"序號":"318","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"搖頭。","備註":""},{"序號":"319","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「哈啊……我擔心死了。」把時葉圈進懷裡，緊緊的抱了一下，感受著屬於自己戀人的體溫、才終於好好放心下來。","備註":""},{"序號":"320","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「……回去啦。」轉頭看旁邊。","備註":""},{"序號":"321","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「不對，那些東西不可能放著不管就好吧？」半瞇起眼，眼神寫滿了要把他們做成生魚片的意念，站起身，往漁人走去，雙手還在胸前，義氣昂然的樣子。\n\n「喂，樓下的監視畫面是你們搞的？」","備註":""},{"序號":"322","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「……魔法竟然這麼簡單就解開了，失敗了……」","備註":""},{"序號":"323","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"那個生物大受打擊似的喃喃低語。","備註":""},{"序號":"324","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"傻眼，「既然失敗了就哪裡回去回哪去。」","備註":""},{"序號":"325","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「走了啦。我想回去洗澡……」走到誠後面揪著衣襬。拉拉。","備註":""},{"序號":"326","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「……」看著身後的時葉，再看了看眼前的魚人，看他們這副模樣，應該也不會再做什麼了吧。\n\n伸手拉起了時葉的手。「走吧，我們回家。」","備註":""},{"序號":"327","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"當你們走出門時，那個生物遺憾地嘆氣低喃。","備註":""},{"序號":"328","類型":"talk","頻道":"main","秘匿對象":"","發言人":"魚男","頭像":"","內容":"「我們會好好回收花園鰻的……」","備註":""},{"序號":"329","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"真是莫名其妙呢。總之你們踏上回家的路。","備註":""},{"序號":"330","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"找到時葉了。你們離開這棟破舊的大樓。","備註":""},{"序號":"331","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"有娛樂到嗎(幹","備註":""},{"序號":"332","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"超好笑","備註":""},{"序號":"333","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"誠會維持一季度的魚肉料理洩憤","備註":""},{"序號":"334","類型":"scene","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"","備註":""},{"序號":"335","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「反正，就是……昨天在網路上看到一個『想知道對方對你的看法嗎？』的奇怪網站，一時好奇就去看看……」","備註":""},{"序號":"336","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「他們就說，只要讓我變成花園鰻？再看看你的反應，就能知道對你來說我有多重要。」","備註":""},{"序號":"337","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「我是覺得莫名其妙，本來想說當作被騙去看看，聽完當然就想走了……結果就這樣了。」","備註":""},{"序號":"338","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「……咦，直接問我就好了不是嗎？」眨了眨眼，原先只是普通的牽手，調整了一下姿勢，變成十指相扣。「很重要啊，你知道吧，你對我來說比全世界都還要重要。」","備註":""},{"序號":"339","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「…………嗯。」","備註":""},{"序號":"340","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"這個嗯是怎樣的語氣我要心理學（？？？？？）","備註":""},{"序號":"341","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"大笑。","備註":""},{"序號":"342","類型":"dice","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"SCCB<=52 (1D100<=52) ＞ 32 ＞ 成功","備註":""},{"序號":"343","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"你覺得時葉好像沒有很同意的樣子……為什麼啊？應該不是懷疑你，但為什麼啊？？？","備註":""},{"序號":"344","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"為什麼啊！","備註":""},{"序號":"345","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"www","備註":""},{"序號":"346","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"明明聽起來像是告白的句子，時葉看起來好像沒有任何反應，撓撓臉頰，輕輕晃著彼此牽好的手。\n\n一直以來都知道時葉對自己的喜歡和愛意，所以這次會因為這樣的奇怪網站被綁去、是因為單純的好奇，還是不安呢？\n\n一邊這麼想著，一邊就這樣子盯著時葉看。","備註":""},{"序號":"347","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"時葉注意到你的視線……然後目光往旁邊轉開了。","備註":""},{"序號":"348","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「反正沒事了，回去吧。」","備註":""},{"序號":"349","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「噢。」拉著時葉的手，走在撲滿地磚的人行道上，突然之間、停下了腳步，拉著時葉的手卻沒有放開。\n\n「時葉，我喜歡你喔。」","備註":""},{"序號":"350","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「……我知道啊。」","備註":""},{"序號":"351","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「…………只要是叫時葉，連花園鰻都可以喔……」碎念。","備註":""},{"序號":"352","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「…………」張口，閉口。\n\n啊，原來剛剛沒什麼反應是因為這個嗎——！！","備註":""},{"序號":"353","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「不是，你聽我說，那個是那些東西搞的咒語啊……！」","備註":""},{"序號":"354","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「只要尺寸對了就什麼都可以了嗎？原來你對海豚或白鯨也可以喔……」隱隱散發了怨念。","備註":""},{"序號":"355","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"被懟的無話可說也無計可施，雖然自己只是覺得相當荒謬才這樣子和魚人說的、但沒想到在時葉聽來是這種意義。\n\n「……不可以。」稍稍施力就把人拉到懷裡來，抱著不放開。「只有我抱著的這個才是長月時葉啊。」","備註":""},{"序號":"356","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"無計可施ｗｗｗ","備註":""},{"序號":"357","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"無可奈何","備註":""},{"序號":"358","類型":"talk","頻道":"main","秘匿對象":"","發言人":"長月 時葉","頭像":"","內容":"「哼。」撇頭。「回去啦。在大街上想幹什麼。」","備註":""},{"序號":"359","類型":"talk","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"「沒有想幹嘛……」埋首蹭了一下才放開，拉著時葉的手加快回程的腳步。","備註":""},{"序號":"360","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"經過莫名其妙的一天，你帶回了你的戀人。回到家後，就像什麼都沒發生過，不管是花園鰻還是水族箱都不存在。","備註":""},{"序號":"361","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"這是當然的。","備註":""},{"序號":"362","類型":"talk","頻道":"main","秘匿對象":"","發言人":"KP","頭像":"","內容":"因為時葉不是花園鰻，就只是時葉。","備註":""},{"序號":"363","類型":"end","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"結局1","備註":""},{"序號":"364","類型":"reward","頻道":"main","秘匿對象":"","發言人":"","頭像":"","內容":"SAN報酬\n劇本通關：2d3\n愛護花園鰻：1d6","備註":""},{"序號":"366","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"愛護花園鰻。","備註":""},{"序號":"367","類型":"dice","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"2D3+1D6 (2D3+1D6) ＞ 5[3,2]+5[5] ＞ 10","備註":""},{"序號":"368","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"變成回SAN本","備註":""},{"序號":"369","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"太讚了吧浣熊最快通關劇本","備註":""},{"序號":"370","類型":"system","頻道":"main","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"SAN : 66 → 74","備註":""},{"序號":"371","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"回好多","備註":""},{"序號":"372","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"忘記可以丟成長（幹","備註":""},{"序號":"373","類型":"talk","頻道":"other","秘匿對象":"","發言人":"KP","頭像":"","內容":"圖書館一次偵查一次","備註":""},{"序號":"374","類型":"dice","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=62 圖書館成長判定 (1D100<=62) ＞ 77 ＞ 失敗","備註":""},{"序號":"375","類型":"dice","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"1D10 圖書館成長 (1D10) ＞ 8","備註":""},{"序號":"376","類型":"dice","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"CCB<=92 偵查成長判定 (1D100<=92) ＞ 2 ＞ 決定性的成功/特殊","備註":""},{"序號":"377","類型":"talk","頻道":"other","秘匿對象":"","發言人":"御子柴 誠","頭像":"","內容":"？","備註":""}];
+let SPK = [{"發言人":"御子柴 誠","顯示名稱":"御子柴 誠","頭像網址":"https://loyaeasuke.github.io/Character/pics/mikoshiba_s.png","代表色":"#b26d47"},{"發言人":"KP","顯示名稱":"KP","頭像網址":"https://loyaeasuke.github.io/Character/pics/KPLoya_s.png","代表色":"#222222"},{"發言人":"長月 時葉","顯示名稱":"長月 時葉","頭像網址":"https://loyaeasuke.github.io/Character/pics/nagatsuki_s.png","代表色":"#757d9c"},{"發言人":"嬌小的女孩","顯示名稱":"嬌小的女孩","頭像網址":"","代表色":"#888888"},{"發言人":"男人的聲音","顯示名稱":"男人的聲音","頭像網址":"","代表色":"#888888"},{"發言人":"魚男","顯示名稱":"魚男","頭像網址":"","代表色":"#888888"}];
+let META = {"眉標":"CALL OF CTHULHU TRPG ／ SESSION LOG","標題":"神貓卓CoC紀錄260.那條花園鰻是KPC","副標題":"KP：洛雅　｜　PL：程暮"};
+let PCS = [{"序":"1","PC":"御子柴 誠","PL":"程暮","職業":"廚師","年齡":"29","性別":"男","立繪":"https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/d7a2c51e241285f41a5256bd556e9b9c115bf10d6f93b4ce3628c17f8c39e046","數值":"HP 12　MP 10　SAN 68／74　DB +1D4\nSTR 12　CON 10　DEX 15　APP 14　POW 10　SIZ 13　INT 13　EDU 18\n幸運 50　知識 90　靈感 65\n年收：900万　財產：4500万","技能":"信用：50　心理學：52　議價：55　聆聽：73　圖書館：62　偵查：92　急救：52　英文：46　博物學：50　生物學：51　電器維修：50　踢擊：45　切肉菜刀：70　製作【料理】：70　克蘇魯神話：27","持有物品":"","備註":"於高中機械科畢業後就一邊就學一邊協助家裡餐館的事業。店裡的電器壞了都是自己修理，省錢。\n跟著父親經營餐館、一邊學習料理，在大學畢業後父親退休，繼承了日式餐館，並且研發出一套年輕人的特色料理。\n\n喜歡特攝電影，餐廳有安排一個大螢幕，不是撥放球賽、就是在撥特攝片。\n因為喜歡特攝片，在學期間曾經學過些許防身術，但因為繼承家業放棄了特攝演員的夢想。\n從特攝片裡得到了快樂和信心，希望自己的料理也能給人帶來這樣的感受，只要有人心情不好，都會免費送上一道小菜。"},{"序":"2","PC":"長月 時葉(KPC)","PL":"洛雅","職業":"兒童圖文作家","年齡":"29","性別":"男","立繪":"https://storage.ccfolia-cdn.net/users/pdRBOaSJr9R2pwEZRPDqXP2OyaB2/files/556dcc92f5de01c41919df205732796479650468f6266ae1b3868cb4bcc3ecc8","數值":"HP 14　MP 10　SAN 52／79　DB 0\nSTR 11　CON 16　DEX 16　APP 12　POW 10　SIZ 12　INT 15　EDU 15\n幸運 50　知識 75　靈感 75\n年收：700万　財產：3500万","技能":"說服：50　心理學：50　聆聽：50　圖書館：70　偵查：64　駕駛汽車：50　英文：46　生物學：30　天文學：30　神秘學：38　電腦使用：36　藝術【插圖】：55　製作【手工藝】：46　克蘇魯神話：22","持有物品":"","備註":"給人的第一印象是性格溫柔、很有耐心。然而時葉的耐心只會用在小孩子身上。若面對的是平輩或者並非尊敬的年長者，則沒有與人長時間交流的耐性，會找各種藉口提早離開現場。沒有多少交心的朋友，但會珍惜關係穩定的交流對象。即使對方是損友……應該也是一樣的吧。\n對御子柴誠毫不客氣，認為這個人一點禮貌也沒有。然而不知道是否習慣了這種常常鬥嘴吵鬧的相處模式，從來沒有真正想把誠拒之門外。即使發生冷戰可能也無法超過兩天，估計不是時葉做手工飾品或擺飾當賠禮送給誠，就是誠跑來給時葉做飯當賠禮吧。（歸根究柢他們應該常常互坑搞到彼此吧）\n原生家庭生活並不美滿。幼時親生父母常常吵架。母親甚至常對時葉說「就是因為你沒用才留不住那個人的心」，當初生下時葉的目的似乎是認為這樣就能獲得父親所有的關注，殊不知父親早已對母親感到厭倦。最後因為母親發現父親外遇，歇斯底里至發狂之際手持菜刀將父親捅死。因為吵架聲引來鄰居關注報警，母親也立即遭到逮捕入獄。後來時葉被送進機構，輾轉遇見現在的養父母，被收養後也隨養父母姓，拋棄本來的姓氏。若問起時葉的舊姓，他會一概回覆「不記得」「不重要」。不會特別隱瞞與現在的父母沒有血緣關係的事實，若被問起為何與雙親長得不像，會乾脆承認是收養關係。\n過去在原生家庭受過的創傷在和養父母一同生活以後受到了良好的照料，長成健康的心理狀態。時葉認為自己是幸運的，因為現在有真正愛著他的家人。會定期和養父母規劃旅遊計劃，主動開車載家人出遊。\n因為感謝曾待過的機構很照顧他的院長與職員們，現在會定期去機構陪小孩子玩，有時也會捐款給機構。\n自目睹母親持刀刺殺父親的那一幕以來，時葉就對長度超過15公分的刀具懷有恐懼。若真有需要使用刀具，水果刀是極限。\n\n目前和御子柴誠同居，未公開交往關係。"}];/*DATA_END*/
+
+/* ── CSV ─────────────────────────────────── */
+function parseCSV(t){
+  t = t.replace(/^\uFEFF/,'');
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<t.length;i++){
+    const c=t[i];
+    if(q){ if(c==='"'){ if(t[i+1]==='"'){cell+='"';i++;} else q=false; } else cell+=c; }
+    else if(c==='"') q=true;
+    else if(c===','){ row.push(cell); cell=''; }
+    else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+    else if(c!=='\r') cell+=c;
+  }
+  if(cell||row.length){ row.push(cell); rows.push(row); }
+  const head=rows.shift().map(h=>h.trim());
+  return rows.filter(r=>r.some(v=>v!=='')).map(r=>Object.fromEntries(head.map((h,i)=>[h,(r[i]??'').trim()])));
+}
+function toCSV(objs, cols){
+  const esc=v=>{v=(v??'')+''; return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  return '\uFEFF'+[cols.join(',')].concat(objs.map(o=>cols.map(c=>esc(o[c])).join(','))).join('\r\n');
+}
+function download(name, text){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([text],{type:'text/csv;charset=utf-8'}));
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+
+/* ── render ──────────────────────────────── */
+const state={f:{main:1,other:1,info:1,secret:1,dice:1},who:'',q:''};
+const spkMap=()=>Object.fromEntries(SPK.map(s=>[s['發言人'],s]));
+const esc=s=>(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+const CN_NUM='零一二三四五六七八九';
+function cnNum(n){
+  n=parseInt(n,10);
+  if(isNaN(n)) return '';
+  if(n<0) return String(n);
+  if(n<=10) return n===10?'十':CN_NUM[n];
+  if(n<20) return '十'+(n%10?CN_NUM[n%10]:'');
+  if(n<100){ const t=Math.floor(n/10), o=n%10; return CN_NUM[t]+'十'+(o?CN_NUM[o]:''); }
+  return String(n);
+}
+function lightenFor(hex,minL){
+  let h=(hex||'').trim().replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return '';
+  let r=parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+  const lum=()=>(0.299*r+0.587*g+0.114*b)/255;
+  let guard=0;
+  while(lum()<minL && guard++<24){ r=Math.round(r+(255-r)*0.18); g=Math.round(g+(255-g)*0.18); b=Math.round(b+(255-b)*0.18); }
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+// 從內容開頭抓出 [ 名字 ]，回傳 [名字, 其餘內容]
+function splitBracketName(text){
+  const m=String(text||'').match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
+  return m ? [m[1].trim(), String(text).slice(m[0].length)] : ['', String(text||'')];
+}
+function roundNo(text){
+  const s=String(text||'');
+  const arrow=s.match(/(-?\d+)\s*(?:→|->|＞|=>)\s*(-?\d+)/);   // 「回合 : 1 → 2」取箭頭後
+  if(arrow) return parseInt(arrow[2],10);
+  const m=s.match(/(-?\d+)/);                                  // 否則取第一個數字
+  return m?parseInt(m[1],10):null;
+}
+function resultClass(w){
+  if(/決定性|大成功|critical/i.test(w)) return 'crit';
+  if(/致命|大失敗|fumble/i.test(w)) return 'fumble';
+  if(/成功|success/i.test(w)) return 'good';
+  if(/失敗|failure/i.test(w)) return 'bad';
+  return '';
+}
+function avatarHTML(s, cls, override){
+  const url = (override && override.trim()) || (s && s['頭像網址']) || '';
+  const nm  = (s && (s['顯示名稱']||s['發言人'])) || '';
+  const col = (s && s['代表色']) || '#888888';
+  if(url) return `<img class="avatar ${cls}" src="${esc(url)}" alt="${esc(nm)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ph ${cls}',style:'background:${col}'}))">`;
+  if(!s) return '';
+  return `<span class="avatar ph ${cls}" style="background:${esc(col)}"></span>`;
+}
+
+const TOC_KEY={scene:'SCENE',pro:'PROLOGUE',epi:'AFTER STORY',rwd:'REWARD'};
+let tocOpen=true, tocWidth=0;   // tocWidth 僅存在本次瀏覽，重新開啟即回預設
+function renderTOC(items){
+  const host=document.getElementById('toc');
+  if(!items || !items.length){ host.innerHTML=''; host.className=''; return; }
+  const rows=items.map(it=>`<a href="#${it.id}" class="k-${it.kind}">
+      <span class="k">${TOC_KEY[it.kind]||''}</span>
+      <span class="t">${esc(it.label)}</span></a>`).join('');
+  host.className = tocOpen ? '' : 'collapsed';
+  if(tocWidth) host.style.setProperty('--tocw', tocWidth+'px'); else host.style.removeProperty('--tocw');
+  host.innerHTML=`<div class="toc-box">
+      <div class="toc-grip" title="拖曳調整寬度"></div>
+      <div class="toc-head"><button class="toc-toggle" title="收起目錄">›</button>目錄<span class="n">${items.length} 項</span></div>
+      <div class="toc-list">${rows}</div>
+    </div>
+    <button class="toc-tab" title="展開目錄">目錄 ‹</button>`;
+
+  host.querySelector('.toc-toggle').onclick=()=>{ tocOpen=false; host.className='collapsed'; };
+  host.querySelector('.toc-tab').onclick=()=>{ tocOpen=true; host.className=''; };
+
+  const grip=host.querySelector('.toc-grip');
+  grip.addEventListener('pointerdown', ev=>{
+    ev.preventDefault();
+    const startX=ev.clientX, startW=host.getBoundingClientRect().width;
+    grip.setPointerCapture(ev.pointerId);
+    document.body.classList.add('tocdrag');
+    const move=e=>{
+      const w=Math.min(460, Math.max(140, startW-(e.clientX-startX)));  // 往左拖變寬
+      tocWidth=Math.round(w);
+      host.style.setProperty('--tocw', tocWidth+'px');
+    };
+    const up=()=>{
+      grip.removeEventListener('pointermove',move);
+      grip.removeEventListener('pointerup',up);
+      document.body.classList.remove('tocdrag');
+    };
+    grip.addEventListener('pointermove',move);
+    grip.addEventListener('pointerup',up);
+  });
+}
+
+function render(){
+  const M=spkMap(), out=[], toc=[]; let shown=0, sceneNo=0, prevSecret='', anchorNo=0;
+  const anchor=(kind,label)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label}); return id; };
+  for(const r of LOG){
+    const type=r['類型']||'talk', ch=(r['頻道']||'main').trim();
+    const isHO = ch!=='secret' && /ho/i.test(ch);   // 非 secret 但名稱含 HO（不分大小寫）
+    const secTarget = isHO ? ch : (r['秘匿對象']||'');  // HO 的秘匿對象＝頻道名
+    const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret'||isHO)?'secret':ch;
+    if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
+        'prologue_start','prologue_end','round','hidden','image',
+        'session_start','session_end','start'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
+    else if(!state.f[kind]) continue;
+    else if(kind==='dice' && (ch==='secret'||isHO) && !state.f.secret) continue;
+    if(state.who && r['發言人']!==state.who && type!=='scene') continue;
+    if(state.q && !(r['內容']||'').includes(state.q) && !(r['發言人']||'').includes(state.q)) continue;
+    shown++;
+
+    if(type==='scene'){
+      sceneNo++;
+      const sid=anchor('scene',`SCENE ${String(sceneNo).padStart(2,'0')}　${r['內容']||''}`.trim());
+      out.push(`<section class="scene" id="${sid}" data-anchor><span class="idx">SCENE ${String(sceneNo).padStart(2,'0')}</span>
+        <div class="bar"><span class="label">${esc(r['內容']||'◆')}</span></div></section>`);
+      continue;
+    }
+    if(type==='battle_start'){
+      out.push(`<section class="battle start"><span class="mk">⚔</span>
+        <span class="txt">${esc(r['內容']||'戰鬥開始')}</span>
+        <span class="en">BATTLE START</span><span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='battle_end'){
+      out.push(`<section class="battle end"><span class="mk">▣</span>
+        <span class="txt">${esc(r['內容']||'戰鬥結束')}</span>
+        <span class="en">BATTLE END</span><span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='epilogue_start'){
+      const eid=anchor('epi', r['內容']||'後日談');
+      out.push(`<section class="epilogue start" id="${eid}" data-anchor><span class="orn">❧</span>
+        <span class="txt">${esc(r['內容']||'後日談')}</span>
+        <span class="en">AFTER STORY</span></section>`);
+      continue;
+    }
+    if(type==='epilogue_end'){
+      out.push(`<section class="epilogue end"><span class="txt">${esc(r['內容']||'後日談　完')}</span>
+        <span class="en">AFTER STORY ／ END</span><span class="orn">❦</span></section>`);
+      continue;
+    }
+    if(type==='prologue_start'){
+      const pid=anchor('pro', r['內容']||'前日談開始');
+      out.push(`<section class="prologue start" id="${pid}" data-anchor><span class="orn">❖</span>
+        <span class="txt">${esc(r['內容']||'前日談開始')}</span>
+        <span class="en">PROLOGUE</span></section>`);
+      continue;
+    }
+    if(type==='prologue_end'){
+      out.push(`<section class="prologue end"><span class="txt">${esc(r['內容']||'前日談結束')}</span>
+        <span class="en">PROLOGUE ／ END</span><span class="orn">❖</span></section>`);
+      continue;
+    }
+    if(type==='round'){
+      const no=roundNo(r['內容']);
+      const label=(no!==null&&!isNaN(no))?`第${cnNum(no)}回合`:(String(r['內容']||'').trim()||'回合');
+      out.push(`<section class="round"><span class="ln"></span>
+        <span class="pill"><span class="t">${esc(label)}</span>
+        ${(no!==null&&!isNaN(no))?`<span class="n">ROUND ${String(no).padStart(2,'0')}</span>`:''}</span>
+        <span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='image'){
+      const src=(r['頭像']||r['內容']||'').trim();   // 圖片網址：優先取「頭像」欄，其次「內容」
+      const cap=(r['頭像']&&r['內容'])?r['內容'].trim():(r['發言人']||'').trim();
+      out.push(`<figure class="figure">
+        ${src?`<img src="${esc(src)}" alt="${esc(cap)}" data-full="${esc(src)}" data-cap="${esc(cap)}"
+            onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'ph',textContent:'圖片無法載入：'+this.getAttribute('src')}))">`
+          :`<div class="ph">在「頭像」或「內容」欄填圖片網址</div>`}
+        ${cap?`<figcaption>${esc(cap)}</figcaption>`:''}</figure>`);
+      continue;
+    }
+    if(type==='hidden'){
+      let hn=r['發言人']||'', hb=r['內容']||'';
+      if(!hn){ const sp=splitBracketName(hb); hn=sp[0]; hb=sp[1]; }
+      const hc=lightenFor((M[hn]&&M[hn]['代表色'])||'',0.62);
+      out.push(`<div class="hidden-info"><span class="mk">HIDDEN</span>
+        ${hn?`<span class="lb" style="${hc?`color:${esc(hc)}`:''}">${esc((M[hn]&&M[hn]['顯示名稱'])||hn)}</span>`:''}
+        <span class="tx">${esc(hb)}</span></div>`);
+      continue;
+    }
+    if(type==='system'){
+      let nm=r['發言人']||'', body=r['內容']||'';
+      if(!nm){ const sp=splitBracketName(body); nm=sp[0]; body=sp[1]; }
+      const sc=(M[nm]&&M[nm]['代表色'])||'';
+      out.push(`<div class="sys">
+        ${nm?`<span class="lb" style="${sc?`color:${esc(sc)}`:''}">${esc((M[nm]&&M[nm]['顯示名稱'])||nm)}</span>`:''}
+        <span class="tx">${esc(body)}</span></div>`);
+      continue;
+    }
+    if(type==='session_start' || type==='start'){
+      out.push(`<section class="sessionmark start"><div class="frame">
+        <span class="glyph">▽　▽　▽</span>
+        <span class="word">SESSION START</span>
+        <span class="label">${esc(r['內容']||'團務開始')}</span></div></section>`);
+      continue;
+    }
+    if(type==='end' || type==='session_end'){
+      out.push(`<section class="sessionmark end"><div class="frame">
+        <span class="label">${esc(r['內容']||'團務結束')}</span>
+        <span class="word">SESSION END</span>
+        <span class="glyph">△　△　△</span></div></section>`);
+      continue;
+    }
+    if(type==='reward'){
+      const rid=anchor('rwd', r['發言人']||'通關報酬');
+      out.push(`<section class="reward" id="${rid}" data-anchor><div class="head">
+        <span class="badge">REWARD</span>
+        <span class="ttl">${esc(r['發言人']||'通關報酬')}</span></div>
+        <div class="text">${esc(r['內容'])}</div></section>`);
+      continue;
+    }
+    if(type==='note'){
+      out.push(`<section class="note"><div class="cap">
+        <span class="mk">COMMENT</span>
+        <span class="who">${esc(r['發言人']||'心得')}</span></div>
+        <div class="text">${esc(r['內容'])}</div></section>`);
+      continue;
+    }
+
+    const s=M[r['發言人']];
+    if(type==='dice'){
+      const sec = ch==='secret'||isHO;
+      const parts=(r['內容']||'').split(/＞|=>/).map(x=>x.trim());
+      const last=parts.length>1?parts.pop():'';
+      out.push(`<div class="dice ${sec?'sec':''}">
+        ${sec?`<span class="tag">秘匿</span>`:''}
+        ${r['發言人']?`<span class="who">${esc((s&&s['顯示名稱'])||r['發言人'])}</span>`:''}
+        <span class="expr">${esc(parts.join(' ＞ '))}</span>
+        ${sec&&secTarget?`<span class="whisper">${esc(secTarget)}</span>`:''}
+        ${last?`<span class="res ${resultClass(last)}">${esc(last)}</span>`:''}</div>`);
+      continue;
+    }
+
+    const pair = (secTarget||'秘匿').replace(/^(秘匿|秘密)/,'');
+    const runStart = kind==='secret' && prevSecret !== pair;
+    prevSecret = kind==='secret' ? pair : '';
+    const nameless=!r['發言人'];
+    const color=(s&&s['代表色'])||'';
+    out.push(`<div class="line ${kind} ${nameless?'nameless':''}">
+      ${runStart?`<span class="seal">秘匿</span>`:''}
+      ${avatarHTML(s,'',r['頭像'])}
+      <div class="body">
+        ${r['發言人']?`<div class="name" style="${color?`color:${esc(color)}`:''}">${esc((s&&s['顯示名稱'])||r['發言人'])}
+          ${kind==='secret'&&secTarget?`<span class="target">→ ${esc(secTarget)}</span>`:''}</div>`:''}
+        <div class="text">${esc(r['內容'])}</div>
+      </div></div>`);
+  }
+  document.getElementById('log').innerHTML=out.join('');
+  renderTOC(toc);
+  document.getElementById('count').textContent=`${shown} / ${LOG.length} 行`;
+}
+
+const TITLE_ROW = r => (r['類型']||'')==='title';
+
+const PC_COLS = ['序','PC','PL','職業','年齡','性別','立繪','數值','技能','持有物品','備註'];
+function statPairs(line){
+  line = line.trim(); if(!line) return [];
+  if(line.indexOf('：')>-1 || line.indexOf(':')>-1){
+    return line.split(/[\s\u3000]+/).filter(Boolean).map(p=>{
+      const m=p.split(/[：:]/); return [m[0], m.slice(1).join(':')];
+    });
+  }
+  const tk=line.split(/[\s\u3000]+/).filter(Boolean), out=[];
+  for(let i=0;i<tk.length;i+=2) out.push([tk[i], tk[i+1]||'']);
+  return out;
+}
+function chipRow(line, cls){
+  const ch = statPairs(line).map(([k,v])=>
+    `<span class="pc-chip ${cls||''}"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></span>`).join('');
+  return ch ? `<div class="pc-chips">${ch}</div>` : '';
+}
+function pcPortrait(p){
+  if(p['立繪']) return `<img class="pc-portrait" src="${esc(p['立繪'])}" alt="${esc(p['PC']||'')}"
+    data-full="${esc(p['立繪'])}" data-cap="${esc(p['PC']||'')}"
+    onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪\n(圖片無法載入)';">`;
+  return `<div class="pc-portrait ph">立繪<br>（在 pcs.csv 的「立繪」欄填圖片網址）</div>`;
+}
+function pcThumb(p){
+  if(p['立繪']) return `<img class="thumb" src="${esc(p['立繪'])}" alt=""
+    onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='${esc((p['PC']||'?').slice(0,1))}';">`;
+  return `<span class="thumb ph">${esc((p['PC']||'?').slice(0,1))}</span>`;
+}
+function hexRGBA(hex,a){
+  let h=(hex||'').trim().replace('#','');
+  if(h.length===3) h=h.split('').map(c=>c+c).join('');
+  if(!/^[0-9a-fA-F]{6}$/.test(h)) return '';
+  const n=parseInt(h,16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+function renderPCs(){
+  const host=document.getElementById('pcs');
+  const SM=spkMap();
+  const list=(PCS||[]).filter(p=>p && (p['PC']||p['PL']||p['數值']||p['技能']||p['立繪']));
+  if(!list.length){ host.innerHTML=''; return; }
+  const cards=list.map(p=>{
+    const sub=p['PL']?'PL '+p['PL']:'';
+    const stat=(p['數值']||'').split('\n').map(l=>chipRow(l,'')).filter(Boolean).join('');
+    const skill=(p['技能']||'').split('\n').map(l=>chipRow(l,'skill')).filter(Boolean).join('');
+    const items=(p['持有物品']||'').trim();
+    const note=(p['備註']||'').trim();
+    const col=(SM[p['PC']]&&SM[p['PC']]['代表色'])||'';
+    const bg=hexRGBA(col,0.09), ln=hexRGBA(col,0.38);
+    const cstyle=col?`style="--c:${esc(col)};${bg?`--cbg:${bg};`:''}${ln?`--cline:${ln};`:''}"`:'';
+    return `<details class="pc-card" open ${cstyle}>
+      <summary>
+        <span class="id"><span class="nm">${esc(p['PC']||'（未命名）')}</span>
+          ${sub?`<span class="sub">${esc(sub)}</span>`:''}</span>
+        <span class="tri">▶</span></summary>
+      <div class="pc-body">
+        ${pcPortrait(p)}
+        <div class="pc-detail">
+          <div class="pc-meta">
+            ${p['職業']?`<span><b>職業</b> ${esc(p['職業'])}</span>`:''}
+            ${p['年齡']?`<span><b>年齡</b> ${esc(p['年齡'])}</span>`:''}
+            ${p['性別']?`<span><b>性別</b> ${esc(p['性別'])}</span>`:''}
+          </div>
+          ${stat?`<div class="pc-block"><div class="h">STATUS</div>${stat}</div>`:''}
+          ${skill?`<div class="pc-block"><div class="h">SKILLS</div>${skill}</div>`:''}
+          ${items?`<div class="pc-block"><div class="h">ITEMS</div><div class="pc-items">${esc(items)}</div></div>`:''}
+          ${note?`<div class="pc-block"><div class="h">NOTE</div><div class="pc-items">${esc(note)}</div></div>`:''}
+        </div>
+      </div></details>`;
+  }).join('');
+  host.innerHTML = `<details class="pc-section" open>
+    <summary><span class="tri">▶</span>PC資訊<span class="n">${list.length} 名探索者</span></summary>
+    <div class="pc-grid">${cards}</div>
+  </details>`;
+}
+
+let _fitRAF=0;
+function fitTitle(){
+  const el=document.getElementById('title'); if(!el) return;
+  const MAX=46, MIN=18;
+  el.style.fontSize=MAX+'px';
+  const avail=el.clientWidth;                    // 版面可用寬度
+  if(!avail){ requestAnimationFrame(fitTitle); return; }  // 版面尚未就緒時重試
+  if(el.scrollWidth>avail){
+    let size=Math.max(MIN, Math.floor(MAX*avail/el.scrollWidth));
+    el.style.fontSize=size+'px';
+    let guard=0;
+    while(el.scrollWidth>avail && size>MIN && guard++<60){ size-=1; el.style.fontSize=size+'px'; }
+  }
+}
+window.addEventListener('resize',()=>{ cancelAnimationFrame(_fitRAF); _fitRAF=requestAnimationFrame(fitTitle); });
+
+function applyMeta(forExport){
+  document.getElementById('eyebrow').textContent = META['眉標']||'';
+  document.getElementById('title').textContent   = META['標題']||'';
+  document.getElementById('subtitle').textContent= META['副標題']||'';
+  document.title = META['標題'] || '神貓卓團錄編輯器1.0版';
+  fitTitle();
+  document.getElementById('meta').textContent =
+    (EDITABLE && !forExport) ? `共 ${LOG.filter(r=>!TITLE_ROW(r)).length} 行 ／ ${SPK.length} 位發言人` : '';
+}
+function pullTitleRows(){                       // CSV 裡的 title 列 → 標題設定
+  const t = LOG.find(TITLE_ROW);
+  if(t){
+    META['標題']   = t['內容'] || META['標題'];
+    META['副標題'] = t['備註'] || '';
+    META['眉標']   = t['秘匿對象'] || META['眉標'];
+  }
+  LOG = LOG.filter(r=>!TITLE_ROW(r));
+}
+function logForCSV(){                           // 匯出時把標題寫回第一列
+  return [{'序號':0,'類型':'title','頻道':'','秘匿對象':META['眉標']||'','發言人':'',
+           '頭像':'','內容':META['標題']||'','備註':META['副標題']||''}].concat(LOG);
+}
+function fillSpeakers(){
+  const sel=document.getElementById('who'), cur=sel.value;
+  sel.innerHTML='<option value="">全部發言人</option>'+
+    SPK.map(s=>`<option value="${esc(s['發言人'])}">${esc(s['顯示名稱']||s['發言人'])}</option>`).join('');
+  sel.value=cur;
+  applyMeta();
+}
+
+/* ── controls ────────────────────────────── */
+document.querySelectorAll('.chip[data-f]').forEach(b=>b.onclick=()=>{
+  const k=b.dataset.f, v=b.getAttribute('aria-pressed')!=='true';
+  b.setAttribute('aria-pressed',v); state.f[k]=v?1:0; render();
+});
+document.getElementById('who').onchange=e=>{state.who=e.target.value;render();};
+document.getElementById('q').oninput=e=>{state.q=e.target.value.trim();render();};
+const EDITABLE = !!document.getElementById('expHtml');
+if(EDITABLE){
+/* ── 原始 ccfolia LOG.html → CSV 資料 ─────── */
+function convertLog(htmlText){
+  const doc = new DOMParser().parseFromString(htmlText,'text/html');
+  const grab = el => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = el.innerHTML.replace(/<br\s*\/?>/gi,'\n');
+    return (tmp.textContent||'').replace(/\u00a0/g,' ').trim();
+  };
+  const DICE = /(CCB?<?=|choice\[|\d+[dDbB]\d+|1D100)/;
+  const SEP  = /^[\s\u3000─—–\-=＝_]*$/;
+  const rows = [], colors = {};
+
+  [...doc.querySelectorAll('p')].forEach((p,i)=>{
+    const spans = [...p.querySelectorAll('span')];
+    if(!spans.length) return;
+    const cm = /color\s*:\s*([^;"']+)/i.exec(p.getAttribute('style')||'');
+    let color = cm ? cm[1].trim() : ((p.style && p.style.color) || '#888888');
+    const rgb = /^rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)/i.exec(color);
+    if(rgb) color = '#'+[1,2,3].map(i=>(+rgb[i]).toString(16).padStart(2,'0')).join('');
+    if(/^#[0-9a-f]{3}$/i.test(color)) color = '#'+color.slice(1).split('').map(c=>c+c).join('');
+    color = color.toLowerCase();
+    const tag  = spans[0] ? grab(spans[0]) : '';
+    const name = spans[1] ? grab(spans[1]) : '';
+    const text = spans[2] ? grab(spans[2]) : (spans[1] ? '' : grab(spans[0]));
+    if(!(tag||name||text)) return;
+
+    const inner = tag.replace(/^\[|\]$/g,'');
+    let channel='other', target='';
+    if(/^(秘匿|秘密)/.test(inner)){ channel='secret'; target=inner; }
+    else if(['main','other','info'].includes(inner)){ channel=inner; }
+    else if(/ho/i.test(inner)){ channel=inner; }   // 標籤含 HO → 直接當成 HO 頻道名
+    else if(inner){ target=inner; }
+
+    const flat = text.replace(/\n/g,'');
+    let type='talk', content=text, sysName='';
+    if(name==='system'){
+      type=/回合/.test(text) ? 'round' : 'system';
+      const m=text.match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
+      if(m){ sysName=m[1].trim(); content=text.slice(m[0].length); }
+    }
+    else if(SEP.test(flat) || (flat.split('─').length-1)>=4){
+      type='scene';
+      content = flat.replace(/[\s\u3000─—–\-]+/g,' ').trim();
+    }
+    else if(DICE.test(text) && (text.includes('＞')||text.includes('>'))){ type='dice'; }
+    else if(channel==='info'){ type='info'; }
+
+    const cname = name==='system' ? sysName : name;
+    if(cname){ (colors[cname]=colors[cname]||{})[color]=(colors[cname][color]||0)+1; }
+    rows.push({'序號':i+1,'類型':type,'頻道':channel,'秘匿對象':target,
+               '發言人':name==='system'?sysName:name,'頭像':'','內容':content,'備註':''});
+  });
+
+  const prev = Object.fromEntries(SPK.map(s=>[s['發言人'],s]));   // 保留既有頭像設定
+  const spk = Object.keys(colors).map(n=>({
+    '發言人':n,
+    '顯示名稱':(prev[n]&&prev[n]['顯示名稱'])||n,
+    '頭像網址':(prev[n]&&prev[n]['頭像網址'])||'',
+    '代表色':Object.entries(colors[n]).sort((a,b)=>b[1]-a[1])[0][0]
+  }));
+  return {rows, spk};
+}
+
+document.getElementById('fHtml').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    const {rows,spk}=convertLog(rd.result);
+    if(!rows.length){ alert('這個檔案裡沒有找到對話行。請確認是 ccfolia 匯出的 LOG.html。'); return; }
+    LOG=rows; SPK=spk; applyMeta(); fillSpeakers(); render(); renderPCs();
+    download('log.csv', toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
+    download('speakers.csv', toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
+  };
+  rd.readAsText(f,'utf-8');
+  e.target.value='';
+};
+
+document.getElementById('fLog').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{LOG=parseCSV(rd.result);pullTitleRows();fillSpeakers();render();};rd.readAsText(f,'utf-8');};
+document.getElementById('fSpk').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{SPK=parseCSV(rd.result);fillSpeakers();render();};rd.readAsText(f,'utf-8');};
+document.getElementById('fPcs').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{PCS=parseCSV(rd.result);renderPCs();};rd.readAsText(f,'utf-8');};
+document.getElementById('expLog').onclick=()=>download('log.csv',toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
+document.getElementById('expSpk').onclick=()=>download('speakers.csv',toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
+document.getElementById('expPcs').onclick=()=>download('pcs.csv',toCSV(PCS,PC_COLS));
+
+document.getElementById('expHtml').onclick=()=>{
+  const logEl=document.getElementById('log'), edEl=document.getElementById('editor'),
+        whoEl=document.getElementById('who'), qEl=document.getElementById('q'),
+        chips=[...document.querySelectorAll('.chip[data-f]')];
+  const keepLog=logEl.innerHTML, keepEd=edEl.innerHTML, keepWho=whoEl.value, keepQ=qEl.value,
+        keepChips=chips.map(c=>c.getAttribute('aria-pressed'));
+  // 匯出乾淨版本：清掉畫面上的暫存狀態，只留資料
+  const heads=['eyebrow','title','subtitle'].map(id=>document.getElementById(id));
+  logEl.innerHTML=''; edEl.innerHTML=''; whoEl.selectedIndex=0; qEl.setAttribute('value','');
+  chips.forEach(c=>c.setAttribute('aria-pressed','true'));
+  heads.forEach(e=>{e.removeAttribute('contenteditable');e.removeAttribute('data-ph');});
+  applyMeta(true);
+  let html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  logEl.innerHTML=keepLog; edEl.innerHTML=keepEd; whoEl.value=keepWho;
+  qEl.setAttribute('value',keepQ); chips.forEach((c,i)=>c.setAttribute('aria-pressed',keepChips[i]));
+  heads.forEach((e,i)=>{e.setAttribute('contenteditable','plaintext-only');
+    e.setAttribute('data-ph',['CALL OF CTHULHU TRPG','（標題）','（副標題，可留空）'][i]);});
+  applyMeta();
+
+  const a=html.indexOf('/*DATA_START*/'), b=html.indexOf('/*DATA_END*/');
+  if(a<0||b<0){ alert('匯出失敗：找不到資料區塊，請改用原始檔重新載入 CSV。'); return; }
+  const j=o=>JSON.stringify(o).replace(/<\//g,'<\\/');
+  const data='/*DATA_START*/let LOG = '+j(LOG)+';\nlet SPK = '+j(SPK)+';\nlet META = '+j(META)+';\nlet PCS = '+j(PCS)+';';
+  html = html.slice(0,a) + data + html.slice(b);
+  // 匯出版為純閱讀：移除所有編輯用介面
+  const M1='<!'+'--EDIT_START-->', M2='<!'+'--EDIT_END-->';
+  html = html.replace(new RegExp(M1+'[\\s\\S]*?'+M2,'g'),'');
+
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  const dateStr=`${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}`;
+  // 標題文字 + 今天日期；標題留空時退回 log
+  const rawTitle=(META['標題']||'').trim();
+  const safeTitle=rawTitle.replace(/[\\/:*?"<>|]/g,'').replace(/\s+/g,'_');
+  const name=(safeTitle?safeTitle+'_':'log_')+dateStr+'.html';
+  const el=document.createElement('a');
+  el.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+  el.download=name; el.click(); URL.revokeObjectURL(el.href);
+};
+
+[['eyebrow','眉標','CALL OF CTHULHU TRPG'],['title','標題','（標題）'],['subtitle','副標題','（副標題，可留空）']]
+  .forEach(([id,key,ph])=>{
+    const el=document.getElementById(id);
+    el.setAttribute('contenteditable','plaintext-only');
+    el.setAttribute('data-ph',ph);
+    el.addEventListener('input',()=>{ META[key]=el.textContent.trim(); document.title=META['標題']||'神貓卓團錄編輯器1.0版'; if(id==='title') fitTitle(); });
+    el.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();el.blur();} });
+  });
+
+const dlg=document.getElementById('dlg');
+document.getElementById('btnAvatar').onclick=()=>{
+  document.getElementById('editor').innerHTML=SPK.map((s,i)=>`<div class="erow">
+    ${avatarHTML(s,'')}
+    <input data-i="${i}" data-k="顯示名稱" value="${esc(s['顯示名稱']||s['發言人'])}" />
+    <input class="url" data-i="${i}" data-k="頭像網址" placeholder="貼上圖片網址" value="${esc(s['頭像網址'])}" />
+  </div>`).join('');
+  dlg.showModal();
+};
+document.getElementById('dlgClose').onclick=()=>dlg.close();
+document.getElementById('dlgSave').onclick=()=>{
+  document.querySelectorAll('#editor input').forEach(i=>{SPK[+i.dataset.i][i.dataset.k]=i.value.trim();});
+  dlg.close(); fillSpeakers(); render();
+};
+} // /EDITABLE
+
+(function(){
+  const lb=document.getElementById('lightbox'), lbi=document.getElementById('lbimg'), lbc=document.getElementById('lbcap');
+  document.addEventListener('click',e=>{
+    const img=e.target.closest('.figure img, img.pc-portrait'); if(!img||!img.dataset.full) return;
+    lbi.src=img.dataset.full; lbi.alt=img.dataset.cap||''; lbc.textContent=img.dataset.cap||'';
+    lb.classList.add('on');
+  });
+  const close=()=>{ lb.classList.remove('on'); lbi.removeAttribute('src'); };
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+})();
+
+fillSpeakers(); render(); renderPCs();
+</script>
+
+
+</body></html>
