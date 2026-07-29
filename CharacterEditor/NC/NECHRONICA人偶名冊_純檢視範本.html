@@ -13,13 +13,15 @@
   --c:#93799f;            /* 角色代表色，會被 JS 覆寫 */
   --c-rgb:147,121,159;
   --c-text:#7a6086;
+  --c-soft:#eee9f1;       /* 代表色淺色版（透明背景用），會被 JS 覆寫 */
   --sans:"Noto Sans TC","Hiragino Sans","Microsoft JhengHei",system-ui,sans-serif;
   --serif:"Noto Serif JP","Noto Serif TC","Songti TC",serif;
   --util:"Oswald","Noto Sans TC",sans-serif;
   --sidebar-w:270px;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
+html{height:100%}
+body{min-height:100vh}
 body{margin:0;background:var(--paper);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 button{font-family:inherit;color:inherit}
 img{display:block}
@@ -74,7 +76,7 @@ body.view #app{min-height:100vh}
 #list::-webkit-scrollbar{width:8px}
 #list::-webkit-scrollbar-thumb{background:#342f42;border-radius:4px}
 .grp{padding:12px 18px 5px;font-family:var(--util);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6f687f;display:flex;align-items:center;gap:8px}
-.grp .n{background:var(--ink-soft);border-radius:8px;padding:1px 7px;font-size:9.5px;color:#8b839a}
+.grp .n{background:var(--ink-soft);border-radius:8px;padding:1px 7px;font-size:10px;color:#8b839a}
 .item{
   width:100%;text-align:left;background:none;border:0;cursor:pointer;color:#c2bcd0;
   padding:8px 18px 8px 15px;border-left:3px solid transparent;line-height:1.4;transition:.12s;
@@ -102,7 +104,7 @@ body.view #app{min-height:100vh}
 .gp-cat::after{content:"";flex:1;height:1px;background:var(--hair)}
 .gp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:20px 18px;margin-bottom:40px}
 .gp-card{display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:0;cursor:pointer;padding:0}
-.gp-card .pic{width:100%;aspect-ratio:1;border-radius:3px;overflow:hidden;background:var(--card);border:1px solid var(--hair);box-shadow:0 1px 2px rgba(20,18,26,.05);transition:.16s;position:relative}
+.gp-card .pic{width:100%;aspect-ratio:1;border-radius:3px;overflow:hidden;background:var(--c-soft);border:1px solid var(--hair);box-shadow:0 1px 2px rgba(20,18,26,.05);transition:.16s;position:relative}
 .gp-card:hover .pic{transform:translateY(-3px);box-shadow:0 8px 20px rgba(20,18,26,.14);border-color:var(--c)}
 .gp-card .pic img{width:100%;height:100%;object-fit:cover;object-position:top;image-rendering:auto}
 .gp-card .fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:38px;color:#fff;background:var(--c)}
@@ -119,7 +121,40 @@ body.view #app{min-height:100vh}
 .sheet-top .player b{font-family:var(--serif);font-weight:700;color:var(--text);font-size:14px;margin-left:6px}
 .sheet-rule{height:2px;background:var(--c);margin:10px 0 22px;opacity:.85}
 
-.grid2{display:grid;grid-template-columns:minmax(320px,400px) 1fr;gap:26px;align-items:start}
+.grid2{display:grid;grid-template-columns:minmax(300px,360px) 1fr;gap:20px;align-items:start}
+
+/* 詳情頁上排：人偶設計圖 | 基本資料+死後經歷 | 外貌與個性 */
+.det-top{display:grid;grid-template-columns:minmax(300px,360px) minmax(230px,1fr) minmax(230px,1.05fr);gap:20px;align-items:start;margin-bottom:18px}
+.det-top .mid-col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.det-top .card{margin-bottom:0}
+/* 詳情頁中排：強化值 | 初期位置 | Karma（欄寬與上排、col-l 對齊） */
+.det-mid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;margin-bottom:18px}
+.det-mid.det-mid3{grid-template-columns:minmax(300px,360px) minmax(230px,1fr) minmax(230px,1.05fr)}
+.det-mid .card{margin-bottom:0}
+/* 初期位置放大顯眼 */
+.zone-body{display:flex;flex-direction:column;justify-content:center;gap:9px;height:100%}
+.zone-opt{display:flex;align-items:center;justify-content:flex-start;gap:10px;padding:9px 14px;border:1px solid var(--hair);border-radius:6px;background:var(--hair-soft)}
+.zone-opt .zn{font-family:var(--serif);font-weight:700;font-size:18px;color:var(--text-dim);letter-spacing:.08em}
+.zone-opt.on{border-color:var(--c);background:rgba(var(--c-rgb),.12);box-shadow:0 2px 10px rgba(var(--c-rgb),.18)}
+.zone-opt.on .zn{color:var(--c-text);font-size:26px}
+.zone-opt .mk{font-family:var(--util);font-size:11px;letter-spacing:.14em;color:#fff;background:var(--c);border-radius:10px;padding:2px 9px;white-space:nowrap}
+.zone-none{font-size:12px;color:var(--text-dim);text-align:center}
+.det-rest{margin-top:0}
+/* 固定高度卡（同排對齊）＋內容過長可捲動 */
+.card.h-fixed{display:flex;flex-direction:column}
+.card.h-fixed > h3{flex:none}
+.card.h-fixed > .body{flex:1;min-height:0}
+.card.h-fixed > .body.scroll-body{overflow:auto}
+.card.h-fixed .portrait{flex:1;min-height:0;max-height:none}
+.scroll-body{overflow:auto}
+@media(max-width:960px){
+  .det-top{grid-template-columns:1fr 1fr}
+  .det-top .persona-col{grid-column:1/-1}
+}
+@media(max-width:720px){
+  .det-top,.det-mid,.det-mid.det-mid3{grid-template-columns:1fr}
+  .card.h-fixed{height:auto!important}
+}
 
 .card{background:var(--card);border:1px solid var(--hair);border-radius:4px;padding:0;margin-bottom:18px;overflow:hidden}
 .card > h3{
@@ -131,25 +166,39 @@ body.view #app{min-height:100vh}
 .card > h3 .badge{margin-left:auto;font-family:var(--util);font-weight:600;font-size:12px;letter-spacing:.04em;background:var(--c);color:#fff;padding:2px 10px;border-radius:10px}
 .card .body{padding:13px 14px}
 
-/* 人偶設計圖：維持原圖比例、置中、不放大超過原尺寸 */
-.portrait{width:100%;background:#0c0a11;position:relative;min-height:180px;max-height:560px;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px}
-.portrait img{width:auto;height:auto;max-width:100%;max-height:548px;object-fit:contain;cursor:zoom-in}
+/* 人偶設計圖：維持原圖比例、置中、不放大超過原尺寸；透明背景以代表色淺色呈現 */
+.portrait{width:100%;background:var(--c-soft);position:relative;min-height:180px;max-height:560px;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:6px}
+.portrait img{width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in}
+.portrait .pf-frame{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.portrait .pf-img{display:none}
+.portrait .pf-img.on{display:block}
+.portrait .pf-img.fb{width:100%;min-height:220px;flex:1;align-items:center;justify-content:center;font-family:var(--serif);font-size:60px;color:#fff;background:linear-gradient(160deg,var(--c),#1a1720)}
+.portrait .pf-img.fb.on{display:flex}
+.pf-nav{position:absolute;top:50%;transform:translateY(-50%);width:32px;height:44px;border:none;background:rgba(20,18,26,.42);color:#fff;font-size:24px;line-height:1;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;transition:.14s;z-index:2}
+.pf-nav:hover{background:var(--c)}
+.pf-prev{left:8px}
+.pf-next{right:8px}
+.pf-count{font-family:var(--util);font-size:11px;color:var(--text-dim);letter-spacing:.05em;margin-left:6px}
 .portrait .fb{width:100%;min-height:220px;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:60px;color:#fff;background:linear-gradient(160deg,var(--c),#1a1720)}
 .persona{white-space:pre-line;font-size:13px;line-height:1.9;color:var(--text);text-align:center}
 
 /* 資料列 */
 .rows{display:grid;grid-template-columns:auto 1fr;gap:0}
 .rows dt{font-family:var(--util);font-size:11px;letter-spacing:.08em;color:var(--text-mid);padding:6px 12px 6px 0;border-bottom:1px solid var(--hair-soft);white-space:nowrap}
-.rows dd{margin:0;font-size:13px;padding:6px 0;border-bottom:1px solid var(--hair-soft);text-align:right;font-weight:500}
+.rows dd{margin:0;font-size:13px;padding:6px 0 6px 14px;border-bottom:1px solid var(--hair-soft);text-align:left;font-weight:500}
 .rows dd .en{font-family:var(--util);font-size:11px;color:var(--text-dim);letter-spacing:.06em;margin-left:5px}
 .rows dt:last-of-type,.rows dd:last-of-type{border-bottom:0}
 
 /* 強化 / 行動值 */
 .stat-row{display:flex;gap:10px;text-align:center}
 .stat-row .box{flex:1;background:var(--hair-soft);border-radius:3px;padding:8px 4px}
-.stat-row .box .k{font-family:var(--util);font-size:10px;letter-spacing:.1em;color:var(--text-mid);text-transform:uppercase}
+.stat-row .box .k{font-family:var(--util);font-size:11px;letter-spacing:.1em;color:var(--text-mid);text-transform:uppercase}
 .stat-row .box .v{font-family:var(--util);font-weight:600;font-size:22px;color:var(--text);line-height:1.1}
+.stat-row .box[data-tip]{cursor:help}
+.stat-row .box.has-plus .v{position:relative}
 .stat-row .box .plus{font-size:12px;color:var(--c-text);font-weight:500}
+.stat-row .box.sel{outline:1px solid rgba(var(--c-rgb),.45);outline-offset:-1px}
+.stat-row .box .sel-dot{color:var(--c-text);font-size:11px}
 .act{display:flex;align-items:center;justify-content:center;gap:10px;font-family:var(--util);padding:4px 0}
 .act-label{text-align:center;font-family:var(--util);font-size:11px;letter-spacing:.1em;color:var(--text-mid);margin-top:8px}
 .act-label .hintline{font-size:10px;color:var(--text-dim);letter-spacing:.04em}
@@ -167,28 +216,50 @@ body.view #app{min-height:100vh}
 .chip{font-size:12px;padding:4px 10px;border:1px solid var(--hair);border-radius:12px;background:var(--hair-soft)}
 .chip.on{border-color:var(--c);background:rgba(var(--c-rgb),.1);color:var(--c-text);font-weight:500}
 .klist{list-style:none;margin:0;padding:0;font-size:13px}
-.klist li{padding:5px 0 5px 22px;position:relative;border-bottom:1px solid var(--hair-soft);line-height:1.5}
+.klist li{padding:5px 0;border-bottom:1px solid var(--hair-soft);line-height:1.5}
 .klist li:last-child{border-bottom:0}
-.klist li::before{content:"✓";position:absolute;left:0;top:5px;color:var(--c);font-size:12px;font-weight:700}
+.klist label{display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+.klist .karma-cb{margin:3px 0 0;width:15px;height:15px;flex:none;accent-color:var(--c);cursor:pointer}
+.klist input:checked + span{color:var(--text-dim);text-decoration:line-through;text-decoration-color:rgba(var(--c-rgb),.5)}
 
 /* 記憶碎片 */
 .mem{border-bottom:1px solid var(--hair-soft);padding:9px 0}
 .mem:last-child{border-bottom:0}
 .mem .h{display:flex;align-items:baseline;gap:9px;margin-bottom:3px}
-.mem .no{font-family:var(--util);font-weight:600;font-size:12px;color:#fff;background:var(--c);border-radius:3px;padding:1px 7px;flex:none}
+.mem .no{font-family:var(--util);font-weight:600;font-size:13px;color:#fff;background:var(--c);border-radius:3px;padding:1px 7px;flex:none}
 .mem .t{font-family:var(--serif);font-weight:700;font-size:14px}
-.mem .c{font-size:12px;line-height:1.75;color:var(--text-mid)}
+.mem .c{font-size:13px;line-height:1.75;color:var(--text-mid)}
 
 /* 依戀 */
 .att{border-bottom:1px solid var(--hair-soft);padding:9px 0}
 .att:last-child{border-bottom:0}
 .att .h{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
 .att .obj{font-family:var(--serif);font-weight:700;font-size:14px}
-.att .kind{font-size:11px;color:var(--c-text);border:1px solid var(--c);border-radius:10px;padding:1px 8px}
+.att .kind{font-size:13px;color:var(--c-text);border:1px solid var(--c);border-radius:10px;padding:1px 8px}
 .att .mad{display:flex;gap:3px;margin-left:auto}
-.att .dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--c)}
+.att .dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--c)}
 .att .dot.f{background:var(--c)}
-.att .c{font-size:12px;line-height:1.7;color:var(--text-mid)}
+.att .dot[data-att]{cursor:pointer;transition:transform .1s}
+.att .dot[data-att]:hover{transform:scale(1.25)}
+.att .c{font-size:13px;line-height:1.7;color:var(--text-mid)}
+/* 依戀發狂顯示 */
+.att.maddened{background:rgba(192,57,43,.06);border:1px solid rgba(192,57,43,.32);border-radius:6px;padding:9px 11px;margin:6px 0}
+.att.maddened .obj{color:#b23227}
+.att.maddened .kind{color:#c0392b;border-color:#e0938b}
+.att.maddened .dot{border-color:#c0392b}
+.att.maddened .dot.f{background:#c0392b}
+.mad-state{margin-top:2px}
+.mad-tag{display:inline-block;font-family:var(--util);font-size:11px;letter-spacing:.12em;background:#c0392b;color:#fff;border-radius:8px;padding:1px 9px;margin-right:7px;vertical-align:middle}
+.mad-state > b{font-family:var(--serif);font-size:14px;color:#b23227}
+.mad-line{font-size:13px;color:#a5342a;font-style:italic;margin-top:6px;line-height:1.65}
+.mad-rule{font-size:11px;color:var(--text-mid);margin-top:6px;line-height:1.65;padding-top:5px;border-top:1px dashed rgba(192,57,43,.3)}
+/* 類型加值徽章 */
+.tmod{font-family:var(--util);font-size:11px;color:var(--c-text);background:rgba(var(--c-rgb),.12);border:1px solid rgba(var(--c-rgb),.3);border-radius:8px;padding:0 6px;margin-left:5px;white-space:nowrap}
+/* 滑鼠提示小窗 */
+[data-tip]{cursor:help}
+.pt-table tr[data-tip]{cursor:help}
+#tip{position:fixed;z-index:200;max-width:300px;background:var(--ink);color:#ece8f2;font-size:12px;line-height:1.6;padding:8px 11px;border-radius:5px;box-shadow:0 8px 26px rgba(0,0,0,.32);white-space:pre-line;pointer-events:none;opacity:0;transition:opacity .12s;border:1px solid #3a3547}
+#tip.on{opacity:1}
 
 /* 劇本經歷 */
 .log{border-bottom:1px solid var(--hair-soft);padding:9px 0}
@@ -196,27 +267,35 @@ body.view #app{min-height:100vh}
 .log .h{display:flex;align-items:baseline;gap:10px}
 .log .nm{font-family:var(--serif);font-weight:700;font-size:14px}
 .log .pt{margin-left:auto;font-family:var(--util);font-weight:600;color:var(--c-text)}
-.log .story{font-size:12px;line-height:1.7;color:var(--text-mid);margin-top:2px}
+.log .story{font-size:13px;line-height:1.7;color:var(--text-mid);margin-top:2px}
 .spend{margin-top:10px;border-top:1px dashed var(--hair);padding-top:10px}
-.spend .row{display:flex;gap:8px;font-size:12px;padding:3px 0;color:var(--text-mid)}
+.spend .row{display:flex;gap:8px;font-size:13px;padding:3px 0;color:var(--text-mid)}
 .spend .row .cost{margin-left:auto;font-family:var(--util);color:var(--text)}
 .remain{display:flex;align-items:center;justify-content:space-between;margin-top:10px;background:rgba(var(--c-rgb),.1);border-radius:3px;padding:8px 12px}
-.remain .k{font-size:12px;color:var(--c-text)}
+.remain .k{font-size:13px;color:var(--c-text)}
 .remain .v{font-family:var(--util);font-weight:600;font-size:20px;color:var(--c-text)}
 
 /* 部件表 */
-.pt-table{width:100%;border-collapse:collapse;font-size:12px}
+.pt-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+/* 固定欄寬（損傷|使用|名稱|時機|COST|射程|效果|等級）；技能表無等級欄，效果欄吸收剩餘 */
+.pt-table th:nth-child(1),.pt-table td:nth-child(1){width:40px}
+.pt-table th:nth-child(2),.pt-table td:nth-child(2){width:40px}
+.pt-table th:nth-child(3),.pt-table td:nth-child(3){width:104px}
+.pt-table th:nth-child(4),.pt-table td:nth-child(4){width:52px}
+.pt-table th:nth-child(5),.pt-table td:nth-child(5){width:44px}
+.pt-table th:nth-child(6),.pt-table td:nth-child(6){width:56px}
+.pt-table th:nth-child(8),.pt-table td:nth-child(8){width:118px}
 .pt-table th{
   font-family:var(--util);font-weight:500;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
   color:#c6c0d2;background:var(--ink-soft);padding:5px 8px;text-align:left;white-space:nowrap;
 }
 .pt-table td{padding:6px 8px;border-bottom:1px solid var(--hair-soft);vertical-align:top;line-height:1.6}
 .pt-table tr:last-child td{border-bottom:0}
-.pt-table tr.enh td{background:rgba(var(--c-rgb),.07)}
-.pt-table .nm{font-weight:500;white-space:nowrap}
-.pt-table .lv{font-size:10.5px;color:var(--c-text);white-space:nowrap}
+.pt-table tr.enh td,.pt-table tr.tre td{background:rgba(var(--c-rgb),.1)}
+.pt-table .nm{font-weight:500;white-space:normal;word-break:break-word}
+.pt-table .lv{font-size:13px;color:var(--c-text);white-space:nowrap}
 .pt-table .lv.base{color:var(--text-dim)}
-.pt-table .eff{color:var(--text-mid)}
+.pt-table .eff{color:var(--text-mid);white-space:normal;word-break:break-word}
 .pt-table .ctr{text-align:center;white-space:nowrap;font-family:var(--util)}
 .pt-table .box{display:inline-block;width:13px;height:13px;border:1.5px solid var(--text-dim);border-radius:2px;vertical-align:middle}
 .sec-empty{font-size:12px;color:var(--text-dim);padding:10px 4px}
@@ -237,7 +316,7 @@ body.view #app{min-height:100vh}
 .ed-card > h3{margin:0;font-family:var(--util);font-weight:500;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:var(--ink);padding:7px 13px;border-radius:4px 4px 0 0}
 .ed-body{padding:12px 13px;display:flex;flex-direction:column;gap:11px}
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
-.fld > label{font-family:var(--util);font-size:10.5px;letter-spacing:.09em;color:var(--text-mid);text-transform:uppercase}
+.fld > label{font-family:var(--util);font-size:11px;letter-spacing:.09em;color:var(--text-mid);text-transform:uppercase}
 .fld input[type=text],.fld input[type=number],.fld textarea,.fld select{width:100%;font-family:inherit;font-size:13px;padding:7px 9px;border:1px solid var(--hair);border-radius:3px;background:#fbfafc;color:var(--text)}
 .fld textarea{min-height:92px;resize:vertical;line-height:1.75}
 .fld input:focus,.fld textarea:focus,.fld select:focus{outline:none;border-color:var(--c);background:#fff}
@@ -271,7 +350,7 @@ body.view #app{min-height:100vh}
 .addbtn:hover{border-color:var(--c);color:var(--c-text)}
 .ptbox{border:1px solid var(--hair);border-radius:4px;padding:10px;background:#fbfafc}
 .ptbox h4{margin:0 0 8px;font-family:var(--util);font-size:11px;letter-spacing:.12em;color:var(--text-mid);display:flex;align-items:center;gap:7px}
-.ptbox h4 .j{margin-left:auto;font-size:10px;color:var(--text-dim);letter-spacing:0}
+.ptbox h4 .j{margin-left:auto;font-size:11px;color:var(--text-dim);letter-spacing:0}
 .ptbox h4 .j input{width:52px;font-size:12px;padding:3px 5px;border:1px solid var(--hair);border-radius:3px;background:#fff}
 .chip-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .pchip{display:inline-flex;align-items:center;gap:5px;background:rgba(var(--c-rgb),.1);border:1px solid rgba(var(--c-rgb),.35);color:var(--c-text);border-radius:14px;padding:3px 5px 3px 11px;font-size:12.5px}
@@ -282,13 +361,21 @@ body.view #app{min-height:100vh}
 .ed-note{font-size:12px;color:var(--text-mid);background:rgba(var(--c-rgb),.07);border:1px solid rgba(var(--c-rgb),.25);border-radius:4px;padding:8px 12px;margin-bottom:16px}
 .act-ro{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-family:var(--util);background:#fbfafc;border:1px solid var(--hair);border-radius:4px;padding:9px}
 .act-ro .ro{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px}
-.act-ro .ro i{font-style:normal;font-size:9.5px;letter-spacing:.06em;color:var(--text-dim)}
+.act-ro .ro i{font-style:normal;font-size:10px;letter-spacing:.06em;color:var(--text-dim)}
 .act-ro .ro b{font-size:22px;color:var(--text)}
 .act-ro .ro.tot b{color:var(--c-text)}
 .act-ro .op{font-size:15px;color:var(--text-dim);align-self:flex-end;padding-bottom:3px}
+.mod-ro{font-size:12px;color:var(--text-mid);background:#f2f0f5;border:1px solid var(--hair);border-radius:3px;padding:6px 8px;text-align:center}
+.mod-ro .mod-base{font-family:var(--util);font-weight:600;font-size:15px;color:var(--c-text)}
+.mod-pick{display:flex;gap:8px}
+.mod-pick-btn{flex:1;font-family:var(--util);font-size:13px;padding:8px 6px;border:1px solid var(--hair);border-radius:4px;background:#fbfafc;color:var(--text-mid);cursor:pointer;transition:.14s}
+.mod-pick-btn:hover{border-color:var(--c)}
+.mod-pick-btn.on{background:var(--c);border-color:var(--c);color:#fff;font-weight:600}
+.skill-ed .skill-slots{display:flex;flex-direction:column;gap:10px}
+.skill-ed .skill-free-t{font-family:var(--util);font-size:11px;letter-spacing:.08em;color:var(--text-mid);margin:12px 0 7px;padding-top:9px;border-top:1px solid var(--hair-soft)}
 .pchip.dmg{background:#fdeceb;border-color:#e8a9a2;color:#c0392b}
 .pchip.dmg .base{color:#c0392b!important}
-.pchip .dmg-toggle{display:inline-flex;align-items:center;gap:2px;font-size:10.5px;color:var(--text-mid);cursor:pointer;padding:0 2px;border-left:1px solid rgba(var(--c-rgb),.3);margin-left:2px}
+.pchip .dmg-toggle{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--text-mid);cursor:pointer;padding:0 2px;border-left:1px solid rgba(var(--c-rgb),.3);margin-left:2px}
 .pchip.dmg .dmg-toggle{color:#c0392b;border-left-color:#e8a9a2}
 .pchip .dmg-toggle input{width:12px;height:12px;margin:0;accent-color:#c0392b;cursor:pointer}
 .edit-btn{font-family:var(--util);font-size:12px;letter-spacing:.05em;padding:6px 13px;border-radius:3px;border:1px solid var(--c);background:rgba(var(--c-rgb),.08);color:var(--c-text);cursor:pointer}
@@ -322,8 +409,12 @@ body.view #app{min-height:100vh}
     <nav id="list" aria-label="人偶清單"><div class="grp">神貓卓<span class="n">2</span></div><button class="item" type="button" data-i="0" style="--c:#93799F" aria-current="true"><span class="nm">露易絲</span><span class="rd">ルイス</span><span class="sub">塔納托斯 · 繁華無序</span></button><button class="item" type="button" data-i="1" style="--c:#5C8A72"><span class="nm">涅可</span><span class="rd">ネコ</span><span class="sub">塔納托斯 · 繁華無序</span></button></nav>
     <footer id="sideFoot" style="display: none;"></footer>
   </aside>
-  <main id="main"><div class="sheet"><div class="sheet-top"><div class="names"><h2 class="name">露易絲</h2><div class="reading">ルイス</div></div><div class="player">玩家<b>洛雅</b></div><button class="edit-btn" type="button" onclick="__edit(0)">✎ 編輯這名人偶</button></div><div class="sheet-rule"></div><div class="grid2"><div class="col-l"><div class="card"><h3>人偶設計圖</h3><div class="portrait"><span class="fb">露</span></div></div><div class="card"><h3>死後經歷</h3><div class="body"><div style="font-family:var(--serif);font-weight:700;margin-bottom:4px">123 <span class="en" style="font-family:var(--util);color:var(--text-dim)">#123</span></div><div style="font-size:12px;line-height:1.75;color:var(--text-mid)">123</div></div></div><div class="card"><h3>記憶碎片</h3><div class="body"><div class="mem"><div class="h"><span class="no">50</span><span class="t">槍聲</span></div><div class="c">瞬間的爆裂音、傳出奇怪焦臭味的聲音，妳的胸口湧出一股熱流，接著翻身向後，然後妳……的記憶到這裡就中斷了。不過那樣的聲響，跟現在每天都會聽到的爆裂聲相當類似。</div></div><div class="mem"><div class="h"><span class="no">95</span><span class="t">死亡到來</span></div><div class="c">妳不記得臉孔與名字。不過，有個很重要的人死了。那個人死的時候妳很悲傷，胸口就像被硬生生挖去般的空虛。可是在妳死而復生的今天，妳慶幸那個人是真的好好地死去。</div></div><div class="mem"><div class="h"><span class="no">50</span><span class="t">槍聲</span></div><div class="c">瞬間的爆裂音、傳出奇怪焦臭味的聲音，妳的胸口湧出一股熱流，接著翻身向後，然後妳……的記憶到這裡就中斷了。不過那樣的聲響，跟現在每天都會聽到的爆裂聲相當類似。</div></div><div class="mem"><div class="h"><span class="no">01</span><span class="t">藍天</span></div><div class="c">天空確實是藍的，不像現在骯髒渾濁的暗鉛色天空一樣。妳所知道的天空，是無邊無際的通透藍天，這樣的天空在過去是如此理所當然存在著，到了現在，大概已經沒有機會能夠再見了吧。</div></div></div></div><div class="card"><h3>依戀</h3><div class="body"><div class="att"><div class="h"><span class="obj">寶物</span><span class="kind">依存</span><span class="mad"><span class="dot f"></span><span class="dot f"></span><span class="dot"></span><span class="dot"></span></span></div><div class="c">妳的最大行動值減少2。</div></div><div class="att"><div class="h"><span class="obj">涅可</span><span class="kind">依存</span><span class="mad"><span class="dot f"></span><span class="dot f"></span><span class="dot f"></span><span class="dot f"></span></span></div><div class="c">妳的最大行動值減少2。</div></div><div class="att"><div class="h"><span class="obj">天塔西</span><span class="kind">憧憬</span><span class="mad"><span class="dot f"></span><span class="dot f"></span><span class="dot f"></span><span class="dot"></span></span></div><div class="c">戰鬥當中，妳跟「依戀的對象」處於同樣區域的時候，無法宣告「移動以外的戰鬥宣言」，此外妳沒有辦法把「自身」與「依戀對象」以外的單位當成移動對象。</div></div><div class="att"><div class="h"><span class="obj">天南星</span><span class="kind">信賴</span><span class="mad"><span class="dot f"></span><span class="dot f"></span><span class="dot f"></span><span class="dot"></span></span></div><div class="c">除了妳以外的所有姊妹，最大行動值減少1。</div></div></div></div><div class="card"><h3>劇本經歷 · 寵愛點</h3><div class="body"><div class="log"><div class="h"><span class="nm">死人工場</span><span class="pt">+22</span></div></div><div class="spend"><div class="row"><span>增加任意強化值1點　<span style="color:var(--text-dim)">增加的強化值可以獲得新增的對應強化部件。</span></span><span class="cost">-10</span></div><div class="row"><span>增加任意強化值1點　<span style="color:var(--text-dim)">增加的強化值可以獲得新增的對應強化部件。</span></span><span class="cost">-10</span></div></div><div class="remain"><span class="k">剩餘寵愛點</span><span class="v">2</span></div></div></div></div><div class="col-r"><div class="card"><h3>基本資料</h3><div class="body"><dl class="rows"><dt>人偶名稱</dt><dd>ルイス</dd><dt>玩家名稱</dt><dd>洛雅</dd><dt>享年</dt><dd>14</dd><dt>暗示</dt><dd>07-渴望</dd><dt>傾向</dt><dd>班長 <span class="en">Sorority</span></dd><dt>主要類型</dt><dd>塔納托斯 <span class="en">Thanatos</span></dd><dt>輔助類型</dt><dd>繁華無序 <span class="en">Baroque</span></dd><dt>寵愛點</dt><dd><span style="font-family:var(--util);font-weight:600;color:var(--c-text)">22</span></dd></dl></div></div><div class="card"><h3>強化值 · 最大行動值</h3><div class="body"><div class="stat-row"><div class="box"><div class="k">武裝</div><div class="v">3<span class="plus"> +1</span></div></div><div class="box"><div class="k">變異</div><div class="v">2</div></div><div class="box"><div class="k">改造</div><div class="v">2<span class="plus"> +1</span></div></div></div><div class="act-label">最大行動值　<span class="hintline">基礎 6 ＋ 部件加成</span></div><div class="act"><span class="n" title="基礎行動值">6</span><span class="op">+</span><span class="n" id="actB" title="部件加成（未損傷部件的最大行動值補正總和）">4</span><span class="eq">=</span><span class="tot" id="actTotal">10</span></div><div class="sub-label">初期位置</div><div class="chips"><span class="chip on">煉獄</span><span class="chip">花園</span><span class="chip">樂園</span></div></div></div><div class="card"><h3>外貌與個性</h3><div class="body"><div class="persona">手持短刀的嬌小殺人貓。<br>帽子底下真的有對貓耳。<br><br>個性樂觀正向，不喜歡看到有人垂頭喪氣的樣子，會適時...會隨心情緩和場面氣氛。<br><br>很擅長使用刀具，認為切割肢解是自己的天職。</div></div></div><div class="card"><h3>Karma · 目標</h3><div class="body"><ul class="klist"><li>取得記憶碎片</li><li>到達產生機械聲的地方</li></ul></div></div><div class="card"><h3><span class="sec-ico">✦</span>スキル</h3><table class="pt-table" data-area="スキル"><thead><tr><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th></tr></thead><tbody><tr><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">號令</td><td class="ctr">即時</td><td class="ctr">2</td><td class="ctr">參照效果</td><td class="eff">包含妳在內的舞台上全體姊妹，可以將指定的1個攻擊戰鬥動作以「即時」發動。</td></tr><tr><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">死神</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">白刃攻擊的攻擊判定修正值可以+1。</td></tr><tr><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">殺劇</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">戰鬥片段時，同回合中攻擊被姊妹當成攻擊目標的敵方對象時，可以讓自身攻擊判定值+1，傷害+1。</td></tr><tr><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">業贓</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">戰鬥片段結束時，可以任選2個受損部件進行修復。</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico">頭</span>頭<span class="badge">攻擊判定值 10</span></h3><table class="pt-table" data-area="頭"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="頭" data-name="腦袋"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">腦袋</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">最大行動值+2。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="頭" data-name="眼球"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">眼球</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">最大行動值+1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="頭" data-name="齒顎"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">齒顎</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">肉體攻擊1。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="頭" data-name="獸耳"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷" checked=""></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">獸耳</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">最大行動值+1。當這個部件使用在動作判定的時候，即使大失敗也不會損傷這個部件。</td><td class="lv">等級2變異部件</td></tr><tr class="enh dmg" data-area="頭" data-name="限制裝置"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷" checked=""></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">限制裝置</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">這個部件在戰鬥片段中損傷的時候，可以當場宣告最大行動值+2。戰鬥片段結束之前這個效果會一直持續，效果作用中的時候，這個部件無法修復。</td><td class="lv">等級1改造部件</td></tr><tr class="enh" data-area="頭" data-name="單分子纖維"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">單分子纖維</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0~1</td><td class="eff">白刃攻擊1＋切斷＋連撃1。</td><td class="lv">等級3武裝部件</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico">腕</span>腕<span class="badge">攻擊判定值 9</span></h3><table class="pt-table" data-area="腕"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="腕" data-name="拳頭"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">拳頭</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">肉體攻擊1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="腕" data-name="手腕"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">手腕</td><td class="ctr">裁判</td><td class="ctr">1</td><td class="ctr">0</td><td class="eff">支援1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="腕" data-name="肩膀"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">肩膀</td><td class="ctr">行動</td><td class="ctr">4</td><td class="ctr">自身</td><td class="eff">移動1。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="腕" data-name="斬骨刀"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">斬骨刀</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">白刃攻擊2。</td><td class="lv">等級1武裝部件</td></tr><tr class="enh" data-area="腕" data-name="尖刺迸發"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">尖刺迸發</td><td class="ctr">傷害</td><td class="ctr">1</td><td class="ctr">自身</td><td class="eff">自身給予目標傷害的時候可以使用。白刃、肉體傷害+2。</td><td class="lv">等級2改造部件</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico">胴</span>胴<span class="badge">攻擊判定值 8</span></h3><table class="pt-table" data-area="胴"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="胴" data-name="脊椎"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">脊椎</td><td class="ctr">行動</td><td class="ctr">1</td><td class="ctr">自身</td><td class="eff">同一輪內，下個回合1個戰鬥動作的消耗值-1(最低為0)。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="胴" data-name="內臟"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">內臟</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">無。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="胴" data-name="內臟"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">內臟</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">無。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="胴" data-name="黑曜石墜鍊(寶物)"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">黑曜石墜鍊(寶物)</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">無</td><td class="eff">戰鬥結束時，選擇減少任意依戀1點補神屬力點數。這個部件損傷的時候，將會被直接移除。</td><td class="lv">寶物</td></tr><tr class="enh" data-area="胴" data-name="拼接製品"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">拼接製品</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">戰鬥片段結束時，這個部件與1個損傷的基本部件都可以自動修復。</td><td class="lv">等級1變異部件</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico">脚</span>脚<span class="badge">攻擊判定值 7</span></h3><table class="pt-table" data-area="脚"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="脚" data-name="腳骨"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">腳骨</td><td class="ctr">行動</td><td class="ctr">3</td><td class="ctr">自身</td><td class="eff">移動1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="脚" data-name="腳骨"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">腳骨</td><td class="ctr">行動</td><td class="ctr">3</td><td class="ctr">自身</td><td class="eff">移動1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="脚" data-name="足"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">足</td><td class="ctr">裁判</td><td class="ctr">1</td><td class="ctr">0</td><td class="eff">妨礙1。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="脚" data-name="鞋內暗器"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">鞋內暗器</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">白刃攻擊2，攻擊判定修正值+1。</td><td class="lv">等級2武裝部件</td></tr></tbody></table></div></div></div></div></main>
-</div><div id="lightbox"><img alt=""></div><script id="app-data">window.__DATA__={"csv":{"角色":"分類,人偶名稱,譯名,拼音,玩家名稱,代表色,頭像,全身圖,差分,享年,暗示,傾向,主要類型,輔助類型,武裝,變異,改造,武裝加值,變異加值,改造加值,行動值A,行動值B,初期配置,Karma,外貌與個性,死後經歷標題,死後經歷編號,死後經歷內容,記憶碎片,依戀,頭判定,腕判定,胴判定,脚判定,技能,頭部件,腕部件,胴部件,脚部件,劇本經歷,寵愛點消耗,寵愛點\n神貓卓,ルイス,露易絲,Louis,洛雅,#93799F,images/louis_icon.png,images/louis_full.png,,14,07,班長,塔納托斯,繁華無序,3,2,2,1,0,1,6,3,煉獄,取得記憶碎片|到達產生機械聲的地方,手持短刀的嬌小殺人貓。\\n帽子底下真的有對貓耳。\\n\\n個性樂觀正向，不喜歡看到有人垂頭喪氣的樣子，會適時...會隨心情緩和場面氣氛。\\n\\n很擅長使用刀具，認為切割肢解是自己的天職。,123,123,123,50|95|50|01,寶物^依存^2|涅可^依存^4|天塔西^憧憬^3|天南星^信賴^3,10,9,8,7,號令|死神|殺劇|業贓,腦袋|眼球|齒顎|獸耳|限制裝置*|單分子纖維,拳頭|手腕|肩膀|斬骨刀|尖刺迸發,脊椎|內臟|內臟|黑曜石墜鍊(寶物)|拼接製品,腳骨|腳骨|足|鞋內暗器,死人工場^^22,增加任意強化值1點^10|增加任意強化值1點^10,22\n神貓卓,ネコ,涅可,Neko,洛雅,#5C8A72,,,,13,07,班長,塔納托斯,繁華無序,2,2,2,0,0,0,6,2,花園,取得記憶碎片,沉默寡言的小小人偶。\\n總是跟在露易絲身後。,,,,01,露易絲^依存^2,8,7,7,6,,,,,,死人工場^^12,增加任意強化值1點^10,12","部件":"部位,名稱,時機,COST,射程,效果,部件等級,最大行動值補正\nスキル,號令,即時,2,參照效果,包含妳在內的舞台上全體姊妹，可以將指定的1個攻擊戰鬥動作以「即時」發動。,,0\nスキル,死神,自動,無,自身,白刃攻擊的攻擊判定修正值可以+1。,,0\nスキル,殺劇,自動,無,自身,戰鬥片段時，同回合中攻擊被姊妹當成攻擊目標的敵方對象時，可以讓自身攻擊判定值+1，傷害+1。,,0\nスキル,業贓,自動,無,自身,戰鬥片段結束時，可以任選2個受損部件進行修復。,,0\n頭,腦袋,自動,無,自身,最大行動值+2。,基本部件,2\n頭,眼球,自動,無,自身,最大行動值+1。,基本部件,1\n頭,齒顎,行動,2,0,肉體攻擊1。,基本部件,0\n頭,獸耳,自動,無,自身,最大行動值+1。當這個部件使用在動作判定的時候，即使大失敗也不會損傷這個部件。,等級2變異部件,1\n頭,限制裝置,自動,無,自身,這個部件在戰鬥片段中損傷的時候，可以當場宣告最大行動值+2。戰鬥片段結束之前這個效果會一直持續，效果作用中的時候，這個部件無法修復。,等級1改造部件,0\n頭,單分子纖維,行動,2,0~1,白刃攻擊1＋切斷＋連撃1。,等級3武裝部件,0\n腕,拳頭,行動,2,0,肉體攻擊1。,基本部件,0\n腕,手腕,裁判,1,0,支援1。,基本部件,0\n腕,肩膀,行動,4,自身,移動1。,基本部件,0\n腕,斬骨刀,行動,2,0,白刃攻擊2。,等級1武裝部件,0\n腕,尖刺迸發,傷害,1,自身,自身給予目標傷害的時候可以使用。白刃、肉體傷害+2。,等級2改造部件,0\n胴,脊椎,行動,1,自身,同一輪內，下個回合1個戰鬥動作的消耗值-1(最低為0)。,基本部件,0\n胴,內臟,自動,無,自身,無。,基本部件,0\n胴,黑曜石墜鍊(寶物),自動,無,無,戰鬥結束時，選擇減少任意依戀1點補神屬力點數。這個部件損傷的時候，將會被直接移除。,寶物,0\n胴,拼接製品,自動,無,自身,戰鬥片段結束時，這個部件與1個損傷的基本部件都可以自動修復。,等級1變異部件,0\n脚,腳骨,行動,3,自身,移動1。,基本部件,0\n脚,足,裁判,1,0,妨礙1。,基本部件,0\n脚,鞋內暗器,行動,2,0,白刃攻擊2，攻擊判定修正值+1。,等級2武裝部件,0","暗示":"編號,名稱,說明\n07,渴望,\"強烈想得到某種事物、無法被滿足的心情。\"","傾向":"名稱,原文,說明\n班長,Sorority,\"守護並統率姊妹的傾向。\"","類型":"名稱,原文,說明\n塔納托斯,Thanatos,\"司掌死亡與破壞的類型。\"\n繁華無序,Baroque,\"司掌混沌與增殖的類型。\"","記憶碎片":"編號,標題,記憶內容\n50,槍聲,\"瞬間的爆裂音、傳出奇怪焦臭味的聲音，妳的胸口湧出一股熱流，接著翻身向後，然後妳……的記憶到這裡就中斷了。不過那樣的聲響，跟現在每天都會聽到的爆裂聲相當類似。\"\n95,死亡到來,\"妳不記得臉孔與名字。不過，有個很重要的人死了。那個人死的時候妳很悲傷，胸口就像被硬生生挖去般的空虛。可是在妳死而復生的今天，妳慶幸那個人是真的好好地死去。\"\n98,殺戮天使,\"有誰教會了妳殺人的技巧，毫無疑問，妳已經殺過好幾個活生生的人類了。只要殺人就會得到獎賞，現在在這個死不了的世界當中，這個持續殺戮的世界當中，只要繼續殺下去的話，也可以得到獎勵嗎？\"\n01,藍天,\"天空確實是藍的，不像現在骯髒渾濁的暗鉛色天空一樣。妳所知道的天空，是無邊無際的通透藍天，這樣的天空在過去是如此理所當然存在著，到了現在，大概已經沒有機會能夠再見了吧。\"","依戀內容":"名稱,發狂內容\n依存,\"妳的最大行動值減少2。\"\n憧憬,\"戰鬥當中，妳跟「依戀的對象」處於同樣區域的時候，無法宣告「移動以外的戰鬥宣言」，此外妳沒有辦法把「自身」與「依戀對象」以外的單位當成移動對象。\"\n信賴,\"除了妳以外的所有姊妹，最大行動值減少1。\"","寵愛點消耗":"名稱,消耗,說明\n增加任意強化值1點,10,\"增加的強化值可以獲得新增的對應強化部件。\"","區段圖示":"區段,圖片路徑\nスキル,images/icon_skill.png\n頭,images/icon_head.png\n腕,images/icon_arm.png\n胴,images/icon_torso.png\n脚,images/icon_leg.png"},"images":{},"title":"您的人偶名冊"};var VIEW_ONLY=true;</script><script id="app-script">
+  <main id="main"><div class="sheet"><div class="sheet-top"><div class="names"><h2 class="name">露易絲</h2><div class="reading">ルイス</div></div><div class="player">玩家<b>洛雅</b></div><button class="edit-btn" type="button" onclick="__edit(0)">✎ 編輯這名人偶</button></div><div class="sheet-rule"></div><div class="det-top"><div class="card" id="cardPortrait"><h3>人偶設計圖</h3><div class="portrait"><div class="pf-frame"><img class="pf-img on" data-i="0" data-fb="露" src="images/louis_full.png" alt="露易絲" onclick="__zoom(this.src)" onerror="window.__imgFail(this)"></div></div></div><div class="mid-col"><div class="card" id="cardInfo"><h3>基本資料</h3><div class="body"><dl class="rows"><dt>人偶名稱</dt><dd>ルイス</dd><dt>玩家名稱</dt><dd>洛雅</dd><dt>享年</dt><dd>14</dd><dt>暗示</dt><dd><span data-tip="強烈想得到某種事物、無法被滿足的心情。">07-渴望</span></dd><dt>傾向</dt><dd><span data-tip="守護並統率姊妹的傾向。">班長 <span class="en">Sorority</span></span></dd><dt>主要類型</dt><dd><span data-tip="擅長白刃戰的戰場女神。">塔納托斯 <span class="en">Thanatos</span> <span class="tmod">武裝+1、改造+1</span></span></dd><dt>輔助類型</dt><dd><span data-tip="具有如同異形般扭曲肉體的怪物。">繁華無序 <span class="en">Baroque</span> <span class="tmod">變異+2</span></span></dd><dt>寵愛點</dt><dd><span style="font-family:var(--util);font-weight:600;color:var(--c-text)">22</span></dd></dl></div></div></div><div class="card" id="cardPersona"><h3>外貌與個性</h3><div class="body scroll-body"><div class="persona">手持短刀的嬌小殺人貓。<br>帽子底下真的有對貓耳。<br><br>個性樂觀正向，<br>不喜歡看到有人垂頭喪氣的樣子，<br>會適時...會隨心情緩和場面氣氛。<br><br>很擅長使用刀具，<br>認為切割肢解是自己的天職。</div></div></div></div><div class="det-mid det-mid3"><div class="card" id="cardStat"><h3>強化值 · 最大行動值</h3><div class="body"><div class="stat-row"><div class="box has-plus" data-tip="加值 +1"><div class="k">武裝</div><div class="v">2</div></div><div class="box"><div class="k">變異</div><div class="v">2</div></div><div class="box has-plus" data-tip="加值 +1"><div class="k">改造</div><div class="v">2</div></div></div><div class="act-ro" style="margin-top:12px"><span class="ro"><i>基礎行動值</i><b>6</b></span><span class="op">＋</span><span class="ro"><i>部件加成</i><b id="actB">4</b></span><span class="op">＝</span><span class="ro tot"><i>最大行動值</i><b id="actTotal">10</b></span></div></div></div><div class="card" id="cardZone"><h3>初期位置</h3><div class="body zone-body"><div class="zone-opt on"><span class="zn">煉獄</span><span class="mk">現在位置</span></div><div class="zone-opt"><span class="zn">花園</span></div><div class="zone-opt"><span class="zn">樂園</span></div></div></div><div class="card" id="cardKarma"><h3>Karma · 目標</h3><div class="body scroll-body"><ul class="klist"><li><label><input type="checkbox" class="karma-cb"> <span>取得記憶碎片</span></label></li><li><label><input type="checkbox" class="karma-cb"> <span>到達產生機械聲的地方</span></label></li></ul></div></div></div><div class="grid2 det-rest"><div class="col-l"><div class="card"><h3>記憶碎片</h3><div class="body"><div class="mem"><div class="h"><span class="no">50</span><span class="t">槍聲</span></div><div class="c">瞬間的爆裂音、傳出奇怪焦臭味的聲音，妳的胸口湧出一股熱流，接著翻身向後，然後妳……的記憶到這裡就中斷了。不過那樣的聲響，跟現在每天都會聽到的爆裂聲相當類似。</div></div><div class="mem"><div class="h"><span class="no">95</span><span class="t">死亡到來</span></div><div class="c">妳不記得臉孔與名字。不過，有個很重要的人死了。那個人死的時候妳很悲傷，胸口就像被硬生生挖去般的空虛。可是在妳死而復生的今天，妳慶幸那個人是真的好好地死去。</div></div><div class="mem"><div class="h"><span class="no">98</span><span class="t">殺戮天使</span></div><div class="c">有誰教會了妳殺人的技巧，毫無疑問，妳已經殺過好幾個活生生的人類了。只要殺人就會得到獎賞，現在在這個死不了的世界當中，這個持續殺戮的世界當中，只要繼續殺下去的話，也可以得到獎勵嗎？</div></div><div class="mem"><div class="h"><span class="no">01</span><span class="t">藍天</span></div><div class="c">天空確實是藍的，不像現在骯髒渾濁的暗鉛色天空一樣。妳所知道的天空，是無邊無際的通透藍天，這樣的天空在過去是如此理所當然存在著，到了現在，大概已經沒有機會能夠再見了吧。</div></div></div></div><div class="card"><h3>依戀</h3><div class="body"><div class="att" data-tip="發狂：幼兒退行
+「別讓我一個人……不要這樣、好恐怖哦……」
+妳的最大行動值減少2。"><div class="h"><span class="obj">寶物</span><span class="kind">依存</span><span class="mad"><span class="dot f" data-att="0" data-dot="0" title="點擊設定狂氣點"></span><span class="dot f" data-att="0" data-dot="1" title="點擊設定狂氣點"></span><span class="dot" data-att="0" data-dot="2" title="點擊設定狂氣點"></span><span class="dot" data-att="0" data-dot="3" title="點擊設定狂氣點"></span></span></div><div class="c">對妳而言，那是不能沒有的存在。如果那個人不在的話，妳會無法承受。</div></div><div class="att" data-tip="發狂：幼兒退行
+「別讓我一個人……不要這樣、好恐怖哦……」
+妳的最大行動值減少2。"><div class="h"><span class="obj">涅可</span><span class="kind">依存</span><span class="mad"><span class="dot f" data-att="1" data-dot="0" title="點擊設定狂氣點"></span><span class="dot f" data-att="1" data-dot="1" title="點擊設定狂氣點"></span><span class="dot f" data-att="1" data-dot="2" title="點擊設定狂氣點"></span><span class="dot" data-att="1" data-dot="3" title="點擊設定狂氣點"></span></span></div><div class="c">對妳而言，那是不能沒有的存在。如果那個人不在的話，妳會無法承受。</div></div><div class="att" data-tip="戰鬥當中，妳跟「依戀的對象」處於同樣區域的時候，無法宣告「移動以外的戰鬥宣言」，此外妳沒有辦法把「自身」與「依戀對象」以外的單位當成移動對象。"><div class="h"><span class="obj">天塔西</span><span class="kind">憧憬</span><span class="mad"><span class="dot f" data-att="2" data-dot="0" title="點擊設定狂氣點"></span><span class="dot f" data-att="2" data-dot="1" title="點擊設定狂氣點"></span><span class="dot f" data-att="2" data-dot="2" title="點擊設定狂氣點"></span><span class="dot" data-att="2" data-dot="3" title="點擊設定狂氣點"></span></span></div><div class="c">戰鬥當中，妳跟「依戀的對象」處於同樣區域的時候，無法宣告「移動以外的戰鬥宣言」，此外妳沒有辦法把「自身」與「依戀對象」以外的單位當成移動對象。</div></div><div class="att" data-tip="除了妳以外的所有姊妹，最大行動值減少1。"><div class="h"><span class="obj">天南星</span><span class="kind">信賴</span><span class="mad"><span class="dot f" data-att="3" data-dot="0" title="點擊設定狂氣點"></span><span class="dot f" data-att="3" data-dot="1" title="點擊設定狂氣點"></span><span class="dot f" data-att="3" data-dot="2" title="點擊設定狂氣點"></span><span class="dot" data-att="3" data-dot="3" title="點擊設定狂氣點"></span></span></div><div class="c">除了妳以外的所有姊妹，最大行動值減少1。</div></div></div></div><div class="card"><h3>劇本經歷 · 寵愛點</h3><div class="body"><div class="log"><div class="h"><span class="nm">死人工場</span><span class="pt">+22</span></div></div><div class="spend"><div class="row"><span>增加任意強化值1點　<span style="color:var(--text-dim)">增加的強化值可以獲得新增的對應強化部件。</span></span><span class="cost">-10</span></div><div class="row"><span>增加任意強化值1點　<span style="color:var(--text-dim)">增加的強化值可以獲得新增的對應強化部件。</span></span><span class="cost">-10</span></div></div><div class="remain"><span class="k">剩餘寵愛點</span><span class="v">2</span></div></div></div></div><div class="col-r"><div class="card"><h3><span class="sec-ico"><img src="images/icon_skill.png" alt="" onerror="this.parentNode.textContent='✦'"></span>技能</h3><table class="pt-table" data-area="スキル"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th></tr></thead><tbody><tr data-tip="班長傾向專屬技能"><td class="ctr"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">號令</td><td class="ctr">即時</td><td class="ctr">2</td><td class="ctr">參照效果</td><td class="eff">包含妳在內的舞台上全體姊妹，可以將指定的1個攻擊戰鬥動作以「即時」發動。</td></tr><tr data-tip="塔納托斯類型專屬技能"><td class="ctr"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">死神</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">白刃攻擊的攻擊判定修正值可以+1。</td></tr><tr data-tip="塔納托斯類型專屬技能"><td class="ctr"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">殺劇</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">戰鬥片段時，同回合中攻擊被姊妹當成攻擊目標的敵方對象時，可以讓自身攻擊判定值+1，傷害+1。</td></tr><tr data-tip="繁華無序類型專屬技能"><td class="ctr"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">業贓</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">戰鬥片段結束時，可以任選2個受損部件進行修復。</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico"><img src="images/icon_head.png" alt="" onerror="this.parentNode.textContent='頭'"></span>頭<span class="badge">攻擊判定值 10</span></h3><table class="pt-table" data-area="頭"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="頭" data-name="腦袋" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">腦袋</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">最大行動值+2。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="頭" data-name="眼球" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">眼球</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">最大行動值+1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="頭" data-name="齒顎" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">齒顎</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">肉體攻擊1。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="頭" data-name="獸耳" data-treasure="" data-tip="妳原本的耳朵被拿掉，替換成一對獸耳，獲得了已經滅亡的野獸的知覺。是可以使妳做出迅捷反應的器官，而且很可愛。"><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">獸耳</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">最大行動值+1。當這個部件使用在動作判定的時候，即使大失敗也不會損傷這個部件。</td><td class="lv">等級2變異部件</td></tr><tr class="enh" data-area="頭" data-name="限制裝置" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">限制裝置</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">這個部件在戰鬥片段中損傷的時候，可以當場宣告最大行動值+2。戰鬥片段結束之前這個效果會一直持續，效果作用中的時候，這個部件無法修復。</td><td class="lv">等級1改造部件</td></tr><tr class="enh" data-area="頭" data-name="單分子纖維" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">單分子纖維</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0~1</td><td class="eff">白刃攻擊1＋切斷＋連撃1。</td><td class="lv">等級3武裝部件</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico"><img src="images/icon_arm.png" alt="" onerror="this.parentNode.textContent='腕'"></span>腕<span class="badge">攻擊判定值 9</span></h3><table class="pt-table" data-area="腕"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="腕" data-name="拳頭" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">拳頭</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">肉體攻擊1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="腕" data-name="手腕" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">手腕</td><td class="ctr">裁判</td><td class="ctr">1</td><td class="ctr">0</td><td class="eff">支援1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="腕" data-name="肩膀" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">肩膀</td><td class="ctr">行動</td><td class="ctr">4</td><td class="ctr">自身</td><td class="eff">移動1。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="腕" data-name="斬骨刀" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">斬骨刀</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">白刃攻擊2。</td><td class="lv">等級1武裝部件</td></tr><tr class="enh" data-area="腕" data-name="尖刺迸發" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">尖刺迸發</td><td class="ctr">傷害</td><td class="ctr">1</td><td class="ctr">自身</td><td class="eff">自身給予目標傷害的時候可以使用。白刃、肉體傷害+2。</td><td class="lv">等級2改造部件</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico"><img src="images/icon_torso.png" alt="" onerror="this.parentNode.textContent='胴'"></span>胴<span class="badge">攻擊判定值 8</span></h3><table class="pt-table" data-area="胴"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="胴" data-name="脊椎" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">脊椎</td><td class="ctr">行動</td><td class="ctr">1</td><td class="ctr">自身</td><td class="eff">同一輪內，下個回合1個戰鬥動作的消耗值-1(最低為0)。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="胴" data-name="內臟" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">內臟</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">無。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="胴" data-name="內臟" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">內臟</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">無。</td><td class="lv base">基本部件</td></tr><tr class="enh tre" data-area="胴" data-name="黑曜石墜鍊(寶物)" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">黑曜石墜鍊(寶物) <span class="tre-badge">(寶物)</span></td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">無</td><td class="eff">戰鬥結束時，選擇減少任意依戀1點補神屬力點數。這個部件損傷的時候，將會被直接移除。</td><td class="lv">寶物</td></tr><tr class="enh" data-area="胴" data-name="拼接製品" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">拼接製品</td><td class="ctr">自動</td><td class="ctr">無</td><td class="ctr">自身</td><td class="eff">戰鬥片段結束時，這個部件與1個損傷的基本部件都可以自動修復。</td><td class="lv">等級1變異部件</td></tr></tbody></table></div><div class="card"><h3><span class="sec-ico"><img src="images/icon_leg.png" alt="" onerror="this.parentNode.textContent='脚'"></span>脚<span class="badge">攻擊判定值 7</span></h3><table class="pt-table" data-area="脚"><thead><tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr></thead><tbody><tr class="" data-area="脚" data-name="腳骨" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">腳骨</td><td class="ctr">行動</td><td class="ctr">3</td><td class="ctr">自身</td><td class="eff">移動1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="脚" data-name="腳骨" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">腳骨</td><td class="ctr">行動</td><td class="ctr">3</td><td class="ctr">自身</td><td class="eff">移動1。</td><td class="lv base">基本部件</td></tr><tr class="" data-area="脚" data-name="足" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">足</td><td class="ctr">裁判</td><td class="ctr">1</td><td class="ctr">0</td><td class="eff">妨礙1。</td><td class="lv base">基本部件</td></tr><tr class="enh" data-area="脚" data-name="鞋內暗器" data-treasure=""><td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"></td><td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td><td class="nm">鞋內暗器</td><td class="ctr">行動</td><td class="ctr">2</td><td class="ctr">0</td><td class="eff">白刃攻擊2，攻擊判定修正值+1。</td><td class="lv">等級2武裝部件</td></tr></tbody></table></div></div></div></div></main>
+</div><div id="lightbox"><img alt=""></div><script id="app-data">window.__DATA__={"csv":{"角色":"分類,人偶名稱,譯名,拼音,玩家名稱,代表色,頭像,全身圖,享年,暗示,傾向,主要類型,輔助類型,武裝加值,變異加值,改造加值,強化選擇,初期配置,Karma,外貌與個性,死後經歷標題,死後經歷編號,死後經歷內容,記憶碎片,依戀,頭判定,腕判定,胴判定,脚判定,技能,頭部件,腕部件,胴部件,脚部件,劇本經歷,寵愛點消耗,寵愛點\n神貓卓,ルイス,露易絲,Louis,洛雅,#93799F,images/louis_icon.png,images/louis_full.png,14,07,班長,塔納托斯,繁華無序,1,0,1,,煉獄,取得記憶碎片|到達產生機械聲的地方,手持短刀的嬌小殺人貓。\\n帽子底下真的有對貓耳。\\n\\n個性樂觀正向，\\n不喜歡看到有人垂頭喪氣的樣子，\\n會適時...會隨心情緩和場面氣氛。\\n\\n很擅長使用刀具，\\n認為切割肢解是自己的天職。,,,,50|95|98|01,寶物^依存^2|涅可^依存^3|天塔西^憧憬^3|天南星^信賴^3,10,9,8,7,號令|死神|殺劇|業贓,腦袋|眼球|齒顎|獸耳|限制裝置|單分子纖維,拳頭|手腕|肩膀|斬骨刀|尖刺迸發,脊椎|內臟|內臟|黑曜石墜鍊(寶物)|拼接製品,腳骨|腳骨|足|鞋內暗器,死人工場^^22,增加任意強化值1點^10|增加任意強化值1點^10,22\n神貓卓,ネコ,涅可,Neko,洛雅,#5C8A72,,,13,07,班長,塔納托斯,繁華無序,0,0,0,,花園,取得記憶碎片,沉默寡言的小小人偶。\\n總是跟在露易絲身後。,,,,01,露易絲^依存^2,8,7,7,6,,,,,,死人工場^^12,增加任意強化值1點^10,12","部件":"部位,名稱,時機,COST,射程,效果,部件等級,最大行動值補正,說明\nスキル,號令,即時,2,參照效果,包含妳在內的舞台上全體姊妹，可以將指定的1個攻擊戰鬥動作以「即時」發動。,,0,\nスキル,死神,自動,無,自身,白刃攻擊的攻擊判定修正值可以+1。,,0,\nスキル,殺劇,自動,無,自身,戰鬥片段時，同回合中攻擊被姊妹當成攻擊目標的敵方對象時，可以讓自身攻擊判定值+1，傷害+1。,,0,\nスキル,業贓,自動,無,自身,戰鬥片段結束時，可以任選2個受損部件進行修復。,,0,\n頭,腦袋,自動,無,自身,最大行動值+2。,基本部件,2,\n頭,眼球,自動,無,自身,最大行動值+1。,基本部件,1,\n頭,齒顎,行動,2,0,肉體攻擊1。,基本部件,0,\n頭,獸耳,自動,無,自身,最大行動值+1。當這個部件使用在動作判定的時候，即使大失敗也不會損傷這個部件。,等級2變異部件,1,妳原本的耳朵被拿掉，替換成一對獸耳，獲得了已經滅亡的野獸的知覺。是可以使妳做出迅捷反應的器官，而且很可愛。\n頭,限制裝置,自動,無,自身,這個部件在戰鬥片段中損傷的時候，可以當場宣告最大行動值+2。戰鬥片段結束之前這個效果會一直持續，效果作用中的時候，這個部件無法修復。,等級1改造部件,0,\n頭,單分子纖維,行動,2,0~1,白刃攻擊1＋切斷＋連撃1。,等級3武裝部件,0,\n腕,拳頭,行動,2,0,肉體攻擊1。,基本部件,0,\n腕,手腕,裁判,1,0,支援1。,基本部件,0,\n腕,肩膀,行動,4,自身,移動1。,基本部件,0,\n腕,斬骨刀,行動,2,0,白刃攻擊2。,等級1武裝部件,0,\n腕,尖刺迸發,傷害,1,自身,自身給予目標傷害的時候可以使用。白刃、肉體傷害+2。,等級2改造部件,0,\n胴,脊椎,行動,1,自身,同一輪內，下個回合1個戰鬥動作的消耗值-1(最低為0)。,基本部件,0,\n胴,內臟,自動,無,自身,無。,基本部件,0,\n胴,黑曜石墜鍊(寶物),自動,無,無,戰鬥結束時，選擇減少任意依戀1點補神屬力點數。這個部件損傷的時候，將會被直接移除。,寶物,0,\n胴,拼接製品,自動,無,自身,戰鬥片段結束時，這個部件與1個損傷的基本部件都可以自動修復。,等級1變異部件,0,\n脚,腳骨,行動,3,自身,移動1。,基本部件,0,\n脚,足,裁判,1,0,妨礙1。,基本部件,0,\n脚,鞋內暗器,行動,2,0,白刃攻擊2，攻擊判定修正值+1。,等級2武裝部件,0,","暗示":"編號,名稱,說明\n07,渴望,\"強烈想得到某種事物、無法被滿足的心情。\"","傾向":"名稱,原文,說明\n班長,Sorority,\"守護並統率姊妹的傾向。\"","類型":"名稱,原文,說明,武裝,變異,改造\n活潑女孩,Stacy,擁有奉獻自身與不朽的特性，堅強的屍體少女。,1,1,\n塔納托斯,Thanatos,擅長白刃戰的戰場女神。,1,,1\n恐怖異端,Gothic,啃噬死人的異端，捕食者。,,1,1\n鎮魂殺手,Requiem,長距離攻擊有著優異表現的使槍人偶。,2,,\n繁華無序,Baroque,具有如同異形般扭曲肉體的怪物。,,2,\n羅馬風采,Romanesque,跳著優雅舞蹈的褪色舞女。,,,2\n迷幻人偶,Psychedelic,超能力娃娃。,,,1","記憶碎片":"編號,標題,記憶內容\n50,槍聲,\"瞬間的爆裂音、傳出奇怪焦臭味的聲音，妳的胸口湧出一股熱流，接著翻身向後，然後妳……的記憶到這裡就中斷了。不過那樣的聲響，跟現在每天都會聽到的爆裂聲相當類似。\"\n95,死亡到來,\"妳不記得臉孔與名字。不過，有個很重要的人死了。那個人死的時候妳很悲傷，胸口就像被硬生生挖去般的空虛。可是在妳死而復生的今天，妳慶幸那個人是真的好好地死去。\"\n98,殺戮天使,\"有誰教會了妳殺人的技巧，毫無疑問，妳已經殺過好幾個活生生的人類了。只要殺人就會得到獎賞，現在在這個死不了的世界當中，這個持續殺戮的世界當中，只要繼續殺下去的話，也可以得到獎勵嗎？\"\n01,藍天,\"天空確實是藍的，不像現在骯髒渾濁的暗鉛色天空一樣。妳所知道的天空，是無邊無際的通透藍天，這樣的天空在過去是如此理所當然存在著，到了現在，大概已經沒有機會能夠再見了吧。\"","死後經歷":"編號,名稱,經歷內容\n01,反抗者,妳是被創造出來、恣意使喚、隨意凌虐的人偶。是為了看見痛苦的樣子，而被賦予了人格。所以妳終於起而反抗。反復計畫過的行動，為了打倒可恨的死靈法師……最後失敗了。不過妳沒有放棄，這一次絕對會成功。","依戀內容":"名稱,發狂內容,概述,發狂,發狂對白\n依存,妳的最大行動值減少2。,對妳而言，那是不能沒有的存在。如果那個人不在的話，妳會無法承受。,幼兒退行,「別讓我一個人……不要這樣、好恐怖哦……」\n憧憬,戰鬥當中，妳跟「依戀的對象」處於同樣區域的時候，無法宣告「移動以外的戰鬥宣言」，此外妳沒有辦法把「自身」與「依戀對象」以外的單位當成移動對象。,,,\n信賴,除了妳以外的所有姊妹，最大行動值減少1。,,,","寵愛點消耗":"名稱,消耗,說明\n增加任意強化值1點,10,\"增加的強化值可以獲得新增的對應強化部件。\"","技能":"類別,所屬,名稱,時機,COST,射程,效果,說明\n傾向,班長,號令,即時,2,參照效果,包含妳在內的舞台上全體姊妹，可以將指定的1個攻擊戰鬥動作以「即時」發動。,班長傾向專屬技能\n類型,塔納托斯,死神,自動,無,自身,白刃攻擊的攻擊判定修正值可以+1。,塔納托斯類型專屬技能\n類型,塔納托斯,殺劇,自動,無,自身,戰鬥片段時，同回合中攻擊被姊妹當成攻擊目標的敵方對象時，可以讓自身攻擊判定值+1，傷害+1。,塔納托斯類型專屬技能\n類型,繁華無序,業贓,自動,無,自身,戰鬥片段結束時，可以任選2個受損部件進行修復。,繁華無序類型專屬技能\n類型,迷幻人偶,幻痛,行動,3,1~2,對1個目標造成精神干擾，該目標下次判定值-1。,迷幻人偶類型專屬技能（範例，請自行替換官方資料）\n類型,鎮魂殺手,狙擊,行動,2,3,射擊攻擊2，攻擊判定修正值+1。,鎮魂殺手類型專屬技能（範例）\n傾向,阿宅,考察,自動,無,自身,記憶碎片相關判定時可獲得有利。,阿宅傾向專屬技能（範例）","區段圖示":"區段,圖片路徑\nスキル,images/icon_skill.png\n頭,images/icon_head.png\n腕,images/icon_arm.png\n胴,images/icon_torso.png\n脚,images/icon_leg.png"},"images":{},"title":"您的人偶名冊"};var VIEW_ONLY=true;</script><script id="app-script">
 (function(){
 "use strict";
 var $=function(id){return document.getElementById(id);};
@@ -361,6 +452,7 @@ function buildDB(csv){
   DB.incl=mkMap("名稱","傾向");
   DB.type=mkMap("名稱","類型");
   DB.mem =mkMap("編號","記憶碎片");
+  DB.death=mkMap("編號","死後經歷");
   DB.att =mkMap("名稱","依戀內容");
   DB.cost=mkMap("名稱","寵愛點消耗");
   DB.part={}; DB.partByArea={};
@@ -371,7 +463,28 @@ function buildDB(csv){
   });
   iconMap={};
   (parseCSV(csv["區段圖示"]||"")).forEach(function(r){ if(r["區段"])iconMap[r["區段"]]=r["圖片路徑"]; });
+  /* 技能資料庫（與部件獨立，對應傾向／類型） */
+  DB.skill={}; DB.skillByIncl={}; DB.skillByType={};
+  (parseCSV(csv["技能"]||"")).forEach(function(r){
+    var nm=r["名稱"]||"";if(!nm)return;
+    DB.skill[nm]=r;
+    var cat=r["類別"]||"",own=r["所屬"]||"";
+    if(cat==="傾向")(DB.skillByIncl[own]=DB.skillByIncl[own]||[]).push(r);
+    else if(cat==="類型")(DB.skillByType[own]=DB.skillByType[own]||[]).push(r);
+  });
   chars=parseCSV(csv["角色"]||"");
+}
+
+/* 技能取用輔助 */
+function skillsOfIncl(nm){return DB.skillByIncl[nm]||[];}
+function skillsOfType(nm){return DB.skillByType[nm]||[];}
+function skillItemsFrom(list){return list.map(function(r){return {v:r["名稱"],label:r["名稱"],sub:(r["說明"]||r["效果"]||"").slice(0,40)};});}
+/* 第5個以後可自由選：所有技能，但若主/輔未選迷幻人偶，排除迷幻人偶技能 */
+function freeSkillItems(mainType,subType){
+  var allowPsy=(mainType==="迷幻人偶"||subType==="迷幻人偶");
+  return Object.keys(DB.skill).filter(function(nm){
+    var r=DB.skill[nm];return allowPsy||!(r["類別"]==="類型"&&r["所屬"]==="迷幻人偶");
+  }).map(function(nm){var r=DB.skill[nm];return {v:nm,label:nm,sub:(r["所屬"]||"")+"　"+(r["說明"]||r["效果"]||"").slice(0,30)};});
 }
 
 /* ── 圖片對應 ─────────────────────────────── */
@@ -390,18 +503,44 @@ function resolveImg(path){
 /* ── 色彩工具 ─────────────────────────────── */
 function toRGB(hex){hex=(hex||"#93799f").replace("#","");if(hex.length===3)hex=hex.split("").map(function(c){return c+c;}).join("");var n=parseInt(hex,16);return[(n>>16)&255,(n>>8)&255,n&255];}
 function readable(rgb){var l=(.299*rgb[0]+.587*rgb[1]+.114*rgb[2]);if(l<150)return"rgb("+rgb.join(",")+")";var f=Math.max(.4,150/l);return"rgb("+rgb.map(function(v){return Math.round(v*f);}).join(",")+")";}
-function applyColor(hex){var rgb=toRGB(hex);document.documentElement.style.setProperty("--c",hex||"#93799f");document.documentElement.style.setProperty("--c-rgb",rgb.join(","));document.documentElement.style.setProperty("--c-text",readable(rgb));}
+function softColor(rgb){return "rgb("+rgb.map(function(v){return Math.round(v+(255-v)*0.86);}).join(",")+")";}
+function applyColor(hex){var rgb=toRGB(hex);document.documentElement.style.setProperty("--c",hex||"#93799f");document.documentElement.style.setProperty("--c-rgb",rgb.join(","));document.documentElement.style.setProperty("--c-text",readable(rgb));document.documentElement.style.setProperty("--c-soft",softColor(rgb));}
 
 /* ── 小工具：切割編碼 ─────────────────────── */
-function pipes(s){return (s||"").split("|").map(function(x){return x.trim();}).filter(Boolean);}
+function pipes(s){return (s||"").split(/[|｜]/).map(function(x){return x.trim();}).filter(Boolean);}
 function carets(s){return (s||"").split("^").map(function(x){return x.trim();});}
 
-/* 損傷標記：部件名稱後綴「*」表示已損傷 */
+/* 部件 token 編碼：name[^寶物][*]　*=損傷、^寶物=自訂寶物 */
 var DMG="*";
-function splitDmg(tok){tok=String(tok||"").trim();var d=false;while(tok.slice(-1)===DMG){d=true;tok=tok.slice(0,-1);}return {name:tok.trim(),dmg:d};}
+function parseTok(tok){
+  tok=String(tok||"").trim();
+  var dmg=false;while(tok.slice(-1)===DMG){dmg=true;tok=tok.slice(0,-1);}
+  var treasure=false,name=tok;
+  if(tok.indexOf("^")>=0){var segs=tok.split("^");name=segs[0];if(segs.indexOf("寶物")>=0)treasure=true;}
+  return {name:name.trim(),dmg:dmg,treasure:treasure};
+}
+function makeTok(t){return t.name+(t.treasure?"^寶物":"")+(t.dmg?DMG:"");}
+/* 舊介面（僅損傷）：保留給既有呼叫 */
+function splitDmg(tok){var t=parseTok(tok);return {name:t.name,dmg:t.dmg};}
 function joinDmg(name,dmg){return name+(dmg?DMG:"");}
-function partTokens(field){return pipes(field).map(splitDmg);}          /* → [{name,dmg}] */
+function partTokens(field){return pipes(field).map(parseTok);}          /* → [{name,dmg,treasure}] */
 function partNames(field){return partTokens(field).map(function(t){return t.name;});}
+
+/* 寶物模板：某部位的寶物資料（除名稱外皆固定，不可更改） */
+function treasureTpl(area){
+  var list=DB.partByArea[area]||[];
+  for(var i=0;i<list.length;i++)if(list[i]["部件等級"]==="寶物")return list[i];
+  for(var k in DB.part)if(DB.part[k]["部件等級"]==="寶物")return DB.part[k];
+  return {"部件等級":"寶物","時機":"","COST":"","射程":"","效果":"","最大行動值補正":"","說明":""};
+}
+/* 解析某 token 對應的部件資料列 */
+function resolvePart(area,t){
+  if(area==="スキル"&&DB.skill&&DB.skill[t.name])return DB.skill[t.name];
+  var p=DB.part[area+"||"+t.name];
+  if(p)return p;
+  if(t.treasure)return treasureTpl(area);
+  return {名稱:t.name};
+}
 
 /* 某部位的基本部件名稱 */
 function basicsOf(area){return (DB.partByArea[area]||[]).filter(function(r){return r["部件等級"]==="基本部件";}).map(function(r){return r["名稱"];});}
@@ -410,7 +549,7 @@ function effectiveTokens(area,field){
   var toks=partTokens(field);
   if(toks.length)return toks;
   if(area==="スキル")return [];
-  return basicsOf(area).map(function(n){return {name:n,dmg:false};});
+  return basicsOf(area).map(function(n){return {name:n,dmg:false,treasure:false};});
 }
 /* 部件加成（行動值 B）＝所有未損傷、實際擁有部件的「最大行動值補正」總和 */
 var AREAS=["スキル","頭","腕","胴","脚"];
@@ -425,6 +564,13 @@ function computeActionB(c){
 }
 var BASE_ACT=6;                       /* 基礎行動值固定 6 */
 
+/* 主要類型＋輔助類型帶來的武裝/變異/改造補正（欄位已從角色 CSV 移除，改由類型自動加算） */
+function typeMod(mainType,subType,key){
+  var a=DB.type[mainType],b=DB.type[subType];
+  return (a?(parseInt(a[key],10)||0):0)+(b?(parseInt(b[key],10)||0):0);
+}
+/* 基礎強化值＝類型補正 ＋（被選取的強化 +1） */
+function baseMod(c,key){return typeMod(c["主要類型"],c["輔助類型"],key)+(c["強化選擇"]===key?1:0);}
 /* 名冊標題 */
 var archiveTitle=(window.__DATA__.title||"您的人偶名冊");
 function applyTitle(){
@@ -457,7 +603,7 @@ function renderGallery(){
     var cat=o.c["分類"]||"未分類";
     if(cat!==last){if(last!==null)h+='</div>';last=cat;h+='<div class="gp-cat">'+esc(cat)+'<span class="n">'+counts[cat]+'</span></div><div class="gp-grid">';}
     var c=o.c,rgb=toRGB(c["代表色"]),src=resolveImg(c["頭像"]);
-    var vars='--c:'+esc(c["代表色"]||"#93799f")+';--c-rgb:'+rgb.join(",")+';--c-text:'+readable(rgb)+';';
+    var vars='--c:'+esc(c["代表色"]||"#93799f")+';--c-rgb:'+rgb.join(",")+';--c-text:'+readable(rgb)+';--c-soft:'+softColor(rgb)+';';
     h+='<button class="gp-card" type="button" data-go="'+o.i+'" style="'+vars+'"><span class="pic">'+
        (src?'<img src="'+esc(src)+'" alt="'+esc(nameOf(c))+'" loading="lazy" onerror="this.parentNode.innerHTML=\'<span class=&quot;fb&quot;>'+esc(nameOf(c).charAt(0))+'</span>\'">':'<span class="fb">'+esc(nameOf(c).charAt(0))+'</span>')+
        '</span><span class="nm">'+esc(nameOf(c))+'</span><span class="rd">'+esc(readingOf(c))+'</span></button>';
@@ -479,23 +625,28 @@ function secIcon(area){
   return '<span class="sec-ico">'+(p?'<img src="'+esc(p)+'" alt="" onerror="this.parentNode.textContent=\''+fallback+'\'">':'<span style="color:#c6c0d2;font-family:var(--serif);font-size:11px">'+fallback+'</span>')+'</span>';
 }
 
+function areaLabel(area){return area==="スキル"?"技能":area;}
 function partSection(area,field,judge){
   var toks=effectiveTokens(area,field);
   var badge=judge?'<span class="badge">攻擊判定值 '+esc(judge)+'</span>':"";
-  var head='<h3>'+secIcon(area)+area+badge+'</h3>';
+  var head='<h3>'+secIcon(area)+areaLabel(area)+badge+'</h3>';
   if(!toks.length)return '<div class="card">'+head+'<div class="body"><div class="sec-empty">（無）</div></div></div>';
   var isSkill=area==="スキル";
+  /* 技能表與部件表欄位對齊：損傷欄留空、無等級欄 */
   var thead=isSkill
-    ?'<tr><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th></tr>'
+    ?'<tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th></tr>'
     :'<tr><th>損傷</th><th>使用</th><th>名稱</th><th>時機</th><th>COST</th><th>射程</th><th>效果</th><th>等級</th></tr>';
   var body=toks.map(function(t){
-    var nm=t.name, p=DB.part[area+"||"+nm]||{名稱:nm};
-    var base=p["部件等級"]==="基本部件", lvl=p["部件等級"]||"";
+    var nm=t.name, p=resolvePart(area,t);
+    var base=p["部件等級"]==="基本部件", lvl=t.treasure?"寶物":(p["部件等級"]||"");
+    var isTre=t.treasure||p["部件等級"]==="寶物";
+    var tip=p["說明"]?' data-tip="'+esc(p["說明"])+'"':"";
     var use='<td class="ctr"><input type="checkbox" class="use-cb" aria-label="使用"></td>';
-    var common='<td class="nm">'+esc(nm)+'</td><td class="ctr">'+esc(p["時機"]||"")+'</td><td class="ctr">'+esc(p["COST"]||"")+'</td><td class="ctr">'+esc(p["射程"]||"")+'</td><td class="eff">'+nl(p["效果"]||"")+'</td>';
-    if(isSkill)return '<tr>'+use+common+'</tr>';
+    var nmCell='<td class="nm">'+esc(nm)+(isTre?' <span class="tre-badge">(寶物)</span>':"")+'</td>';
+    var common=nmCell+'<td class="ctr">'+esc(p["時機"]||"")+'</td><td class="ctr">'+esc(p["COST"]||"")+'</td><td class="ctr">'+esc(p["射程"]||"")+'</td><td class="eff">'+nl(p["效果"]||"")+'</td>';
+    if(isSkill)return '<tr'+tip+'><td class="ctr"></td>'+use+common+'</tr>';
     var dmg='<td class="ctr"><input type="checkbox" class="dmg-cb" aria-label="損傷"'+(t.dmg?" checked":"")+'></td>';
-    return '<tr class="'+(base?"":"enh")+(t.dmg?" dmg":"")+'" data-area="'+esc(area)+'" data-name="'+esc(nm)+'">'+dmg+use+common+'<td class="lv'+(base?" base":"")+'">'+esc(lvl)+'</td></tr>';
+    return '<tr class="'+(base?"":"enh")+(isTre?" tre":"")+(t.dmg?" dmg":"")+'" data-area="'+esc(area)+'" data-name="'+esc(nm)+'" data-treasure="'+(t.treasure?"1":"")+'"'+tip+'>'+dmg+use+common+'<td class="lv'+(base?" base":"")+'">'+esc(lvl)+'</td></tr>';
   }).join("");
   return '<div class="card">'+head+'<table class="pt-table" data-area="'+esc(area)+'"><thead>'+thead+'</thead><tbody>'+body+'</tbody></table></div>';
 }
@@ -504,52 +655,78 @@ function renderDetail(){
   var c=chars[state.sel],box=$("main");
   if(!c){renderGallery();return;}
   applyColor(c["代表色"]);
+  var isView=(typeof VIEW_ONLY!=="undefined"&&VIEW_ONLY);
 
   /* 參照展開 */
   var hint=DB.hint[c["暗示"]], hintTxt=hint?(c["暗示"]+"-"+hint["名稱"]):(c["暗示"]||"—");
-  var incl=DB.incl[c["傾向"]], inclTxt=incl?(c["傾向"]+" <span class=\"en\">"+esc(incl["原文"])+"</span>"):esc(c["傾向"]||"—");
-  var t1=DB.type[c["主要類型"]], t1Txt=t1?(esc(c["主要類型"])+" <span class=\"en\">"+esc(t1["原文"])+"</span>"):esc(c["主要類型"]||"—");
-  var t2=DB.type[c["輔助類型"]], t2Txt=t2?(esc(c["輔助類型"])+" <span class=\"en\">"+esc(t2["原文"])+"</span>"):esc(c["輔助類型"]||"—");
+  var hintTip=hint?(hint["說明"]||""):"";
+  var incl=DB.incl[c["傾向"]], inclTip=incl?(incl["說明"]||""):"";
+  var inclTxt=incl?(c["傾向"]+" <span class=\"en\">"+esc(incl["原文"])+"</span>"):esc(c["傾向"]||"—");
+  function typeTxt(nm){var t=DB.type[nm];if(!t)return esc(nm||"—");
+    var mods=[["武裝",t["武裝"]],["變異",t["變異"]],["改造",t["改造"]]].filter(function(m){return +m[1];}).map(function(m){return m[0]+"+"+m[1];}).join("、");
+    var tip=(t["說明"]||"");
+    return '<span'+(tip?' data-tip="'+esc(tip.trim())+'"':"")+'>'+esc(nm)+' <span class="en">'+esc(t["原文"])+'</span>'+(mods?' <span class="tmod">'+esc(mods)+'</span>':"")+'</span>';
+  }
 
   var actA=BASE_ACT, actB=computeActionB(c);
 
-  /* 人偶設計圖（左上，維持原圖比例、不放大到滿版） */
-  var iconSrc=resolveImg(c["全身圖"]||c["頭像"]);
-  var portrait='<div class="card"><h3>人偶設計圖</h3><div class="portrait">'+
-    (iconSrc?'<img src="'+esc(iconSrc)+'" alt="'+esc(nameOf(c))+'" onclick="__zoom(this.src)" style="cursor:zoom-in" onerror="this.parentNode.innerHTML=\'<span class=&quot;fb&quot;>'+esc(nameOf(c).charAt(0))+'</span>\'">':'<span class="fb">'+esc(nameOf(c).charAt(0))+'</span>')+'</div>';
-  var variants=pipes(c["差分"]);
-  if(variants.length){portrait+='<div class="body"><div class="variants">'+variants.map(function(v){return '<img src="'+esc(resolveImg(v))+'" alt="差分" onclick="__zoom(this.src)">';}).join("")+'</div></div>';}
-  portrait+='</div>';
+  /* 人偶設計圖：全身圖可多張（｜分隔），多張時顯示左右箭頭切換，預設第一張 */
+  var fulls=pipes(c["全身圖"]);if(!fulls.length&&c["頭像"])fulls=[c["頭像"]];
+  var multi=fulls.length>1;
+  var portrait='<div class="card" id="cardPortrait"><h3>人偶設計圖'+(multi?' <span class="pf-count"><span id="pfCur">1</span>/'+fulls.length+'</span>':"")+'</h3><div class="portrait">';
+  if(fulls.length){
+    portrait+='<div class="pf-frame"'+(multi?' data-imgs="'+esc(JSON.stringify(fulls.map(resolveImg)))+'"':"")+'>'+
+      fulls.map(function(v,i){return '<img class="pf-img'+(i===0?" on":"")+'" data-i="'+i+'" data-fb="'+esc(nameOf(c).charAt(0))+'" src="'+esc(resolveImg(v))+'" alt="'+esc(nameOf(c))+'" onclick="__zoom(this.src)" onerror="window.__imgFail(this)">';}).join("")+'</div>';
+    if(multi)portrait+='<button class="pf-nav pf-prev" type="button" aria-label="上一張">‹</button><button class="pf-nav pf-next" type="button" aria-label="下一張">›</button>';
+  }else{
+    portrait+='<span class="fb">'+esc(nameOf(c).charAt(0))+'</span>';
+  }
+  portrait+='</div></div>';
 
-  var persona=c["外貌與個性"]?'<div class="card"><h3>外貌與個性</h3><div class="body"><div class="persona">'+nl(c["外貌與個性"])+'</div></div></div>':"";
+  var persona='<div class="card" id="cardPersona"><h3>外貌與個性</h3><div class="body scroll-body"><div class="persona">'+(c["外貌與個性"]?nl(c["外貌與個性"]):'<span class="sec-empty">（無）</span>')+'</div></div></div>';
 
-  var info='<div class="card"><h3>基本資料</h3><div class="body">'+rowsDL([
+  var info='<div class="card" id="cardInfo"><h3>基本資料</h3><div class="body">'+rowsDL([
     ["人偶名稱",esc(c["人偶名稱"]||nameOf(c))],
     ["玩家名稱",esc(c["玩家名稱"]||"—")],
     ["享年",esc(c["享年"]||"—")],
-    ["暗示",esc(hintTxt)],
-    ["傾向",inclTxt],
-    ["主要類型",t1Txt],
-    ["輔助類型",t2Txt],
+    ["暗示",'<span'+(hintTip?' data-tip="'+esc(hintTip)+'"':"")+'>'+esc(hintTxt)+'</span>'],
+    ["傾向",'<span'+(inclTip?' data-tip="'+esc(inclTip)+'"':"")+'>'+inclTxt+'</span>'],
+    ["主要類型",typeTxt(c["主要類型"])],
+    ["輔助類型",typeTxt(c["輔助類型"])],
     ["寵愛點",'<span style="font-family:var(--util);font-weight:600;color:var(--c-text)">'+esc(c["寵愛點"]||"0")+'</span>']
   ])+'</div></div>';
 
-  var stat='<div class="card"><h3>強化值 · 最大行動值</h3><div class="body">'+
+  /* 死後經歷（讀死後經歷資料庫） */
+  var dno=c["死後經歷編號"],drec=DB.death[dno];
+  var dTitle=drec?(drec["名稱"]||""):(c["死後經歷標題"]||"");
+  var dBody=drec?(drec["經歷內容"]||""):(c["死後經歷內容"]||"");
+  var deathCard=(dTitle||dBody)?'<div class="card" id="cardDeath"><h3>死後經歷</h3><div class="body">'+
+    (dTitle?'<div style="font-family:var(--serif);font-weight:700;margin-bottom:4px">'+esc(dTitle)+(dno?' <span class="en" style="font-family:var(--util);color:var(--text-dim)">'+esc(dno)+'</span>':"")+'</div>':"")+
+    '<div style="font-size:13px;line-height:1.75;color:var(--text-mid)">'+nl(dBody)+'</div></div></div>':"";
+
+  var stat='<div class="card" id="cardStat"><h3>強化值 · 最大行動值</h3><div class="body">'+
     '<div class="stat-row">'+[["武裝","武裝加值"],["變異","變異加值"],["改造","改造加值"]].map(function(k){
-      var b=+c[k[1]]||0;return '<div class="box"><div class="k">'+k[0]+'</div><div class="v">'+esc(c[k[0]]||"0")+(b?'<span class="plus"> +'+b+'</span>':"")+'</div></div>';
+      var base=baseMod(c,k[0]);var plus=+c[k[1]]||0;var total=base+plus;var sel=c["強化選擇"]===k[0];
+      var tip=plus?' data-tip="加值 +'+plus+'"':"";
+      return '<div class="box'+(plus?" has-plus":"")+(sel?" sel":"")+'"'+tip+'><div class="k">'+k[0]+(sel?' <span class="sel-dot" title="選取強化 +1">＊</span>':"")+'</div><div class="v">'+total+'</div></div>';
     }).join("")+'</div>'+
-    '<div class="act-label">最大行動值　<span class="hintline">基礎 '+BASE_ACT+' ＋ 部件加成</span></div>'+
-    '<div class="act"><span class="n" title="基礎行動值">'+actA+'</span><span class="op">+</span><span class="n" id="actB" title="部件加成（未損傷部件的最大行動值補正總和）">'+actB+'</span><span class="eq">=</span><span class="tot" id="actTotal">'+(actA+actB)+'</span></div>'+
-    '<div class="sub-label">初期位置</div>'+
-    '<div class="chips">'+["煉獄","花園","樂園"].map(function(p){return '<span class="chip'+(c["初期配置"]===p?" on":"")+'">'+p+'</span>';}).join("")+'</div>'+
+    '<div class="act-ro" style="margin-top:12px">'+
+      '<span class="ro"><i>基礎行動值</i><b>'+actA+'</b></span><span class="op">＋</span>'+
+      '<span class="ro"><i>部件加成</i><b id="actB">'+actB+'</b></span><span class="op">＝</span>'+
+      '<span class="ro tot"><i>最大行動值</i><b id="actTotal">'+(actA+actB)+'</b></span>'+
+    '</div>'+
+    '</div></div>';
+
+  /* 初期位置（獨立卡、放大顯眼） */
+  var zone='<div class="card" id="cardZone"><h3>初期位置</h3><div class="body zone-body">'+
+    ["煉獄","花園","樂園"].map(function(p){var on=c["初期配置"]===p;return '<div class="zone-opt'+(on?" on":"")+'"><span class="zn">'+p+'</span>'+(on?'<span class="mk">現在位置</span>':"")+'</div>';}).join("")+
+    (["煉獄","花園","樂園"].indexOf(c["初期配置"])<0?'<div class="zone-none">未設定</div>':"")+
     '</div></div>';
 
   var karma=pipes(c["Karma"]);
-  var karmaCard=karma.length?'<div class="card"><h3>Karma · 目標</h3><div class="body"><ul class="klist">'+karma.map(function(k){return '<li>'+esc(k)+'</li>';}).join("")+'</ul></div></div>':"";
-
-  var deathCard=(c["死後經歷標題"]||c["死後經歷內容"])?'<div class="card"><h3>死後經歷</h3><div class="body">'+
-    (c["死後經歷標題"]?'<div style="font-family:var(--serif);font-weight:700;margin-bottom:4px">'+esc(c["死後經歷標題"])+(c["死後經歷編號"]?' <span class="en" style="font-family:var(--util);color:var(--text-dim)">#'+esc(c["死後經歷編號"])+'</span>':"")+'</div>':"")+
-    '<div style="font-size:12px;line-height:1.75;color:var(--text-mid)">'+nl(c["死後經歷內容"]||"")+'</div></div></div>':"";
+  var karmaCard='<div class="card" id="cardKarma"><h3>Karma · 目標</h3><div class="body scroll-body">'+
+    (karma.length?'<ul class="klist">'+karma.map(function(k){return '<li><label><input type="checkbox" class="karma-cb"> <span>'+esc(k)+'</span></label></li>';}).join("")+'</ul>':'<span class="sec-empty">（無）</span>')+
+    '</div></div>';
 
   var mems=pipes(c["記憶碎片"]);
   var memCard=mems.length?'<div class="card"><h3>記憶碎片</h3><div class="body">'+mems.map(function(no){
@@ -557,12 +734,30 @@ function renderDetail(){
     return '<div class="mem"><div class="h"><span class="no">'+esc(no)+'</span><span class="t">'+esc(m["標題"]||"—")+'</span></div>'+(m["記憶內容"]?'<div class="c">'+nl(m["記憶內容"])+'</div>':"")+'</div>';
   }).join("")+'</div></div>':"";
 
+  /* 依戀（狂氣可改、發狂顯示、tooltip） */
   var atts=pipes(c["依戀"]);
-  var attCard=atts.length?'<div class="card"><h3>依戀</h3><div class="body">'+atts.map(function(a){
+  var attCard=atts.length?'<div class="card"><h3>依戀</h3><div class="body">'+atts.map(function(a,ai){
     var f=carets(a),obj=f[0]||"",kind=f[1]||"",mad=+f[2]||0;
-    var madTxt=(DB.att[kind]||{})["發狂內容"]||"";
-    var dots="";for(var k=0;k<4;k++)dots+='<span class="dot'+(k<mad?" f":"")+'"></span>';
-    return '<div class="att"><div class="h"><span class="obj">'+esc(obj)+'</span><span class="kind">'+esc(kind)+'</span><span class="mad">'+dots+'</span></div>'+(madTxt?'<div class="c">'+nl(madTxt)+'</div>':"")+'</div>';
+    var rec=DB.att[kind]||{};
+    var summary=rec["概述"]||rec["發狂內容"]||"";
+    var maddened=mad>=4;
+    var tipArr=maddened
+      ?[rec["概述"]||""]
+      :[rec["發狂"]?"發狂："+rec["發狂"]:"",rec["發狂對白"]||"",rec["發狂內容"]||""];
+    tipArr=tipArr.filter(Boolean);
+    var tip=tipArr.length?' data-tip="'+esc(tipArr.join("\n"))+'"':"";
+    var dots="";
+    for(var k=0;k<4;k++)dots+='<span class="dot'+(k<mad?" f":"")+'" data-att="'+ai+'" data-dot="'+k+'" title="點擊設定狂氣點"></span>';
+    var head='<div class="h"><span class="obj">'+esc(obj)+'</span><span class="kind">'+esc(kind)+'</span><span class="mad">'+dots+'</span></div>';
+    var bodyHtml;
+    if(maddened){
+      bodyHtml='<div class="mad-state"><span class="mad-tag">發狂</span>'+(rec["發狂"]?'<b>'+esc(rec["發狂"])+'</b>':"")+
+        (rec["發狂對白"]?'<div class="mad-line">'+esc(rec["發狂對白"])+'</div>':"")+
+        (rec["發狂內容"]?'<div class="mad-rule">'+nl(rec["發狂內容"])+'</div>':"")+'</div>';
+    }else{
+      bodyHtml=summary?'<div class="c">'+nl(summary)+'</div>':"";
+    }
+    return '<div class="att'+(maddened?" maddened":"")+'"'+tip+'>'+head+bodyHtml+'</div>';
   }).join("")+'</div></div>':"";
 
   /* 劇本經歷 + 寵愛點 */
@@ -589,13 +784,35 @@ function renderDetail(){
     '<div class="sheet">'+
       '<div class="sheet-top"><div class="names"><h2 class="name">'+esc(nameOf(c))+'</h2>'+(readingOf(c)?'<div class="reading">'+esc(readingOf(c))+'</div>':"")+'</div>'+
       (c["玩家名稱"]?'<div class="player">玩家<b>'+esc(c["玩家名稱"])+'</b></div>':"")+
-      (typeof VIEW_ONLY!=="undefined"&&VIEW_ONLY?"":'<button class="edit-btn" type="button" onclick="__edit('+state.sel+')">✎ 編輯這名人偶</button>')+'</div>'+
+      (isView?"":'<button class="edit-btn" type="button" onclick="__edit('+state.sel+')">✎ 編輯這名人偶</button>')+'</div>'+
       '<div class="sheet-rule"></div>'+
-      '<div class="grid2">'+
-        '<div class="col-l">'+portrait+deathCard+memCard+attCard+logCard+'</div>'+
-        '<div class="col-r">'+info+stat+persona+karmaCard+parts+'</div>'+
+      '<div class="det-top">'+portrait+'<div class="mid-col">'+info+'</div>'+persona+'</div>'+
+      '<div class="det-mid det-mid3">'+stat+zone+karmaCard+'</div>'+
+      '<div class="grid2 det-rest">'+
+        '<div class="col-l">'+deathCard+memCard+attCard+logCard+'</div>'+
+        '<div class="col-r">'+parts+'</div>'+
       '</div>'+
     '</div>';
+
+  fixDetailHeights();
+}
+
+/* 依「標準卡」高度，把同列其他卡設成固定高度（僅檢視詳情頁用） */
+function fixDetailHeights(){
+  requestAnimationFrame(function(){
+    function match(refId,ids){
+      var ref=$(refId);if(!ref)return;var h=ref.offsetHeight;if(!h)return;
+      ids.forEach(function(id){var el2=$(id);if(el2){el2.style.height=h+"px";el2.classList.add("h-fixed");}});
+    }
+    /* 依「較高者」對齊：以強化值為基本高度，Karma 內容較長時兩者一起延伸 */
+    function matchMax(ids){
+      var hs=ids.map(function(id){var e=$(id);return e?e.offsetHeight:0;});
+      var max=Math.max.apply(null,hs);if(!max)return;
+      ids.forEach(function(id){var e=$(id);if(e){e.style.height=max+"px";e.classList.add("h-fixed");}});
+    }
+    match("cardInfo",["cardPortrait","cardPersona"]);   /* 依基本資料為準 */
+    matchMax(["cardStat","cardZone","cardKarma"]);       /* 以強化值為基本、取較高者 */
+  });
 }
 
 /* ══════════════════════════════════════════
@@ -633,7 +850,53 @@ document.addEventListener("click",function(e){
 $("homeBtn").addEventListener("click",home);
 $("search").addEventListener("input",function(e){state.filter=e.target.value;render();});
 window.__zoom=function(src){var lb=$("lightbox");lb.querySelector("img").src=src;lb.classList.add("on");};
+/* 全身圖抓不到圖時，改用預設畫面（角色首字底色卡），不破圖 */
+window.__imgFail=function(img){
+  var span=document.createElement("span");
+  span.className="pf-img fb"+(img.classList.contains("on")?" on":"");
+  span.setAttribute("data-i",img.getAttribute("data-i")||"0");
+  span.textContent=img.getAttribute("data-fb")||"？";
+  if(img.parentNode)img.parentNode.replaceChild(span,img);
+};
 $("lightbox").addEventListener("click",function(){this.classList.remove("on");});
+
+/* 詳情頁：全身圖多張切換 */
+$("main").addEventListener("click",function(e){
+  var nav=e.target.closest(".pf-nav");if(!nav)return;
+  var frame=nav.parentNode.querySelector(".pf-frame");if(!frame)return;
+  var imgs=[].slice.call(frame.querySelectorAll(".pf-img"));if(imgs.length<2)return;
+  var cur=imgs.findIndex(function(m){return m.classList.contains("on");});if(cur<0)cur=0;
+  var next=(cur+(nav.classList.contains("pf-next")?1:-1)+imgs.length)%imgs.length;
+  imgs[cur].classList.remove("on");imgs[next].classList.add("on");
+  var ind=$("pfCur");if(ind)ind.textContent=next+1;
+});
+$("main").addEventListener("click",function(e){
+  var dot=e.target.closest(".dot[data-att]");if(!dot)return;
+  if(state.mode==="edit"||state.sel<0)return;
+  var ai=+dot.getAttribute("data-att"),k=+dot.getAttribute("data-dot");
+  var c=chars[state.sel],arr=pipes(c["依戀"]);
+  if(ai<0||ai>=arr.length)return;
+  var f=carets(arr[ai]),cur=+f[2]||0;
+  var nv=(cur===k+1)?k:(k+1);           /* 點目前最高格→減一，否則設到該格 */
+  f[2]=String(nv);arr[ai]=f.join("^");c["依戀"]=arr.join("|");
+  window.__DATA__.csv["角色"]=serializeChars();
+  markDirty(state.sel);statusApplied();
+  renderDetail();
+});
+
+/* 滑鼠提示小窗（部件說明 / 依戀概述·發狂 / 類型說明） */
+(function(){
+  var tip=document.createElement("div");tip.id="tip";document.body.appendChild(tip);
+  var cur=null;
+  function pos(e){var pad=14,w=tip.offsetWidth,h=tip.offsetHeight,x=e.clientX+pad,y=e.clientY+pad;
+    if(x+w>window.innerWidth-8)x=e.clientX-w-pad;
+    if(y+h>window.innerHeight-8)y=e.clientY-h-pad;
+    tip.style.left=Math.max(6,x)+"px";tip.style.top=Math.max(6,y)+"px";}
+  document.addEventListener("mouseover",function(e){var t=e.target.closest?e.target.closest("[data-tip]"):null;
+    if(t){cur=t;tip.textContent=t.getAttribute("data-tip");tip.classList.add("on");pos(e);}});
+  document.addEventListener("mousemove",function(e){if(cur)pos(e);});
+  document.addEventListener("mouseout",function(e){if(cur&&(!e.relatedTarget||!cur.contains(e.relatedTarget))){cur=null;tip.classList.remove("on");}});
+})();
 
 /* 詳情頁：損傷勾選 → 紅底 + 寫回記憶體 + 重算行動值 */
 $("main").addEventListener("change",function(e){
@@ -644,19 +907,20 @@ $("main").addEventListener("change",function(e){
   tr.classList.toggle("dmg",cb.checked);
   var area=table.getAttribute("data-area"),c=chars[state.sel];
   var toks=[].slice.call(table.querySelectorAll("tbody tr")).map(function(r){
-    return joinDmg(r.getAttribute("data-name"),r.querySelector(".dmg-cb")&&r.querySelector(".dmg-cb").checked);
+    return makeTok({name:r.getAttribute("data-name"),dmg:!!(r.querySelector(".dmg-cb")&&r.querySelector(".dmg-cb").checked),treasure:r.getAttribute("data-treasure")==="1"});
   });
   c[AREA_FIELD[area]]=toks.join("|");           /* 損傷狀態寫回記憶體（匯出即保留） */
   window.__DATA__.csv["角色"]=serializeChars();
   var b=computeActionB(c),bEl=$("actB"),tEl=$("actTotal");
   if(bEl)bEl.textContent=b;if(tEl)tEl.textContent=BASE_ACT+b;
+  markDirty(state.sel);statusApplied();
 });
 
 /* ══════════════════════════════════════════
    載入 / 匯出（僅編輯器模式）
    ══════════════════════════════════════════ */
 function setStatus(html){var s=$("status");if(s)s.innerHTML=html;}
-var CSV_FILES=["角色","部件","暗示","傾向","類型","記憶碎片","依戀內容","寵愛點消耗","區段圖示"];
+var CSV_FILES=["角色","部件","暗示","傾向","類型","記憶碎片","死後經歷","依戀內容","寵愛點消耗","區段圖示","技能"];
 
 function boot(){
   buildDB(window.__DATA__.csv);
@@ -707,7 +971,7 @@ if(!VIEW_ONLY){
     var task=Promise.resolve({});
     if(embed){
       var wanted={};
-      chars.forEach(function(c){[c["頭像"],c["全身圖"]].concat(pipes(c["差分"])).forEach(function(p){if(p)wanted[p]=1;});});
+      chars.forEach(function(c){[c["頭像"]].concat(pipes(c["全身圖"])).forEach(function(p){if(p)wanted[p]=1;});});
       Object.keys(iconMap).forEach(function(k){if(iconMap[k])wanted[iconMap[k]]=1;});
       var jobs=Object.keys(wanted).map(function(path){
         var f=imgFiles[path]||imgFiles[path.split("/").pop()]||imgFiles["images/"+path.split("/").pop()];
@@ -740,7 +1004,7 @@ if(!VIEW_ONLY){
 var CHAR_COLS=(function(){
   var head=(window.__DATA__.csv["角色"]||"").replace(/^\uFEFF/,"").split(/\r?\n/)[0];
   var cols=head?head.split(","):[];
-  return cols.length?cols:["分類","人偶名稱","譯名","拼音","玩家名稱","代表色","頭像","全身圖","差分","享年","暗示","傾向","主要類型","輔助類型","武裝","變異","改造","武裝加值","變異加值","改造加值","行動值A","行動值B","初期配置","Karma","外貌與個性","死後經歷標題","死後經歷編號","死後經歷內容","記憶碎片","依戀","頭判定","腕判定","胴判定","脚判定","技能","頭部件","腕部件","胴部件","脚部件","劇本經歷","寵愛點消耗","寵愛點"];
+  return cols.length?cols:["分類","人偶名稱","譯名","拼音","玩家名稱","代表色","頭像","全身圖","享年","暗示","傾向","主要類型","輔助類型","武裝加值","變異加值","改造加值","強化選擇","初期配置","Karma","外貌與個性","死後經歷標題","死後經歷編號","死後經歷內容","記憶碎片","依戀","頭判定","腕判定","胴判定","脚判定","技能","頭部件","腕部件","胴部件","脚部件","劇本經歷","寵愛點消耗","寵愛點"];
 })();
 
 function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
@@ -798,6 +1062,7 @@ function combo(items,opts){
 function partItems(area){return (DB.partByArea[area]||[]).map(function(r){var lv=r["部件等級"]||"";return {v:r["名稱"],label:r["名稱"],sub:(lv?lv+"　":"")+(r["效果"]||"").replace(/\\n|\n/g," ")};});}
 function hintItems(){return Object.keys(DB.hint).map(function(k){var r=DB.hint[k];return {v:k,label:r["名稱"]||k,sub:k+"　"+(r["說明"]||"")};});}
 function memItems(){return Object.keys(DB.mem).map(function(k){var r=DB.mem[k];return {v:k,label:r["標題"]||k,sub:k+"　"+(r["記憶內容"]||"").slice(0,40)};});}
+function deathItems(){return Object.keys(DB.death).map(function(k){var r=DB.death[k];return {v:k,label:r["名稱"]||k,sub:k+"　"+(r["經歷內容"]||"").slice(0,40)};});}
 function inclItems(){return Object.keys(DB.incl).map(function(k){var r=DB.incl[k];return {v:k,label:k,sub:(r["原文"]||"")+"　"+(r["說明"]||"")};});}
 function typeItems(){return Object.keys(DB.type).map(function(k){var r=DB.type[k];return {v:k,label:k,sub:(r["原文"]||"")+"　"+(r["說明"]||"")};});}
 function attItems(){return Object.keys(DB.att).map(function(k){var r=DB.att[k];return {v:k,label:k,sub:(r["發狂內容"]||"").slice(0,44)};});}
@@ -819,6 +1084,15 @@ function linkNumName(numInp,cb,map){
 
 var ED={};              /* 目前編輯器的 DOM 參照 */
 var editIndex=-1;
+/* 追蹤「已套用但尚未匯出」的角色（以索引記錄，顯示時再取名字） */
+var dirtyIdx=[];
+function markDirty(i){if(i>=0&&dirtyIdx.indexOf(i)<0)dirtyIdx.push(i);}
+function dirtyNames(){return dirtyIdx.filter(function(i){return i<chars.length;}).map(function(i){return nameOf(chars[i]);});}
+function statusApplied(){
+  var ns=dirtyNames();
+  if(!ns.length){setStatus("");return;}
+  setStatus("已套用（尚未匯出）："+ns.map(function(n){return "<b>"+esc(n)+"</b>";}).join("、")+"　·　可繼續編輯，最後於工具列按「匯出角色 CSV」一次存出");
+}
 
 function field(label,node,tip){
   var f=el("div","fld");f.appendChild(el("label",null,esc(label)));f.appendChild(node);
@@ -881,7 +1155,7 @@ function spendRow(nm,cost){
   return item;
 }
 
-/* 部件分區：可搜尋下拉加入，chips 可排序刪除 */
+/* 部件分區：可搜尋下拉加入，chips 可排序刪除；另可加入自訂名稱的寶物 */
 function partArea(area,judgeKey,tokens,judge,onChange){
   var box=el("div","ptbox");
   var h=el("h4",null,'<span>'+esc(area)+'</span>');
@@ -894,12 +1168,19 @@ function partArea(area,judgeKey,tokens,judge,onChange){
   function refresh(){
     if(!list.querySelector(".pchip")){list.innerHTML='<span class="ed-empty">'+(area==="スキル"?"尚未加入技能":"未加入 → 匯出後將自動帶入基本部件")+'</span>';}
   }
-  function addChip(nm,dmg){
+  function addChip(nm,dmg,treasure){
     var empt=list.querySelector(".ed-empty");if(empt)empt.remove();
-    var rec=DB.part[area+"||"+nm]||{};
+    var rec=treasure?treasureTpl(area):(DB.part[area+"||"+nm]||{});
     var base=rec["部件等級"]==="基本部件";
-    var chip=el("span","pchip"+(dmg?" dmg":""));
-    chip.appendChild(el("span",null,esc(nm)+(base?' <span class="base" style="font-size:10px;color:var(--text-dim)">基本</span>':"")));
+    var chip=el("span","pchip"+(dmg?" dmg":"")+(treasure?" tre":""));
+    if(treasure){
+      /* 寶物：名稱可自訂，其餘資料固定 */
+      var tin=el("input");tin.type="text";tin.className="tre-in";tin.value=nm||"寶物";tin.size=6;tin.placeholder="寶物名稱";
+      tin.oninput=function(){chip._nm=tin.value.trim()||"寶物";};
+      chip.appendChild(el("span","tre-tag","(寶物)"));chip.appendChild(tin);
+    }else{
+      chip.appendChild(el("span",null,esc(nm)+(base?' <span class="base" style="font-size:11px;color:var(--text-dim)">基本</span>':"")));
+    }
     if(area!=="スキル"){
       var lbl=el("label","dmg-toggle");var dc=el("input");dc.type="checkbox";dc.checked=!!dmg;
       dc.onchange=function(){chip.classList.toggle("dmg",dc.checked);chip._dmg=dc.checked;fire();};
@@ -910,14 +1191,65 @@ function partArea(area,judgeKey,tokens,judge,onChange){
     var dn=el("button",null,"▸");dn.type="button";dn.title="後移";dn.onclick=function(){if(chip.nextElementSibling)list.insertBefore(chip.nextElementSibling,chip);};
     var rm=el("button",null,"✕");rm.type="button";rm.title="移除";rm.onclick=function(){chip.remove();refresh();fire();};
     mv.appendChild(up);mv.appendChild(dn);chip.appendChild(mv);chip.appendChild(rm);
-    chip._nm=nm;chip._dmg=!!dmg;list.appendChild(chip);
+    chip._nm=nm||(treasure?"寶物":"");chip._dmg=!!dmg;chip._tre=!!treasure;list.appendChild(chip);
   }
-  cb.onPick=function(v){if(v){addChip(v,false);cb.set("",true);cb.input.value="";cb.input.focus();fire();}};
-  (tokens||[]).forEach(function(t){addChip(t.name,t.dmg);});refresh();
-  box._get=function(){return [].slice.call(list.querySelectorAll(".pchip")).map(function(c){return joinDmg(c._nm,c._dmg);});};
-  box._names=function(){return [].slice.call(list.querySelectorAll(".pchip")).map(function(c){return {name:c._nm,dmg:c._dmg};});};
+  cb.onPick=function(v){if(v){addChip(v,false,false);cb.set("",true);cb.input.value="";cb.input.focus();fire();}};
+  var bTre=el("button","addbtn tre-add","＋ 寶物（自訂名稱）");bTre.type="button";
+  bTre.onclick=function(){addChip("寶物",false,true);refresh();fire();};
+  box.appendChild(bTre);
+  (tokens||[]).forEach(function(t){addChip(t.name,t.dmg,t.treasure);});refresh();
+  box._get=function(){return [].slice.call(list.querySelectorAll(".pchip")).map(function(c){return makeTok({name:c._nm,dmg:c._dmg,treasure:c._tre});});};
+  box._names=function(){return [].slice.call(list.querySelectorAll(".pchip")).map(function(c){return {name:c._nm,dmg:c._dmg,treasure:c._tre};});};
   box._judge=function(){return judge||"";};
   box._area=area;
+  return box;
+}
+
+/* 技能編輯器：依位置規則從技能資料庫選取 */
+function skillEditor(initialSkills,getIncl,getMain,getSub){
+  var box=el("div","skill-ed");
+  var slotWrap=el("div","skill-slots");box.appendChild(slotWrap);
+  box.appendChild(el("div","skill-free-t","第 5 個以後 · 自由選擇（未選迷幻人偶則不含其技能）"));
+  var freeWrap=el("div","rowlist");box.appendChild(freeWrap);
+  var addFree=el("button","addbtn","＋ 加入技能（自由）");addFree.type="button";box.appendChild(addFree);
+  var slots=[],frees=[];
+  function slotDef(i){
+    if(i===0)return {label:"第 1 技能 · 傾向技能",owner:getIncl(),items:skillItemsFrom(skillsOfIncl(getIncl()))};
+    if(i===1)return {label:"第 2 技能 · 主要類型技能",owner:getMain(),items:skillItemsFrom(skillsOfType(getMain()))};
+    if(i===2)return {label:"第 3 技能 · 主要類型技能",owner:getMain(),items:skillItemsFrom(skillsOfType(getMain()))};
+    return {label:"第 4 技能 · 輔助類型技能",owner:getSub(),items:skillItemsFrom(skillsOfType(getSub()))};
+  }
+  function buildSlots(values){
+    slotWrap.innerHTML="";slots=[];
+    for(var i=0;i<4;i++){
+      var def=slotDef(i);
+      var cb=combo(def.items,{placeholder:def.owner?("選擇「"+def.owner+"」技能…"):"（尚未選對應傾向/類型）",value:values[i]||""});
+      slots.push(cb);
+      var f=el("div","fld");f.appendChild(el("label",null,esc(def.label)+(def.owner?"　<span style='color:var(--text-dim)'>"+esc(def.owner)+"</span>":"")));
+      f.appendChild(cb.el);slotWrap.appendChild(f);
+    }
+  }
+  function addFreeRow(val){
+    var item=el("div","rl-item");
+    var cb=combo(freeSkillItems(getMain(),getSub()),{placeholder:"搜尋技能…",value:val||""});
+    item.appendChild(field("技能",cb.el));
+    var tools=el("div","rl-tools");var del=el("button",null,"✕");del.type="button";
+    del.onclick=function(){item.remove();frees=frees.filter(function(x){return x.item!==item;});};
+    tools.appendChild(del);item.appendChild(tools);
+    freeWrap.appendChild(item);frees.push({item:item,cb:cb});
+  }
+  addFree.onclick=function(){addFreeRow("");};
+  function rebuild(){
+    var sv=slots.map(function(s){return s.get();}),fv=frees.map(function(f){return f.cb.get();});
+    buildSlots(sv);
+    freeWrap.innerHTML="";frees=[];fv.forEach(function(v){addFreeRow(v);});
+  }
+  var init=initialSkills||[];
+  buildSlots(init.slice(0,4));init.slice(4).forEach(function(v){addFreeRow(v);});
+  box._get=function(){var out=[];slots.forEach(function(s){var v=s.get();if(v)out.push(v);});frees.forEach(function(f){var v=f.cb.get();if(v)out.push(v);});return out;};
+  box._names=function(){return box._get().map(function(n){return {name:n,dmg:false,treasure:false};});};
+  box._judge=function(){return "";};
+  box.rebuild=rebuild;
   return box;
 }
 
@@ -956,17 +1288,20 @@ function renderEditor(c){
   /* ══ 左欄（對應檢視模式左欄）══ */
   /* 圖片（人偶設計圖） */
   var bImg=card("人偶設計圖 · 圖片路徑（相對於 images/）",L);
-  ED.頭像=textInput(c["頭像"]);ED.全身圖=textInput(c["全身圖"]);ED.差分=textInput(c["差分"]);
-  bImg.appendChild(field("全身圖（人偶設計圖）",ED.全身圖,"例：images/louis_full.png"));
+  ED.頭像=textInput(c["頭像"]);ED.全身圖=textInput(c["全身圖"]);
+  bImg.appendChild(field("全身圖（人偶設計圖；多張用 ｜ 分隔，檢視時可左右切換）",ED.全身圖,"例：images/louis_a.png｜images/louis_b.png"));
   bImg.appendChild(field("頭像（縮圖用）",ED.頭像));
-  bImg.appendChild(field("差分（多張用 ｜ 分隔）",ED.差分));
 
-  /* 死後經歷 */
+  /* 死後經歷（編號純數字自動抓取 + 名稱可搜尋下拉；名稱可自訂，不在資料庫也能手動輸入） */
   var bDeath=card("死後經歷",L);
-  ED.死後經歷標題=textInput(c["死後經歷標題"]);ED.死後經歷編號=textInput(c["死後經歷編號"]);
-  var dg=el("div","two");dg.appendChild(field("標題",ED.死後經歷標題));dg.appendChild(field("編號",ED.死後經歷編號));bDeath.appendChild(dg);
+  ED.死後經歷編號=numInput(c["死後經歷編號"]);ED.死後經歷編號.placeholder="編號";
+  var dInitKey=findNumKey(DB.death,c["死後經歷編號"]);
+  ED.死後經歷名=combo(deathItems(),{placeholder:"搜尋或自行輸入名稱…",value:dInitKey||c["死後經歷標題"]||"",allowFree:true});
+  linkNumName(ED.死後經歷編號,ED.死後經歷名,DB.death);
+  var dg=el("div","linkrow");dg.appendChild(field("編號",ED.死後經歷編號));dg.appendChild(field("名稱（可搜尋／自訂）",ED.死後經歷名.el));
+  bDeath.appendChild(field("死後經歷",dg,"純數字自動抓取，或用名稱下拉；也可直接輸入資料庫沒有的自訂名稱"));
   ED.死後經歷內容=el("textarea");ED.死後經歷內容.value=(c["死後經歷內容"]||"").replace(/\\n/g,"\n");ED.死後經歷內容.style.minHeight="60px";
-  bDeath.appendChild(field("內容",ED.死後經歷內容));
+  bDeath.appendChild(field("內容（自訂名稱時請在此填內容；資料庫有對應編號時以資料庫為準）",ED.死後經歷內容));
 
   /* 記憶碎片 */
   var b5=card("記憶碎片",L);
@@ -1022,14 +1357,31 @@ function renderEditor(c){
 
   /* 強化值 · 最大行動值 · 初期位置 */
   var b3=card("強化值 · 最大行動值 · 初期位置",R);
-  ED.武裝=numInput(c["武裝"]);ED.變異=numInput(c["變異"]);ED.改造=numInput(c["改造"]);
   ED.武裝加值=numInput(c["武裝加值"]);ED.變異加值=numInput(c["變異加值"]);ED.改造加值=numInput(c["改造加值"]);
+  ED.modBase={};
   var eg=el("div","three");
   [["武裝","武裝加值"],["變異","變異加值"],["改造","改造加值"]].forEach(function(k){
-    var sub=el("div","two");sub.appendChild(ED[k[0]]);sub.appendChild(ED[k[1]]);
-    ED[k[0]].placeholder="值";ED[k[1]].placeholder="加值";
-    eg.appendChild(field(k[0]+" / 加值",sub));
+    var baseSpan=el("span","mod-base","0");ED.modBase[k[0]]=baseSpan;
+    var baseRo=el("div","mod-ro");baseRo.appendChild(document.createTextNode("基礎 "));baseRo.appendChild(baseSpan);
+    var sub=el("div");sub.style.display="flex";sub.style.flexDirection="column";sub.style.gap="5px";
+    sub.appendChild(baseRo);sub.appendChild(ED[k[1]]);ED[k[1]].placeholder="加值";
+    eg.appendChild(field(k[0]+"（基礎來自類型 / 加值）",sub));
   });b3.appendChild(eg);
+  /* 強化選擇：武裝／變異／改造 三選一（互斥），被選的強化基礎 +1 */
+  ED.強化選擇=c["強化選擇"]||"";
+  var pickWrap=el("div","mod-pick");
+  var pickBtns={};
+  ["武裝","變異","改造"].forEach(function(k){
+    var btn=el("button","mod-pick-btn"+(ED.強化選擇===k?" on":""),k);btn.type="button";
+    btn.onclick=function(){ED.強化選擇=(ED.強化選擇===k?"":k);["武裝","變異","改造"].forEach(function(kk){pickBtns[kk].classList.toggle("on",ED.強化選擇===kk);});recomputeMods();};
+    pickBtns[k]=btn;pickWrap.appendChild(btn);
+  });
+  b3.appendChild(field("強化選擇（三選一，被選的強化基礎 +1）",pickWrap,"再點一次可取消選擇"));
+  function recomputeMods(){["武裝","變異","改造"].forEach(function(k){ED.modBase[k].textContent=typeMod(ED.主要類型.get(),ED.輔助類型.get(),k)+(ED.強化選擇===k?1:0);});}
+  ED.主要類型.onPick=function(){recomputeMods();if(ED.rebuildSkills)ED.rebuildSkills();};
+  ED.輔助類型.onPick=function(){recomputeMods();if(ED.rebuildSkills)ED.rebuildSkills();};
+  ED.傾向.onPick=function(){if(ED.rebuildSkills)ED.rebuildSkills();};
+  recomputeMods();
   /* 行動值：A 固定 6、B 自動計算，皆不可編輯 */
   ED.actBspan=el("b",null,"0");
   ED.actTotspan=el("b",null,String(BASE_ACT));
@@ -1056,7 +1408,9 @@ function renderEditor(c){
   var b7=card("部件（技能 · 頭 · 腕 · 胴 · 脚）",R);
   ED.部件={};
   function recomputeB(){var b=edComputeB();ED.actBspan.textContent=b;ED.actTotspan.textContent=BASE_ACT+b;}
-  ED.部件["スキル"]=partArea("スキル",null,partTokens(c["技能"]),"",recomputeB);b7.appendChild(ED.部件["スキル"]);b7.appendChild(el("div",null,"<div style='height:4px'></div>"));
+  ED.部件["スキル"]=skillEditor(partNames(c["技能"]),function(){return ED.傾向.get();},function(){return ED.主要類型.get();},function(){return ED.輔助類型.get();});
+  ED.rebuildSkills=function(){ED.部件["スキル"].rebuild();};
+  b7.appendChild(field("技能（依傾向／類型規則選取）",ED.部件["スキル"]));b7.appendChild(el("div",null,"<div style='height:4px'></div>"));
   [["頭","頭判定","頭部件"],["腕","腕判定","腕部件"],["胴","胴判定","胴部件"],["脚","脚判定","脚部件"]].forEach(function(a){
     ED.部件[a[0]]=partArea(a[0],a[1],partTokens(c[a[2]]),c[a[1]],recomputeB);b7.appendChild(ED.部件[a[0]]);b7.appendChild(el("div",null,"<div style='height:4px'></div>"));
   });
@@ -1085,15 +1439,18 @@ function readEditor(){
   var o={};CHAR_COLS.forEach(function(k){o[k]="";});
   o["分類"]=ED.分類.value.trim();o["人偶名稱"]=ED.人偶名稱.value.trim();o["譯名"]=ED.譯名.value.trim();o["拼音"]=ED.拼音.value.trim();o["玩家名稱"]=ED.玩家名稱.value.trim();
   o["代表色"]=ED.代表色.value.trim()||"#93799F";o["享年"]=ED.享年.value.trim();
-  o["頭像"]=ED.頭像.value.trim();o["全身圖"]=ED.全身圖.value.trim();o["差分"]=ED.差分.value.trim();
+  o["頭像"]=ED.頭像.value.trim();o["全身圖"]=ED.全身圖.value.trim();
   o["暗示"]=ED.暗示No.value.trim()||ED.暗示Cb.get();
   o["傾向"]=ED.傾向.get();o["主要類型"]=ED.主要類型.get();o["輔助類型"]=ED.輔助類型.get();
-  ["武裝","變異","改造","武裝加值","變異加值","改造加值"].forEach(function(k){o[k]=ED[k].value.trim();});
-  o["行動值A"]=String(BASE_ACT);o["行動值B"]=String(edComputeB());
+  ["武裝加值","變異加值","改造加值"].forEach(function(k){o[k]=ED[k].value.trim();});
+  o["強化選擇"]=ED.強化選擇||"";
   o["初期配置"]=ED.初期配置.value;
   o["Karma"]=ED.Karma.value.split(/\n/).map(function(s){return s.trim();}).filter(Boolean).join("|");
   o["外貌與個性"]=ED.外貌與個性.value.replace(/\r?\n/g,"\\n");
-  o["死後經歷標題"]=ED.死後經歷標題.value.trim();o["死後經歷編號"]=ED.死後經歷編號.value.trim();
+  var dNum=ED.死後經歷編號.value.trim(),dName=ED.死後經歷名.get();
+  var dKey=(dNum&&DB.death[dNum])?dNum:(DB.death[dName]?dName:"");
+  if(dKey){o["死後經歷編號"]=dKey;o["死後經歷標題"]=DB.death[dKey]["名稱"]||"";}
+  else{o["死後經歷編號"]=dNum;o["死後經歷標題"]=dName;}   /* 自訂名稱 */
   o["死後經歷內容"]=ED.死後經歷內容.value.replace(/\r?\n/g,"\\n");
   o["記憶碎片"]=[].slice.call(ED.memList.children).map(function(r){return r._get();}).filter(Boolean).join("|");
   o["依戀"]=[].slice.call(ED.attList.children).map(function(r){return r._get();}).filter(Boolean).join("|");
@@ -1114,7 +1471,8 @@ function commitEditor(){
   if(editIndex>=0){chars[editIndex]=o;}
   else{chars.push(o);editIndex=chars.length-1;}
   window.__DATA__.csv["角色"]=serializeChars();
-  setStatus("已套用 <b>"+esc(nameOf(o))+"</b>（僅在記憶體；可繼續編輯其他角色，最後於工具列按「匯出角色 CSV」一次存出）");
+  markDirty(editIndex);
+  statusApplied();
   return editIndex;
 }
 
@@ -1131,6 +1489,7 @@ function exportCharCSV(){
   var csv="\uFEFF"+serializeChars();
   var blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
   var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="角色.csv";a.click();
+  dirtyIdx=[];
   setStatus("已匯出角色 CSV（<b>"+chars.length+"</b> 名）· 請另存到 資料庫/ 取代舊檔");
 }
 
