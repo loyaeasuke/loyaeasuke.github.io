@@ -37,17 +37,17 @@ img{display:block}
   margin-right:6px;padding-right:12px;border-right:1px solid #3a3547;white-space:nowrap;
 }
 #toolbar label.btn,#toolbar button.btn{
-  display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:12.5px;
+  display:inline-flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;
   padding:7px 12px;border:1px solid #3a3547;border-radius:2px;background:var(--ink-soft);
   color:#c6c0d2;transition:.14s;
 }
 #toolbar label.btn:hover,#toolbar button.btn:hover{background:#28243350;border-color:#544d63;color:#fff}
-#toolbar .chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#9a93a9;cursor:pointer}
+#toolbar .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#9a93a9;cursor:pointer}
 #toolbar input[type=file]{display:none}
-#toolbar #titleInput{display:inline-block;width:150px;font-family:inherit;font-size:12px;padding:5px 8px;border:1px solid #3a3547;border-radius:2px;background:var(--ink-soft);color:#e0dbe9}
+#toolbar #titleInput{display:inline-block;width:150px;font-family:inherit;font-size:13px;padding:5px 8px;border:1px solid #3a3547;border-radius:2px;background:var(--ink-soft);color:#e0dbe9}
 #toolbar #titleInput:focus{outline:none;border-color:var(--c,#6b6280)}
 #toolbar #titleInput::placeholder{color:#5f5872}
-#toolbar .status{margin-left:auto;font-size:11.5px;color:#8b8498;letter-spacing:.02em}
+#toolbar .status{margin-left:auto;font-size:13px;color:#8b8498;letter-spacing:.02em}
 #toolbar .status b{color:#cfc8dc;font-weight:500}
 
 /* ── 版面 ────────────────────────────────────────── */
@@ -60,14 +60,14 @@ body.view #side{top:0;height:100vh}
 body.view #app{min-height:100vh}
 .side-head{padding:16px 18px 12px;border-bottom:1px solid var(--ink-line)}
 .side-title{font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.05em;color:#e4dfeb;margin:0 0 3px}
-.side-sub{font-family:var(--util);font-size:10px;letter-spacing:.22em;color:#79728a;text-transform:uppercase}
+.side-sub{font-family:var(--util);font-size:13px;letter-spacing:.12em;color:#79728a;text-transform:uppercase}
 #search{
   width:100%;margin-top:12px;padding:8px 10px;font-size:13px;font-family:inherit;
   background:var(--ink-soft);border:1px solid var(--ink-line);border-radius:2px;color:#e0dbe9;
 }
 #search::placeholder{color:#5f5872}
 #homeBtn{
-  width:100%;margin-top:9px;padding:8px 10px;font-size:12.5px;display:flex;align-items:center;gap:8px;
+  width:100%;margin-top:9px;padding:8px 10px;font-size:13px;display:flex;align-items:center;gap:8px;
   cursor:pointer;text-align:left;background:var(--ink-soft);border:1px solid var(--ink-line);
   border-radius:2px;color:#b0a9c0;transition:.14s;
 }
@@ -75,8 +75,8 @@ body.view #app{min-height:100vh}
 #list{flex:1;overflow-y:auto;padding:8px 0}
 #list::-webkit-scrollbar{width:8px}
 #list::-webkit-scrollbar-thumb{background:#342f42;border-radius:4px}
-.grp{padding:12px 18px 5px;font-family:var(--util);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#6f687f;display:flex;align-items:center;gap:8px}
-.grp .n{background:var(--ink-soft);border-radius:8px;padding:1px 7px;font-size:10px;color:#8b839a}
+.grp{padding:12px 18px 5px;font-family:var(--util);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#6f687f;display:flex;align-items:center;gap:8px}
+.grp .n{background:var(--ink-soft);border-radius:8px;padding:1px 7px;font-size:13px;color:#8b839a}
 .item{
   width:100%;text-align:left;background:none;border:0;cursor:pointer;color:#c2bcd0;
   padding:8px 18px 8px 15px;border-left:3px solid transparent;line-height:1.4;transition:.12s;
@@ -84,9 +84,9 @@ body.view #app{min-height:100vh}
 .item:hover{background:#211d2b;color:#fff}
 .item[aria-current="true"]{background:#241f30;color:#fff;border-left-color:var(--c,#93799f)}
 .item .nm{font-size:14px;font-weight:500}
-.item .rd{font-family:var(--util);font-size:10.5px;letter-spacing:.08em;color:#7d7590;margin-left:6px}
-.item .sub{display:block;font-size:11px;color:#726a86;margin-top:1px}
-#sideFoot{flex:none;padding:12px 18px;border-top:1px solid var(--ink-line);font-size:11px;line-height:1.6;letter-spacing:.02em;color:#948ca6}
+.item .rd{font-family:var(--util);font-size:13px;letter-spacing:.06em;color:#7d7590;margin-left:6px}
+.item .sub{display:block;font-size:13px;color:#726a86;margin-top:1px}
+#sideFoot{flex:none;padding:12px 18px;border-top:1px solid var(--ink-line);font-size:13px;line-height:1.55;letter-spacing:.02em;color:#948ca6}
 
 #main{flex:1;min-width:0;padding:28px 30px 60px}
 
@@ -235,7 +235,7 @@ body.view #app{min-height:100vh}
 
 /* 依戀 */
 /* 依戀：未發狂／發狂共用相同外框幾何（1px 邊框＋內距＋外距一致），切換時僅變更邊框顏色與底色，內容不會上下或左右偏移 */
-.att{border:1px solid transparent;border-radius:6px;background:transparent;padding:9px 11px;margin:5px -12px}
+.att{border:1px solid transparent;border-radius:6px;background:transparent;padding:9px 11px;margin:5px -4px}
 .att:first-child{margin-top:0}
 .att:last-child{margin-bottom:0}
 .att:not(.maddened) + .att:not(.maddened){border-top-color:var(--hair-soft);border-top-left-radius:0;border-top-right-radius:0}
@@ -361,6 +361,7 @@ body.view #app{min-height:100vh}
 .rl-tools button{border:1px solid var(--hair);background:#fff;border-radius:3px;width:22px;height:22px;font-size:12px;cursor:pointer;color:var(--text-mid);line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
 .rl-tools button:hover{border-color:var(--c);color:var(--c-text)}
 .addbtn{align-self:flex-start;font-family:var(--util);font-size:13px;letter-spacing:.05em;padding:6px 12px;border:1px dashed #cfc9d8;border-radius:3px;background:none;cursor:pointer;color:var(--text-mid)}
+.addbtn.tre-add{margin-top:6px}
 .addbtn:hover{border-color:var(--c);color:var(--c-text)}
 .ptbox{border:1px solid var(--hair);border-radius:4px;padding:10px;background:#fbfafc}
 .ptbox h4{margin:0 0 8px;font-family:var(--util);font-size:11px;letter-spacing:.12em;color:var(--text-mid);display:flex;align-items:center;gap:7px}
@@ -368,8 +369,8 @@ body.view #app{min-height:100vh}
 .ptbox h4 .j input{width:52px;font-size:12px;padding:3px 5px;border:1px solid var(--hair);border-radius:3px;background:#fff}
 .chip-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
 .pchip{display:inline-flex;align-items:center;gap:5px;background:rgba(var(--c-rgb),.1);border:1px solid rgba(var(--c-rgb),.35);color:var(--c-text);border-radius:14px;padding:3px 5px 3px 11px;font-size:12.5px}
-.pchip .mv{display:flex;gap:1px}
-.pchip button{border:0;background:none;cursor:pointer;color:var(--c-text);font-size:13px;padding:0 2px;line-height:1;opacity:.65}
+.pchip .mv{display:flex;gap:3px}
+.pchip button{border:0;background:none;cursor:pointer;color:var(--c-text);font-size:16px;padding:3px 6px;line-height:1;opacity:.7;border-radius:4px}
 .pchip button:hover{opacity:1}
 .ed-empty{font-size:12px;color:var(--text-dim);padding:2px 0}
 .ed-note{font-size:12px;color:var(--text-mid);background:rgba(var(--c-rgb),.07);border:1px solid rgba(var(--c-rgb),.25);border-radius:4px;padding:8px 12px;margin-bottom:16px}
@@ -398,11 +399,12 @@ body.view #app{min-height:100vh}
 .pchip .dmg-toggle input{width:12px;height:12px;margin:0;accent-color:#c0392b;cursor:pointer}
 .pchip .base{font-size:11px;color:var(--text-dim)}
 /* 強化部件／技能 chip 的自訂名稱・說明編輯面板（基本部件不可自訂） */
-.pchip.editing{flex-direction:column;align-items:stretch;border-radius:10px;padding:6px 8px 8px;gap:6px}
+.pchip.editing{flex-direction:column;align-items:stretch;border-radius:14px;padding:3px 5px 8px 11px;gap:6px}
 .pc-head{display:inline-flex;align-items:center;gap:5px}
 .pchip.editing .pc-head{width:100%}
 .pchip .cust{font-size:10px;opacity:.75}
-.pc-ed{border:0;background:none;cursor:pointer;color:var(--c-text);font-size:13px;padding:0 3px;opacity:.6}
+.pc-ed{border:0;background:none;cursor:pointer;color:var(--c-text);font-size:16px;padding:3px 7px;opacity:.7;border-radius:4px}
+.pc-ed .pc-ed-txt{font-size:13px}
 .pc-ed:hover{opacity:1}
 .pc-edit{display:none;flex-direction:column;gap:3px;width:100%;background:#fff;border:1px solid var(--hair);border-radius:6px;padding:7px 8px}
 .pchip.editing .pc-edit{display:flex}
@@ -533,9 +535,8 @@ function tcrLine(r){function v(k){var x=(r[k]==null?"":String(r[k])).trim();retu
 /* 編輯器 chip／技能懸浮提示文字（僅顯示資料庫資訊，不含自訂名稱與說明） */
 function partTipText(area,ref,treasure){
   var r=treasure?treasureTpl(area):(DB.part[area+"||"+ref]||{});
-  var lvl=treasure?"寶物":(r["部件等級"]||"");
   var eff=(r["效果"]||"").replace(/\\n/g,"\n");
-  return (lvl?lvl+"\n":"")+tcrLine(r)+(eff?"\n"+eff:"");
+  return tcrLine(r)+(eff?"\n"+eff:"");
 }
 function skillTipText(name){
   var r=DB.skill[name]||{};
@@ -645,7 +646,10 @@ function effectiveTokens(area,field){
 /* 部件加成（行動值 B）＝所有未損傷、實際擁有部件的「最大行動值補正」總和 */
 var AREAS=["技能","頭","手","軀幹","腳"];
 var AREA_FIELD={"技能":"技能","頭":"頭部件","手":"手部件","軀幹":"軀幹部件","腳":"腳部件"};
-function corrOf(area,name){var r=DB.part[area+"||"+name];return r?(parseInt(r["最大行動值補正"],10)||0):0;}
+function corrOf(area,name){
+  if(area==="技能"){var s=DB.skill[name];return s?(parseInt(s["最大行動值"],10)||0):0;}
+  var r=DB.part[area+"||"+name];return r?(parseInt(r["最大行動值補正"],10)||0):0;
+}
 function computeActionB(c){
   var sum=0;
   AREAS.forEach(function(area){
@@ -701,7 +705,7 @@ function computeEnhOver(c){
         if(cl&&cl.cat===cat)byLvl[cl.lvl].push(area+"#"+idx);
       });
     });
-    var Q=quotaFor(enhBudgetForChar(c,cat)),rem={1:Q[0],2:Q[1],3:Q[2]},over={1:0,2:0,3:0};
+    var Q=quotaForCat(cat,enhBudgetForChar(c,cat),charSkillNames(c)),rem={1:Q[0],2:Q[1],3:Q[2]},over={1:0,2:0,3:0};
     [3,2,1].forEach(function(L){var need=byLvl[L].length;for(var sl=L;sl<=3;sl++){var take=Math.min(need,rem[sl]);rem[sl]-=take;need-=take;}over[L]=need;});
     [1,2,3].forEach(function(L){var arr=byLvl[L],k=over[L];for(var i=arr.length-k;i<arr.length;i++){if(i>=0)flag[arr[i]]=true;}});
   });
@@ -1204,6 +1208,8 @@ function combo(items,opts){
   function setValue(v,silent){cur=v||"";inp.value=cur?labelOf(cur):"";wrap.classList.toggle("has",!!cur);if(!silent&&api.onPick)api.onPick(cur);}
   function pick(v){setValue(v);close();}
   inp.addEventListener("focus",open);
+  /* 讓輸入框本身也能當「開啟下拉」按鈕：即使已聚焦，點一下仍會開啟（focus 事件在已聚焦時不會再觸發） */
+  inp.addEventListener("mousedown",function(){if(!wrap.classList.contains("open"))open();});
   inp.addEventListener("input",function(){wrap.classList.add("open");active=-1;paint();if(opts.allowFree){cur=inp.value;wrap.classList.toggle("has",!!cur);}});
   inp.addEventListener("keydown",function(e){
     if(e.key==="ArrowDown"){e.preventDefault();active=Math.min(active+1,view.length-1);paint();ensure();}
@@ -1228,6 +1234,17 @@ var LVL_NUM={"１":1,"２":2,"３":3,"1":1,"2":2,"3":3};
 /* 取得數量表（依強化值 → 各等級可取得的「欄位數」）：index=強化值(0..9)，值=[等級1,等級2,等級3] */
 var ENH_QUOTA=[[0,0,0],[1,0,0],[1,1,0],[1,1,1],[2,1,1],[2,2,1],[2,2,2],[3,2,2],[3,3,2],[3,3,3]];
 function quotaFor(B){var b=Math.max(0,Math.min(9,B|0));return ENH_QUOTA[b];}   /* → [S1,S2,S3] */
+/* 例外規則：擁有「歪極」→ 變異可多 1 個等級３；擁有「時鐘機器」→ 改造可多 1 個等級３ */
+function enhBonusS3(cat,names){
+  names=names||[];
+  if(cat==="變異"&&names.indexOf("歪極")>=0)return 1;
+  if(cat==="改造"&&names.indexOf("時鐘機器")>=0)return 1;
+  return 0;
+}
+function edSkillNames(){var b=ED&&ED.部件&&ED.部件["技能"];return (b&&b._names)?b._names().map(function(x){return x.name;}):[];}
+function charSkillNames(c){return partTokens(c["技能"]||"").map(function(t){return t.name;});}
+/* 依強化值 + 技能例外，取得某類別的實際欄位數 [S1,S2,S3] */
+function quotaForCat(cat,budget,names){var Q=quotaFor(budget);return [Q[0],Q[1],Q[2]+enhBonusS3(cat,names)];}
 /* 解析部件等級 → {cat,lvl}；基本部件／寶物／無法辨識 → null（不佔強化欄位） */
 function partClass(area,name,treasure){
   if(treasure)return null;
@@ -1266,6 +1283,10 @@ function partItems(area){
 function hintItems(){return (DB.hintRows||[]).filter(function(r){return r["編號"];}).map(function(r){var k=r["編號"];return {v:k,label:r["名稱"]||k,sub:k+"　"+(r["說明"]||"")};});}
 function memItems(){return (DB.memRows||[]).filter(function(r){return r["編號"];}).map(function(r){var k=r["編號"];return {v:k,label:r["標題"]||k,sub:k+"　"+(r["記憶內容"]||"").slice(0,40)};});}
 function deathItems(){return (DB.deathRows||[]).filter(function(r){return r["編號"];}).map(function(r){var k=r["編號"];return {v:k,label:r["名稱"]||k,sub:k+"　"+(r["經歷內容"]||"").slice(0,40)};});}
+/* 編號可搜尋下拉（label＝編號，方便以編號搜尋；支援 α20、β30 等非數字編號） */
+function keyItems(rows,keyF,nameF){return (rows||[]).filter(function(r){return r[keyF];}).map(function(r){var k=r[keyF];return {v:k,label:k,sub:(r[nameF]||"")};});}
+/* 雙向連動：編號下拉 ↔ 名稱下拉（兩者的 v 都是編號） */
+function linkNoName(noCb,nameCb){noCb.onPick=function(v){nameCb.set(v,true);};nameCb.onPick=function(v){noCb.set(v,true);};}
 function inclItems(){return Object.keys(DB.incl).map(function(k){var r=DB.incl[k];return {v:k,label:k,sub:(r["原文"]||"")+"　"+(r["說明"]||"")};});}
 function typeItems(){return Object.keys(DB.type).map(function(k){var r=DB.type[k];return {v:k,label:k,sub:(r["原文"]||"")+"　"+(r["說明"]||"")};});}
 function attItems(){return Object.keys(DB.att).map(function(k){var r=DB.att[k];return {v:k,label:k,sub:(r["發狂內容"]||"").slice(0,44)};});}
@@ -1309,23 +1330,19 @@ function memRow(tokOrNo){
   var t=parseTok(tokOrNo||"");
   var no=t.name||"";
   var item=el("div","rl-item");
-  var ni=numInput(no);ni.placeholder="編號";ni.style.width="100%";
-  var cb=combo(memItems(),{placeholder:"搜尋記憶碎片標題…",value:findNumKey(DB.mem,no)});
-  linkNumName(ni,cb,DB.mem);
-  var grid=el("div","linkrow");
-  grid.appendChild(field("編號",ni));grid.appendChild(field("標題（可搜尋）",cb.el));
-  item.appendChild(grid);
+  var cb=combo(memItems(),{placeholder:"搜尋編號／名稱，或自行輸入自訂名稱…",value:findNumKey(DB.mem,no)||no,allowFree:true});
+  var cp=cb.onPick;
+  cb.onPick=function(v){if(cp)cp(v);ph();};
+  item.appendChild(field("碎片名稱（可搜尋編號／名稱／自訂名稱）",cb.el));
   /* 自訂名稱／內容（留空＝資料庫預設） */
   var cName=t.cName||"",cDesc=t.cDesc||"";
-  var edb=el("button","pc-ed","✎ 自訂名稱／內容");edb.type="button";
+  var edb=el("button","pc-ed",'✎ <span class="pc-ed-txt">自訂名稱／內容</span>');edb.type="button";
   var panel=el("div","pc-edit");
   var lN=el("label","pc-lab","名稱");
-  var titI=el("input");titI.type="text";titI.className="pc-cname";titI.value=cName;
+  var titI=el("input");titI.type="text";titI.className="pc-cname";titI.value=cName;titI.style.fontSize="13px";titI.style.padding="6px 8px";
   var lD=el("label","pc-lab","內容");
-  var conT=el("textarea");conT.className="pc-cdesc";conT.value=cDesc;
-  function ph(){var m=DB.mem[ni.value.trim()||cb.get()]||{};titI.placeholder=m["標題"]||"（自訂標題）";conT.placeholder=(m["記憶內容"]||"（自訂內容）");}
-  ni.addEventListener("input",ph);
-  var prevPick=cb.onPick;cb.onPick=function(v){if(prevPick)prevPick(v);ph();};
+  var conT=el("textarea");conT.className="pc-cdesc";conT.value=cDesc;conT.style.fontSize="13px";conT.style.padding="6px 8px";conT.style.minHeight="64px";
+  function ph(){var m=DB.mem[cb.get()]||{};titI.placeholder=m["標題"]||"（自訂標題）";conT.placeholder=(m["記憶內容"]||"（自訂內容）");}
   ph();
   titI.oninput=function(){cName=titI.value.trim();};
   conT.oninput=function(){cDesc=conT.value;};
@@ -1333,7 +1350,7 @@ function memRow(tokOrNo){
   edb.onclick=function(){panel.style.display=(panel.style.display==="flex"?"none":"flex");};
   item.appendChild(edb);item.appendChild(panel);
   var tools=el("div","rl-tools");var del=el("button",null,"✕");del.type="button";del.title="刪除";del.onclick=function(){item.remove();};tools.appendChild(del);item.appendChild(tools);
-  item._get=function(){var n=ni.value.trim()||cb.get();if(!n&&!cName&&!(cDesc&&cDesc.trim()))return"";return makeTok({name:n,cName:cName,cDesc:cDesc});};
+  item._get=function(){var n=cb.get();if(!n&&!cName&&!(cDesc&&cDesc.trim()))return"";return makeTok({name:n,cName:cName,cDesc:cDesc});};
   return item;
 }
 /* 多筆列：依戀 */
@@ -1427,11 +1444,15 @@ function partArea(area,judgeKey,tokens,judge,onChange){
       if(kind==="enh"){
         var edb=el("button","pc-ed","✎");edb.type="button";edb.title="自訂名稱／說明";
         edb.onclick=function(){chip.classList.toggle("editing");};head.appendChild(edb);
+      }else if(kind==="tre"){
+        /* 寶物無自訂鈕，但保留同寬空位；用「同為 button」以取得與強化部件 ✎ 完全相同的寬度，
+           使「損」核取方塊與後方按鈕與強化部件對齊（span 會少吃到 .pchip button 的樣式而略有位移） */
+        var sp=el("button","pc-ed pc-ed-spacer","✎");sp.type="button";sp.disabled=true;sp.tabIndex=-1;sp.style.visibility="hidden";sp.setAttribute("aria-hidden","true");head.appendChild(sp);
       }
       var mv=el("span","mv");
-      var up=el("button",null,"◂");up.type="button";up.title="前移";
+      var up=el("button",null,"▲");up.type="button";up.title="上移";
       up.onclick=function(){var p=chip.previousElementSibling;if(p&&p.classList.contains("pchip")&&!p.classList.contains("basic-fixed"))list.insertBefore(chip,p);};
-      var dn=el("button",null,"▸");dn.type="button";dn.title="後移";
+      var dn=el("button",null,"▼");dn.type="button";dn.title="下移";
       dn.onclick=function(){var n=chip.nextElementSibling;if(n&&n.classList.contains("pchip"))list.insertBefore(n,chip);};
       var rm=el("button",null,"✕");rm.type="button";rm.title="移除";
       rm.onclick=function(){chip.remove();fire();};
@@ -1462,7 +1483,7 @@ function partArea(area,judgeKey,tokens,judge,onChange){
     return chip;
   }
 
-  cb.onPick=function(v){if(v){list.appendChild(makeChip("enh",v,{}));cb.set("",true);cb.input.value="";cb.input.focus();fire();}};
+  cb.onPick=function(v){if(v){list.appendChild(makeChip("enh",v,{}));cb.set("",true);cb.input.value="";cb.input.blur();fire();}};
   var bTre=el("button","addbtn tre-add","＋ 寶物（自訂名稱）");bTre.type="button";
   bTre.onclick=function(){list.appendChild(makeChip("tre","寶物",{cName:"寶物"}));fire();};
   box.appendChild(bTre);
@@ -1545,6 +1566,8 @@ function skillEditor(initialSkills,getIncl,getMain,getSub){
   function dedupAll(){
     slots.forEach(function(s){s.applyDedup(usedRefs(s));});
     frees.forEach(function(f){f.applyDedup(usedRefs(f));});
+    /* 技能變動可能影響：強化部件例外額度（歪極／時鐘機器）、以及最大行動值，連動更新 */
+    if(ED&&ED.部件&&ED.部件["頭"]){if(typeof revalidateEnh==="function")revalidateEnh();if(ED.recomputeB)ED.recomputeB();}
   }
   /* 單一技能控制項：下拉 ＋「✎ 自訂」名稱／說明面板（留空＝資料庫預設） */
   function makeSkillCtl(baseItems,opt){
@@ -1552,7 +1575,7 @@ function skillEditor(initialSkills,getIncl,getMain,getSub){
     var wrap=el("div","skl-ctl");
     var cb=combo(baseItems,{placeholder:opt.placeholder||"搜尋技能…",value:opt.value||""});
     var ctl={_base:baseItems,cName:opt.cName||"",cDesc:opt.cDesc||"",cb:cb,el:wrap};
-    var edb=el("button","pc-ed","✎ 自訂");edb.type="button";edb.title="自訂技能名稱／說明";
+    var edb=el("button","pc-ed",'✎ <span class="pc-ed-txt">自訂</span>');edb.type="button";edb.title="自訂技能名稱／說明";
     var panel=el("div","pc-edit");
     var lN=el("label","pc-lab","名稱");
     var ni=el("input");ni.type="text";ni.className="pc-cname";ni.value=ctl.cName;
@@ -1650,14 +1673,11 @@ function renderEditor(c){
 
   /* 死後經歷（編號純數字自動抓取 + 名稱可搜尋下拉；名稱可自訂，不在資料庫也能手動輸入） */
   var bDeath=card("死後經歷",L);
-  ED.死後經歷編號=numInput(c["死後經歷編號"]);ED.死後經歷編號.placeholder="編號";
   var dInitKey=findNumKey(DB.death,c["死後經歷編號"]);
-  ED.死後經歷名=combo(deathItems(),{placeholder:"搜尋或自行輸入名稱…",value:dInitKey||c["死後經歷標題"]||"",allowFree:true});
-  linkNumName(ED.死後經歷編號,ED.死後經歷名,DB.death);
-  var dg=el("div","linkrow");dg.appendChild(field("編號",ED.死後經歷編號));dg.appendChild(field("名稱（可搜尋／自訂）",ED.死後經歷名.el));
-  bDeath.appendChild(field("死後經歷",dg,"純數字自動抓取，或用名稱下拉；也可直接輸入資料庫沒有的自訂名稱"));
+  ED.死後經歷名=combo(deathItems(),{placeholder:"搜尋編號／名稱，或自行輸入自訂名稱…",value:dInitKey||c["死後經歷標題"]||"",allowFree:true});
+  bDeath.appendChild(field("經歷名稱（可搜尋編號／名稱／自訂名稱）",ED.死後經歷名.el,"以編號或名稱搜尋皆可；也可直接輸入資料庫沒有的自訂名稱"));
   ED.死後經歷內容=el("textarea");ED.死後經歷內容.value=(c["死後經歷內容"]||"").replace(/\\n/g,"\n");ED.死後經歷內容.style.minHeight="60px";
-  bDeath.appendChild(field("內容（自訂名稱時請在此填內容；資料庫有對應編號時以資料庫為準）",ED.死後經歷內容));
+  bDeath.appendChild(field("內容（自訂名稱時請在此填內容）",ED.死後經歷內容));
 
   /* 記憶碎片 */
   var b5=card("記憶碎片",L);
@@ -1718,16 +1738,21 @@ function renderEditor(c){
   ED.代表色.oninput=function(){if(hexOk.test(ED.代表色.value)){var v=ED.代表色.value.charAt(0)==="#"?ED.代表色.value:"#"+ED.代表色.value;colPick.value=v;applyColor(v);}};
   colWrap.appendChild(colPick);colWrap.appendChild(ED.代表色);
   var g3=el("div","two");g3.appendChild(field("代表色（文字圈色碼）",colWrap));g3.appendChild(field("享年",ED.享年));b1.appendChild(g3);
-  ED.暗示No=numInput(c["暗示"]);ED.暗示No.placeholder="編號";
+  ED.暗示No=combo(keyItems(DB.hintRows,"編號","名稱"),{placeholder:"搜尋暗示編號…",value:findNumKey(DB.hint,c["暗示"])||(c["暗示"]||""),allowFree:true});
   ED.暗示Cb=combo(hintItems(),{placeholder:"搜尋暗示名稱…",value:findNumKey(DB.hint,c["暗示"])});
-  linkNumName(ED.暗示No,ED.暗示Cb,DB.hint);
-  var hintGrid=el("div","linkrow");hintGrid.appendChild(field("暗示編號",ED.暗示No));hintGrid.appendChild(field("暗示名稱（可搜尋）",ED.暗示Cb.el));
-  b1.appendChild(field("暗示",hintGrid,"輸入純數字自動抓取，或用名稱下拉；兩者互相帶入"));
+  linkNoName(ED.暗示No,ED.暗示Cb);
+  var hintGrid=el("div","linkrow");hintGrid.appendChild(field("暗示編號（可搜尋）",ED.暗示No.el));hintGrid.appendChild(field("暗示名稱（可搜尋）",ED.暗示Cb.el));
+  b1.appendChild(field("暗示",hintGrid,"以編號或名稱搜尋皆可；兩者互相帶入"));
   ED.傾向=combo(inclItems(),{placeholder:"搜尋傾向…",value:c["傾向"]||""});
   b1.appendChild(field("傾向（名稱）",ED.傾向.el));
   ED.主要類型=combo(typeItems(),{placeholder:"搜尋主要類型…",value:c["主要類型"]||""});
   ED.輔助類型=combo(typeItems(),{placeholder:"搜尋輔助類型…",value:c["輔助類型"]||""});
   var tg=el("div","two");tg.appendChild(field("主要類型",ED.主要類型.el));tg.appendChild(field("輔助類型",ED.輔助類型.el));b1.appendChild(tg);
+
+  /* 外貌與個性（置於基本資料下方、強化值上方） */
+  var bPer=card("外貌與個性",R);
+  ED.外貌與個性=el("textarea");ED.外貌與個性.value=(c["外貌與個性"]||"").replace(/\\n/g,"\n");
+  bPer.appendChild(field("外貌與個性",ED.外貌與個性));
 
   /* 強化值 · 最大行動值 · 初期位置 */
   var b3=card("強化值 · 最大行動值 · 初期位置",R);
@@ -1769,11 +1794,6 @@ function renderEditor(c){
   ED.初期配置=el("select");["","煉獄","花園","樂園"].forEach(function(o){var op=el("option",null,o||"—");op.value=o;if(c["初期配置"]===o)op.selected=true;ED.初期配置.appendChild(op);});
   b3.appendChild(field("初期位置",ED.初期配置));
 
-  /* 外貌與個性 */
-  var bPer=card("外貌與個性",R);
-  ED.外貌與個性=el("textarea");ED.外貌與個性.value=(c["外貌與個性"]||"").replace(/\\n/g,"\n");
-  bPer.appendChild(field("外貌與個性",ED.外貌與個性));
-
   /* Karma */
   var bKarma=card("Karma · 目標",R);
   ED.Karma=el("textarea");ED.Karma.value=pipes(c["Karma"]).join("\n");ED.Karma.placeholder="一行一個目標";ED.Karma.style.minHeight="66px";
@@ -1783,6 +1803,7 @@ function renderEditor(c){
   var b7=card("部件（技能 · 頭 · 手 · 軀幹 · 腳）",R);
   ED.部件={};
   function recomputeB(){var b=edComputeB();ED.actBspan.textContent=b;ED.actTotspan.textContent=BASE_ACT+b;}
+  ED.recomputeB=recomputeB;
   function onPartChange(){recomputeB();revalidateEnh();}
   ED.部件["技能"]=skillEditor(partTokens(c["技能"]),function(){return ED.傾向.get();},function(){return ED.主要類型.get();},function(){return ED.輔助類型.get();});
   ED.rebuildSkills=function(){ED.部件["技能"].rebuild();};
@@ -1840,7 +1861,7 @@ function revalidateEnh(){
         else{ci.el.classList.remove("over");if(ci.el._applyTip)ci.el._applyTip(false);}   /* 基本／寶物：清除超額標記，還原資訊提示 */
       });
     });
-    var Q=quotaFor(enhBudget(cat)),S1=Q[0],S2=Q[1],S3=Q[2];
+    var Q=quotaForCat(cat,enhBudget(cat),edSkillNames()),S1=Q[0],S2=Q[1],S3=Q[2];
     /* 先清除本類別 chip 的超額標記（還原資訊提示） */
     [1,2,3].forEach(function(L){byLvl[L].forEach(function(o){o.el.classList.remove("over");if(o.el._applyTip)o.el._applyTip(false);});});
     /* 由高等到低等貪婪配位：等級 L 依序使用等級 L、L+1…3 的空位 */
@@ -1892,17 +1913,17 @@ function readEditor(){
   o["分類"]=ED.分類.value.trim();o["人偶名稱"]=ED.人偶名稱.value.trim();o["拼音"]=ED.拼音.value.trim();o["玩家名稱"]=ED.玩家名稱.value.trim();
   o["代表色"]=ED.代表色.value.trim()||"#93799F";o["享年"]=ED.享年.value.trim();
   o["頭像"]=ED.頭像.value.trim();o["全身圖"]=ED.全身圖.value.trim();
-  o["暗示"]=ED.暗示No.value.trim()||ED.暗示Cb.get();
+  o["暗示"]=ED.暗示No.get()||ED.暗示Cb.get();
   o["傾向"]=ED.傾向.get();o["主要類型"]=ED.主要類型.get();o["輔助類型"]=ED.輔助類型.get();
   ["武裝加值","變異加值","改造加值"].forEach(function(k){o[k]=ED[k].value.trim();});
   o["強化選擇"]=ED.強化選擇||"";
   o["初期配置"]=ED.初期配置.value;
   o["Karma"]=ED.Karma.value.split(/\n/).map(function(s){return s.trim();}).filter(Boolean).join("|");
   o["外貌與個性"]=ED.外貌與個性.value.replace(/\r?\n/g,"\\n");
-  var dNum=ED.死後經歷編號.value.trim(),dName=ED.死後經歷名.get();
-  var dKey=(dNum&&DB.death[dNum])?dNum:(DB.death[dName]?dName:"");
+  var dSel=ED.死後經歷名.get();
+  var dKey=DB.death[dSel]?dSel:findNumKey(DB.death,dSel);
   if(dKey){o["死後經歷編號"]=dKey;o["死後經歷標題"]=DB.death[dKey]["名稱"]||"";}
-  else{o["死後經歷編號"]=dNum;o["死後經歷標題"]=dName;}   /* 自訂名稱 */
+  else{o["死後經歷編號"]="";o["死後經歷標題"]=dSel;}   /* 自訂名稱 */
   o["死後經歷內容"]=ED.死後經歷內容.value.replace(/\r?\n/g,"\\n");
   o["記憶碎片"]=[].slice.call(ED.memList.children).map(function(r){return r._get();}).filter(Boolean).join("|");
   o["依戀"]=[].slice.call(ED.attList.children).map(function(r){return r._get();}).filter(Boolean).join("|");
