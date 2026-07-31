@@ -241,7 +241,8 @@ body.view #app{min-height:100vh}
 .att{border:1px solid transparent;border-radius:6px;background:transparent;padding:9px 11px;margin:5px -4px}
 .att:first-child{margin-top:0}
 .att:last-child{margin-bottom:0}
-.att:not(.maddened) + .att:not(.maddened){border-top-color:var(--hair-soft);border-top-left-radius:0;border-top-right-radius:0}
+.att + .att{border-top-color:var(--hair-soft)}
+.att + .att:not(.maddened){border-top-left-radius:0;border-top-right-radius:0}
 .att .h{display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap}
 .att .obj{font-family:var(--serif);font-weight:700;font-size:14px}
 .att .kind{font-size:13px;color:var(--c-text);border:1px solid var(--c);border-radius:10px;padding:1px 8px;margin-left:auto}
@@ -262,7 +263,8 @@ body.view #app{min-height:100vh}
 .att.nolost .kind{border-color:#c9c3d2}
 .att.nolost .dot{border-color:#b9b3c4;cursor:default}
 .att.nolost .dot.f{background:#b9b3c4}
-.att .lost-tag{font-size:12px;color:#8a8397;border:1px dashed #c9c3d2;border-radius:10px;padding:1px 8px;margin-left:8px}
+.att .lost-tag{font-size:12px;color:#8a8397;border:1px dashed #c9c3d2;border-radius:10px;padding:1px 8px;margin-left:auto;margin-right:8px}
+.att.nolost .kind{margin-left:0}
 .att.maddened .dot.f{background:#c0392b}
 .mad-state{margin-top:2px}
 .mad-tag{display:inline-block;font-family:var(--util);font-size:11px;letter-spacing:.12em;background:#c0392b;color:#fff;border-radius:8px;padding:1px 9px;margin-right:7px;vertical-align:middle}
@@ -821,7 +823,7 @@ function renderDetail(){
 
   /* 參照展開 */
   var hint=DB.hint[c["暗示"]], hintTxt=hint?(c["暗示"]+"-"+hint["名稱"]):(c["暗示"]||"—");
-  var hintTip=hint?(hint["說明"]||""):"";
+  var hintTip=(c["暗示說明"]&&c["暗示說明"].trim())?c["暗示說明"].replace(/\\n/g,"\n"):(hint?(hint["說明"]||""):"");
   var incl=DB.incl[c["傾向"]], inclTip=incl?(incl["說明"]||""):"";
   var inclTxt=incl?(c["傾向"]+" <span class=\"en\">"+esc(incl["原文"])+"</span>"):esc(c["傾向"]||"—");
   function typeTxt(nm){var t=DB.type[nm];if(!t)return esc(nm||"—");
@@ -916,7 +918,7 @@ function renderDetail(){
     var dots="";
     for(var k=0;k<4;k++)dots+='<span class="dot'+(k<mad?" f":"")+'"'+(treLost?"":(' data-att="'+ai+'" data-dot="'+k+'" title="點擊設定狂氣點"'))+'></span>';
     var lostTag=treLost?'<span class="lost-tag">無寶物</span>':"";
-    var head='<div class="h"><span class="obj">'+esc(obj)+'</span><span class="kind">'+esc(kind)+'</span>'+lostTag+'<span class="mad">'+dots+'</span></div>';
+    var head='<div class="h"><span class="obj">'+esc(obj)+'</span>'+lostTag+'<span class="kind">'+esc(kind)+'</span><span class="mad">'+dots+'</span></div>';
     var bodyHtml;
     if(maddened){
       bodyHtml='<div class="mad-state"><span class="mad-tag">發狂</span>'+(rec["發狂"]?'<b>'+esc(rec["發狂"])+'</b>':"")+
@@ -1228,7 +1230,7 @@ if(!VIEW_ONLY){
 var CHAR_COLS=(function(){
   var head=(window.__DATA__.csv["角色"]||"").replace(/^\uFEFF/,"").split(/\r?\n/)[0];
   var cols=head?head.split(","):[];
-  return cols.length?cols:["分類","人偶名稱","拼音","玩家名稱","代表色","頭像","全身圖","享年","暗示","傾向","主要類型","輔助類型","武裝加值","變異加值","改造加值","強化選擇","初期配置","Karma","外貌與個性","死後經歷標題","死後經歷編號","死後經歷內容","記憶碎片","依戀","技能","頭部件","手部件","軀幹部件","腳部件","劇本經歷","寵愛點消耗"];
+  return cols.length?cols:["分類","人偶名稱","拼音","玩家名稱","代表色","頭像","全身圖","享年","暗示","暗示說明","傾向","主要類型","輔助類型","武裝加值","變異加值","改造加值","強化選擇","初期配置","Karma","外貌與個性","死後經歷標題","死後經歷編號","死後經歷內容","記憶碎片","依戀","技能","頭部件","手部件","軀幹部件","腳部件","劇本經歷","寵愛點消耗"];
 })();
 
 function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
@@ -1755,7 +1757,7 @@ function renderEditor(c){
   var bDeath=card("死後經歷",L);
   var dInitKey=findNumKey(DB.death,c["死後經歷編號"]);
   ED.死後經歷名=combo(deathItems(),{placeholder:"搜尋編號／名稱，或自行輸入自訂名稱…",value:dInitKey||c["死後經歷標題"]||"",allowFree:true});
-  bDeath.appendChild(field("經歷名稱",ED.死後經歷名.el,"以編號或名稱搜尋皆可；也可直接輸入資料庫沒有的自訂名稱"));
+  bDeath.appendChild(field("經歷名稱",ED.死後經歷名.el));
   ED.死後經歷內容=el("textarea");ED.死後經歷內容.value=(c["死後經歷內容"]||"").replace(/\\n/g,"\n");ED.死後經歷內容.style.minHeight="60px";
   bDeath.appendChild(field("內容（自訂名稱時請在此填內容）",ED.死後經歷內容));
 
@@ -1828,8 +1830,10 @@ function renderEditor(c){
   ED.代表色.oninput=function(){if(hexOk.test(ED.代表色.value)){var v=ED.代表色.value.charAt(0)==="#"?ED.代表色.value:"#"+ED.代表色.value;colPick.value=v;applyColor(v);}};
   colWrap.appendChild(colPick);colWrap.appendChild(ED.代表色);
   var g3=el("div","two");g3.appendChild(field("代表色（文字圈色碼）",colWrap));g3.appendChild(field("享年",ED.享年));b1.appendChild(g3);
-  ED.暗示Cb=combo(hintItems(),{placeholder:"搜尋暗示編號／名稱…",value:findNumKey(DB.hint,c["暗示"])||(c["暗示"]||""),allowFree:true});
-  b1.appendChild(field("暗示",ED.暗示Cb.el,"以編號或名稱搜尋皆可；也可直接輸入自訂值"));
+  ED.暗示Cb=combo(hintItems(),{placeholder:"搜尋編號／名稱，或自行輸入自訂名稱…",value:findNumKey(DB.hint,c["暗示"])||(c["暗示"]||""),allowFree:true});
+  b1.appendChild(field("暗示",ED.暗示Cb.el));
+  ED.暗示說明=el("textarea");ED.暗示說明.value=(c["暗示說明"]||"").replace(/\\n/g,"\n");ED.暗示說明.style.minHeight="60px";
+  b1.appendChild(field("說明（自訂名稱時請在此填內容）",ED.暗示說明));
   ED.傾向=combo(inclItems(),{placeholder:"搜尋傾向…",value:c["傾向"]||""});
   b1.appendChild(field("傾向",ED.傾向.el));
   ED.主要類型=combo(typeItems(),{placeholder:"搜尋主要類型…",value:c["主要類型"]||""});
@@ -2005,6 +2009,7 @@ function readEditor(){
   o["代表色"]=ED.代表色.value.trim()||"#93799F";o["享年"]=ED.享年.value.trim();
   o["頭像"]=ED.頭像.value.trim();o["全身圖"]=ED.全身圖.value.trim();
   o["暗示"]=ED.暗示Cb.get();
+  o["暗示說明"]=ED.暗示說明.value.replace(/\r?\n/g,"\\n");
   o["傾向"]=ED.傾向.get();o["主要類型"]=ED.主要類型.get();o["輔助類型"]=ED.輔助類型.get();
   ["武裝加值","變異加值","改造加值"].forEach(function(k){o[k]=ED[k].value.trim();});
   o["強化選擇"]=ED.強化選擇||"";
