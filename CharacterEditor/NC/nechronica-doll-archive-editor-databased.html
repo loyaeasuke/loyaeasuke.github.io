@@ -21,7 +21,7 @@
 }
 *{box-sizing:border-box}
 html{height:100%}
-body{min-height:100vh}
+body{height:100vh;display:flex;flex-direction:column;overflow:hidden}
 body{margin:0;background:var(--paper);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
 button{font-family:inherit;color:inherit}
 img{display:block}
@@ -29,7 +29,7 @@ img{display:block}
 
 /* ── 工具列（匯出後移除） ─────────────────────────── */
 #toolbar{
-  position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
+  position:sticky;top:0;z-index:60;flex:none;display:flex;flex-wrap:wrap;gap:10px;align-items:center;
   padding:10px 16px;background:var(--ink);color:#e9e6ef;border-bottom:1px solid #000;
 }
 #toolbar .brand{
@@ -51,13 +51,13 @@ img{display:block}
 #toolbar .status b{color:#cfc8dc;font-weight:500}
 
 /* ── 版面 ────────────────────────────────────────── */
-#app{display:flex;min-height:calc(100vh - 44px)}
+#app{display:flex;flex:1;min-height:0}
 #side{
   width:var(--sidebar-w);flex:none;background:var(--ink);color:#c6c0d2;
-  display:flex;flex-direction:column;position:sticky;top:44px;height:calc(100vh - 44px);
+  display:flex;flex-direction:column;min-height:0;
 }
-body.view #side{top:0;height:100vh}
-body.view #app{min-height:100vh}
+body.view #side{min-height:0}
+body.view #app{min-height:0}
 .side-head{padding:16px 18px 12px;border-bottom:1px solid var(--ink-line)}
 .side-title{font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.05em;color:#e4dfeb;margin:0 0 3px}
 .side-sub{font-family:var(--util);font-size:13px;letter-spacing:.12em;color:#79728a;text-transform:uppercase}
@@ -89,7 +89,7 @@ body.view #app{min-height:100vh}
 .item .sub{display:block;font-size:13px;color:#726a86;margin-top:1px}
 #sideFoot{flex:none;padding:12px 18px;border-top:1px solid var(--ink-line);font-size:13px;line-height:1.55;letter-spacing:.02em;color:#948ca6}
 
-#main{flex:1;min-width:0;padding:28px 30px 60px}
+#main{flex:1;min-width:0;min-height:0;overflow-y:auto;padding:28px 30px 60px}
 
 /* ── 空狀態 ──────────────────────────────────────── */
 .blank{max-width:420px;margin:16vh auto;text-align:center;color:var(--text-dim)}
