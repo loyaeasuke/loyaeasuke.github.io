@@ -815,6 +815,39 @@ function partSection(area,field,judge,overFlag){
   return '<div class="card">'+head+warn+'<table class="pt-table" data-area="'+esc(area)+'"><thead>'+thead+'</thead><tbody>'+body+'</tbody></table></div>';
 }
 
+/* 依戀列表 HTML（供詳情頁與「就地更新」共用） */
+function attListHTML(c){
+  var atts=pipes(c["依戀"]);
+  var noTre=!hasTreasurePart(c);
+  return atts.map(function(a,ai){
+    var f=carets(a),obj=f[0]||"",kind=f[1]||"",mad=+f[2]||0;
+    var treLost=(obj==="寶物")&&noTre;               /* 無寶物：鎖定、灰化 */
+    var rec=DB.att[kind]||{};
+    var summary=rec["概述"]||rec["發狂內容"]||"";
+    var maddened=(mad>=4)&&!treLost;
+    var tipArr=treLost
+      ?["此依戀對象為「寶物」，但角色目前沒有任何「寶物」等級部件；取得寶物前無法調整狂氣點。"]
+      :(maddened
+        ?[rec["概述"]||""]
+        :[rec["發狂"]?"發狂："+rec["發狂"]:"",rec["發狂內容"]||""]);
+    tipArr=tipArr.filter(Boolean);
+    var tip=tipArr.length?' data-tip="'+esc(tipArr.join("\n"))+'"':"";
+    var dots="";
+    for(var k=0;k<4;k++)dots+='<span class="dot'+(k<mad?" f":"")+'"'+(treLost?"":(' data-att="'+ai+'" data-dot="'+k+'" title="點擊設定狂氣點"'))+'></span>';
+    var lostTag=treLost?'<span class="lost-tag">無寶物</span>':"";
+    var head='<div class="h"><span class="obj">'+esc(obj)+'</span>'+lostTag+'<span class="kind">'+esc(kind)+'</span><span class="mad">'+dots+'</span></div>';
+    var bodyHtml;
+    if(maddened){
+      bodyHtml='<div class="mad-state"><span class="mad-tag">發狂</span>'+(rec["發狂"]?'<b>'+esc(rec["發狂"])+'</b>':"")+
+        (rec["發狂對白"]?'<div class="mad-line">'+esc(rec["發狂對白"])+'</div>':"")+
+        (rec["發狂內容"]?'<div class="mad-rule">'+nl(rec["發狂內容"])+'</div>':"")+'</div>';
+    }else{
+      bodyHtml=summary?'<div class="c">'+nl(summary)+'</div>':"";
+    }
+    return '<div class="att'+(maddened?" maddened":"")+(treLost?" nolost":"")+'"'+tip+'>'+head+bodyHtml+'</div>';
+  }).join("");
+}
+
 function renderDetail(){
   var c=chars[state.sel],box=$("main");
   if(!c){renderGallery();return;}
@@ -901,34 +934,7 @@ function renderDetail(){
 
   /* 依戀（狂氣可改、發狂顯示、tooltip） */
   var atts=pipes(c["依戀"]);
-  var noTre=!hasTreasurePart(c);
-  var attCard=atts.length?'<div class="card"><h3>依戀</h3><div class="body">'+atts.map(function(a,ai){
-    var f=carets(a),obj=f[0]||"",kind=f[1]||"",mad=+f[2]||0;
-    var treLost=(obj==="寶物")&&noTre;               /* 無寶物：鎖定、灰化 */
-    var rec=DB.att[kind]||{};
-    var summary=rec["概述"]||rec["發狂內容"]||"";
-    var maddened=(mad>=4)&&!treLost;
-    var tipArr=treLost
-      ?["此依戀對象為「寶物」，但角色目前沒有任何「寶物」等級部件；取得寶物前無法調整狂氣點。"]
-      :(maddened
-        ?[rec["概述"]||""]
-        :[rec["發狂"]?"發狂："+rec["發狂"]:"",rec["發狂內容"]||""]);
-    tipArr=tipArr.filter(Boolean);
-    var tip=tipArr.length?' data-tip="'+esc(tipArr.join("\n"))+'"':"";
-    var dots="";
-    for(var k=0;k<4;k++)dots+='<span class="dot'+(k<mad?" f":"")+'"'+(treLost?"":(' data-att="'+ai+'" data-dot="'+k+'" title="點擊設定狂氣點"'))+'></span>';
-    var lostTag=treLost?'<span class="lost-tag">無寶物</span>':"";
-    var head='<div class="h"><span class="obj">'+esc(obj)+'</span>'+lostTag+'<span class="kind">'+esc(kind)+'</span><span class="mad">'+dots+'</span></div>';
-    var bodyHtml;
-    if(maddened){
-      bodyHtml='<div class="mad-state"><span class="mad-tag">發狂</span>'+(rec["發狂"]?'<b>'+esc(rec["發狂"])+'</b>':"")+
-        (rec["發狂對白"]?'<div class="mad-line">'+esc(rec["發狂對白"])+'</div>':"")+
-        (rec["發狂內容"]?'<div class="mad-rule">'+nl(rec["發狂內容"])+'</div>':"")+'</div>';
-    }else{
-      bodyHtml=summary?'<div class="c">'+nl(summary)+'</div>':"";
-    }
-    return '<div class="att'+(maddened?" maddened":"")+(treLost?" nolost":"")+'"'+tip+'>'+head+bodyHtml+'</div>';
-  }).join("")+'</div></div>':"";
+  var attCard=atts.length?'<div class="card"><h3>依戀</h3><div class="body" id="attBody">'+attListHTML(c)+'</div></div>':"";
 
   /* 劇本經歷 + 寵愛點 */
   var logs=pipes(c["劇本經歷"]);
@@ -1054,7 +1060,9 @@ $("main").addEventListener("click",function(e){
   f[2]=String(nv);arr[ai]=f.join("^");c["依戀"]=arr.join("|");
   window.__DATA__.csv["角色"]=serializeChars();
   markDirty(state.sel);statusApplied();
-  renderDetail();
+  var _ab=$("attBody");                 /* 只就地更新依戀卡，不重繪整頁 → 畫面不會捲動 */
+  if(_ab)_ab.innerHTML=attListHTML(c);
+  else renderDetail();
 });
 
 /* 滑鼠提示小窗（部件說明 / 依戀概述·發狂 / 類型說明） */
