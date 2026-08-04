@@ -265,6 +265,16 @@ img{display:block}
   mask-image:linear-gradient(to left,#000 30%,transparent 92%);
 }
 .sheet-in{position:relative;z-index:2;padding:34px 38px 40px}
+.edit-btn{
+  position:absolute;top:16px;right:16px;z-index:5;
+  padding:6px 14px;border-radius:2px;cursor:pointer;
+  font-family:var(--util);font-size:12px;letter-spacing:.1em;
+  color:#fff;background:var(--accent);border:0;
+  box-shadow:0 1px 3px rgba(20,24,35,.28);
+  transition:filter .14s,transform .14s;
+}
+.edit-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.edit-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* 圖片列 */
 .gallery{display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap;margin-bottom:22px}
@@ -432,6 +442,101 @@ table.stat td{
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
 }
+
+/* ── 新增角色 Modal ─────────────────────────── */
+#modal{
+  position:fixed;inset:0;z-index:150;display:none;
+  align-items:center;justify-content:center;padding:40px 20px;
+  background:rgba(12,14,20,.55);overflow:hidden;
+}
+#modal.on{display:flex}
+.mbox{
+  width:100%;max-width:760px;max-height:calc(100vh - 80px);
+  display:flex;flex-direction:column;overflow:hidden;
+  background:#fff;border-radius:6px;
+  box-shadow:0 24px 70px -20px rgba(12,14,20,.6);
+  animation:rise .26s cubic-bezier(.2,.7,.3,1) both;
+}
+.mhead{
+  flex:none;display:flex;align-items:center;gap:12px;padding:18px 24px;
+  border-bottom:1px solid var(--hair);background:#fff;
+}
+.mhead h2{font-family:var(--serif);font-size:19px;font-weight:700;margin:0;flex:1}
+.mhead .x{
+  border:0;background:none;font-size:22px;line-height:1;color:var(--text-dim);
+  cursor:pointer;width:32px;height:32px;border-radius:4px;
+}
+.mhead .x:hover{background:#f0f1f4;color:var(--text)}
+.mbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding:22px 24px}
+.frow{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.fld{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:5px}
+.fld.narrow{flex:0 0 150px}
+.fld label{font-size:12px;font-weight:500;color:var(--text-mid);letter-spacing:.02em}
+.fld label .req{color:var(--accent-text)}
+.fld label .hn{font-weight:400;color:var(--text-dim);font-size:11px}
+.fld input[type=text],.fld input[type=number],.fld textarea,.fld select{
+  font-family:inherit;font-size:14px;color:var(--text);
+  padding:8px 10px;border:1px solid #cfd3db;border-radius:3px;background:#fff;width:100%;
+}
+.fld textarea{resize:vertical;min-height:64px;line-height:1.6}
+.fld input:focus,.fld textarea:focus,.fld select:focus{
+  outline:none;border-color:#7c88a3;box-shadow:0 0 0 3px rgba(124,136,163,.16);
+}
+.msec{margin:22px 0 14px;padding-top:16px;border-top:1px solid var(--hair)}
+.msec:first-child{margin-top:0;padding-top:0;border-top:0}
+.msec h3{
+  font-family:var(--util);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--text-dim);margin:0 0 14px;
+}
+.color-row{display:flex;align-items:center;gap:10px}
+.color-row input[type=color]{
+  width:40px;height:38px;padding:0;border:1px solid #cfd3db;border-radius:3px;
+  background:none;cursor:pointer;flex:none;
+}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-grid .fld label{font-family:var(--util);letter-spacing:.08em;text-align:center}
+.stat-grid input{text-align:center;font-family:var(--util);font-size:16px}
+.img-fld{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:16px}
+.img-prev{
+  width:70px;height:70px;flex:none;border:1px solid var(--hair);border-radius:3px;
+  background:#f6f7f9 center/cover no-repeat;display:grid;place-items:center;
+  font-size:10px;color:var(--text-dim);overflow:hidden;
+}
+.img-prev.full{width:56px;height:88px}
+.img-ctrl{flex:1 1 260px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.img-ctrl .btnrow{display:flex;gap:8px;align-items:center}
+.mini{
+  font-size:12px;padding:6px 11px;border:1px solid #cfd3db;border-radius:3px;
+  background:#f7f8fa;cursor:pointer;color:var(--text);white-space:nowrap;
+}
+.mini:hover{background:#eef0f3}
+.mini.ghost{border-style:dashed;color:var(--text-mid)}
+.var-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.var-chip{position:relative;width:52px;height:68px;border:1px solid var(--hair);border-radius:3px;overflow:hidden;background:#f6f7f9}
+.var-chip img{width:100%;height:100%;object-fit:cover;display:block}
+.var-chip button{
+  position:absolute;top:2px;right:2px;width:16px;height:16px;border:0;border-radius:50%;
+  background:rgba(20,24,35,.7);color:#fff;font-size:11px;line-height:16px;cursor:pointer;padding:0;
+}
+.mfoot{
+  flex:none;display:flex;align-items:center;gap:12px;padding:16px 24px;
+  border-top:1px solid var(--hair);background:#fff;
+}
+.mfoot .err{color:var(--accent-text);font-size:13px;flex:1}
+.mfoot .spacer{flex:1}
+.mbtn{
+  padding:9px 18px;border-radius:3px;font-size:14px;font-family:inherit;cursor:pointer;
+  border:1px solid #cfd3db;background:#fff;color:var(--text);
+}
+.mbtn:hover{background:#f4f5f7}
+.mbtn.primary{background:#1e2330;border-color:#1e2330;color:#fff;font-weight:500}
+.mbtn.primary:hover{background:#2a3140}
+@media (max-width:640px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  #modal{padding:0}
+  .mbox{border-radius:0;height:100%;max-height:100%}
+}
+
 @media print{
   #side,#toolbar,.hint{display:none}
   #main{overflow:visible;padding:0}
@@ -446,6 +551,8 @@ table.stat td{
   <input id="titleInput" type="text" value="您的CoC 6th PC一覽" aria-label="網頁標題">
   <button class="tbtn" id="btnCsv">載入 CSV</button>
   <button class="tbtn" id="btnImgs">載入圖片資料夾</button>
+  <button class="tbtn" id="btnAdd">＋ 新增PC</button>
+  <button class="tbtn" id="btnCsvOut" disabled>匯出 CSV</button>
   <button class="tbtn" id="btnSample">下載 CSV 範本</button>
   <label class="tswitch"><input type="checkbox" id="embedImgs" checked> 匯出時內嵌圖片</label>
   <button class="tbtn primary" id="btnExport" disabled>匯出純檢視網頁</button>
@@ -565,6 +672,43 @@ function cleanColor(v){
   return v;
 }
 
+/* 把新角色插進同分類群組的尾端，維持側欄群組連續；回傳插入位置 */
+function insertByCategory(list, rec){
+  var last = -1;
+  for(var i=0;i<list.length;i++){ if(list[i].category===rec.category) last=i; }
+  var at = (last>=0) ? last+1 : list.length;
+  list.splice(at,0,rec);
+  return at;
+}
+
+/* 依 CSV 規格把資料序列化回 CSV（欄位順序與範本一致） */
+var CSV_COLS = [
+  ["category","分類"],["name","名字"],["reading","拼音"],["ho","HO"],["job","職業"],
+  ["color","代表色"],["relation","關係"],["icon","頭像"],["full","全身圖"],["variants","差分"],
+  ["STR","STR"],["CON","CON"],["POW","POW"],["DEX","DEX"],["APP","APP"],["SIZ","SIZ"],
+  ["INT","INT"],["EDU","EDU"],["san","SAN"],["quote","台詞"],["summary","概要"],["logs","經歷"]
+];
+function csvCell(v){
+  v = (v==null) ? "" : String(v);
+  return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+}
+function recordsToCSV(list){
+  var lines = [ CSV_COLS.map(function(c){ return c[1]; }).join(",") ];
+  list.forEach(function(c){
+    var row = CSV_COLS.map(function(col){
+      var k = col[0];
+      if(k==="variants") return csvCell(c.variants.join("|"));
+      if(k==="logs")     return csvCell(c.logs.join("|"));
+      if(k==="quote")    return csvCell((c.quote||"").replace(/\n/g,"|"));
+      if(k==="san")      return csvCell(c.san==null ? "" : c.san);
+      if(STAT_KEYS.indexOf(k)>=0) return csvCell(c.stats[k]||0);
+      return csvCell(c[k]);
+    });
+    lines.push(row.join(","));
+  });
+  return "\uFEFF"+lines.join("\n");
+}
+
 /* ══════════════════════════════════════════════════════════
    顏色工具
    ══════════════════════════════════════════════════════════ */
@@ -597,6 +741,10 @@ var state = {
 };
 var imgFiles = {};   /* 檔名 → File（本機資料夾） */
 var imgURLs  = {};   /* 檔名 → object URL */
+
+/* 新增角色表單的暫存與開窗函式（實體在 initAddModal 內建立） */
+var addState = { icon:"", full:"", variants:[] };
+var openAddModal = function(){};
 
 function resolveImg(v){
   v = String(v||"").trim();
@@ -868,7 +1016,13 @@ function galleryPage(){
            : '')+
          '</button>';
   });
-  return h+'</div></div>';
+  return h+'</div>'+(VIEW_ONLY?'':
+    '<div class="gp-cat" style="margin-top:6px">新增</div>'+
+    '<div class="gp-grid"><button class="gp-card" type="button" data-add="1" style="--c:#8b919d;--c-rgb:139,145,157;--c-text:#5c6371">'+
+      '<span class="pic" style="display:grid;place-items:center;border-style:dashed">'+
+        '<span style="font-size:34px;color:#b6bcc7;line-height:1">＋</span></span>'+
+      '<span class="nm">新增PC</span><span class="rd"></span><span class="jb"></span>'+
+    '</button></div>')+'</div>';
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -900,6 +1054,7 @@ function renderDetail(){
 
   var h = '';
   h += '<article class="sheet" style="'+vars+'">';
+  if(!VIEW_ONLY) h += '<button class="edit-btn" type="button" data-edit="1">編輯PC</button>';
   if(fullSrc) h += '<div class="art"><img src="'+esc(fullSrc)+'" alt="" onerror="this.parentNode.style.display=\'none\'"></div>';
   h += '<div class="sheet-in">';
 
@@ -1021,8 +1176,12 @@ function closeLB(){ $("lightbox").classList.remove("on"); $("lbImg").src=""; }
 function stepLB(d){ openLB((lbIdx+d+galleryImgs.length)%galleryImgs.length); }
 
 $("detail").addEventListener("click", function(e){
+  var ed = e.target.closest("[data-edit]");
+  if(ed){ if(typeof openAddModal==="function") openAddModal(state.sel); return; }
   var card = e.target.closest("[data-go]");
   if(card){ select(parseInt(card.dataset.go,10)); return; }
+  var add = e.target.closest("[data-add]");
+  if(add){ if(typeof openAddModal==="function") openAddModal(); return; }
   var b = e.target.closest("[data-img]");
   if(!b) return;
   var i = parseInt(b.dataset.img,10);
@@ -1065,7 +1224,7 @@ if(toolbar && !VIEW_ONLY){
         state.chars = recordsFromCSV(text);
         state.sel = -1;
         render();
-        $("btnExport").disabled = !state.chars.length;
+        setExportEnabled();
         setStatus(state.chars.length ? "已載入 <b>"+state.chars.length+"</b> 位 PC　·　"+esc(f.name)
                                      : "CSV 讀到了，但沒有任何一列有「名字」");
       }catch(err){
@@ -1099,6 +1258,16 @@ if(toolbar && !VIEW_ONLY){
     download("PC範本.csv", "\uFEFF"+SAMPLE_CSV, "text/csv;charset=utf-8");
   });
 
+  /* ── 匯出 CSV（把目前資料，含新增的角色，存回 CSV） ── */
+  $("btnCsvOut").addEventListener("click", function(){
+    download((state.title||"PC一覽")+".csv", recordsToCSV(state.chars), "text/csv;charset=utf-8");
+    setStatus("已匯出 <b>"+state.chars.length+"</b> 位 PC 的 CSV");
+  });
+
+  /* ── 新增角色 Modal ── */
+  initAddModal();
+  $("btnAdd").addEventListener("click", function(){ openAddModal(); });
+
   $("btnExport").addEventListener("click", function(){
     $("btnExport").disabled = true;
     setStatus("正在打包…");
@@ -1114,6 +1283,289 @@ if(toolbar && !VIEW_ONLY){
 }
 
 function setStatus(html){ var s=$("status"); if(s) s.innerHTML = html; }
+
+function setExportEnabled(){
+  var on = state.chars.length>0;
+  var be=$("btnExport"), bc=$("btnCsvOut");
+  if(be) be.disabled = !on;
+  if(bc) bc.disabled = !on;
+}
+
+/* ══════════════════════════════════════════════════════════
+   新增角色：表單 Modal
+   ══════════════════════════════════════════════════════════ */
+function initAddModal(){
+  var statHTML = STAT_KEYS.map(function(k){
+    return '<div class="fld"><label>'+k+'</label><input type="number" data-stat="'+k+'" min="0" step="1" placeholder="0"></div>';
+  }).join("");
+
+  var html =
+  '<div id="modal" role="dialog" aria-modal="true" aria-label="新增角色">'+
+    '<div class="mbox">'+
+      '<div class="mhead"><h2 id="m_title">新增PC</h2><button class="x" type="button" data-mx aria-label="關閉">✕</button></div>'+
+      '<div class="mbody">'+
+
+        '<div class="msec"><h3>基本</h3>'+
+          '<div class="frow">'+
+            '<div class="fld"><label>名字 <span class="req">*</span></label><input type="text" id="f_name"></div>'+
+            '<div class="fld"><label>拼音 <span class="hn">名字下方</span></label><input type="text" id="f_reading"></div>'+
+          '</div>'+
+          '<div class="frow">'+
+            '<div class="fld"><label>分類 <span class="hn">側欄／總覽分組</span></label><input type="text" id="f_category" list="catList" placeholder="相同分類將自動分組"><datalist id="catList"></datalist></div>'+
+            '<div class="fld"><label>職業</label><input type="text" id="f_job"></div>'+
+          '</div>'+
+          '<div class="frow">'+
+            '<div class="fld"><label>HO <span class="hn">名字上方小字</span></label><input type="text" id="f_ho"></div>'+
+            '<div class="fld narrow"><label>代表色</label><div class="color-row"><input type="color" id="f_colorPick" value="#5a6273"><input type="text" id="f_color" value="#5a6273" spellcheck="false"></div></div>'+
+          '</div>'+
+          '<div class="frow">'+
+            '<div class="fld"><label><input type="checkbox" id="f_relation" style="width:auto;margin-right:6px;vertical-align:-1px">有親密互動對象（うちよそ）</label></div>'+
+          '</div>'+
+        '</div>'+
+
+        '<div class="msec"><h3>圖片 <span class="hn" style="text-transform:none;letter-spacing:0;font-weight:400">選檔會內嵌進資料；或直接填路徑（跟 CSV 相同）</span></h3>'+
+          '<div class="img-fld">'+
+            '<div class="img-prev" id="pv_icon">頭像</div>'+
+            '<div class="img-ctrl"><label style="font-size:12px;color:var(--text-mid)">頭像 <span class="hn">1:1</span></label>'+
+              '<div class="btnrow"><button class="mini" type="button" data-pick="icon">選擇檔案</button><button class="mini ghost" type="button" data-clr="icon">清除</button></div>'+
+              '<input type="text" data-path="icon" placeholder="或填路徑 images/xxx_icon.png">'+
+            '</div>'+
+          '</div>'+
+          '<div class="img-fld">'+
+            '<div class="img-prev full" id="pv_full">全身圖</div>'+
+            '<div class="img-ctrl"><label style="font-size:12px;color:var(--text-mid)">全身圖 <span class="hn">直幅 1:2</span></label>'+
+              '<div class="btnrow"><button class="mini" type="button" data-pick="full">選擇檔案</button><button class="mini ghost" type="button" data-clr="full">清除</button></div>'+
+              '<input type="text" data-path="full" placeholder="或填路徑 images/xxx_full.png">'+
+            '</div>'+
+          '</div>'+
+          '<div class="img-fld">'+
+            '<div class="img-ctrl" style="flex:1 1 100%"><label style="font-size:12px;color:var(--text-mid)">差分 <span class="hn">直幅 3:4，可多張</span></label>'+
+              '<div class="btnrow"><button class="mini" type="button" data-pick="variants">加入圖檔</button>'+
+                '<button class="mini ghost" type="button" data-clr="variants">全部清除</button></div>'+
+              '<input type="text" data-path="variants" placeholder="或填路徑，多張用 | 分隔">'+
+              '<div class="var-list" id="pv_vars"></div>'+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+
+        '<div class="msec"><h3>能力值</h3>'+
+          '<div class="stat-grid">'+statHTML+'</div>'+
+          '<div class="frow" style="margin-top:14px"><div class="fld narrow"><label>SAN <span class="hn">留空＝POW×5</span></label><input type="number" id="f_san" min="0" step="1" placeholder="自動"></div></div>'+
+        '</div>'+
+
+        '<div class="msec"><h3>文字</h3>'+
+          '<div class="fld" style="margin-bottom:16px"><label>代表PC性格的台詞 <span class="hn">換行用 Enter 或 |</span></label><textarea id="f_quote"></textarea></div>'+
+          '<div class="fld" style="margin-bottom:16px"><label>概要 <span class="hn">角色設定、背景</span></label><textarea id="f_summary"></textarea></div>'+
+          '<div class="fld"><label>經歷 <span class="hn">通過的團務，一行一筆</span></label><textarea id="f_logs" placeholder="第一個劇本&#10;第二個劇本"></textarea></div>'+
+        '</div>'+
+
+      '</div>'+
+      '<div class="mfoot"><span class="err" id="f_err"></span><span class="spacer"></span>'+
+        '<button class="mbtn" type="button" data-mx>取消</button>'+
+        '<button class="mbtn primary" type="button" id="f_save">新增</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
+
+  document.body.insertAdjacentHTML("beforeend", html);
+  var picker = document.createElement("input");
+  picker.type="file"; picker.accept="image/*"; picker.hidden=true;
+  document.body.appendChild(picker);
+
+  var modal = $("modal");
+
+  function renderVars(){
+    var box = $("pv_vars");
+    box.innerHTML = addState.variants.map(function(src,i){
+      return '<span class="var-chip">'+
+             '<img src="'+esc(src)+'" alt="差分 '+(i+1)+'">'+
+             '<button type="button" data-rmvar="'+i+'" aria-label="移除">✕</button></span>';
+    }).join("");
+  }
+  function setPrev(which){
+    var el = $("pv_"+which); if(!el) return;
+    var v = addState[which] || (modal.querySelector('[data-path="'+which+'"]')||{}).value || "";
+    if(v){ el.style.backgroundImage = "url("+JSON.stringify(v)+")"; el.textContent=""; }
+    else { el.style.backgroundImage=""; el.textContent = which==="icon"?"頭像":"全身圖"; }
+  }
+
+  /* 顏色雙向同步 */
+  var cp=$("f_colorPick"), ct=$("f_color");
+  cp.addEventListener("input", function(){ ct.value=cp.value; });
+  ct.addEventListener("input", function(){
+    var v=cleanColor(ct.value); if(/^#[0-9a-f]{6}$/i.test(v)) cp.value=v;
+  });
+
+  /* 圖片：選檔（讀成 data URL） */
+  var pickTarget=null;
+  modal.addEventListener("click", function(e){
+    var pk=e.target.closest("[data-pick]");
+    if(pk){ pickTarget=pk.dataset.pick; picker.value=""; picker.multiple=(pickTarget==="variants"); picker.click(); return; }
+    var cl=e.target.closest("[data-clr]");
+    if(cl){
+      var w=cl.dataset.clr;
+      if(w==="variants"){ addState.variants=[]; renderVars(); }
+      else { addState[w]=""; var pi=modal.querySelector('[data-path="'+w+'"]'); if(pi) pi.value=""; setPrev(w); }
+      return;
+    }
+    var rm=e.target.closest("[data-rmvar]");
+    if(rm){ addState.variants.splice(parseInt(rm.dataset.rmvar,10),1); renderVars(); return; }
+    if(e.target.closest("[data-mx]")){ closeAddModal(); return; }
+    if(e.target===modal){ closeAddModal(); return; }
+  });
+  picker.addEventListener("change", function(){
+    var files=Array.prototype.slice.call(picker.files||[]); if(!files.length) return;
+    var w=pickTarget;
+    files.forEach(function(f){
+      var fr=new FileReader();
+      fr.onload=function(){
+        if(w==="variants"){ addState.variants.push(fr.result); renderVars(); }
+        else {
+          addState[w]=fr.result;
+          var pi=modal.querySelector('[data-path="'+w+'"]'); if(pi) pi.value="";
+          setPrev(w);
+        }
+      };
+      fr.readAsDataURL(f);
+    });
+  });
+  /* 路徑欄輸入時更新預覽（若沒有選檔） */
+  ["icon","full"].forEach(function(w){
+    var pi=modal.querySelector('[data-path="'+w+'"]');
+    pi.addEventListener("input", function(){ if(!addState[w]) setPrev(w); });
+  });
+
+  $("f_save").addEventListener("click", commitAdd);
+  document.addEventListener("keydown", function(e){
+    if(!modal.classList.contains("on")) return;
+    if(e.key==="Escape") closeAddModal();
+  });
+
+  var editIndex = -1;   /* -1＝新增；>=0＝編輯該索引的角色 */
+
+  /* 把一筆角色資料填回表單（編輯用） */
+  function fillForm(c){
+    $("f_name").value = c.name || "";
+    $("f_reading").value = c.reading || "";
+    $("f_category").value = c.category==="未分類" ? "" : (c.category||"");
+    $("f_job").value = c.job || "";
+    $("f_ho").value = c.ho || "";
+    var col = cleanColor(c.color);
+    $("f_color").value = col;
+    if(/^#[0-9a-f]{6}$/i.test(col)) $("f_colorPick").value = col;
+    $("f_relation").checked = !!c.relation;
+    STAT_KEYS.forEach(function(k){
+      modal.querySelector('[data-stat="'+k+'"]').value = (c.stats && c.stats[k]) ? c.stats[k] : "";
+    });
+    $("f_san").value = (c.san==null ? "" : c.san);
+    $("f_quote").value = c.quote || "";
+    $("f_summary").value = c.summary || "";
+    $("f_logs").value = (c.logs||[]).join("\n");
+
+    /* 圖片：內嵌(data:)放暫存並預覽，路徑放文字欄 */
+    function loadImg(w, val){
+      if(!val){ addState[w]=""; var p0=modal.querySelector('[data-path="'+w+'"]'); if(p0)p0.value=""; setPrev(w); return; }
+      if(/^data:/i.test(val)){ addState[w]=val; var p1=modal.querySelector('[data-path="'+w+'"]'); if(p1)p1.value=""; }
+      else { addState[w]=""; var p2=modal.querySelector('[data-path="'+w+'"]'); if(p2)p2.value=val; }
+      setPrev(w);
+    }
+    loadImg("icon", c.icon);
+    loadImg("full", c.full);
+    addState.variants = (c.variants||[]).filter(function(v){ return /^data:/i.test(v); });
+    var paths = (c.variants||[]).filter(function(v){ return !/^data:/i.test(v); });
+    modal.querySelector('[data-path="variants"]').value = paths.join("|");
+    renderVars();
+  }
+
+  /* 對外開關；傳入索引＝編輯，不傳＝新增 */
+  openAddModal = function(idx){
+    var cats={}; state.chars.forEach(function(c){ cats[c.category]=1; });
+    $("catList").innerHTML = Object.keys(cats).map(function(c){ return '<option value="'+esc(c)+'">'; }).join("");
+
+    if(typeof idx==="number" && idx>=0 && state.chars[idx]){
+      editIndex = idx;
+      resetAddForm();
+      fillForm(state.chars[idx]);
+      $("m_title").textContent = "編輯PC";
+      $("f_save").textContent = "儲存變更";
+    } else {
+      editIndex = -1;
+      resetAddForm();
+      $("m_title").textContent = "新增PC";
+      $("f_save").textContent = "新增";
+    }
+    modal.classList.add("on");
+    $("f_name").focus();
+  };
+  function closeAddModal(){ modal.classList.remove("on"); }
+
+  function commitAdd(){
+    var name=$("f_name").value.trim();
+    if(!name){ $("f_err").textContent="請至少填寫名字"; $("f_name").focus(); return; }
+    $("f_err").textContent="";
+
+    var pathVal=function(w){ var pi=modal.querySelector('[data-path="'+w+'"]'); return pi?pi.value.trim():""; };
+    var stats={};
+    STAT_KEYS.forEach(function(k){
+      var n=parseFloat(modal.querySelector('[data-stat="'+k+'"]').value);
+      stats[k]=isFinite(n)?n:0;
+    });
+    var sanV=parseFloat($("f_san").value);
+    var varPaths=splitList(pathVal("variants"));
+
+    var rec={
+      category: $("f_category").value.trim() || "未分類",
+      name: name,
+      reading: $("f_reading").value.trim(),
+      ho: $("f_ho").value.trim(),
+      job: $("f_job").value.trim(),
+      color: cleanColor($("f_color").value),
+      icon: addState.icon || pathVal("icon"),
+      full: addState.full || pathVal("full"),
+      relation: $("f_relation").checked ? "有" : "",
+      variants: addState.variants.concat(varPaths),
+      stats: stats,
+      san: isFinite(sanV)?sanV:null,
+      quote: $("f_quote").value.replace(/\|/g,"\n"),
+      summary: $("f_summary").value,
+      logs: splitList($("f_logs").value)
+    };
+
+    var at;
+    if(editIndex>=0 && state.chars[editIndex]){
+      var old = state.chars[editIndex];
+      if(old.category === rec.category){
+        state.chars[editIndex] = rec;
+        at = editIndex;
+      } else {
+        state.chars.splice(editIndex,1);
+        at = insertByCategory(state.chars, rec);
+      }
+    } else {
+      at = insertByCategory(state.chars, rec);
+    }
+    var wasEdit = editIndex>=0;
+    editIndex = -1;
+    resetAddForm();
+    closeAddModal();
+    setExportEnabled();
+    select(at);
+    setStatus((wasEdit?"已更新 <b>":"已新增 <b>")+esc(name)+"</b>　·　目前 "+state.chars.length+" 位 PC，記得用「匯出 CSV」保存");
+  }
+
+  function resetAddForm(){
+    ["f_name","f_reading","f_category","f_job","f_ho","f_san","f_quote","f_summary","f_logs"].forEach(function(id){ $(id).value=""; });
+    $("f_color").value="#5a6273"; $("f_colorPick").value="#5a6273";
+    $("f_relation").checked=false;
+    STAT_KEYS.forEach(function(k){ modal.querySelector('[data-stat="'+k+'"]').value=""; });
+    ["icon","full"].forEach(function(w){ var pi=modal.querySelector('[data-path="'+w+'"]'); if(pi) pi.value=""; });
+    modal.querySelector('[data-path="variants"]').value="";
+    addState={icon:"",full:"",variants:[]};
+    setPrev("icon"); setPrev("full"); renderVars();
+    $("f_err").textContent="";
+  }
+}
+
 
 function download(filename, content, mime){
   var blob = new Blob([content], {type:mime});
