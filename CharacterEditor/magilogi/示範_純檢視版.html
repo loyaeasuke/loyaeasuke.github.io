@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" style="--accent: #9280A4; --accent-rgb: 146,128,164; --accent-ink: #6b5a82;"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>魔道書大戦 魔法師名冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700;900&amp;family=Noto+Sans+TC:wght@400;500;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<style id="app-style">
+:root{
+  --ink:#0e1120; --ink-2:#161a2c; --ink-3:#20263d; --ink-line:#2c3350;
+  --paper:#e8e5dd; --card:#faf8f2; --card-2:#f2efe6;
+  --text:#191c28; --text-mid:#585f72; --text-dim:#8b91a2;
+  --hair:#ddd8cd; --hair-2:#cec8ba; --star:#c9b8e6;
+  --accent:#9280A4; --accent-rgb:146,128,164; --accent-ink:#6b5a82;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","Hiragino Sans","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"Space Mono","Noto Sans TC",monospace;
+  --sidebar-w:284px;
+  /* 全站字級基準：最小 13px */
+  --fs-min:13px; --fs-sm:13px; --fs-base:15px; --fs-md:14px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--paper);color:var(--text);
+  font-family:var(--sans);font-size:var(--fs-base);line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;color:inherit;cursor:pointer}
+img{display:block}
+a{color:inherit}
+::selection{background:rgba(var(--accent-rgb),.25)}
+
+/* ── 工具列（匯出純檢視版會移除） ─────────────────── */
+#toolbar{
+  position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;gap:9px;align-items:center;
+  padding:10px 16px;background:var(--ink);color:#e7e9f2;border-bottom:1px solid #05060c;
+}
+#toolbar .brand{
+  font-family:var(--serif);font-weight:700;letter-spacing:.14em;font-size:var(--fs-md);
+  margin-right:6px;display:flex;align-items:center;gap:9px;color:#f2eefb;white-space:nowrap;
+}
+#toolbar .brand .mk{width:15px;height:15px;flex:none}
+.tbtn{
+  padding:7px 13px;font-size:var(--fs-sm);background:var(--ink-2);color:#d6dbea;
+  border:1px solid var(--ink-line);border-radius:2px;transition:background .14s,border-color .14s,color .14s;
+}
+.tbtn:hover{background:var(--ink-3);border-color:#3c456a;color:#fff}
+.tbtn:disabled{opacity:.42;cursor:default}
+.tbtn.primary{background:rgba(var(--accent-rgb),.22);border-color:rgba(var(--accent-rgb),.55);color:#efeaf6}
+.tbtn.primary:hover{background:rgba(var(--accent-rgb),.34)}
+#toolbar label.chk{display:flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:#aab2c6;cursor:pointer}
+#toolbar .status{margin-left:auto;font-size:var(--fs-sm);color:#98a0b6;font-family:var(--mono)}
+#toolbar .status b{color:var(--star);font-weight:700}
+
+/* ── 版面骨架 ─────────────────────────────────── */
+#app{display:flex;min-height:calc(100vh - 48px)}
+#sidebar{
+  width:var(--sidebar-w);flex:none;background:var(--ink);color:#cfd5e6;
+  border-right:1px solid #05060c;display:flex;flex-direction:column;position:sticky;top:48px;
+  height:calc(100vh - 48px);
+}
+body.exported #sidebar{top:0;height:100vh}
+.sb-top{padding:16px 15px 12px;border-bottom:1px solid var(--ink-line)}
+.sb-title{
+  font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.14em;color:#efeaf9;
+  margin:0 0 3px;display:flex;align-items:center;gap:8px;
+}
+.sb-title .mk{width:16px;height:16px;flex:none}
+.sb-sub{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.18em;color:#6f7794;margin:0}
+#search{
+  width:100%;margin-top:12px;padding:9px 11px;font-family:inherit;font-size:var(--fs-sm);
+  background:var(--ink-2);color:#e7e9f2;border:1px solid var(--ink-line);border-radius:2px;
+}
+#search::placeholder{color:#5d6579}
+#search:focus{outline:none;border-color:rgba(var(--accent-rgb),.7)}
+#homeBtn{
+  width:100%;margin-top:9px;padding:8px 10px;font-size:var(--fs-sm);
+  display:flex;align-items:center;gap:8px;text-align:left;
+  background:var(--ink-2);border:1px solid var(--ink-line);border-radius:2px;color:#aeb6c8;
+  transition:background .14s,color .14s,border-color .14s;
+}
+#homeBtn svg{flex:none;opacity:.85}
+#homeBtn:hover,#homeBtn[aria-current="true"]{background:var(--ink-3);color:#fff;border-color:#3c456a}
+.sb-list{flex:1;overflow-y:auto;padding:8px 8px 20px}
+.sb-group{margin-top:10px}
+.sb-group>.gh{
+  font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.2em;color:#727a97;
+  padding:6px 8px 5px;display:flex;align-items:center;gap:8px;
+}
+.sb-group>.gh::after{content:"";flex:1;height:1px;background:var(--ink-line)}
+.item{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:7px 9px;border:none;background:none;border-radius:3px;color:#cbd1e2;
+  transition:background .12s;
+}
+.item:hover{background:var(--ink-2)}
+.item[aria-current="true"]{background:var(--ink-3);box-shadow:inset 2px 0 0 var(--ic,var(--accent))}
+.item .dot{width:9px;height:9px;border-radius:50%;flex:none;background:var(--ic,var(--accent))}
+.item .nm{font-size:var(--fs-sm);font-weight:500;line-height:1.35}
+.item .rd{display:block;font-family:var(--mono);font-size:var(--fs-min);color:#7b83a0;letter-spacing:.04em}
+
+/* ── 右側主區 ─────────────────────────────────── */
+#main{flex:1;min-width:0;position:relative}
+.wrap{max-width:1120px;margin:0 auto;padding:30px 34px 70px}
+
+/* 縮圖展示頁 */
+.gp-head{text-align:center;margin:14px 0 40px;position:relative}
+.gp-head .const{margin:0 auto 14px;width:132px;height:34px;opacity:.9}
+.gp-head h2{font-family:var(--serif);font-weight:900;font-size:34px;letter-spacing:.14em;margin:0;line-height:1.2}
+.gp-head p{margin:11px 0 0;font-family:var(--mono);font-size:var(--fs-sm);letter-spacing:.26em;color:var(--text-dim)}
+.gp-cat{
+  display:flex;align-items:center;gap:13px;margin:0 0 22px;
+  font-family:var(--mono);font-size:var(--fs-sm);letter-spacing:.2em;color:var(--text-mid);
+}
+.gp-cat .n{color:#a48fbb;letter-spacing:.06em}
+.gp-cat::after{content:"";flex:1;height:1px;background:var(--hair-2)}
+.gp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:18px 16px;margin-bottom:40px}
+.gp-card{
+  display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:none;padding:6px 4px 10px;
+  border-radius:4px;transition:transform .16s;
+}
+.gp-card:hover{transform:translateY(-3px)}
+.gp-card .pic{
+  width:100%;aspect-ratio:1;border-radius:3px;overflow:hidden;position:relative;
+  background:var(--cc,#cdbfe0);border:1px solid var(--hair-2);
+  box-shadow:0 1px 0 #fff inset,0 2px 8px rgba(20,22,40,.09);
+  transition:box-shadow .16s,border-color .16s;
+}
+.gp-card:hover .pic{border-color:var(--cc,var(--accent));box-shadow:0 0 0 2px rgba(var(--accent-rgb),.18),0 6px 16px rgba(20,22,40,.16)}
+.gp-card .pic img{width:100%;height:100%;object-fit:cover}
+.gp-card .pic .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-weight:700;font-size:34px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.28)}
+.gp-card .nm{font-family:var(--serif);font-weight:700;font-size:var(--fs-base);line-height:1.25;color:var(--cc,var(--text));text-align:center}
+.gp-card .rd{font-family:var(--mono);font-size:var(--fs-min);color:var(--text-dim);min-height:1em;letter-spacing:.03em;text-align:center}
+.gp-card .mg{font-size:var(--fs-min);color:var(--text-mid);text-align:center;line-height:1.3}
+
+/* ── 詳情頁 ─────────────────────────────────── */
+.sheet{position:relative;animation:rise .34s cubic-bezier(.2,.7,.3,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.sheet,.gp-card{animation:none;transition:none}}
+.bgfull{
+  position:absolute;top:0;right:-8px;width:min(46%,440px);height:100%;
+  background-size:cover;background-position:top center;opacity:.11;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to left,#000 40%,transparent);mask-image:linear-gradient(to left,#000 40%,transparent);
+  z-index:0;
+}
+.sheet>*{position:relative;z-index:1}
+
+.dh{border-bottom:2px solid var(--accent);padding-bottom:16px;margin-bottom:20px}
+.dh .cat{font-family:var(--mono);font-size:var(--fs-sm);letter-spacing:.24em;color:var(--accent-ink);text-transform:uppercase;margin-bottom:7px}
+.dh h1{font-family:var(--serif);font-weight:900;font-size:33px;letter-spacing:.06em;margin:0;line-height:1.15;color:var(--accent-ink)}
+.dh .rd{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text-mid);letter-spacing:.1em;margin-top:5px}
+.dh .mg{font-family:var(--serif);font-size:var(--fs-md);color:var(--text-mid);margin-top:3px;font-style:italic}
+.dh .meta{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:13px}
+.dh .meta .m{font-size:var(--fs-sm);color:var(--text-mid);background:var(--card-2);border:1px solid var(--hair);border-radius:2px;padding:3px 9px}
+.dh .meta .m b{color:var(--text);font-weight:700}
+.dh .meta .m.hl{background:rgba(var(--accent-rgb),.12);border-color:rgba(var(--accent-rgb),.4);color:var(--accent-ink)}
+.dh .meta .m.hl b{color:var(--accent-ink)}
+
+/* 能力數值 */
+.stats{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 22px}
+.stat{background:var(--card);border:1px solid var(--hair);border-radius:3px;padding:9px 15px;text-align:center;min-width:74px}
+.stat .k{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.14em;color:var(--text-dim)}
+.stat .v{font-family:var(--serif);font-weight:900;font-size:24px;line-height:1.1;color:var(--text);margin-top:1px}
+.stat.big{background:var(--accent);border-color:var(--accent)}
+.stat.big .k{color:rgba(255,255,255,.82)}
+.stat.big .v{color:#fff}
+.stat.sm .v{font-size:19px}
+
+/* 區塊 */
+.sec{margin:0 0 24px}
+.sec-h{
+  font-family:var(--mono);font-size:var(--fs-sm);letter-spacing:.2em;color:var(--text-mid);
+  display:flex;align-items:center;gap:11px;margin:0 0 13px;
+}
+.sec-h::before{content:"";width:15px;height:1px;background:var(--accent)}
+.sec-h::after{content:"";flex:1;height:1px;background:var(--hair)}
+
+/* 特技表 signature */
+.skwrap{overflow-x:auto}
+.sktable{border-collapse:separate;border-spacing:0;width:100%;min-width:600px;font-size:var(--fs-sm)}
+.sktable th,.sktable td{border:1px solid var(--hair-2);text-align:center;padding:0}
+.sktable thead th{
+  background:var(--ink-2);color:#e7e9f2;font-family:var(--serif);font-weight:700;
+  letter-spacing:.06em;padding:6px 2px;font-size:var(--fs-sm);
+}
+.sktable thead th.corner{background:var(--ink);width:34px}
+.sktable td.die,.sktable th.die{
+  background:var(--ink-3);color:#c7cde0;font-family:var(--mono);font-size:var(--fs-min);width:34px;
+}
+.sktable td.sk{
+  background:var(--card);color:var(--text);height:33px;font-size:var(--fs-sm);
+  position:relative;transition:background .1s;white-space:nowrap;padding:0 5px;
+}
+.sktable td.sk.on{background:var(--accent);color:#fff;font-weight:700;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.sktable td.sk.judge{outline:2px solid var(--accent-ink);outline-offset:-2px}
+.sktable td.sk.judge::after{
+  content:"";position:absolute;top:0;right:0;
+  border-style:solid;border-width:0 10px 10px 0;
+  border-color:transparent var(--accent-ink) transparent transparent;
+}
+.sktable td.sk.gap::before{
+  content:"";position:absolute;left:3px;top:3px;width:5px;height:5px;border-radius:50%;
+  background:var(--star);box-shadow:0 0 0 1px var(--accent-ink);
+}
+.sk-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:var(--fs-min);color:var(--text-mid)}
+.sk-legend span{display:inline-flex;align-items:center;gap:6px}
+.sk-legend .swatch{width:13px;height:13px;border-radius:2px;background:var(--accent);border:1px solid var(--accent-ink)}
+.sk-legend .swatch.g{background:var(--star)}
+.sk-legend .swatch.j{background:#fff;outline:2px solid var(--accent-ink);outline-offset:-2px}
+
+/* 習得特技判定值 + 魂之特技 */
+.judge-list{display:flex;flex-wrap:wrap;gap:8px}
+.jchip{
+  display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--hair);
+  border-radius:3px;padding:6px 12px;font-size:var(--fs-sm);
+}
+.jchip .nm{font-weight:700;color:var(--accent-ink)}
+.jchip .vl{font-family:var(--mono);font-size:var(--fs-min);color:var(--text-mid)}
+.jchip .gp{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.04em;background:var(--star);color:var(--accent-ink);border-radius:2px;padding:1px 6px}
+.jchip.soul{background:rgba(var(--accent-rgb),.1);border-color:rgba(var(--accent-rgb),.45)}
+.jchip.soul .tag{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.08em;background:var(--accent-ink);color:#fff;border-radius:2px;padding:1px 6px}
+
+/* 兩欄 */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media (max-width:840px){.cols{grid-template-columns:1fr}}
+
+/* 定義列表卡 */
+.card-block{background:var(--card);border:1px solid var(--hair);border-radius:4px;padding:14px 16px;margin-bottom:14px}
+.card-block .bt{font-family:var(--serif);font-weight:700;font-size:var(--fs-base);color:var(--text);margin:0 0 4px;display:flex;align-items:baseline;gap:9px}
+.card-block .creed{font-size:var(--fs-sm);color:var(--accent-ink);font-weight:500}
+.card-block .desc{font-size:var(--fs-sm);color:var(--text-mid);line-height:1.55}
+.card-block .eff{display:inline-block;font-size:var(--fs-min);font-family:var(--mono);letter-spacing:.04em;background:rgba(var(--accent-rgb),.14);color:var(--accent-ink);border-radius:2px;padding:2px 8px;margin-left:auto}
+
+.prose{font-size:var(--fs-base);color:var(--text);line-height:1.72;white-space:pre-wrap}
+.prose.mid{color:var(--text-mid);font-size:var(--fs-sm)}
+
+/* 錨點關係 */
+.anchor{background:var(--card);border:1px solid var(--hair);border-radius:4px;padding:12px 14px;margin-bottom:11px;position:relative}
+.anchor .top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:5px}
+.anchor .an{font-family:var(--serif);font-weight:700;font-size:var(--fs-base)}
+.chip{font-size:var(--fs-min);border-radius:2px;padding:2px 9px;font-weight:500;letter-spacing:.02em;white-space:nowrap}
+.chip.fate{background:var(--accent-ink);color:#fff;font-family:var(--mono)}
+.chip.fate.trauma{background:#7a2e3a}
+.chip.attr{background:var(--card-2);border:1px solid var(--hair-2);color:var(--text-mid)}
+.anchor .set{font-size:var(--fs-sm);color:var(--text-mid);line-height:1.55}
+.anchor .del{position:absolute;top:9px;right:10px;background:none;border:none;color:var(--text-dim);font-size:16px;line-height:1;padding:2px 5px;border-radius:3px}
+.anchor .del:hover{background:#eee2e4;color:#a23b4a}
+body.exported .anchor .del{display:none}
+
+/* 錨點編輯器 */
+.anchor-edit{display:none;background:var(--card-2);border:1px dashed var(--hair-2);border-radius:4px;padding:13px 14px;margin-bottom:12px}
+.anchor-edit.show{display:block}
+.anchor-edit .row{display:grid;grid-template-columns:1.2fr .8fr 1fr;gap:9px;margin-bottom:9px}
+@media (max-width:560px){.anchor-edit .row{grid-template-columns:1fr}}
+.anchor-edit label{display:block;font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.1em;color:var(--text-mid);margin-bottom:3px}
+.anchor-edit input,.anchor-edit select,.anchor-edit textarea{
+  width:100%;font-family:inherit;font-size:var(--fs-sm);padding:7px 9px;
+  border:1px solid var(--hair-2);border-radius:2px;background:#fff;color:var(--text);
+}
+.anchor-edit textarea{resize:vertical;min-height:44px}
+.anchor-edit .acts{display:flex;gap:8px;margin-top:2px}
+.mini{padding:6px 13px;font-size:var(--fs-sm);border:1px solid var(--hair-2);background:#fff;border-radius:2px}
+.mini.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.mini.accent:hover{filter:brightness(1.06)}
+.mini:hover{background:var(--card-2)}
+.add-anchor{margin-top:2px}
+body.exported .add-anchor,body.exported .anchor-edit{display:none!important}
+
+/* 藏書 */
+.spell{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;background:var(--card);border:1px solid var(--hair);border-radius:4px;padding:11px 14px;margin-bottom:10px}
+.spell .sp-top{grid-column:1/-1;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.spell .sp-nm{font-family:var(--serif);font-weight:700;font-size:var(--fs-base)}
+.spell .sp-tags{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.spell .t{font-size:var(--fs-min);border-radius:2px;padding:1px 8px;white-space:nowrap}
+.spell .t.kind{background:rgba(var(--accent-rgb),.16);color:var(--accent-ink)}
+.spell .t.skill{background:var(--card-2);border:1px solid var(--hair-2);color:var(--text-mid)}
+.spell .t.cost{background:var(--ink-2);color:#dfe3f0;font-family:var(--mono)}
+.spell .sp-eff{grid-column:1/-1;font-size:var(--fs-sm);color:var(--text-mid);line-height:1.55;margin-top:5px}
+.spell .miss{grid-column:1/-1;font-size:var(--fs-min);color:#b05a5a}
+
+/* 差分 */
+.variants{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}
+.variants img{width:70px;height:70px;object-fit:cover;border-radius:3px;border:1px solid var(--hair-2);cursor:zoom-in;transition:transform .14s}
+.variants img:hover{transform:scale(1.05);border-color:var(--accent)}
+
+/* 空狀態 */
+.empty{max-width:520px;margin:12vh auto;text-align:center;color:var(--text-mid)}
+.empty .const{width:150px;height:40px;margin:0 auto 18px;opacity:.85}
+.empty h2{font-family:var(--serif);font-weight:700;font-size:22px;color:var(--text);letter-spacing:.06em;margin:0 0 10px}
+.empty p{font-size:var(--fs-sm);line-height:1.7;margin:5px 0}
+.empty code{font-family:var(--mono);font-size:var(--fs-min);background:var(--card-2);border:1px solid var(--hair);border-radius:2px;padding:1px 6px}
+
+/* lightbox */
+#lb{position:fixed;inset:0;background:rgba(8,9,18,.9);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
+#lb.show{display:flex}
+#lb img{max-width:94vw;max-height:92vh;border-radius:3px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+#lb .x{position:absolute;top:18px;right:22px;background:none;border:none;color:#fff;font-size:30px;line-height:1}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body class="exported">
+
+
+
+<div id="app">
+  <aside id="sidebar">
+    <div class="sb-top">
+      <p class="sb-title">
+        <svg class="mk" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 6.9L21.6 9l-5.4 4.3 2 7-6.2-4.2L5.8 20.3l2-7L2.4 9l7.2-.1z" fill="currentColor"></path></svg>
+        魔法師名冊
+      </p>
+      <p class="sb-sub">MAGICA LOGIA ROSTER</p>
+      <input id="search" type="search" placeholder="搜尋偽名・魔法名・機關・特技・PL…" autocomplete="off">
+      <button id="homeBtn" aria-current="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" fill="currentColor"></rect><rect x="14" y="3" width="7" height="7" rx="1" fill="currentColor"></rect><rect x="3" y="14" width="7" height="7" rx="1" fill="currentColor"></rect><rect x="14" y="14" width="7" height="7" rx="1" fill="currentColor"></rect></svg>
+        回到縮圖展示頁
+      </button>
+    </div>
+    <nav class="sb-list" id="list"><div class="sb-group"><div class="gh">戶口</div><button class="item" style="--ic:#9280A4"><span class="dot"></span><span><span class="nm">明星 紫名</span><span class="rd">アカボシ シナ</span></span></button></div><div class="sb-group"><div class="gh">圓桌</div><button class="item" style="--ic:#4C8FB0"><span class="dot"></span><span><span class="nm">初見 蒼衣</span><span class="rd">ハツミ アオイ</span></span></button></div></nav>
+  </aside>
+
+  <main id="main"><div class="wrap" id="content"><div class="gp-head"><svg class="const" viewBox="0 0 132 34" fill="none"><g stroke="var(--accent)" stroke-width="1" opacity=".55"><path d="M8 24L34 9L62 21L92 7L118 20"></path></g><g fill="var(--accent)"><circle cx="8" cy="24" r="2.4"></circle><circle cx="34" cy="9" r="3"></circle><circle cx="62" cy="21" r="2.2"></circle><circle cx="92" cy="7" r="3.2"></circle><circle cx="118" cy="20" r="2.6"></circle></g><g fill="var(--star)" opacity=".8"><circle cx="20" cy="14" r="1"></circle><circle cx="48" cy="26" r="1"></circle><circle cx="78" cy="14" r="1"></circle><circle cx="106" cy="27" r="1"></circle></g></svg><h2>魔法師名冊</h2><p>全 2 名 魔法師</p></div><div class="gp-cat"><span class="n">戶口</span><span>1</span></div><div class="gp-grid"><button class="gp-card" style="--cc:#9280A4"><span class="pic" style="--cc:#9280A4;background:#9280A4"><span class="ph">明</span></span><span class="nm">明星 紫名</span><span class="rd">アカボシ シナ</span><span class="mg">ディバイン・ゾディアク-Divine Zodiac-</span></button></div><div class="gp-cat"><span class="n">圓桌</span><span>1</span></div><div class="gp-grid"><button class="gp-card" style="--cc:#4C8FB0"><span class="pic" style="--cc:#4C8FB0;background:#4C8FB0"><span class="ph">初</span></span><span class="nm">初見 蒼衣</span><span class="rd">ハツミ アオイ</span><span class="mg">スターゲイザー-Stargazer-</span></button></div></div></main>
+</div>
+
+<div id="lb"><button class="x" aria-label="關閉">×</button><img alt=""></div>
+
+<script id="demo-data" type="application/json-csv">
+</script>
+
+<script>window.__EXPORT__={"角色.csv":"﻿分類,偽名,拼音,魔法名,PL,代表色,頭像,全身圖,差分,性別,年齡,階梯數,階梯名,攻擊力,防禦力,根源力,魔力,臨時魔力,最大值,功績點,經歷,經歷信條,機關,機關信條,表面身分,領域,判定特技,魂之特技,魂之特技判定,魂之特技備註,習得特技,真實之姿,個性,義務對象,義務願望,藏書,初期背景設定,追加設定,台詞\r\n戶口,明星 紫名,アカボシ シナ,ディバイン・ゾディアク-Divine Zodiac-／神諭星座,洛雅,#9280A4,images/shina_icon.png,images/shina_full.png,,女,614,4,哲人,4,4,4,0,0,4,,書警,阻止魔法災厄,戶口,盡可能溫和地解決事件,圖書館司書,星,寂靜,星座審判,6,魔力1消費,\"大地:9::\n寂靜:5::\n光:12:1:\n物語:15:1:\n祈禱:15:1:\",幽暗星海的天秤,性格冷靜，不太多話，但認為溝通是必要的，所以會好好想辦法表達自己的想法與傳達任務。,,,緊急召喚|魔劍召喚※|火花|書刑|約定|流砂|嘆願,曾經隸屬圓桌的書警，從外顯個性上看不出來的戰鬥狂。在一次的禁書討伐中失利，分科會崩潰且喪失一名錨點後退出圓桌，轉而進入戶口支援與人界相關的處理業務。對一線作戰有點提不起勁，若真有必要還是會前往支援組成分科會，畢竟大法典終年人手不足。,,\r\n圓桌,初見 蒼衣,ハツミ アオイ,スターゲイザー-Stargazer-／觀星之瞳,範例PL,#4C8FB0,,,,女,19,1,學徒,3,2,5,3,0,5,,學徒,精進學業,圓桌,討伐禁書,天文社社員,力,光,無,,,\"光:5::\n雷:9::\n波:12::\",灼熱的獅子王,開朗好奇，總想弄懂魔法背後的原理，遇到難題會兩眼發光。,紫名,想成為能獨當一面的魔法師,火花|星屑之盾|迷宮,這是一名範例角色，用來示範資料庫如何共用魔法、經歷、機關等 CSV。可自由刪除或改寫。,,總有一天，我要看遍所有星星背後的故事。","特技.csv":"領域,骰值,特技名\n星,2,黃金\n星,3,大地\n星,4,森\n星,5,道路\n星,6,海\n星,7,寂靜\n星,8,雨\n星,9,嵐\n星,10,太陽\n星,11,天空\n星,12,異界\n獸,2,肉\n獸,3,蟲\n獸,4,花\n獸,5,血\n獸,6,鱗\n獸,7,混沌\n獸,8,牙\n獸,9,喊叫\n獸,10,憤怒\n獸,11,翼\n獸,12,情色\n力,2,重力\n力,3,風\n力,4,流動\n力,5,水\n力,6,波\n力,7,自由\n力,8,衝擊\n力,9,雷\n力,10,炎\n力,11,光\n力,12,圓環\n歌,2,物語\n歌,3,旋律\n歌,4,淚\n歌,5,離別\n歌,6,微笑\n歌,7,思念\n歌,8,勝利\n歌,9,戀\n歌,10,熱情\n歌,11,療癒\n歌,12,時間\n夢,2,追憶\n夢,3,謎\n夢,4,謊言\n夢,5,不安\n夢,6,睡眠\n夢,7,偶然\n夢,8,幻\n夢,9,狂氣\n夢,10,祈禱\n夢,11,希望\n夢,12,未來\n闇,2,深淵\n闇,3,腐敗\n闇,4,背叛\n闇,5,迷失\n闇,6,怠惰\n闇,7,歪曲\n闇,8,不幸\n闇,9,愚笨\n闇,10,惡意\n闇,11,絕望\n闇,12,死","經歷.csv":"經歷名,說明,常見信條\n書警,守護大法典、追緝禁書與違規魔法師的執法者。,阻止魔法災厄|守護大法典|追緝禁書\n學徒,仍在修習魔法、尚未獨當一面的見習魔法師。,精進學業|回應師長期待|探求真理\n隱者,遠離塵世、獨自鑽研魔法的孤高之人。,不干涉他人|守護秘密|追求自我\n遊俠,四處遊歷、受託解決各地魔法糾紛的自由魔法師。,幫助有難之人|守護旅途所見|不受束縛","機關.csv":"機關名,說明,常見信條\n戶口,負責人界事務與支援組協調的行政部門。,盡可能溫和地解決事件|維持人界秩序|支援第一線\n圓桌,統籌禁書討伐的核心作戰組織。,討伐禁書|保護同袍|完成任務\n書庫,保管、研究魔道書與魔法知識的部門。,守護知識|防止知識外流|記錄真相\n巡邏,巡查人界各地、及早發現魔法災厄徵兆的單位。,防患未然|守護居民|回報異狀","真實之姿.csv":"名稱,效果,說明\n幽暗星海的天秤,魔力解放,顯露真實之姿時，可將魔力回復至最大值，並在此回合內取消魔力消費的限制。\n灼熱的獅子王,追加傷害,顯露真實之姿的回合中，自身造成的傷害全部加算。\n永凍的冰華,絕對防禦,顯露真實之姿時，可完全無效化一次針對自身的攻擊。\n虛無的深淵,吞噬,顯露真實之姿時，選擇一個目標的魔法使其失效。","藏書_魔法.csv":"魔法名,種類,指定特技,COST,效果\n緊急召喚,召喚,可變,無,隨機選 1 個特技作為指定特技。指定特技判定成功後，可召喚 1 個「（特技名）」的精靈。\n魔劍召喚※,召喚,寂靜,星1,魔劍 等級1元型【追加傷害1】。指定特技判定成功後，可召喚 1 個「（特技名）」的魔劍。\n火花,咒文,光,全1,可在魔法戰中自己的行動時使用。指定特技判定成功後，給予目標 1 點傷害。\n書刑,裝備,無,獸1,對裝備此魔法的角色進行抵抗判定時，判定值受到 -2 修正。\n約定,裝備,無,歌1,進行契約時，將錨點的【命運】值視為比原來多一。\n流砂,咒文,大地,星2,魔法戰自己的行動時使用，指定特技判定成功後，對目標造成 1 點傷害並給予「封印」變調。\n嘆願,咒文,祈禱,夢2,某人使用命運之力做復活判定時可使用。指定特技判定成功，可給予該判定 +2 修正值。\n星屑之盾,裝備,無,星1,裝備此魔法者受到攻擊時，可消費 1 點魔素抵銷 1 點傷害。\n迷宮,咒文,道路,星2,魔法戰自己的行動時使用，指定特技判定成功後，給予目標「移動不能」變調。","錨點關係.csv":"﻿角色,錨點名,命運,屬性,設定\r\n明星 紫名,神代 皐,3,血緣,百年前交好的人類友人的子孫。把紫名當成小妹妹，但有些脫線，時常處於被紫名訓話的立場。過去事件結識的錨點。\r\n明星 紫名,緋色 月,創傷,興趣,曾經夢想成為天文學家。受到魔法災厄波及而死亡。"};</script>
+<script id="app-script">
+(function(){
+"use strict";
+/* ══════════════════════════════════════════════════
+   內建示範 CSV（＝範本內容，單一來源）
+   ══════════════════════════════════════════════════ */
+var DEMO = {};
+DEMO["角色.csv"] = `分類,偽名,拼音,魔法名,PL,代表色,頭像,全身圖,差分,性別,年齡,階梯數,階梯名,攻擊力,防禦力,根源力,魔力,臨時魔力,最大值,功績點,經歷,經歷信條,機關,機關信條,表面身分,領域,判定特技,魂之特技,魂之特技判定,魂之特技備註,習得特技,真實之姿,個性,義務對象,義務願望,藏書,初期背景設定,追加設定,台詞
+戶口,明星 紫名,アカボシ シナ,ディバイン・ゾディアク-Divine Zodiac-／神諭星座,洛雅,#9280A4,images/shina_icon.png,images/shina_full.png,,女,614,4,哲人,4,4,4,0,0,4,,書警,阻止魔法災厄,戶口,盡可能溫和地解決事件,圖書館司書,星,寂靜,星座審判,6,魔力1消費,"大地:9::
+寂靜:5::
+光:12:1:
+物語:15:1:
+祈禱:15:1:",幽暗星海的天秤,"性格冷靜，不太多話，但認為溝通是必要的，所以會好好想辦法表達自己的想法與傳達任務。",,,緊急召喚|魔劍召喚※|火花|書刑|約定|流砂|嘆願,"曾經隸屬圓桌的書警，從外顯個性上看不出來的戰鬥狂。在一次的禁書討伐中失利，分科會崩潰且喪失一名錨點後退出圓桌，轉而進入戶口支援與人界相關的處理業務。對一線作戰有點提不起勁，若真有必要還是會前往支援組成分科會，畢竟大法典終年人手不足。",,
+圓桌,初見 蒼衣,ハツミ アオイ,スターゲイザー-Stargazer-／觀星之瞳,範例PL,#4C8FB0,,,,女,19,1,學徒,3,2,5,3,0,5,,學徒,精進學業,圓桌,討伐禁書,天文社社員,力,光,無,,,"光:5::
+雷:9::
+波:12::",灼熱的獅子王,"開朗好奇，總想弄懂魔法背後的原理，遇到難題會兩眼發光。",紫名,想成為能獨當一面的魔法師,火花|星屑之盾|迷宮,"這是一名範例角色，用來示範資料庫如何共用魔法、經歷、機關等 CSV。可自由刪除或改寫。",,總有一天，我要看遍所有星星背後的故事。`;
+
+DEMO["特技.csv"] = `領域,骰值,特技名
+星,2,黃金
+星,3,大地
+星,4,森
+星,5,道路
+星,6,海
+星,7,寂靜
+星,8,雨
+星,9,嵐
+星,10,太陽
+星,11,天空
+星,12,異界
+獸,2,肉
+獸,3,蟲
+獸,4,花
+獸,5,血
+獸,6,鱗
+獸,7,混沌
+獸,8,牙
+獸,9,喊叫
+獸,10,憤怒
+獸,11,翼
+獸,12,情色
+力,2,重力
+力,3,風
+力,4,流動
+力,5,水
+力,6,波
+力,7,自由
+力,8,衝擊
+力,9,雷
+力,10,炎
+力,11,光
+力,12,圓環
+歌,2,物語
+歌,3,旋律
+歌,4,淚
+歌,5,離別
+歌,6,微笑
+歌,7,思念
+歌,8,勝利
+歌,9,戀
+歌,10,熱情
+歌,11,療癒
+歌,12,時間
+夢,2,追憶
+夢,3,謎
+夢,4,謊言
+夢,5,不安
+夢,6,睡眠
+夢,7,偶然
+夢,8,幻
+夢,9,狂氣
+夢,10,祈禱
+夢,11,希望
+夢,12,未來
+闇,2,深淵
+闇,3,腐敗
+闇,4,背叛
+闇,5,迷失
+闇,6,怠惰
+闇,7,歪曲
+闇,8,不幸
+闇,9,愚笨
+闇,10,惡意
+闇,11,絕望
+闇,12,死`;
+
+DEMO["經歷.csv"] = `經歷名,說明,常見信條
+書警,守護大法典、追緝禁書與違規魔法師的執法者。,阻止魔法災厄|守護大法典|追緝禁書
+學徒,仍在修習魔法、尚未獨當一面的見習魔法師。,精進學業|回應師長期待|探求真理
+隱者,遠離塵世、獨自鑽研魔法的孤高之人。,不干涉他人|守護秘密|追求自我
+遊俠,四處遊歷、受託解決各地魔法糾紛的自由魔法師。,幫助有難之人|守護旅途所見|不受束縛`;
+
+DEMO["機關.csv"] = `機關名,說明,常見信條
+戶口,負責人界事務與支援組協調的行政部門。,盡可能溫和地解決事件|維持人界秩序|支援第一線
+圓桌,統籌禁書討伐的核心作戰組織。,討伐禁書|保護同袍|完成任務
+書庫,保管、研究魔道書與魔法知識的部門。,守護知識|防止知識外流|記錄真相
+巡邏,巡查人界各地、及早發現魔法災厄徵兆的單位。,防患未然|守護居民|回報異狀`;
+
+DEMO["真實之姿.csv"] = `名稱,效果,說明
+幽暗星海的天秤,魔力解放,顯露真實之姿時，可將魔力回復至最大值，並在此回合內取消魔力消費的限制。
+灼熱的獅子王,追加傷害,顯露真實之姿的回合中，自身造成的傷害全部加算。
+永凍的冰華,絕對防禦,顯露真實之姿時，可完全無效化一次針對自身的攻擊。
+虛無的深淵,吞噬,顯露真實之姿時，選擇一個目標的魔法使其失效。`;
+
+DEMO["藏書_魔法.csv"] = `魔法名,種類,指定特技,COST,效果
+緊急召喚,召喚,可變,無,隨機選 1 個特技作為指定特技。指定特技判定成功後，可召喚 1 個「（特技名）」的精靈。
+魔劍召喚※,召喚,寂靜,星1,魔劍 等級1元型【追加傷害1】。指定特技判定成功後，可召喚 1 個「（特技名）」的魔劍。
+火花,咒文,光,全1,可在魔法戰中自己的行動時使用。指定特技判定成功後，給予目標 1 點傷害。
+書刑,裝備,無,獸1,對裝備此魔法的角色進行抵抗判定時，判定值受到 -2 修正。
+約定,裝備,無,歌1,進行契約時，將錨點的【命運】值視為比原來多一。
+流砂,咒文,大地,星2,魔法戰自己的行動時使用，指定特技判定成功後，對目標造成 1 點傷害並給予「封印」變調。
+嘆願,咒文,祈禱,夢2,某人使用命運之力做復活判定時可使用。指定特技判定成功，可給予該判定 +2 修正值。
+星屑之盾,裝備,無,星1,裝備此魔法者受到攻擊時，可消費 1 點魔素抵銷 1 點傷害。
+迷宮,咒文,道路,星2,魔法戰自己的行動時使用，指定特技判定成功後，給予目標「移動不能」變調。`;
+
+DEMO["錨點關係.csv"] = `角色,錨點名,命運,屬性,設定
+明星 紫名,神代 皐,3,血緣,百年前交好的人類友人的子孫。把紫名當成小妹妹，但有些脫線，時常處於被紫名訓話的立場。過去事件結識的錨點。
+明星 紫名,緋色 月,創傷,興趣,曾經夢想成為天文學家。受到魔法災厄波及而死亡。`;
+
+/* 錨點下拉選單值 */
+var FATE_OPTS = ["1","2","3","4","5","創傷"];
+var ATTR_OPTS = ["血緣","支配","宿敵","戀愛","興趣","尊敬"];
+var DOMAINS   = ["星","獸","力","歌","夢","闇"];
+var DOMAIN_NO = {星:"1",獸:"2",力:"3",歌:"4",夢:"5",闇:"6"};
+
+/* ══════════════════════════════════════════════════
+   CSV 解析（RFC4180，支援引號內換行）
+   ══════════════════════════════════════════════════ */
+function parseCSV(text){
+  text = String(text||"").replace(/^\uFEFF/,"");
+  var rows=[],row=[],cur="",i=0,q=false,c;
+  while(i<text.length){
+    c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){cur+='"';i+=2;continue;} q=false;i++;continue; }
+      cur+=c;i++;continue;
+    }
+    if(c==='"'){q=true;i++;continue;}
+    if(c===','){row.push(cur);cur="";i++;continue;}
+    if(c==='\r'){i++;continue;}
+    if(c==='\n'){row.push(cur);rows.push(row);row=[];cur="";i++;continue;}
+    cur+=c;i++;
+  }
+  if(cur!==""||row.length){row.push(cur);rows.push(row);}
+  return rows;
+}
+function csvToObjects(text){
+  var rows=parseCSV(text).filter(function(r){return r.some(function(x){return String(x).trim()!=="";});});
+  if(!rows.length) return [];
+  var head=rows[0].map(function(h){return String(h).trim();});
+  return rows.slice(1).map(function(r){
+    var o={}; head.forEach(function(h,idx){o[h]=(r[idx]!=null?r[idx]:"");}); return o;
+  });
+}
+function csvEscape(v){
+  v=v==null?"":String(v);
+  return /[",\n\r]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+}
+function objectsToCSV(head,objs){
+  var out=[head.map(csvEscape).join(",")];
+  objs.forEach(function(o){ out.push(head.map(function(h){return csvEscape(o[h]);}).join(",")); });
+  return "\uFEFF"+out.join("\r\n");
+}
+
+/* ══════════════════════════════════════════════════
+   狀態
+   ══════════════════════════════════════════════════ */
+var state={
+  chars:[], skillGrid:{}, exp:{}, org:{}, trueforms:{}, spells:{}, anchors:{},
+  title:"魔法師名冊", cur:null
+};
+var imgURLs={}, imgFiles={};
+
+function buildFromCSV(files){
+  /* files: { "角色.csv":text, ... } */
+  var g=function(n){return files[n]!=null?files[n]:DEMO[n];};
+  state.chars = csvToObjects(g("角色.csv"));
+
+  /* 特技表 → grid[領域][骰值]=特技名 */
+  var grid={}; DOMAINS.forEach(function(d){grid[d]={};});
+  csvToObjects(g("特技.csv")).forEach(function(r){
+    var d=String(r["領域"]).trim(), die=String(r["骰值"]).trim(), nm=String(r["特技名"]).trim();
+    if(!grid[d])grid[d]={}; grid[d][die]=nm;
+  });
+  state.skillGrid=grid;
+
+  state.exp={}; csvToObjects(g("經歷.csv")).forEach(function(r){ state.exp[String(r["經歷名"]).trim()]=r; });
+  state.org={}; csvToObjects(g("機關.csv")).forEach(function(r){ state.org[String(r["機關名"]).trim()]=r; });
+  state.trueforms={}; csvToObjects(g("真實之姿.csv")).forEach(function(r){ state.trueforms[String(r["名稱"]).trim()]=r; });
+  state.spells={}; csvToObjects(g("藏書_魔法.csv")).forEach(function(r){ state.spells[String(r["魔法名"]).trim()]=r; });
+
+  state.anchors={};
+  csvToObjects(g("錨點關係.csv")).forEach(function(r){
+    var key=String(r["角色"]).trim();
+    (state.anchors[key]=state.anchors[key]||[]).push({
+      name:String(r["錨點名"]).trim(), fate:String(r["命運"]).trim(),
+      attr:String(r["屬性"]).trim(), setting:String(r["設定"]).trim()
+    });
+  });
+}
+
+/* 解析習得特技欄：每列 "特技:判定值:Gap1:Gap2" */
+function parseLearned(str){
+  return String(str||"").split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean).map(function(l){
+    var p=l.split(":");
+    return {name:(p[0]||"").trim(), value:(p[1]||"").trim(), gap1:(p[2]||"").trim(), gap2:(p[3]||"").trim()};
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   圖片解析
+   ══════════════════════════════════════════════════ */
+function resolveImg(v){
+  v=String(v||"").trim();
+  if(!v) return "";
+  if(/^(https?:|data:|blob:)/i.test(v)) return v;
+  if(imgURLs[v]) return imgURLs[v];
+  var base=v.split("/").pop();
+  if(imgURLs[base]) return imgURLs[base];
+  if(imgURLs["./"+v]) return imgURLs["./"+v];
+  return "";
+}
+
+/* ══════════════════════════════════════════════════
+   色彩工具
+   ══════════════════════════════════════════════════ */
+function hexToRgb(hex){
+  hex=String(hex||"").trim().replace('#','');
+  if(hex.length===3)hex=hex.split('').map(function(c){return c+c;}).join('');
+  if(!/^[0-9a-fA-F]{6}$/.test(hex))return null;
+  return {r:parseInt(hex.slice(0,2),16),g:parseInt(hex.slice(2,4),16),b:parseInt(hex.slice(4,6),16)};
+}
+function darken(rgb,amt){
+  return {r:Math.round(rgb.r*(1-amt)),g:Math.round(rgb.g*(1-amt)),b:Math.round(rgb.b*(1-amt))};
+}
+function lum(rgb){return (0.299*rgb.r+0.587*rgb.g+0.114*rgb.b)/255;}
+function applyAccent(hex){
+  var rgb=hexToRgb(hex)||hexToRgb("#9280A4");
+  var ink=rgb; var i=0;
+  while(lum(ink)>0.42 && i<8){ ink=darken(ink,0.18); i++; }
+  var root=document.documentElement.style;
+  root.setProperty('--accent','rgb('+rgb.r+','+rgb.g+','+rgb.b+')');
+  root.setProperty('--accent-rgb',rgb.r+','+rgb.g+','+rgb.b);
+  root.setProperty('--accent-ink','rgb('+ink.r+','+ink.g+','+ink.b+')');
+}
+function resetAccent(){
+  var root=document.documentElement.style;
+  root.setProperty('--accent','#9280A4');
+  root.setProperty('--accent-rgb','146,128,164');
+  root.setProperty('--accent-ink','#6b5a82');
+}
+
+/* ══════════════════════════════════════════════════
+   工具
+   ══════════════════════════════════════════════════ */
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function el(html){var t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild;}
+function charKey(c){return String(c["偽名"]||"").trim();}
+
+/* ══════════════════════════════════════════════════
+   側欄清單
+   ══════════════════════════════════════════════════ */
+function groupChars(list){
+  var groups={},order=[];
+  list.forEach(function(c){
+    var g=String(c["分類"]||"未分類").trim()||"未分類";
+    if(!groups[g]){groups[g]=[];order.push(g);}
+    groups[g].push(c);
+  });
+  return order.map(function(g){return {name:g,items:groups[g]};});
+}
+function renderList(filter){
+  var listEl=document.getElementById('list'); listEl.innerHTML="";
+  var f=(filter||"").trim().toLowerCase();
+  var shown=state.chars.filter(function(c){return matchChar(c,f);});
+  groupChars(shown).forEach(function(grp){
+    var box=el('<div class="sb-group"><div class="gh">'+esc(grp.name)+'</div></div>');
+    grp.items.forEach(function(c){
+      var color=String(c["代表色"]||"#9280A4");
+      var b=el('<button class="item" style="--ic:'+esc(color)+'">'+
+        '<span class="dot"></span><span><span class="nm">'+esc(c["偽名"])+'</span>'+
+        (c["拼音"]?'<span class="rd">'+esc(c["拼音"])+'</span>':'')+'</span></button>');
+      b.addEventListener('click',function(){selectChar(charKey(c));});
+      if(state.cur===charKey(c))b.setAttribute('aria-current','true');
+      box.appendChild(b);
+    });
+    listEl.appendChild(box);
+  });
+}
+function matchChar(c,f){
+  if(!f)return true;
+  var learned=parseLearned(c["習得特技"]).map(function(x){return x.name;}).join(" ");
+  var hay=[c["偽名"],c["拼音"],c["魔法名"],c["機關"],c["經歷"],c["PL"],c["表面身分"],c["判定特技"],c["領域"],learned,c["藏書"]].join(" ").toLowerCase();
+  return hay.indexOf(f)>=0;
+}
+
+/* ══════════════════════════════════════════════════
+   縮圖展示頁
+   ══════════════════════════════════════════════════ */
+var CONST_SVG='<svg class="const" viewBox="0 0 132 34" fill="none"><g stroke="var(--accent)" stroke-width="1" opacity=".55"><path d="M8 24L34 9L62 21L92 7L118 20"/></g><g fill="var(--accent)"><circle cx="8" cy="24" r="2.4"/><circle cx="34" cy="9" r="3"/><circle cx="62" cy="21" r="2.2"/><circle cx="92" cy="7" r="3.2"/><circle cx="118" cy="20" r="2.6"/></g><g fill="var(--star)" opacity=".8"><circle cx="20" cy="14" r="1"/><circle cx="48" cy="26" r="1"/><circle cx="78" cy="14" r="1"/><circle cx="106" cy="27" r="1"/></g></svg>';
+
+function renderGallery(filter){
+  resetAccent();
+  state.cur=null;
+  document.getElementById('homeBtn').setAttribute('aria-current','true');
+  var f=(filter||"").trim().toLowerCase();
+  var shown=state.chars.filter(function(c){return matchChar(c,f);});
+  var content=document.getElementById('content');
+  var head='<div class="gp-head">'+CONST_SVG+'<h2>'+esc(state.title)+'</h2><p>全 '+shown.length+' 名 魔法師</p></div>';
+  if(!shown.length){ content.innerHTML=head+'<p style="text-align:center;color:var(--text-dim)">沒有符合的角色。</p>'; return; }
+  var body='';
+  groupChars(shown).forEach(function(grp){
+    body+='<div class="gp-cat"><span class="n">'+esc(grp.name)+'</span><span>'+grp.items.length+'</span></div><div class="gp-grid">';
+    grp.items.forEach(function(c){
+      var color=String(c["代表色"]||"#9280A4");
+      var src=resolveImg(c["頭像"]);
+      var pic=src?'<span class="pic" style="--cc:'+esc(color)+'"><img loading="lazy" src="'+esc(src)+'" alt="'+esc(c["偽名"])+'"></span>'
+                 :'<span class="pic" style="--cc:'+esc(color)+';background:'+esc(color)+'"><span class="ph">'+esc(String(c["偽名"]||"?").trim().charAt(0))+'</span></span>';
+      var card=el('<button class="gp-card" style="--cc:'+esc(color)+'">'+pic+
+        '<span class="nm">'+esc(c["偽名"])+'</span>'+
+        '<span class="rd">'+esc(c["拼音"]||"")+'</span>'+
+        (c["魔法名"]?'<span class="mg">'+esc(String(c["魔法名"]).split("／")[0])+'</span>':'')+'</button>');
+      card.addEventListener('click',function(){selectChar(charKey(c));});
+      body+=card.outerHTML;
+    });
+    body+='</div>';
+  });
+  content.innerHTML=head+body;
+  /* outerHTML 會丟失事件，改重綁 */
+  var cards=content.querySelectorAll('.gp-card'); var idx=0;
+  groupChars(shown).forEach(function(grp){grp.items.forEach(function(c){
+    if(cards[idx]) cards[idx].addEventListener('click',function(){selectChar(charKey(c));});
+    idx++;
+  });});
+}
+
+/* ══════════════════════════════════════════════════
+   詳情頁
+   ══════════════════════════════════════════════════ */
+function selectChar(key){
+  var c=state.chars.filter(function(x){return charKey(x)===key;})[0];
+  if(!c)return;
+  state.cur=key;
+  applyAccent(c["代表色"]);
+  document.getElementById('homeBtn').setAttribute('aria-current','false');
+  renderList(document.getElementById('search').value);
+  renderDetail(c);
+  try{ document.getElementById('main').scrollTop=0; if(window.scrollTo)window.scrollTo(0,0); }catch(e){}
+  var active=document.querySelector('.item[aria-current="true"]');
+  try{ if(active&&active.scrollIntoView)active.scrollIntoView({block:'nearest'}); }catch(e){}
+}
+
+function skillTableHTML(c){
+  var learned=parseLearned(c["習得特技"]);
+  var litMap={}; learned.forEach(function(l){litMap[l.name]={gap:!!(l.gap1||l.gap2)};});
+  /* 領域特技欄額外點亮（可省略） */
+  String(c["領域特技"]||"").split("|").map(function(s){return s.trim();}).filter(Boolean).forEach(function(n){ if(!litMap[n])litMap[n]={gap:false}; });
+  var judge=String(c["判定特技"]||"").trim();
+  var dice=["2","3","4","5","6","7","8","9","10","11","12"];
+  var h='<div class="skwrap"><table class="sktable"><thead><tr><th class="corner"></th>';
+  DOMAINS.forEach(function(d){h+='<th>'+esc(DOMAIN_NO[d]+d)+'</th>';});
+  h+='<th class="corner"></th></tr></thead><tbody>';
+  dice.forEach(function(die){
+    h+='<tr><td class="die">'+die+'</td>';
+    DOMAINS.forEach(function(d){
+      var nm=(state.skillGrid[d]&&state.skillGrid[d][die])||"";
+      var cls="sk";
+      if(litMap[nm]){cls+=" on"; if(litMap[nm].gap)cls+=" gap";}
+      if(nm&&nm===judge)cls+=" judge";
+      h+='<td class="'+cls+'">'+esc(nm)+'</td>';
+    });
+    h+='<td class="die">'+die+'</td></tr>';
+  });
+  h+='</tbody></table></div>';
+  h+='<div class="sk-legend"><span><i class="swatch"></i>習得特技</span><span><i class="swatch j"></i>判定特技</span><span><i class="swatch g"></i>Gap 連線</span><span style="color:var(--text-dim)">領域：'+esc(c["領域"]||"—")+'</span></div>';
+  return h;
+}
+
+function judgeListHTML(c){
+  var learned=parseLearned(c["習得特技"]);
+  var h='<div class="judge-list">';
+  learned.forEach(function(l){
+    var gap=(l.gap1?'<span class="gp">Gap1</span>':'')+(l.gap2?'<span class="gp">Gap2</span>':'');
+    h+='<span class="jchip"><span class="nm">'+esc(l.name)+'</span>'+
+       (l.value?'<span class="vl">2D6≥'+esc(l.value)+'</span>':'')+gap+'</span>';
+  });
+  if(String(c["魂之特技"]||"").trim() && c["魂之特技"].trim()!=="無"){
+    h+='<span class="jchip soul"><span class="tag">魂</span><span class="nm">'+esc(c["魂之特技"])+'</span>'+
+       (c["魂之特技判定"]?'<span class="vl">2D6≥'+esc(c["魂之特技判定"])+'</span>':'')+
+       (c["魂之特技備註"]?'<span class="vl">'+esc(c["魂之特技備註"])+'</span>':'')+'</span>';
+  }
+  h+='</div>';
+  return h;
+}
+
+function expOrgHTML(c){
+  var h='';
+  var eName=String(c["經歷"]||"").trim();
+  if(eName){
+    var e=state.exp[eName]||{};
+    h+='<div class="card-block"><div class="bt">經歷・'+esc(eName)+(c["經歷信條"]?'<span class="creed">信條：'+esc(c["經歷信條"])+'</span>':'')+'</div>'+
+       (e["說明"]?'<div class="desc">'+esc(e["說明"])+'</div>':'')+'</div>';
+  }
+  var oName=String(c["機關"]||"").trim();
+  if(oName){
+    var o=state.org[oName]||{};
+    h+='<div class="card-block"><div class="bt">機關・'+esc(oName)+(c["機關信條"]?'<span class="creed">信條：'+esc(c["機關信條"])+'</span>':'')+'</div>'+
+       (o["說明"]?'<div class="desc">'+esc(o["說明"])+'</div>':'')+'</div>';
+  }
+  var tName=String(c["真實之姿"]||"").trim();
+  if(tName){
+    var t=state.trueforms[tName]||{};
+    h+='<div class="card-block"><div class="bt">真實之姿・'+esc(tName)+(t["效果"]?'<span class="eff">效果：'+esc(t["效果"])+'</span>':'')+'</div>'+
+       (t["說明"]?'<div class="desc">'+esc(t["說明"])+'</div>':'')+'</div>';
+  }
+  return h;
+}
+
+function anchorsHTML(c){
+  var key=charKey(c);
+  var list=state.anchors[key]||[];
+  var h='';
+  list.forEach(function(a,idx){
+    var trauma=(a.fate==="創傷");
+    h+='<div class="anchor" data-idx="'+idx+'"><div class="top">'+
+       '<span class="an">'+esc(a.name||"（未命名錨點）")+'</span>'+
+       (a.fate?'<span class="chip fate'+(trauma?' trauma':'')+'">命運 '+esc(a.fate)+'</span>':'')+
+       (a.attr?'<span class="chip attr">'+esc(a.attr)+'</span>':'')+
+       '<button class="del" title="刪除錨點" data-del="'+idx+'">×</button></div>'+
+       (a.setting?'<div class="set">'+esc(a.setting)+'</div>':'')+'</div>';
+  });
+  /* 編輯器 */
+  var fateOpts=FATE_OPTS.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('');
+  var attrOpts=ATTR_OPTS.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('');
+  h+='<button class="mini add-anchor" id="btnAddAnchor">＋ 新增錨點</button>'+
+     '<div class="anchor-edit" id="anchorEdit">'+
+       '<div class="row">'+
+         '<div><label>錨點名</label><input id="ae_name" placeholder="例：神代 皐"></div>'+
+         '<div><label>命運</label><select id="ae_fate">'+fateOpts+'</select></div>'+
+         '<div><label>屬性</label><select id="ae_attr">'+attrOpts+'</select></div>'+
+       '</div>'+
+       '<div style="margin-bottom:9px"><label>設定</label><textarea id="ae_set" placeholder="這名錨點與角色的關係、背景…"></textarea></div>'+
+       '<div class="acts"><button class="mini accent" id="ae_save">加入錨點</button><button class="mini" id="ae_cancel">取消</button></div>'+
+     '</div>';
+  return h;
+}
+
+function spellsHTML(c){
+  var names=String(c["藏書"]||"").split("|").map(function(s){return s.trim();}).filter(Boolean);
+  if(!names.length)return '<p class="prose mid">（無藏書）</p>';
+  var h='';
+  names.forEach(function(nm){
+    var s=state.spells[nm];
+    if(s){
+      h+='<div class="spell"><div class="sp-top"><span class="sp-nm">'+esc(nm)+'</span><span class="sp-tags">'+
+         (s["種類"]?'<span class="t kind">'+esc(s["種類"])+'</span>':'')+
+         (s["指定特技"]?'<span class="t skill">指定：'+esc(s["指定特技"])+'</span>':'')+
+         (s["COST"]?'<span class="t cost">'+esc(s["COST"])+'</span>':'')+
+         '</span></div>'+
+         (s["效果"]?'<div class="sp-eff">'+esc(s["效果"])+'</div>':'')+'</div>';
+    }else{
+      h+='<div class="spell"><div class="sp-top"><span class="sp-nm">'+esc(nm)+'</span></div>'+
+         '<div class="miss">※ 魔法庫（藏書_魔法.csv）中查無此魔法，請確認名稱是否一致。</div></div>';
+    }
+  });
+  return h;
+}
+
+function renderDetail(c){
+  var content=document.getElementById('content');
+  var full=resolveImg(c["全身圖"]);
+  var stairs=(c["階梯數"]?'第 '+esc(c["階梯數"])+' 階梯':'')+(c["階梯名"]?' ・ '+esc(c["階梯名"]):'');
+  var ageSex=[c["性別"],c["年齡"]?c["年齡"]+' 歲':''].filter(Boolean).join(' ／ ');
+
+  var meta='';
+  if(c["PL"])meta+='<span class="m">PL <b>'+esc(c["PL"])+'</b></span>';
+  if(stairs)meta+='<span class="m"><b>'+stairs+'</b></span>';
+  if(ageSex)meta+='<span class="m">'+esc(ageSex)+'</span>';
+  if(c["判定特技"])meta+='<span class="m hl">判定特技 <b>'+esc(c["判定特技"])+'</b></span>';
+  if(c["表面身分"])meta+='<span class="m">表面身分 <b>'+esc(c["表面身分"])+'</b></span>';
+
+  var stats='<div class="stats">'+
+    '<div class="stat big"><div class="k">攻擊力</div><div class="v">'+esc(c["攻擊力"]||"—")+'</div></div>'+
+    '<div class="stat big"><div class="k">防禦力</div><div class="v">'+esc(c["防禦力"]||"—")+'</div></div>'+
+    '<div class="stat big"><div class="k">根源力</div><div class="v">'+esc(c["根源力"]||"—")+'</div></div>'+
+    '<div class="stat sm"><div class="k">魔力</div><div class="v">'+esc(c["魔力"]||"0")+'</div></div>'+
+    '<div class="stat sm"><div class="k">臨時魔力</div><div class="v">'+esc(c["臨時魔力"]||"0")+'</div></div>'+
+    '<div class="stat sm"><div class="k">最大值</div><div class="v">'+esc(c["最大值"]||"—")+'</div></div>'+
+    (c["功績點"]?'<div class="stat sm"><div class="k">功績點</div><div class="v">'+esc(c["功績點"])+'</div></div>':'')+
+  '</div>';
+
+  var duty='';
+  if(String(c["義務對象"]||"").trim()||String(c["義務願望"]||"").trim()){
+    duty='<div class="card-block"><div class="bt">義務</div><div class="desc">'+
+      (c["義務對象"]?'對象：'+esc(c["義務對象"])+'　':'')+(c["義務願望"]?'願望：'+esc(c["義務願望"]):'')+'</div></div>';
+  }
+
+  var variants=String(c["差分"]||"").split("|").map(function(s){return resolveImg(s.trim());}).filter(Boolean);
+  var varHTML= variants.length? '<div class="sec"><div class="sec-h">立繪差分</div><div class="variants">'+
+      variants.map(function(u){return '<img src="'+esc(u)+'" alt="差分" data-full="'+esc(u)+'">';}).join('')+'</div></div>' : '';
+
+  var html=''+
+  '<div class="sheet">'+
+    (full?'<div class="bgfull" style="background-image:url('+esc(full)+')"></div>':'')+
+    '<div class="dh">'+
+      (c["分類"]?'<div class="cat">'+esc(c["分類"])+'</div>':'')+
+      '<h1>'+esc(c["偽名"]||"未命名")+'</h1>'+
+      (c["拼音"]?'<div class="rd">'+esc(c["拼音"])+'</div>':'')+
+      (c["魔法名"]?'<div class="mg">'+esc(c["魔法名"])+'</div>':'')+
+      '<div class="meta">'+meta+'</div>'+
+    '</div>'+
+    stats+
+    '<div class="sec"><div class="sec-h">特技表　SKILL TABLE</div>'+skillTableHTML(c)+'</div>'+
+    '<div class="sec"><div class="sec-h">習得特技・判定值</div>'+judgeListHTML(c)+'</div>'+
+    '<div class="cols">'+
+      '<div>'+
+        '<div class="sec"><div class="sec-h">經歷・機關・真實之姿</div>'+expOrgHTML(c)+'</div>'+
+        (c["個性"]?'<div class="sec"><div class="sec-h">個性</div><div class="prose">'+esc(c["個性"])+'</div></div>':'')+
+        duty+
+      '</div>'+
+      '<div>'+
+        '<div class="sec"><div class="sec-h">錨點關係</div>'+anchorsHTML(c)+'</div>'+
+        '<div class="sec"><div class="sec-h">藏書・魔法</div>'+spellsHTML(c)+'</div>'+
+      '</div>'+
+    '</div>'+
+    (c["初期背景設定"]?'<div class="sec"><div class="sec-h">初期背景設定</div><div class="prose mid">'+esc(c["初期背景設定"])+'</div></div>':'')+
+    (c["追加設定"]?'<div class="sec"><div class="sec-h">跑團後追加設定</div><div class="prose mid">'+esc(c["追加設定"])+'</div></div>':'')+
+    (c["台詞"]?'<div class="sec"><div class="sec-h">台詞</div><blockquote class="prose" style="border-left:3px solid var(--accent);padding-left:14px;margin:0;font-style:italic">「'+esc(c["台詞"])+'」</blockquote></div>':'')+
+    varHTML+
+  '</div>';
+
+  content.innerHTML=html;
+  bindAnchorEditor(c);
+  content.querySelectorAll('.variants img').forEach(function(img){
+    img.addEventListener('click',function(){openLB(img.dataset.full);});
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   錨點編輯器（含命運/屬性下拉選單）
+   ══════════════════════════════════════════════════ */
+function bindAnchorEditor(c){
+  var key=charKey(c);
+  var content=document.getElementById('content');
+  content.querySelectorAll('.anchor .del').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var i=parseInt(btn.dataset.del,10);
+      if(state.anchors[key]){ state.anchors[key].splice(i,1); renderDetail(c); }
+    });
+  });
+  var addBtn=document.getElementById('btnAddAnchor');
+  var editor=document.getElementById('anchorEdit');
+  if(addBtn&&editor){
+    addBtn.addEventListener('click',function(){ editor.classList.toggle('show'); if(editor.classList.contains('show')){document.getElementById('ae_name').focus();} });
+    document.getElementById('ae_cancel').addEventListener('click',function(){editor.classList.remove('show');});
+    document.getElementById('ae_save').addEventListener('click',function(){
+      var name=document.getElementById('ae_name').value.trim();
+      if(!name){document.getElementById('ae_name').focus();return;}
+      var a={name:name,fate:document.getElementById('ae_fate').value,attr:document.getElementById('ae_attr').value,setting:document.getElementById('ae_set').value.trim()};
+      (state.anchors[key]=state.anchors[key]||[]).push(a);
+      renderDetail(c);
+      setStatus('已為 <b>'+esc(name)+'</b> 加入錨點（記得匯出以保存）');
+    });
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   lightbox
+   ══════════════════════════════════════════════════ */
+function openLB(src){var lb=document.getElementById('lb');lb.querySelector('img').src=src;lb.classList.add('show');}
+document.getElementById('lb').addEventListener('click',function(){this.classList.remove('show');});
+
+/* ══════════════════════════════════════════════════
+   載入資料夾（多 CSV + 圖片）
+   ══════════════════════════════════════════════════ */
+var CSV_NAMES=["角色.csv","特技.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"];
+function setStatus(html){var s=document.getElementById('status');if(s)s.innerHTML=html;}
+function bind(id,ev,fn){var e=document.getElementById(id);if(e)e.addEventListener(ev,fn);}
+
+bind('btnFolder','click',function(){var fi=document.getElementById('folderInput');if(fi)fi.click();});
+bind('folderInput','change',function(e){
+  var files=Array.prototype.slice.call(e.target.files||[]);
+  if(!files.length)return;
+  var csvText={}, imgCount=0, pending=[];
+  imgURLs={};imgFiles={};
+  files.forEach(function(f){
+    var base=f.name;
+    var rel=(f.webkitRelativePath||f.name);
+    var relNoRoot=rel.split("/").slice(1).join("/")||f.name;
+    if(/\.csv$/i.test(f.name)){
+      if(CSV_NAMES.indexOf(base)>=0){
+        pending.push(f.text().then(function(t){csvText[base]=t;}));
+      }
+    }else if(/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(f.name)){
+      var url=URL.createObjectURL(f);
+      [rel,relNoRoot,base,"./"+relNoRoot].forEach(function(k){if(k){imgURLs[k]=url;imgFiles[k]=f;}});
+      imgCount++;
+    }
+  });
+  Promise.all(pending).then(function(){
+    buildFromCSV(csvText);
+    var got=Object.keys(csvText);
+    setStatus('已載入 <b>'+got.length+'</b> 個 CSV・<b>'+imgCount+'</b> 張圖・<b>'+state.chars.length+'</b> 名角色');
+    renderList("");
+    renderGallery("");
+  });
+  e.target.value="";
+});
+
+/* ══════════════════════════════════════════════════
+   下載 CSV 範本（store ZIP）
+   ══════════════════════════════════════════════════ */
+function crc32(bytes){
+  var c,table=crc32.t;
+  if(!table){table=crc32.t=[];for(var n=0;n<256;n++){c=n;for(var k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);table[n]=c>>>0;}}
+  var crc=0xFFFFFFFF;
+  for(var i=0;i<bytes.length;i++)crc=(crc>>>8)^table[(crc^bytes[i])&0xFF];
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function strBytes(s){return new TextEncoder().encode(s);}
+function u16(n){return [n&0xFF,(n>>8)&0xFF];}
+function u32(n){return [n&0xFF,(n>>8)&0xFF,(n>>16)&0xFF,(n>>24)&0xFF];}
+function makeZip(entries){
+  /* entries: [{name, bytes}] store（不壓縮） */
+  var chunks=[], central=[], offset=0;
+  entries.forEach(function(en){
+    var nameB=strBytes(en.name), data=en.bytes, crc=crc32(data);
+    var local=[].concat(u32(0x04034b50),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0));
+    var localHead=new Uint8Array(local);
+    chunks.push(localHead,nameB,data);
+    var cen=[].concat(u32(0x02014b50),u16(20),u16(20),u16(0x0800),u16(0),u16(0),u16(0),u32(crc),u32(data.length),u32(data.length),u16(nameB.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(offset));
+    central.push(new Uint8Array(cen),nameB);
+    offset+=localHead.length+nameB.length+data.length;
+  });
+  var cenStart=offset, cenSize=0;
+  central.forEach(function(c){cenSize+=c.length;});
+  var end=new Uint8Array([].concat(u32(0x06054b50),u16(0),u16(0),u16(entries.length),u16(entries.length),u32(cenSize),u32(cenStart),u16(0)));
+  var all=chunks.concat(central,[end]);
+  return new Blob(all,{type:'application/zip'});
+}
+function currentCSVMap(){
+  /* 依當前狀態重建各 CSV（含錨點編輯結果） */
+  var m={};
+  m["角色.csv"]=DEMO["角色.csv"]; /* 佔位，稍後覆寫 */
+  m["特技.csv"]=DEMO["特技.csv"];
+  m["經歷.csv"]=DEMO["經歷.csv"];
+  m["機關.csv"]=DEMO["機關.csv"];
+  m["真實之姿.csv"]=DEMO["真實之姿.csv"];
+  m["藏書_魔法.csv"]=DEMO["藏書_魔法.csv"];
+  /* 角色 CSV：用當前 state.chars 重建，保留全部欄位 */
+  if(state.chars.length){
+    var head=Object.keys(state.chars[0]);
+    m["角色.csv"]=objectsToCSV(head,state.chars);
+  }
+  /* 錨點關係 CSV：用當前 state.anchors 重建 */
+  var arows=[];
+  Object.keys(state.anchors).forEach(function(k){
+    state.anchors[k].forEach(function(a){arows.push({角色:k,錨點名:a.name,命運:a.fate,屬性:a.attr,設定:a.setting});});
+  });
+  m["錨點關係.csv"]=objectsToCSV(["角色","錨點名","命運","屬性","設定"],arows);
+  return m;
+}
+bind('btnTemplate','click',function(){
+  var m=currentCSVMap();
+  var entries=Object.keys(m).map(function(n){return {name:"魔法師名冊資料庫/"+n,bytes:strBytes(m[n])};});
+  entries.push({name:"魔法師名冊資料庫/images/放圖說明.txt",bytes:strBytes("將頭像／全身圖／差分放在這裡，CSV 以 images/xxx.png 相對路徑指定。\r\n載入時用工具列的「載入資料夾」選擇整個「魔法師名冊資料庫」資料夾即可一次讀入所有 CSV 與圖片。")});
+  var blob=makeZip(entries);
+  downloadBlob("魔法師名冊資料庫.zip",blob);
+  setStatus('已下載 <b>7</b> 個 CSV 範本（ZIP）');
+});
+
+/* ══════════════════════════════════════════════════
+   匯出純檢視網頁
+   ══════════════════════════════════════════════════ */
+function downloadBlob(name,blob){
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},200);
+}
+function fileToDataURL(file){return new Promise(function(res){var r=new FileReader();r.onload=function(){res(r.result);};r.onerror=function(){res("");};r.readAsDataURL(file);});}
+
+bind('btnExport','click',async function(){
+  var btn=this;btn.disabled=true;setStatus('正在打包純檢視網頁…');
+  try{
+    var m=currentCSVMap();
+    var ec=document.getElementById('embedImgs');var embed=ec?ec.checked:false;
+    /* 收集需要內嵌的圖片路徑 */
+    if(embed){
+      /* 把 imgFiles 轉 data URL，並改寫 CSV 中的相對路徑為 data URL */
+      var keys=Object.keys(imgFiles);
+      var dataMap={};
+      for(var i=0;i<keys.length;i++){ dataMap[keys[i]]=await fileToDataURL(imgFiles[keys[i]]); }
+      /* 對角色 CSV 內的圖片欄替換：簡化作法——載入圖片後才有 imgFiles */
+      /* 為求穩健，改為在匯出 HTML 內附一份 imgLib，讓 resolveImg 先查 */
+      m.__imglib__=JSON.stringify((function(){
+        var lib={}; Object.keys(dataMap).forEach(function(k){ if(dataMap[k])lib[k]=dataMap[k]; }); return lib;
+      })());
+    }
+    var doc=document.documentElement.cloneNode(true);
+    var tb=doc.querySelector('#toolbar'); if(tb)tb.remove();
+    doc.querySelector('body').classList.add('exported');
+    var payload="window.__EXPORT__="+JSON.stringify(m)+";";
+    var html="<!DOCTYPE html>\n"+doc.outerHTML;
+    html=html.replace('<script id="app-script">',
+      '<scr'+'ipt>'+payload+'<\/scr'+'ipt>\n<scr'+'ipt id="app-script">');
+    var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+    downloadBlob((state.title||"魔法師名冊")+"_純檢視版.html",blob);
+    setStatus('已匯出純檢視網頁（<b>'+state.chars.length+'</b> 名角色）');
+  }catch(err){ setStatus('匯出失敗：'+(err&&err.message||err)); }
+  btn.disabled=false;
+});
+
+/* ══════════════════════════════════════════════════
+   搜尋 / 首頁鈕
+   ══════════════════════════════════════════════════ */
+document.getElementById('search').addEventListener('input',function(){
+  var v=this.value;
+  renderList(v);
+  if(state.cur===null)renderGallery(v);
+});
+document.getElementById('homeBtn').addEventListener('click',function(){
+  renderGallery(document.getElementById('search').value);
+  renderList(document.getElementById('search').value);
+});
+
+/* ══════════════════════════════════════════════════
+   啟動
+   ══════════════════════════════════════════════════ */
+function boot(){
+  var exportData = (typeof window!=='undefined' && window.__EXPORT__) ? window.__EXPORT__ : null;
+  if(exportData){
+    /* 匯出版：用內嵌 CSV + 圖庫 */
+    if(exportData.__imglib__){ try{ var lib=JSON.parse(exportData.__imglib__); Object.keys(lib).forEach(function(k){imgURLs[k]=lib[k];}); }catch(e){} }
+    var files={};
+    ["角色.csv","特技.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"].forEach(function(n){ if(exportData[n]!=null)files[n]=exportData[n]; });
+    buildFromCSV(files);
+  }else{
+    buildFromCSV({});
+  }
+  renderList("");
+  renderGallery("");
+}
+boot();
+})();
+</script>
+
+
+</body></html>
