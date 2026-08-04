@@ -710,6 +710,110 @@ function recordsToCSV(list){
 }
 
 /* ══════════════════════════════════════════════════════════
+   CSV 匯出：把內嵌圖(data URL)抽成 images/ 檔案，欄位改回路徑，
+   打包成 ZIP，讓匯出的 CSV 跟手寫的一樣好編輯。
+   ══════════════════════════════════════════════════════════ */
+function dataURLtoBytes(durl){
+  var m = /^data:([^;,]*)?(;base64)?,([\s\S]*)$/i.exec(durl||"");
+  var mime = (m && m[1]) ? m[1].toLowerCase() : "image/png";
+  var body = m ? m[3] : "";
+  var bytes;
+  if(m && m[2]){                       /* base64 */
+    var bin = atob(body);
+    bytes = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  } else {                             /* 純文字（少見，如 svg 未編碼） */
+    bytes = new TextEncoder().encode(decodeURIComponent(body));
+  }
+  var ext = ({"image/png":"png","image/jpeg":"jpg","image/jpg":"jpg","image/gif":"gif",
+              "image/webp":"webp","image/svg+xml":"svg","image/avif":"avif"})[mime] || "png";
+  return { bytes: bytes, ext: ext };
+}
+
+function buildCsvBundle(list){
+  var images = [];
+  var copy = list.map(function(c){
+    var o = {}; for(var k in c) o[k]=c[k];
+    o.variants = (c.variants||[]).slice();
+    o.stats = c.stats;
+    return o;
+  });
+  copy.forEach(function(c, i){
+    var base = "pc" + (i+1<10 ? "0"+(i+1) : (i+1));
+    function ext(field, suffix){
+      var v = c[field];
+      if(v && /^data:/i.test(v)){
+        var info = dataURLtoBytes(v);
+        var name = "images/"+base+"_"+suffix+"."+info.ext;
+        images.push({ name:name, bytes:info.bytes });
+        c[field] = name;
+      }
+    }
+    ext("icon","icon");
+    ext("full","full");
+    c.variants = c.variants.map(function(v,j){
+      if(v && /^data:/i.test(v)){
+        var info = dataURLtoBytes(v);
+        var name = "images/"+base+"_v"+(j+1)+"."+info.ext;
+        images.push({ name:name, bytes:info.bytes });
+        return name;
+      }
+      return v;
+    });
+  });
+  return { csvText: recordsToCSV(copy), images: images };
+}
+
+/* 最小 ZIP（store，無壓縮；PNG/JPEG 本身已壓縮） */
+var CRC_TABLE = (function(){
+  var t = new Array(256);
+  for(var n=0;n<256;n++){ var c=n; for(var k=0;k<8;k++) c = (c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; }
+  return t;
+})();
+function crc32(bytes){
+  var c = 0xFFFFFFFF;
+  for(var i=0;i<bytes.length;i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function makeZip(files){
+  var enc = new TextEncoder();
+  var now = new Date();
+  var dtime = (now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1);
+  var ddate = ((now.getFullYear()-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate();
+  var u16=function(n){return [n&255,(n>>8)&255];};
+  var u32=function(n){return [n&255,(n>>8)&255,(n>>16)&255,(n>>>24)&255];};
+  var chunks=[], central=[], offset=0;
+  files.forEach(function(f){
+    var nameB = enc.encode(f.name);
+    var data = f.bytes;
+    var crc = crc32(data);
+    var local = [].concat(u32(0x04034b50), u16(20), u16(0x0800), u16(0),
+      u16(dtime), u16(ddate), u32(crc), u32(data.length), u32(data.length),
+      u16(nameB.length), u16(0));
+    var localA = Uint8Array.from(local);
+    chunks.push(localA, nameB, data);
+    central.push({crc:crc, size:data.length, nameB:nameB, offset:offset});
+    offset += localA.length + nameB.length + data.length;
+  });
+  var cdStart = offset;
+  central.forEach(function(c){
+    var hdr = [].concat(u32(0x02014b50), u16(20), u16(20), u16(0x0800), u16(0),
+      u16(dtime), u16(ddate), u32(c.crc), u32(c.size), u32(c.size),
+      u16(c.nameB.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(c.offset));
+    var hdrA = Uint8Array.from(hdr);
+    chunks.push(hdrA, c.nameB);
+    offset += hdrA.length + c.nameB.length;
+  });
+  var cdSize = offset - cdStart;
+  chunks.push(Uint8Array.from([].concat(u32(0x06054b50), u16(0), u16(0),
+    u16(central.length), u16(central.length), u32(cdSize), u32(cdStart), u16(0))));
+  var total = chunks.reduce(function(a,c){ return a+c.length; },0);
+  var out = new Uint8Array(total), p=0;
+  chunks.forEach(function(c){ out.set(c,p); p+=c.length; });
+  return out;
+}
+
+/* ══════════════════════════════════════════════════════════
    顏色工具
    ══════════════════════════════════════════════════════════ */
 function toRGB(hex){
@@ -1258,10 +1362,19 @@ if(toolbar && !VIEW_ONLY){
     download("PC範本.csv", "\uFEFF"+SAMPLE_CSV, "text/csv;charset=utf-8");
   });
 
-  /* ── 匯出 CSV（把目前資料，含新增的角色，存回 CSV） ── */
+  /* ── 匯出 CSV：內嵌圖會抽成 images/ 檔案並打包 ZIP，讓 CSV 保持可編輯 ── */
   $("btnCsvOut").addEventListener("click", function(){
-    download((state.title||"PC一覽")+".csv", recordsToCSV(state.chars), "text/csv;charset=utf-8");
-    setStatus("已匯出 <b>"+state.chars.length+"</b> 位 PC 的 CSV");
+    var title = state.title || "PC一覽";
+    var bundle = buildCsvBundle(state.chars);
+    if(!bundle.images.length){
+      download(title+".csv", bundle.csvText, "text/csv;charset=utf-8");
+      setStatus("已匯出 <b>"+state.chars.length+"</b> 位 PC 的 CSV");
+    } else {
+      var files = [{ name: title+".csv", bytes: new TextEncoder().encode(bundle.csvText) }]
+                    .concat(bundle.images);
+      download(title+".zip", makeZip(files), "application/zip");
+      setStatus("已匯出 ZIP（CSV ＋ images/ 共 <b>"+bundle.images.length+"</b> 張圖）　·　解壓後 CSV 內是路徑，可直接編輯");
+    }
   });
 
   /* ── 新增角色 Modal ── */
