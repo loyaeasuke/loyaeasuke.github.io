@@ -549,15 +549,15 @@ table.stat td{
 <div id="toolbar" class="tool-only">
   <span class="brand">神貓卓CoC 6th PC一覽編輯器</span>
   <input id="titleInput" type="text" value="您的CoC 6th PC一覽" aria-label="網頁標題">
-  <button class="tbtn" id="btnCsv">載入 CSV</button>
+  <button class="tbtn" id="btnCsv">匯入PC資料包</button>
   <button class="tbtn" id="btnImgs">載入圖片資料夾</button>
   <button class="tbtn" id="btnAdd">＋ 新增PC</button>
-  <button class="tbtn" id="btnCsvOut" disabled>匯出 CSV</button>
+  <button class="tbtn" id="btnCsvOut" disabled>匯出PC資料包</button>
   <button class="tbtn" id="btnSample">下載 CSV 範本</button>
   <label class="tswitch"><input type="checkbox" id="embedImgs" checked> 匯出時內嵌圖片</label>
   <button class="tbtn primary" id="btnExport" disabled>匯出純檢視網頁</button>
   <span id="status">尚未載入資料</span>
-  <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+  <input type="file" id="csvFile" accept=".csv,.zip,text/csv,application/zip" hidden>
   <input type="file" id="imgFiles" webkitdirectory directory multiple hidden>
 </div>
 <div class="hint tool-only" id="hintBar">
@@ -730,8 +730,10 @@ function dataURLtoBytes(durl){
   return { bytes: bytes, ext: ext };
 }
 
-function buildCsvBundle(list){
-  var images = [];
+/* 匯出資料包：內嵌圖(data URL)抽進 JSON 圖庫、CSV 只放代號(@pcNN_xxx)，
+   路徑型圖片維持原路徑。匯入的代號會先還原成 data URL 再重新編碼。 */
+function buildDataPack(list){
+  var library = {};
   var copy = list.map(function(c){
     var o = {}; for(var k in c) o[k]=c[k];
     o.variants = (c.variants||[]).slice();
@@ -740,28 +742,76 @@ function buildCsvBundle(list){
   });
   copy.forEach(function(c, i){
     var base = "pc" + (i+1<10 ? "0"+(i+1) : (i+1));
-    function ext(field, suffix){
-      var v = c[field];
-      if(v && /^data:/i.test(v)){
-        var info = dataURLtoBytes(v);
-        var name = "images/"+base+"_"+suffix+"."+info.ext;
-        images.push({ name:name, bytes:info.bytes });
-        c[field] = name;
-      }
+    function code(field, suffix){
+      var actual = imgLib[c[field]] || c[field];
+      if(actual && /^data:/i.test(actual)){
+        var key = "@"+base+"_"+suffix;
+        library[key] = actual; c[field] = key;
+      } else { c[field] = actual || ""; }
     }
-    ext("icon","icon");
-    ext("full","full");
+    code("icon","icon");
+    code("full","full");
     c.variants = c.variants.map(function(v,j){
-      if(v && /^data:/i.test(v)){
-        var info = dataURLtoBytes(v);
-        var name = "images/"+base+"_v"+(j+1)+"."+info.ext;
-        images.push({ name:name, bytes:info.bytes });
-        return name;
+      var actual = imgLib[v] || v;
+      if(actual && /^data:/i.test(actual)){
+        var key = "@"+base+"_v"+(j+1);
+        library[key] = actual; return key;
       }
-      return v;
+      return actual;
     });
   });
-  return { csvText: recordsToCSV(copy), images: images };
+  return { csvText: recordsToCSV(copy), library: library };
+}
+
+/* bytes ↔ base64 / mime */
+function bytesToBase64(bytes){
+  var bin="", CH=0x8000;
+  for(var i=0;i<bytes.length;i+=CH) bin += String.fromCharCode.apply(null, bytes.subarray(i,i+CH));
+  return btoa(bin);
+}
+function extToMime(name){
+  var ext=(name.split(".").pop()||"").toLowerCase();
+  return ({png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",gif:"image/gif",
+           webp:"image/webp",svg:"image/svg+xml",avif:"image/avif"})[ext]||"image/png";
+}
+
+/* ══════════════════════════════════════════════════════════
+   讀取 ZIP（store 直接切；deflate 用瀏覽器內建 DecompressionStream）
+   ══════════════════════════════════════════════════════════ */
+function _u16(a,p){ return a[p]|(a[p+1]<<8); }
+function _u32(a,p){ return (a[p]|(a[p+1]<<8)|(a[p+2]<<16)|(a[p+3]*0x1000000))>>>0; }
+
+function inflateRaw(bytes){
+  if(typeof DecompressionStream==="undefined")
+    return Promise.reject(new Error("此瀏覽器無法解壓縮，請改用工具匯出的原始資料包"));
+  var ds = new DecompressionStream("deflate-raw");
+  var stream = new Blob([bytes]).stream().pipeThrough(ds);
+  return new Response(stream).arrayBuffer().then(function(ab){ return new Uint8Array(ab); });
+}
+
+function readZip(u8){
+  var i = u8.length - 22;
+  for(; i>=0; i--){ if(u8[i]===0x50&&u8[i+1]===0x4b&&u8[i+2]===0x05&&u8[i+3]===0x06) break; }
+  if(i<0) return Promise.reject(new Error("不是有效的 ZIP 檔"));
+  var count=_u16(u8,i+10), cdOff=_u32(u8,i+16), p=cdOff, entries=[];
+  for(var n=0;n<count;n++){
+    if(_u32(u8,p)!==0x02014b50) break;
+    var method=_u16(u8,p+10), csize=_u32(u8,p+20);
+    var nlen=_u16(u8,p+28), elen=_u16(u8,p+30), clen=_u16(u8,p+32), lho=_u32(u8,p+42);
+    var name=new TextDecoder().decode(u8.slice(p+46,p+46+nlen));
+    var lnlen=_u16(u8,lho+26), lelen=_u16(u8,lho+28);
+    var dstart=lho+30+lnlen+lelen;
+    entries.push({name:name, method:method, comp:u8.slice(dstart,dstart+csize)});
+    p += 46+nlen+elen+clen;
+  }
+  var files={};
+  return entries.reduce(function(chain, e){
+    return chain.then(function(){
+      if(e.method===0){ files[e.name]=e.comp; return; }
+      if(e.method===8) return inflateRaw(e.comp).then(function(b){ files[e.name]=b; });
+      throw new Error("不支援的壓縮方式："+e.method);
+    });
+  }, Promise.resolve()).then(function(){ return files; });
 }
 
 /* 最小 ZIP（store，無壓縮；PNG/JPEG 本身已壓縮） */
@@ -845,6 +895,7 @@ var state = {
 };
 var imgFiles = {};   /* 檔名 → File（本機資料夾） */
 var imgURLs  = {};   /* 檔名 → object URL */
+var imgLib   = {};   /* 代號(@pcNN_xxx) → data URL（資料包 JSON 圖庫） */
 
 /* 新增角色表單的暫存與開窗函式（實體在 initAddModal 內建立） */
 var addState = { icon:"", full:"", variants:[] };
@@ -853,6 +904,7 @@ var openAddModal = function(){};
 function resolveImg(v){
   v = String(v||"").trim();
   if(!v) return "";
+  if(imgLib[v]) return imgLib[v];        /* 資料包圖庫代號 */
   if(/^(https?:|data:|blob:)/i.test(v)) return v;
   var base = v.split(/[\\/]/).pop();
   if(imgURLs[v]) return imgURLs[v];
@@ -1318,21 +1370,20 @@ if(toolbar && !VIEW_ONLY){
     var f = e.target.files[0]; if(!f) return;
     var fr = new FileReader();
     fr.onload = function(){
-      var buf = fr.result, text;
-      try{ text = new TextDecoder("utf-8",{fatal:true}).decode(buf); }
-      catch(err){
-        try{ text = new TextDecoder("big5").decode(buf); }
-        catch(e2){ text = new TextDecoder("utf-8").decode(buf); }
-      }
-      try{
-        state.chars = recordsFromCSV(text);
-        state.sel = -1;
-        render();
-        setExportEnabled();
-        setStatus(state.chars.length ? "已載入 <b>"+state.chars.length+"</b> 位 PC　·　"+esc(f.name)
-                                     : "CSV 讀到了，但沒有任何一列有「名字」");
-      }catch(err){
-        setStatus("CSV 解析失敗：檢查欄位標題與引號是否成對");
+      var u8 = new Uint8Array(fr.result);
+      var isZip = /\.zip$/i.test(f.name) || (u8[0]===0x50&&u8[1]===0x4b&&u8[2]===0x03&&u8[3]===0x04);
+      if(isZip){
+        readZip(u8).then(function(files){ importPack(files, f.name); })
+                   .catch(function(err){ setStatus("資料包讀取失敗："+(err&&err.message?err.message:err)); });
+      } else {
+        var text;
+        try{ text = new TextDecoder("utf-8",{fatal:true}).decode(u8); }
+        catch(err){
+          try{ text = new TextDecoder("big5").decode(u8); }
+          catch(e2){ text = new TextDecoder("utf-8").decode(u8); }
+        }
+        imgLib = {};                 /* 純 CSV：清掉舊圖庫 */
+        loadCSVText(text, f.name);
       }
       e.target.value = "";
     };
@@ -1362,19 +1413,17 @@ if(toolbar && !VIEW_ONLY){
     download("PC範本.csv", "\uFEFF"+SAMPLE_CSV, "text/csv;charset=utf-8");
   });
 
-  /* ── 匯出 CSV：內嵌圖會抽成 images/ 檔案並打包 ZIP，讓 CSV 保持可編輯 ── */
+  /* ── 匯出PC資料包：CSV（圖用代號）＋ 圖庫.json（內嵌圖 base64），打包成 ZIP ── */
   $("btnCsvOut").addEventListener("click", function(){
     var title = state.title || "PC一覽";
-    var bundle = buildCsvBundle(state.chars);
-    if(!bundle.images.length){
-      download(title+".csv", bundle.csvText, "text/csv;charset=utf-8");
-      setStatus("已匯出 <b>"+state.chars.length+"</b> 位 PC 的 CSV");
-    } else {
-      var files = [{ name: title+".csv", bytes: new TextEncoder().encode(bundle.csvText) }]
-                    .concat(bundle.images);
-      download(title+".zip", makeZip(files), "application/zip");
-      setStatus("已匯出 ZIP（CSV ＋ images/ 共 <b>"+bundle.images.length+"</b> 張圖）　·　解壓後 CSV 內是路徑，可直接編輯");
-    }
+    var pack = buildDataPack(state.chars);
+    var enc = new TextEncoder();
+    var files = [{ name: title+".csv", bytes: enc.encode(pack.csvText) }];
+    var nImg = Object.keys(pack.library).length;
+    if(nImg) files.push({ name: "圖庫.json", bytes: enc.encode(JSON.stringify(pack.library)) });
+    download(title+".zip", makeZip(files), "application/zip");
+    setStatus("已匯出資料包"+(nImg?"（CSV ＋ 圖庫.json，內嵌 <b>"+nImg+"</b> 張圖）":"（CSV）")+
+              "　·　CSV 內是"+(nImg?"代號":"路徑")+"，可直接編輯後再匯入");
   });
 
   /* ── 新增角色 Modal ── */
@@ -1396,6 +1445,48 @@ if(toolbar && !VIEW_ONLY){
 }
 
 function setStatus(html){ var s=$("status"); if(s) s.innerHTML = html; }
+
+/* 載入 CSV 文字（不動圖庫；圖庫由呼叫端決定是否清空／設定） */
+function loadCSVText(text, fname){
+  try{
+    state.chars = recordsFromCSV(text);
+    state.sel = -1;
+    render();
+    setExportEnabled();
+    setStatus(state.chars.length ? "已載入 <b>"+state.chars.length+"</b> 位 PC　·　"+esc(fname)
+                                 : "CSV 讀到了，但沒有任何一列有「名字」");
+  }catch(err){
+    setStatus("CSV 解析失敗：檢查欄位標題與引號是否成對");
+  }
+}
+
+/* 匯入資料包（ZIP）：拆出 CSV、JSON 圖庫、以及舊格式的 images/ 圖檔 */
+function importPack(files, zipName){
+  imgLib = {};
+  var names = Object.keys(files);
+  var csvName = names.filter(function(n){ return /\.csv$/i.test(n); })[0];
+  if(!csvName){ setStatus("資料包裡找不到 CSV 檔"); return; }
+
+  var jsonName = names.filter(function(n){ return /\.json$/i.test(n); })[0];
+  if(jsonName){
+    try{
+      var lib = JSON.parse(new TextDecoder().decode(files[jsonName]));
+      if(lib && typeof lib==="object") imgLib = lib;
+    }catch(e){ /* 圖庫壞了就當作沒有 */ }
+  }
+
+  /* 舊格式資料包：images/ 內的實體圖檔 → 轉 data URL 放進 imgURLs（路徑照樣解析得到） */
+  names.forEach(function(n){
+    if(/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(n)){
+      var durl = "data:"+extToMime(n)+";base64,"+bytesToBase64(files[n]);
+      var baseName = n.split(/[\\/]/).pop();
+      imgURLs[n] = durl; imgURLs[baseName] = durl; imgURLs["./"+n] = durl;
+    }
+  });
+
+  var text = new TextDecoder().decode(files[csvName]).replace(/^\uFEFF/,"");
+  loadCSVText(text, zipName);
+}
 
 function setExportEnabled(){
   var on = state.chars.length>0;
@@ -1575,17 +1666,18 @@ function initAddModal(){
     $("f_summary").value = c.summary || "";
     $("f_logs").value = (c.logs||[]).join("\n");
 
-    /* 圖片：內嵌(data:)放暫存並預覽，路徑放文字欄 */
+    /* 圖片：內嵌(data:)放暫存並預覽，路徑放文字欄；代號先還原成 data URL */
     function loadImg(w, val){
-      if(!val){ addState[w]=""; var p0=modal.querySelector('[data-path="'+w+'"]'); if(p0)p0.value=""; setPrev(w); return; }
-      if(/^data:/i.test(val)){ addState[w]=val; var p1=modal.querySelector('[data-path="'+w+'"]'); if(p1)p1.value=""; }
+      var real = imgLib[val] || val;
+      if(!real){ addState[w]=""; var p0=modal.querySelector('[data-path="'+w+'"]'); if(p0)p0.value=""; setPrev(w); return; }
+      if(/^data:/i.test(real)){ addState[w]=real; var p1=modal.querySelector('[data-path="'+w+'"]'); if(p1)p1.value=""; }
       else { addState[w]=""; var p2=modal.querySelector('[data-path="'+w+'"]'); if(p2)p2.value=val; }
       setPrev(w);
     }
     loadImg("icon", c.icon);
     loadImg("full", c.full);
-    addState.variants = (c.variants||[]).filter(function(v){ return /^data:/i.test(v); });
-    var paths = (c.variants||[]).filter(function(v){ return !/^data:/i.test(v); });
+    addState.variants = (c.variants||[]).map(function(v){ return imgLib[v]||v; }).filter(function(v){ return /^data:/i.test(v); });
+    var paths = (c.variants||[]).filter(function(v){ return !/^data:/i.test(imgLib[v]||v); });
     modal.querySelector('[data-path="variants"]').value = paths.join("|");
     renderVars();
   }
@@ -1702,6 +1794,12 @@ function fileToDataURL(file){
 function buildExport(){
   var embed = $("embedImgs") && $("embedImgs").checked;
   var chars = JSON.parse(JSON.stringify(state.chars));
+  /* 資料包代號 → 內嵌 data URL，讓匯出的檢視頁自成一體 */
+  chars.forEach(function(c){
+    if(imgLib[c.icon]) c.icon = imgLib[c.icon];
+    if(imgLib[c.full]) c.full = imgLib[c.full];
+    c.variants = (c.variants||[]).map(function(v){ return imgLib[v]||v; });
+  });
   var jobs = [];
 
   if(embed){
