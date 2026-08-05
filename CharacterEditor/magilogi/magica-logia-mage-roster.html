@@ -201,15 +201,44 @@ body.exported #sidebar{top:0;height:100vh}
   border-style:solid;border-width:0 10px 10px 0;
   border-color:transparent var(--accent-ink) transparent transparent;
 }
-.sktable td.sk.gap::before{
-  content:"";position:absolute;left:3px;top:3px;width:5px;height:5px;border-radius:50%;
-  background:var(--star);box-shadow:0 0 0 1px var(--accent-ink);
+/* 疵：該領域不可用 */
+.sktable td.sk.flaw{
+  color:var(--text-dim);text-decoration:line-through;
+  background:repeating-linear-gradient(45deg,var(--card),var(--card) 4px,var(--card-2) 4px,var(--card-2) 8px);
 }
-.sk-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:var(--fs-min);color:var(--text-mid)}
+.sktable td.sk.flaw.on{background:var(--text-dim);color:#f3f1ec;box-shadow:none}
+.sktable th.flawh{color:#8f96ab;text-decoration:line-through}
+/* Gap 直欄（領域間的細長方框；塗黑＝視為不存在） */
+.sktable td.gapc,.sktable th.gaph{width:12px;min-width:12px;max-width:12px;padding:0;background:var(--card-2)}
+.sktable th.gaph{background:var(--ink-2)}
+.sktable td.gapc.blk,.sktable th.gaph.blk{background:var(--accent-ink);border-color:var(--accent-ink)}
+/* 特技表底部控制列：領域 + 疵 */
+.sk-foot{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:12px;align-items:center}
+.sk-foot .ft-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.sk-foot .ft-lb{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.2em;color:var(--text-mid)}
+.sk-foot select#fld_domain{
+  font-family:inherit;font-size:var(--fs-sm);padding:5px 9px;border:1px solid var(--hair-2);
+  border-radius:2px;background:#fff;color:var(--text);
+}
+.sk-foot select#fld_domain:disabled{background:var(--card-2);color:var(--text);opacity:1}
+.sk-foot .ft-tag{font-family:var(--serif);font-weight:700;font-size:var(--fs-sm);color:var(--accent-ink)}
+.flaw-boxes{display:flex;flex-wrap:wrap;gap:6px}
+.flaw-box{
+  display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-min);
+  padding:3px 8px 3px 6px;border:1px solid var(--hair-2);border-radius:2px;background:#fff;color:var(--text-mid);
+}
+.flaw-box .bx{width:14px;height:14px;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--hair-2);border-radius:2px;background:#fff;font-size:11px;line-height:1;color:#fff}
+.flaw-box:hover:not(:disabled){border-color:var(--accent)}
+.flaw-box.on{background:#3a2b30;border-color:#3a2b30;color:#f0e6e8}
+.flaw-box.on .bx{background:#a23b4a;border-color:#a23b4a}
+.flaw-box:disabled{cursor:default}
+.sk-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:var(--fs-min);color:var(--text-mid)}
 .sk-legend span{display:inline-flex;align-items:center;gap:6px}
 .sk-legend .swatch{width:13px;height:13px;border-radius:2px;background:var(--accent);border:1px solid var(--accent-ink)}
-.sk-legend .swatch.g{background:var(--star)}
+.sk-legend .swatch.blk{background:var(--accent-ink);border-color:var(--accent-ink)}
 .sk-legend .swatch.j{background:#fff;outline:2px solid var(--accent-ink);outline-offset:-2px}
+.sk-legend .swatch.fl{background:repeating-linear-gradient(45deg,var(--card),var(--card) 3px,var(--hair-2) 3px,var(--hair-2) 6px)}
 
 /* 習得特技判定值 + 魂之特技 */
 .judge-list{display:flex;flex-wrap:wrap;gap:8px}
@@ -275,11 +304,18 @@ body.exported .add-anchor,body.exported .anchor-edit{display:none!important}
 .spell .sp-nm{font-family:var(--serif);font-weight:700;font-size:var(--fs-base)}
 .spell .sp-tags{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
 .spell .t{font-size:var(--fs-min);border-radius:2px;padding:1px 8px;white-space:nowrap}
-.spell .t.kind{background:rgba(var(--accent-rgb),.16);color:var(--accent-ink)}
+.spell .t.kind{font-weight:700}
+.spell .t.kind.summon{background:rgba(var(--accent-rgb),.2);color:var(--accent-ink)}
+.spell .t.kind.spell{background:#d7e7f0;color:#255a76}
+.spell .t.kind.perm{background:#e6dfcd;color:#786425}
 .spell .t.skill{background:var(--card-2);border:1px solid var(--hair-2);color:var(--text-mid)}
 .spell .t.cost{background:var(--ink-2);color:#dfe3f0;font-family:var(--mono)}
 .spell .sp-eff{grid-column:1/-1;font-size:var(--fs-sm);color:var(--text-mid);line-height:1.55;margin-top:5px}
+.spell .sp-inc{grid-column:1/-1;font-size:var(--fs-min);color:var(--text-dim);font-style:italic;margin-top:4px;padding-left:9px;border-left:2px solid var(--hair-2)}
 .spell .miss{grid-column:1/-1;font-size:var(--fs-min);color:#b05a5a}
+.spell-count{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.1em;color:var(--text-mid);margin-bottom:9px}
+.spell-count b{color:var(--accent-ink);font-weight:700}
+.spell-count .over{color:#b05a5a}
 
 /* 差分 */
 .variants{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}
@@ -299,6 +335,7 @@ body.exported .add-anchor,body.exported .anchor-edit{display:none!important}
 #lb img{max-width:94vw;max-height:92vh;border-radius:3px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
 #lb .x{position:absolute;top:18px;right:22px;background:none;border:none;color:#fff;font-size:30px;line-height:1}
 
+body.exported .flaw-box{pointer-events:none}
 .hidden{display:none!important}
 </style>
 </head>
@@ -349,15 +386,17 @@ body.exported .add-anchor,body.exported .anchor-edit{display:none!important}
    內建示範 CSV（＝範本內容，單一來源）
    ══════════════════════════════════════════════════ */
 var DEMO = {};
-DEMO["角色.csv"] = `分類,偽名,拼音,魔法名,PL,代表色,頭像,全身圖,差分,性別,年齡,階梯數,階梯名,攻擊力,防禦力,根源力,魔力,臨時魔力,最大值,功績點,經歷,經歷信條,機關,機關信條,表面身分,領域,判定特技,魂之特技,魂之特技判定,魂之特技備註,習得特技,真實之姿,個性,義務對象,義務願望,藏書,初期背景設定,追加設定,台詞
-戶口,明星 紫名,アカボシ シナ,ディバイン・ゾディアク-Divine Zodiac-／神諭星座,洛雅,#9280A4,images/shina_icon.png,images/shina_full.png,,女,614,4,哲人,4,4,4,0,0,4,,書警,阻止魔法災厄,戶口,盡可能溫和地解決事件,圖書館司書,星,寂靜,星座審判,6,魔力1消費,"大地:9::
-寂靜:5::
-光:12:1:
-物語:15:1:
-祈禱:15:1:",幽暗星海的天秤,"性格冷靜，不太多話，但認為溝通是必要的，所以會好好想辦法表達自己的想法與傳達任務。",,,緊急召喚|魔劍召喚※|火花|書刑|約定|流砂|嘆願,"曾經隸屬圓桌的書警，從外顯個性上看不出來的戰鬥狂。在一次的禁書討伐中失利，分科會崩潰且喪失一名錨點後退出圓桌，轉而進入戶口支援與人界相關的處理業務。對一線作戰有點提不起勁，若真有必要還是會前往支援組成分科會，畢竟大法典終年人手不足。",,
-圓桌,初見 蒼衣,ハツミ アオイ,スターゲイザー-Stargazer-／觀星之瞳,範例PL,#4C8FB0,,,,女,19,1,學徒,3,2,5,3,0,5,,學徒,精進學業,圓桌,討伐禁書,天文社社員,力,光,無,,,"光:5::
-雷:9::
-波:12::",灼熱的獅子王,"開朗好奇，總想弄懂魔法背後的原理，遇到難題會兩眼發光。",紫名,想成為能獨當一面的魔法師,火花|星屑之盾|迷宮,"這是一名範例角色，用來示範資料庫如何共用魔法、經歷、機關等 CSV。可自由刪除或改寫。",,總有一天，我要看遍所有星星背後的故事。`;
+DEMO["角色.csv"] = `分類,偽名,拼音,魔法名,PL,代表色,頭像,全身圖,差分,性別,年齡,階梯數,階梯名,攻擊力,防禦力,根源力,魔力,臨時魔力,最大值,功績點,經歷,經歷信條,機關,機關信條,表面身分,領域,疵,判定特技,魂之特技,魂之特技判定,魂之特技備註,習得特技,真實之姿,個性,義務對象,義務願望,藏書,初期背景設定,追加設定,台詞
+戶口,明星 紫名,アカボシ シナ,ディバイン・ゾディアク-Divine Zodiac-／神諭星座,洛雅,#9280A4,images/shina_icon.png,images/shina_full.png,,女,614,4,哲人,4,4,4,0,0,4,,書警,阻止魔法災厄,戶口,盡可能溫和地解決事件,圖書館司書,星,,寂靜,星座審判,6,魔力1消費,"寂靜
+大地
+光
+物語
+祈禱",幽暗星海的天秤,"性格冷靜，不太多話，但認為溝通是必要的，所以會好好想辦法表達自己的想法與傳達任務。",,,緊急召喚|魔劍召喚※|火花|書刑|約定|流砂|嘆願,"曾經隸屬圓桌的書警，從外顯個性上看不出來的戰鬥狂。在一次的禁書討伐中失利，分科會崩潰且喪失一名錨點後退出圓桌，轉而進入戶口支援與人界相關的處理業務。對一線作戰有點提不起勁，若真有必要還是會前往支援組成分科會，畢竟大法典終年人手不足。",,
+圓桌,初見 蒼衣,ハツミ アオイ,スターゲイザー-Stargazer-／觀星之瞳,範例PL,#4C8FB0,,,,女,19,3,實踐者,3,3,3,0,0,3,,學徒,精進學業,圓桌,討伐禁書,天文社社員,力,,光,無,,,"光
+水
+物語
+希望
+大地",灼熱的獅子王,"開朗好奇，總想弄懂魔法背後的原理，遇到難題會兩眼發光。",紫名,想成為能獨當一面的魔法師,緊急召喚|火花|流砂|嘆願|約定,"這是一名以「第三階梯・實踐者」預設值製作的範例角色（攻/防/根源皆 3，除緊急召喚外習得 4 個魔法），示範資料庫如何共用魔法、經歷、機關等 CSV。可自由刪除或改寫。",,總有一天，我要看遍所有星星背後的故事。`;
 
 DEMO["特技.csv"] = `領域,骰值,特技名
 星,2,黃金
@@ -427,6 +466,15 @@ DEMO["特技.csv"] = `領域,骰值,特技名
 闇,11,絕望
 闇,12,死`;
 
+DEMO["階梯.csv"] = `階梯,名稱,英文,升階必要功績點,魔法習得數
+第一階梯,新參者,Neophyte,—,—
+第二階梯,理論者,Theoricus,—,—
+第三階梯,實踐者,Practicus,5,4
+第四階梯,哲人,Philosophus,10,5
+第五階梯,達人,Adeptus,15,6
+第六階梯,魔導師,Magus,20,7
+第七階梯,超越者,Ipsissimus,50,8`;
+
 DEMO["經歷.csv"] = `經歷名,說明,常見信條
 書警,守護大法典、追緝禁書與違規魔法師的執法者。,阻止魔法災厄|守護大法典|追緝禁書
 學徒,仍在修習魔法、尚未獨當一面的見習魔法師。,精進學業|回應師長期待|探求真理
@@ -445,16 +493,16 @@ DEMO["真實之姿.csv"] = `名稱,效果,說明
 永凍的冰華,絕對防禦,顯露真實之姿時，可完全無效化一次針對自身的攻擊。
 虛無的深淵,吞噬,顯露真實之姿時，選擇一個目標的魔法使其失效。`;
 
-DEMO["藏書_魔法.csv"] = `魔法名,種類,指定特技,COST,效果
-緊急召喚,召喚,可變,無,隨機選 1 個特技作為指定特技。指定特技判定成功後，可召喚 1 個「（特技名）」的精靈。
-魔劍召喚※,召喚,寂靜,星1,魔劍 等級1元型【追加傷害1】。指定特技判定成功後，可召喚 1 個「（特技名）」的魔劍。
-火花,咒文,光,全1,可在魔法戰中自己的行動時使用。指定特技判定成功後，給予目標 1 點傷害。
-書刑,裝備,無,獸1,對裝備此魔法的角色進行抵抗判定時，判定值受到 -2 修正。
-約定,裝備,無,歌1,進行契約時，將錨點的【命運】值視為比原來多一。
-流砂,咒文,大地,星2,魔法戰自己的行動時使用，指定特技判定成功後，對目標造成 1 點傷害並給予「封印」變調。
-嘆願,咒文,祈禱,夢2,某人使用命運之力做復活判定時可使用。指定特技判定成功，可給予該判定 +2 修正值。
-星屑之盾,裝備,無,星1,裝備此魔法者受到攻擊時，可消費 1 點魔素抵銷 1 點傷害。
-迷宮,咒文,道路,星2,魔法戰自己的行動時使用，指定特技判定成功後，給予目標「移動不能」變調。`;
+DEMO["藏書_魔法.csv"] = `魔法名,種類,指定特技,COST,效果,咒語
+緊急召喚,召喚,可變,無,隨機選 1 個特技作為指定特技。指定特技判定成功後，可召喚 1 個「（特技名）」的精靈。,
+魔劍召喚※,召喚,寂靜,星1,魔劍 等級1元型【追加傷害1】。指定特技判定成功後，可召喚 1 個「（特技名）」的魔劍。,
+火花,咒文,光,全1,可在魔法戰中自己的行動時使用。指定特技判定成功後，給予目標 1 點傷害。,
+書刑,裝備,無,獸1,對裝備此魔法的角色進行抵抗判定時，判定值受到 -2 修正。,
+約定,裝備,無,歌1,進行契約時，將錨點的【命運】值視為比原來多一。,
+流砂,咒文,大地,星2,魔法戰自己的行動時使用，指定特技判定成功後，對目標造成 1 點傷害並給予「封印」變調。,
+嘆願,咒文,祈禱,夢2,某人使用命運之力做復活判定時可使用。指定特技判定成功，可給予該判定 +2 修正值。,
+星屑之盾,裝備,無,星1,裝備此魔法者受到攻擊時，可消費 1 點魔素抵銷 1 點傷害。,
+迷宮,咒文,道路,星2,魔法戰自己的行動時使用，指定特技判定成功後，給予目標「移動不能」變調。,`;
 
 DEMO["錨點關係.csv"] = `角色,錨點名,命運,屬性,設定
 明星 紫名,神代 皐,3,血緣,百年前交好的人類友人的子孫。把紫名當成小妹妹，但有些脫線，時常處於被紫名訓話的立場。過去事件結識的錨點。
@@ -509,7 +557,7 @@ function objectsToCSV(head,objs){
    狀態
    ══════════════════════════════════════════════════ */
 var state={
-  chars:[], skillGrid:{}, exp:{}, org:{}, trueforms:{}, spells:{}, anchors:{},
+  chars:[], skillGrid:{}, exp:{}, org:{}, trueforms:{}, spells:{}, anchors:{}, ranks:{},
   title:"魔法師名冊", cur:null
 };
 var imgURLs={}, imgFiles={};
@@ -517,6 +565,9 @@ var imgURLs={}, imgFiles={};
 function buildFromCSV(files){
   /* files: { "角色.csv":text, ... } */
   var g=function(n){return files[n]!=null?files[n]:DEMO[n];};
+  /* 保留原始 CSV 文字，讓匯出／範本能保存使用者載入的參照資料庫 */
+  state.rawCSV={};
+  ["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"].forEach(function(n){ state.rawCSV[n]=g(n); });
   state.chars = csvToObjects(g("角色.csv"));
 
   /* 特技表 → grid[領域][骰值]=特技名 */
@@ -526,6 +577,11 @@ function buildFromCSV(files){
     if(!grid[d])grid[d]={}; grid[d][die]=nm;
   });
   state.skillGrid=grid;
+
+  state.ranks={}; csvToObjects(g("階梯.csv")).forEach(function(r){
+    var nm=String(r["名稱"]).trim(), st=String(r["階梯"]).trim();
+    if(nm)state.ranks[nm]=r; if(st)state.ranks[st]=r;
+  });
 
   state.exp={}; csvToObjects(g("經歷.csv")).forEach(function(r){ state.exp[String(r["經歷名"]).trim()]=r; });
   state.org={}; csvToObjects(g("機關.csv")).forEach(function(r){ state.org[String(r["機關名"]).trim()]=r; });
@@ -542,12 +598,16 @@ function buildFromCSV(files){
   });
 }
 
-/* 解析習得特技欄：每列 "特技:判定值:Gap1:Gap2" */
+/* 解析習得特技欄：每列一個特技名（可選 "特技名:備註"） */
 function parseLearned(str){
   return String(str||"").split(/\r?\n/).map(function(l){return l.trim();}).filter(Boolean).map(function(l){
     var p=l.split(":");
-    return {name:(p[0]||"").trim(), value:(p[1]||"").trim(), gap1:(p[2]||"").trim(), gap2:(p[3]||"").trim()};
+    return {name:(p[0]||"").trim(), note:(p[1]||"").trim()};
   });
+}
+/* 疵：不可用的領域（以 | 或空白分隔） */
+function domainFlaws(c){
+  return String(c["疵"]||"").split(/[|,\s]+/).map(function(s){return s.trim();}).filter(function(s){return DOMAINS.indexOf(s)>=0;});
 }
 
 /* ══════════════════════════════════════════════════
@@ -695,27 +755,58 @@ function selectChar(key){
 
 function skillTableHTML(c){
   var learned=parseLearned(c["習得特技"]);
-  var litMap={}; learned.forEach(function(l){litMap[l.name]={gap:!!(l.gap1||l.gap2)};});
-  /* 領域特技欄額外點亮（可省略） */
-  String(c["領域特技"]||"").split("|").map(function(s){return s.trim();}).filter(Boolean).forEach(function(n){ if(!litMap[n])litMap[n]={gap:false}; });
+  var litSet={}; learned.forEach(function(l){litSet[l.name]=true;});
   var judge=String(c["判定特技"]||"").trim();
+  var dom=String(c["領域"]||"").trim();
+  var di=DOMAINS.indexOf(dom);
+  /* 環狀 6 道 Gap：選定領域塗黑其左(gap=di)與右(gap=(di+1)%6)。gap[0]＝星左側(＝闇右側，環繞) */
+  var blk={};
+  if(di>=0){ blk[di]=true; blk[(di+1)%6]=true; }
+  var flaws={}; domainFlaws(c).forEach(function(d){flaws[d]=true;});
   var dice=["2","3","4","5","6","7","8","9","10","11","12"];
+  var exported=document.body.classList.contains('exported');
+
   var h='<div class="skwrap"><table class="sktable"><thead><tr><th class="corner"></th>';
-  DOMAINS.forEach(function(d){h+='<th>'+esc(DOMAIN_NO[d]+d)+'</th>';});
+  DOMAINS.forEach(function(d,i){
+    h+='<th class="gaph'+(blk[i]?' blk':'')+'"></th>';
+    h+='<th class="'+(flaws[d]?'flawh':'')+'">'+esc(DOMAIN_NO[d]+d)+'</th>';
+  });
   h+='<th class="corner"></th></tr></thead><tbody>';
   dice.forEach(function(die){
     h+='<tr><td class="die">'+die+'</td>';
-    DOMAINS.forEach(function(d){
+    DOMAINS.forEach(function(d,i){
+      h+='<td class="gapc'+(blk[i]?' blk':'')+'"></td>';
       var nm=(state.skillGrid[d]&&state.skillGrid[d][die])||"";
       var cls="sk";
-      if(litMap[nm]){cls+=" on"; if(litMap[nm].gap)cls+=" gap";}
+      if(litSet[nm])cls+=" on";
       if(nm&&nm===judge)cls+=" judge";
+      if(flaws[d])cls+=" flaw";
       h+='<td class="'+cls+'">'+esc(nm)+'</td>';
     });
     h+='<td class="die">'+die+'</td></tr>';
   });
   h+='</tbody></table></div>';
-  h+='<div class="sk-legend"><span><i class="swatch"></i>習得特技</span><span><i class="swatch j"></i>判定特技</span><span><i class="swatch g"></i>Gap 連線</span><span style="color:var(--text-dim)">領域：'+esc(c["領域"]||"—")+'</span></div>';
+
+  /* 底部：領域下拉 + 疵 核取 */
+  var domSel='<select id="fld_domain"'+(exported?' disabled':'')+'>'+
+    '<option value=""'+(di<0?' selected':'')+'>（未定）</option>'+
+    DOMAINS.map(function(d){return '<option value="'+esc(d)+'"'+(d===dom?' selected':'')+'>'+esc(DOMAIN_NO[d]+d)+'</option>';}).join('')+
+    '</select>';
+  var flawBoxes=DOMAINS.map(function(d){
+    return '<button type="button" class="flaw-box'+(flaws[d]?' on':'')+'" data-d="'+esc(d)+'"'+(exported?' disabled':'')+'>'+
+      '<span class="bx">'+(flaws[d]?'✓':'')+'</span>'+esc(DOMAIN_NO[d]+d)+'</button>';
+  }).join('');
+  h+='<div class="sk-foot">'+
+       '<div class="ft-row"><span class="ft-lb">領域</span>'+domSel+
+         (dom?'<span class="ft-tag">'+esc(dom)+'領域的魔法使</span>':'')+'</div>'+
+       '<div class="ft-row"><span class="ft-lb">疵</span><div class="flaw-boxes">'+flawBoxes+'</div></div>'+
+     '</div>';
+  h+='<div class="sk-legend">'+
+       '<span><i class="swatch"></i>習得特技</span>'+
+       '<span><i class="swatch j"></i>判定特技</span>'+
+       '<span><i class="swatch blk"></i>領域 Gap（塗黑＝視為不存在）</span>'+
+       '<span><i class="swatch fl"></i>疵（該領域不可用）</span>'+
+     '</div>';
   return h;
 }
 
@@ -723,9 +814,8 @@ function judgeListHTML(c){
   var learned=parseLearned(c["習得特技"]);
   var h='<div class="judge-list">';
   learned.forEach(function(l){
-    var gap=(l.gap1?'<span class="gp">Gap1</span>':'')+(l.gap2?'<span class="gp">Gap2</span>':'');
     h+='<span class="jchip"><span class="nm">'+esc(l.name)+'</span>'+
-       (l.value?'<span class="vl">2D6≥'+esc(l.value)+'</span>':'')+gap+'</span>';
+       (l.note?'<span class="vl">'+esc(l.note)+'</span>':'')+'</span>';
   });
   if(String(c["魂之特技"]||"").trim() && c["魂之特技"].trim()!=="無"){
     h+='<span class="jchip soul"><span class="tag">魂</span><span class="nm">'+esc(c["魂之特技"])+'</span>'+
@@ -788,19 +878,24 @@ function anchorsHTML(c){
   return h;
 }
 
+var KIND_CLASS={"召喚":"summon","咒文":"spell","裝備":"perm"};
 function spellsHTML(c){
   var names=String(c["藏書"]||"").split("|").map(function(s){return s.trim();}).filter(Boolean);
-  if(!names.length)return '<p class="prose mid">（無藏書）</p>';
-  var h='';
+  var over=names.length>10;
+  var head='<div class="spell-count">藏書 <b>'+names.length+'</b> / 10'+(over?'　<span class="over">⚠ 已超過上限（最多 10）</span>':'')+'</div>';
+  if(!names.length)return head+'<p class="prose mid">（無藏書）</p>';
+  var h=head;
   names.forEach(function(nm){
     var s=state.spells[nm];
     if(s){
+      var kc=KIND_CLASS[String(s["種類"]).trim()]||"";
       h+='<div class="spell"><div class="sp-top"><span class="sp-nm">'+esc(nm)+'</span><span class="sp-tags">'+
-         (s["種類"]?'<span class="t kind">'+esc(s["種類"])+'</span>':'')+
+         (s["種類"]?'<span class="t kind '+kc+'">'+esc(s["種類"])+'</span>':'')+
          (s["指定特技"]?'<span class="t skill">指定：'+esc(s["指定特技"])+'</span>':'')+
-         (s["COST"]?'<span class="t cost">'+esc(s["COST"])+'</span>':'')+
+         (s["COST"]?'<span class="t cost">COST '+esc(s["COST"])+'</span>':'')+
          '</span></div>'+
-         (s["效果"]?'<div class="sp-eff">'+esc(s["效果"])+'</div>':'')+'</div>';
+         (s["效果"]?'<div class="sp-eff">'+esc(s["效果"])+'</div>':'')+
+         (String(s["咒語"]||"").trim()?'<div class="sp-inc">「'+esc(s["咒語"])+'」</div>':'')+'</div>';
     }else{
       h+='<div class="spell"><div class="sp-top"><span class="sp-nm">'+esc(nm)+'</span></div>'+
          '<div class="miss">※ 魔法庫（藏書_魔法.csv）中查無此魔法，請確認名稱是否一致。</div></div>';
@@ -812,12 +907,15 @@ function spellsHTML(c){
 function renderDetail(c){
   var content=document.getElementById('content');
   var full=resolveImg(c["全身圖"]);
+  var rk=state.ranks[String(c["階梯名"]||"").trim()]||state.ranks[String(c["階梯數"]||"").trim()]||null;
   var stairs=(c["階梯數"]?'第 '+esc(c["階梯數"])+' 階梯':'')+(c["階梯名"]?' ・ '+esc(c["階梯名"]):'');
   var ageSex=[c["性別"],c["年齡"]?c["年齡"]+' 歲':''].filter(Boolean).join(' ／ ');
 
   var meta='';
   if(c["PL"])meta+='<span class="m">PL <b>'+esc(c["PL"])+'</b></span>';
-  if(stairs)meta+='<span class="m"><b>'+stairs+'</b></span>';
+  if(stairs)meta+='<span class="m"><b>'+stairs+'</b>'+(rk&&rk["英文"]&&rk["英文"]!=="—"?' <span style="color:var(--text-dim)">'+esc(rk["英文"])+'</span>':'')+'</span>';
+  if(rk&&rk["魔法習得數"]&&rk["魔法習得數"]!=="—")meta+='<span class="m">魔法習得數 <b>'+esc(rk["魔法習得數"])+'</b></span>';
+  if(c["領域"])meta+='<span class="m hl"><b>'+esc(c["領域"])+'</b> 領域</span>';
   if(ageSex)meta+='<span class="m">'+esc(ageSex)+'</span>';
   if(c["判定特技"])meta+='<span class="m hl">判定特技 <b>'+esc(c["判定特技"])+'</b></span>';
   if(c["表面身分"])meta+='<span class="m">表面身分 <b>'+esc(c["表面身分"])+'</b></span>';
@@ -854,7 +952,7 @@ function renderDetail(c){
     '</div>'+
     stats+
     '<div class="sec"><div class="sec-h">特技表　SKILL TABLE</div>'+skillTableHTML(c)+'</div>'+
-    '<div class="sec"><div class="sec-h">習得特技・判定值</div>'+judgeListHTML(c)+'</div>'+
+    '<div class="sec"><div class="sec-h">習得特技・魂之特技</div>'+judgeListHTML(c)+'</div>'+
     '<div class="cols">'+
       '<div>'+
         '<div class="sec"><div class="sec-h">經歷・機關・真實之姿</div>'+expOrgHTML(c)+'</div>'+
@@ -874,8 +972,24 @@ function renderDetail(c){
 
   content.innerHTML=html;
   bindAnchorEditor(c);
+  bindSkillControls(c);
   content.querySelectorAll('.variants img').forEach(function(img){
     img.addEventListener('click',function(){openLB(img.dataset.full);});
+  });
+}
+
+/* 特技表底部：領域下拉 + 疵 核取（即時更新，匯出時保存） */
+function bindSkillControls(c){
+  if(document.body.classList.contains('exported'))return;
+  var sel=document.getElementById('fld_domain');
+  if(sel)sel.addEventListener('change',function(){ c["領域"]=sel.value; renderDetail(c); });
+  document.querySelectorAll('.flaw-box').forEach(function(b){
+    b.addEventListener('click',function(){
+      var d=b.dataset.d, set=domainFlaws(c), i=set.indexOf(d);
+      if(i>=0)set.splice(i,1); else set.push(d);
+      c["疵"]=set.join("|");
+      renderDetail(c);
+    });
   });
 }
 
@@ -916,7 +1030,7 @@ document.getElementById('lb').addEventListener('click',function(){this.classList
 /* ══════════════════════════════════════════════════
    載入資料夾（多 CSV + 圖片）
    ══════════════════════════════════════════════════ */
-var CSV_NAMES=["角色.csv","特技.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"];
+var CSV_NAMES=["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"];
 function setStatus(html){var s=document.getElementById('status');if(s)s.innerHTML=html;}
 function bind(id,ev,fn){var e=document.getElementById(id);if(e)e.addEventListener(ev,fn);}
 
@@ -981,21 +1095,25 @@ function makeZip(entries){
   var all=chunks.concat(central,[end]);
   return new Blob(all,{type:'application/zip'});
 }
+function charHeader(){
+  /* 角色 CSV 欄位＝所有角色鍵的聯集，並確保含「領域」「疵」 */
+  var seen={},head=[];
+  state.chars.forEach(function(o){Object.keys(o).forEach(function(k){if(!seen[k]){seen[k]=1;head.push(k);}});});
+  ["領域","疵"].forEach(function(k){if(!seen[k]){head.push(k);seen[k]=1;}});
+  return head;
+}
 function currentCSVMap(){
-  /* 依當前狀態重建各 CSV（含錨點編輯結果） */
+  /* 依當前狀態重建各 CSV：參照資料庫保留載入時的原文，角色/錨點用編輯後的狀態重建 */
+  var raw=state.rawCSV||{};
   var m={};
-  m["角色.csv"]=DEMO["角色.csv"]; /* 佔位，稍後覆寫 */
-  m["特技.csv"]=DEMO["特技.csv"];
-  m["經歷.csv"]=DEMO["經歷.csv"];
-  m["機關.csv"]=DEMO["機關.csv"];
-  m["真實之姿.csv"]=DEMO["真實之姿.csv"];
-  m["藏書_魔法.csv"]=DEMO["藏書_魔法.csv"];
-  /* 角色 CSV：用當前 state.chars 重建，保留全部欄位 */
+  ["特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv"].forEach(function(n){
+    m[n]=(raw[n]!=null?raw[n]:DEMO[n]);
+  });
   if(state.chars.length){
-    var head=Object.keys(state.chars[0]);
-    m["角色.csv"]=objectsToCSV(head,state.chars);
+    m["角色.csv"]=objectsToCSV(charHeader(),state.chars);
+  }else{
+    m["角色.csv"]=(raw["角色.csv"]!=null?raw["角色.csv"]:DEMO["角色.csv"]);
   }
-  /* 錨點關係 CSV：用當前 state.anchors 重建 */
   var arows=[];
   Object.keys(state.anchors).forEach(function(k){
     state.anchors[k].forEach(function(a){arows.push({角色:k,錨點名:a.name,命運:a.fate,屬性:a.attr,設定:a.setting});});
@@ -1005,11 +1123,16 @@ function currentCSVMap(){
 }
 bind('btnTemplate','click',function(){
   var m=currentCSVMap();
-  var entries=Object.keys(m).map(function(n){return {name:"魔法師名冊資料庫/"+n,bytes:strBytes(m[n])};});
-  entries.push({name:"魔法師名冊資料庫/images/放圖說明.txt",bytes:strBytes("將頭像／全身圖／差分放在這裡，CSV 以 images/xxx.png 相對路徑指定。\r\n載入時用工具列的「載入資料夾」選擇整個「魔法師名冊資料庫」資料夾即可一次讀入所有 CSV 與圖片。")});
+  var csvNames=Object.keys(m).filter(function(k){return k!=='__imglib__';});
+  var entries=csvNames.map(function(n){
+    /* 每個 CSV 前置單一 UTF-8 BOM，Excel 開啟不亂碼 */
+    var s=String(m[n]||"").replace(/^\uFEFF/,"");
+    return {name:"魔法師名冊資料庫/"+n,bytes:strBytes("\uFEFF"+s)};
+  });
+  entries.push({name:"魔法師名冊資料庫/images/放圖說明.txt",bytes:strBytes("\uFEFF將頭像／全身圖／差分放在這裡，CSV 以 images/xxx.png 相對路徑指定。\r\n載入時用工具列的「載入資料夾」選擇整個「魔法師名冊資料庫」資料夾即可一次讀入所有 CSV 與圖片。")});
   var blob=makeZip(entries);
   downloadBlob("魔法師名冊資料庫.zip",blob);
-  setStatus('已下載 <b>7</b> 個 CSV 範本（ZIP）');
+  setStatus('已下載 <b>'+csvNames.length+'</b> 個 CSV 範本（ZIP・UTF-8）');
 });
 
 /* ══════════════════════════════════════════════════
@@ -1074,7 +1197,7 @@ function boot(){
     /* 匯出版：用內嵌 CSV + 圖庫 */
     if(exportData.__imglib__){ try{ var lib=JSON.parse(exportData.__imglib__); Object.keys(lib).forEach(function(k){imgURLs[k]=lib[k];}); }catch(e){} }
     var files={};
-    ["角色.csv","特技.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"].forEach(function(n){ if(exportData[n]!=null)files[n]=exportData[n]; });
+    ["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","錨點關係.csv"].forEach(function(n){ if(exportData[n]!=null)files[n]=exportData[n]; });
     buildFromCSV(files);
   }else{
     buildFromCSV({});
