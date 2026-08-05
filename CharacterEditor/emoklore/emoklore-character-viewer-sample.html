@@ -192,7 +192,7 @@ img{display:block}
   color:var(--accent-ink);border-left:3px solid var(--accent);padding:8px 0 8px 16px;line-height:1.65;white-space:pre-wrap}
 
 /* 三欄上區：角色設定 ｜ 能力值+點數 ｜ 共鳴+殘響 */
-.top3{display:grid;grid-template-columns:minmax(280px,1.15fr) minmax(210px,.85fr) minmax(230px,1fr);
+.top3{display:grid;grid-template-columns:minmax(300px,1.25fr) minmax(190px,.62fr) minmax(250px,1fr);
   gap:20px;align-items:start;margin-bottom:18px}
 /* 個資與喜歡／討厭：統一標籤＋內文格式 */
 .info-blocks{display:flex;flex-wrap:wrap;gap:14px 16px;margin-bottom:14px}
@@ -223,31 +223,25 @@ img{display:block}
 }
 .card > h3::before{content:"";width:4px;height:14px;background:var(--accent);border-radius:2px;display:inline-block}
 
-/* abilities：單一圓角容器＋細線分隔，避免各格圓角露出底色白邊 */
-.abil{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair-2);
-  border:1px solid var(--hair-2);border-radius:10px;overflow:hidden}
-.ab{display:flex;align-items:center;justify-content:space-between;background:var(--card-2);padding:7px 11px}
-.ab .k{font-size:var(--fs-md);color:var(--text-mid)}
-.ab .v{font-family:var(--mono);font-weight:500;font-size:17px}
-.ab.luck{grid-column:1/-1;background:rgba(var(--accent-rgb),.12)}
-.hpmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:9px;
-  background:var(--hair-2);border-radius:10px;overflow:hidden}
-.hpmp .b{padding:8px 12px;color:#fff;display:flex;align-items:baseline;justify-content:space-between}
-.hpmp .b.hp{background:#8a4b52}.hpmp .b.mp{background:#405a86}
-.hpmp .b .k{font-size:var(--fs-sm);letter-spacing:.1em;opacity:.92}
-.hpmp .b .v{font-family:var(--mono);font-weight:500;font-size:20px}
-/* 額外點數 */
-.pt-extra{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
-.pt-x{display:flex;align-items:baseline;justify-content:space-between;background:rgba(255,255,255,.5);
-  border:1px solid var(--hair);border-radius:8px;padding:7px 11px}
-.pt-x .k{font-size:var(--fs-sm);color:var(--text-mid)}
-.pt-x .v{font-family:var(--mono);font-weight:500;font-size:var(--fs-md);color:var(--text)}
+/* abilities：直向、緊密單欄；HP／MP 併入同一列表 */
+.abil{display:flex;flex-direction:column;border:1px solid var(--hair-2);border-radius:10px;overflow:hidden}
+.ab{display:flex;align-items:center;justify-content:space-between;background:var(--card-2);
+  padding:5px 12px;border-top:1px solid var(--hair)}
+.ab:first-child{border-top:0}
+.ab .k{font-size:var(--fs-md);color:var(--text-mid);letter-spacing:.04em}
+.ab .v{font-family:var(--mono);font-weight:600;font-size:16px;color:var(--text)}
+.ab.luck{background:rgba(var(--accent-rgb),.10)}
+.ab.luck .v{color:var(--accent-ink)}
+.ab.hp{border-top:2px solid var(--hair-2);background:rgba(138,75,82,.11)}
+.ab.hp .v{color:#8a4b52}
+.ab.mp{background:rgba(64,90,134,.11)}
+.ab.mp .v{color:#405a86}
 
-/* point budgets */
-.pts{display:grid;gap:8px}
-.pt{background:var(--card-2);border:1px solid var(--hair);border-radius:8px;padding:8px 11px}
+/* point budgets（配合直向能力值：緊密清爽） */
+.pts{display:flex;flex-direction:column;gap:11px}
+.pt{background:rgba(255,255,255,.5);border:1px solid var(--hair);border-radius:9px;padding:8px 11px}
 .pt .row1{display:flex;justify-content:space-between;align-items:baseline}
-.pt .lab{font-size:var(--fs-md);color:var(--text-mid)}
+.pt .lab{font-size:var(--fs-md);color:var(--text-mid);font-weight:700}
 .pt .num{font-family:var(--mono);font-size:var(--fs-md)}
 .pt .num b{font-size:16px;color:var(--text)}
 .pt .num .over{color:var(--warn)}
@@ -256,6 +250,12 @@ img{display:block}
 .pt .bar > i.over{background:var(--warn)}
 .pt .hint{font-size:var(--fs-sm);color:var(--text-dim);margin-top:5px}
 .pt .hint.warn{color:var(--warn)}
+/* 額外點數：整列顯示，避免窄欄換行 */
+.pt-extra{display:flex;flex-direction:column;gap:7px}
+.pt-x{display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:var(--card-2);
+  border:1px solid var(--hair);border-radius:8px;padding:6px 11px}
+.pt-x .k{font-size:var(--fs-sm);color:var(--text-mid);white-space:nowrap}
+.pt-x .v{font-family:var(--mono);font-weight:600;font-size:var(--fs-md);color:var(--text)}
 
 /* resonance emotions — signature */
 .reson{position:relative;padding-left:20px}
@@ -267,9 +267,10 @@ img{display:block}
   background:var(--accent);box-shadow:0 0 0 3px var(--card)}
 .emo:last-child{margin-bottom:0}
 .emo .slot{font-size:var(--fs-sm);letter-spacing:.22em;color:var(--text-dim);font-weight:700}
-.emo .word{font-family:var(--serif);font-weight:700;font-size:19px;color:var(--accent-ink);margin-top:1px}
-.emo .cat{display:inline-block;margin-top:5px;font-size:var(--fs-sm);color:#fff;background:var(--accent);
-  border-radius:999px;padding:2px 9px;font-weight:700}
+.emo .wr{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:2px}
+.emo .word{font-family:var(--serif);font-weight:700;font-size:19px;color:var(--accent-ink)}
+.emo .cat{font-size:var(--fs-sm);color:#fff;background:var(--accent);
+  border-radius:999px;padding:2px 9px;font-weight:700;align-self:center}
 .emo .desc{font-size:var(--fs-sm);color:var(--text-mid);margin-top:6px;line-height:1.5}
 
 /* skill list — 寬表格（欄位標題＋分區） */
@@ -287,8 +288,8 @@ img{display:block}
 .sk-h.r{justify-content:flex-end}
 .sk-h-lv{background:var(--ink-3);color:#fff;font-family:var(--serif);font-weight:700;font-size:var(--fs-sm);
   display:flex;align-items:center;justify-content:center;padding:7px 0;letter-spacing:.04em}
-/* 分區列（技能分類）：深底淺字，與可分配技能區別 */
-.sk-catbar{grid-column:1/-1;background:var(--ink-3);border-top:1px solid var(--ink-3);
+/* 分區列（技能分類）：以代表色系深底，與欄位標題（深藍）以顏色區分 */
+.sk-catbar{grid-column:1/-1;background:var(--accent-ink);border-top:1px solid var(--accent-ink);
   font-family:var(--serif);font-weight:700;font-size:var(--fs-md);color:#fff;padding:6px 10px;letter-spacing:.06em}
 /* 技能格 */
 .sk-c{border-top:1px solid var(--hair-2);padding:5px 9px;display:flex;align-items:center;min-width:0;background:rgba(255,255,255,.30)}
@@ -768,9 +769,13 @@ function renderDetail(ch){
   const profileBlocks=[['性別',ch.性別],['年齡',ch.年齡?ch.年齡+' 歲':''],['職業',ch.職業],['出身地',ch.出身地]]
     .filter(m=>m[1]).map(m=>`<div class="lk"><h4>${m[0]}</h4><p>${esc(m[1])}</p></div>`).join('');
 
-  // 能力
-  const abilHtml=ABILS.map(k=>`<div class="ab"><span class="k">${k}</span><span class="v">${abilVal(ch,k)}</span></div>`).join('')
-    +`<div class="ab luck"><span class="k">運勢</span><span class="v">${abilVal(ch,'運勢')}</span></div>`;
+  // 能力（直向、指定順序；運勢、HP、MP 併入同列表）
+  const ABIL_DISPLAY=['身體','精神','智力','社會','靈巧','五感','魅力'];
+  const abilHtml=
+    ABIL_DISPLAY.map(k=>`<div class="ab"><span class="k">${k}</span><span class="v">${abilVal(ch,k)}</span></div>`).join('')
+    +`<div class="ab luck"><span class="k">運勢</span><span class="v">${abilVal(ch,'運勢')}</span></div>`
+    +`<div class="ab hp"><span class="k">HP</span><span class="v">${hp(ch)}</span></div>`
+    +`<div class="ab mp"><span class="k">MP</span><span class="v">${mp(ch)}</span></div>`;
 
   // 點數
   const xAbil=parseInt(ch.額外能力點||'0',10)||0, xSkill=parseInt(ch.額外技能點||'0',10)||0;
@@ -796,8 +801,9 @@ function renderDetail(ch){
     if(/[／/]/.test(raw)){ const p=raw.split(/[／/]/); word=p[0].trim(); cat=(p[1]||'').trim(); }
     if(!cat) cat=emoCat(word);
     const d=emoDesc(word);
-    return `<div class="emo"><div class="slot">${slot}</div><div class="word">${esc(word)}</div>`+
-      (cat?`<span class="cat">${esc(cat)}</span>`:'')+(d?`<div class="desc">${esc(d)}</div>`:'')+`</div>`;
+    return `<div class="emo"><div class="slot">${slot}</div>`+
+      `<div class="wr"><span class="word">${esc(word)}</span>`+(cat?`<span class="cat">${esc(cat)}</span>`:'')+`</div>`+
+      (d?`<div class="desc">${esc(d)}</div>`:'')+`</div>`;
   }).join('');
 
   // 技能列表（signature）
@@ -837,11 +843,8 @@ function renderDetail(ch){
       (ch.台詞?`<div class="hx-quote">${esc(ch.台詞)}</div>`:'')+
     `</div></div>`;
 
-  // 能力值（個資已移至角色設定）
-  const abilCard=`<div class="card"><h3>能力值</h3>`+
-    `<div class="abil">${abilHtml}</div>`+
-    `<div class="hpmp"><div class="b hp"><span class="k">HP</span><span class="v">${hp(ch)}</span></div>`+
-    `<div class="b mp"><span class="k">MP</span><span class="v">${mp(ch)}</span></div></div></div>`;
+  // 能力值（個資已移至角色設定；HP／MP 併入列表）
+  const abilCard=`<div class="card"><h3>能力值</h3><div class="abil">${abilHtml}</div></div>`;
   const ptsCard=`<div class="card"><h3>可分配點數</h3><div class="pts">${ptsHtml}</div></div>`;
   const emoCard=emoHtml?`<div class="card"><h3>共鳴感情</h3><div class="reson">${emoHtml}</div></div>`:'';
 
