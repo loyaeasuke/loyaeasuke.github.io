@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>エモクロア Emo-klore 角色名冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style id="app-style">
+:root{
+  --ink:#171a26;
+  --ink-2:#1f2333;
+  --ink-3:#2a2f43;
+  --ink-line:#343a52;
+  --paper:#e9e7e1;
+  --card:#fbfaf6;
+  --card-2:#f2f0e9;
+  --text:#1b1e29;
+  --text-mid:#565c6e;
+  --text-dim:#8a8f9e;
+  --hair:#dedbd2;
+  --hair-2:#cfccc1;
+  --warn:#b1503f;
+  --ok:#4f7a5b;
+  /* character accent (rep color) injected at runtime */
+  --accent:#696662;
+  --accent-ink:#54514e;
+  --accent-rgb:105,102,98;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","Hiragino Sans","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"DM Mono","Noto Sans TC",monospace;
+  --sidebar-w:286px;
+  --fs-min:13px; --fs-sm:13px; --fs-md:14px; --fs-base:15px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--paper);color:var(--text);
+  font-family:var(--sans);font-size:var(--fs-base);line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;color:inherit;cursor:pointer}
+img{display:block}
+::selection{background:rgba(var(--accent-rgb),.22)}
+.app{display:flex;min-height:100vh}
+
+/* ---------- Sidebar ---------- */
+.side{
+  width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
+  background:var(--ink);color:#e7e6ef;position:sticky;top:0;height:100vh;
+  display:flex;flex-direction:column;border-right:1px solid #0c0e16;
+}
+.brand{padding:20px 20px 16px;border-bottom:1px solid var(--ink-line)}
+.brand .jp{
+  font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.16em;
+  color:#c9c6dd;margin:0 0 6px;
+}
+.brand h1{
+  font-family:var(--serif);font-weight:900;font-size:22px;line-height:1.2;margin:0;
+  letter-spacing:.02em;color:#fff;
+}
+.brand .sub{margin:7px 0 0;font-size:var(--fs-sm);color:#8e93ab;letter-spacing:.04em}
+.searchwrap{padding:14px 16px 10px}
+.search{
+  width:100%;background:var(--ink-2);border:1px solid var(--ink-line);color:#eceafc;
+  border-radius:9px;padding:9px 11px;font-size:var(--fs-md);outline:none;
+}
+.search::placeholder{color:#767b93}
+.search:focus{border-color:#5a6188;box-shadow:0 0 0 3px rgba(90,97,136,.28)}
+.homebtn{
+  margin:2px 16px 8px;display:flex;align-items:center;gap:9px;width:calc(100% - 32px);
+  background:var(--ink-2);border:1px solid var(--ink-line);color:#cdd0e4;
+  border-radius:9px;padding:8px 11px;font-size:var(--fs-md);text-align:left;
+}
+.homebtn:hover{background:var(--ink-3)}
+.homebtn[aria-current="true"]{
+  background:rgba(var(--accent-rgb),.24);border-color:rgba(var(--accent-rgb),.6);color:#fff;
+}
+.homebtn svg{width:15px;height:15px;flex:0 0 15px;opacity:.85}
+.roster{flex:1;overflow-y:auto;padding:4px 10px 12px}
+.grp-h{
+  font-size:var(--fs-sm);letter-spacing:.14em;color:#828aa6;
+  padding:12px 8px 6px;font-weight:700;
+}
+.pc{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:transparent;border:0;border-radius:9px;padding:8px 9px;margin:1px 0;color:#dcdbe9;
+}
+.pc:hover{background:var(--ink-2)}
+.pc[aria-current="true"]{background:var(--ink-3);box-shadow:inset 3px 0 0 var(--accent)}
+.pc .av{
+  width:34px;height:34px;flex:0 0 34px;border-radius:8px;object-fit:cover;
+  background:#3a3f57;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:700;font-size:var(--fs-md);color:#fff;overflow:hidden;
+}
+.pc .tx{min-width:0;flex:1}
+.pc .nm{font-weight:700;font-size:var(--fs-md);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.pc .rd{font-size:var(--fs-sm);color:#8a8fa8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.side-foot{padding:10px 16px;border-top:1px solid var(--ink-line);font-size:var(--fs-sm);color:#767b93}
+.side-foot b{color:#aeb2c8;font-weight:700}
+
+/* ---------- Main ---------- */
+.main{flex:1;min-width:0}
+.topbar{
+  position:sticky;top:0;z-index:20;background:rgba(233,231,225,.86);backdrop-filter:blur(9px);
+  border-bottom:1px solid var(--hair-2);display:flex;gap:9px;align-items:center;
+  padding:11px 22px;flex-wrap:wrap;
+}
+.tb-btn{
+  background:var(--card);border:1px solid var(--hair-2);border-radius:9px;
+  padding:8px 13px;font-size:var(--fs-md);font-weight:500;display:inline-flex;align-items:center;gap:7px;
+}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.tb-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tb-btn.primary:hover{background:var(--ink-3)}
+.tb-btn svg{width:15px;height:15px}
+.tb-chk{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:var(--text-mid)}
+.tb-status{margin-left:auto;font-size:var(--fs-sm);color:var(--text-mid)}
+.tb-status b{color:var(--text)}
+
+/* ---------- Gallery ---------- */
+.gallery{padding:30px 30px 60px;max-width:1240px;margin:0 auto}
+.g-head{text-align:center;margin:14px 0 30px}
+.g-head .eye{font-size:var(--fs-sm);letter-spacing:.34em;color:var(--text-dim);font-weight:700}
+.g-head h2{font-family:var(--serif);font-weight:900;font-size:32px;margin:8px 0 6px;letter-spacing:.04em}
+.g-head p{margin:0;color:var(--text-mid);font-size:var(--fs-md)}
+.g-cat{margin:0 0 30px}
+.g-cat-h{display:flex;align-items:baseline;gap:11px;margin:0 2px 14px;padding-bottom:8px;border-bottom:1px solid var(--hair-2)}
+.g-cat-h span{font-family:var(--serif);font-weight:700;font-size:19px}
+.g-cat-h em{font-style:normal;font-size:var(--fs-sm);color:var(--text-dim)}
+.g-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.g-card{
+  background:var(--card);border:1px solid var(--hair-2);border-radius:14px;overflow:hidden;
+  text-align:left;padding:0;transition:transform .16s,box-shadow .16s,border-color .16s;
+}
+.g-card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(20,20,30,.12);border-color:var(--gc-acc,var(--accent))}
+.g-card .ph{aspect-ratio:1/1;background:var(--card-2);overflow:hidden;position:relative}
+.g-card .ph img{width:100%;height:100%;object-fit:cover}
+.g-card .ph .init{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:900;font-size:40px;color:#fff;
+}
+.g-card .cap{padding:11px 12px 13px}
+.g-card .cap .nm{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.28;color:var(--gc-acc,var(--text))}
+.g-card .cap .rd{font-size:var(--fs-sm);color:var(--text-dim);margin-top:2px;min-height:1.2em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-card .cap .jb{font-size:var(--fs-sm);color:var(--text-mid);margin-top:5px}
+
+/* ---------- Detail ---------- */
+.sheet{padding:26px 30px 70px;max-width:1240px;margin:0 auto;position:relative}
+
+/* 全身圖：刷淡浮水印（頁面右側，固定於視窗；半透明底板讓它透出） */
+.watermark{position:fixed;top:0;right:0;height:100vh;width:min(46%,560px);
+  pointer-events:none;z-index:0;display:flex;align-items:center;justify-content:flex-end;overflow:hidden}
+.watermark img{max-width:100%;max-height:96vh;object-fit:contain;object-position:right center;opacity:.16;
+  -webkit-mask-image:linear-gradient(to left,#000 52%,transparent);mask-image:linear-gradient(to left,#000 52%,transparent)}
+.dh,.top3,.skwide{position:relative;z-index:1}
+
+/* 標題列：頭像輪播 ｜ 身分＋台詞 */
+.dh{display:flex;gap:24px;align-items:flex-start;margin-bottom:22px}
+.por-col{flex:0 0 auto;display:flex;flex-direction:column;gap:8px;width:132px}
+.por{
+  width:132px;height:132px;aspect-ratio:1/1;border-radius:16px;overflow:hidden;
+  background:var(--card-2);border:1px solid var(--hair-2);
+  display:flex;align-items:center;justify-content:center;position:relative;
+}
+.por .por-img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.por .init{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--serif);font-weight:900;font-size:56px;color:#fff}
+.por-nav{position:absolute;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;
+  border:0;background:rgba(20,20,28,.55);color:#fff;font-size:17px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;z-index:2;transition:background .12s}
+.por-nav:hover{background:rgba(20,20,28,.82)}
+.por-nav.prev{left:6px}.por-nav.next{right:6px}
+/* 檢視全身圖：固定保留一個位置（有無立繪都不影響下方排版高度） */
+.fullbtn-slot{height:34px;display:flex}
+.fullbtn{flex:1;font-size:var(--fs-sm);color:var(--accent-ink);font-weight:700;cursor:pointer;
+  border:1px solid var(--hair-2);background:rgba(255,255,255,.6);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;gap:6px}
+.fullbtn:hover{border-color:var(--accent)}
+
+.hx{flex:1;min-width:0;display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.hx .idb{min-width:0;flex:0 1 auto}
+.hx .cat{display:inline-block;font-size:var(--fs-sm);letter-spacing:.12em;color:#fff;
+  background:var(--accent);padding:3px 10px;border-radius:999px;font-weight:700}
+.hx h2{font-family:var(--serif);font-weight:900;font-size:32px;margin:11px 0 3px;line-height:1.16;color:var(--accent-ink)}
+.hx .rd{font-size:var(--fs-md);color:var(--text-mid);letter-spacing:.08em}
+.hx .meta{margin-top:13px;display:flex;flex-wrap:wrap;gap:7px}
+.hx .meta .m{background:var(--card);border:1px solid var(--hair-2);border-radius:8px;
+  padding:6px 11px;font-size:var(--fs-md)}
+.hx .meta .m b{color:var(--text-mid);font-weight:500;margin-right:6px}
+.hx-quote{flex:1 1 240px;min-width:0;align-self:center;font-family:var(--serif);font-size:18px;
+  color:var(--accent-ink);border-left:3px solid var(--accent);padding:8px 0 8px 16px;line-height:1.65;white-space:pre-wrap}
+
+/* 三欄上區：角色設定 ｜ 能力值+點數 ｜ 共鳴+殘響 */
+.top3{display:grid;grid-template-columns:minmax(280px,1.15fr) minmax(210px,.85fr) minmax(230px,1fr);
+  gap:20px;align-items:start;margin-bottom:18px}
+/* 個資與喜歡／討厭：統一標籤＋內文格式 */
+.info-blocks{display:flex;flex-wrap:wrap;gap:14px 16px;margin-bottom:14px}
+.info-blocks .lk{flex:1 1 120px;min-width:110px}
+
+/* 角色設定：固定高度可捲動內容 */
+.scrollbox{max-height:132px;overflow-y:auto;padding-right:6px;
+  border:1px solid var(--hair);border-radius:8px;background:rgba(255,255,255,.42);padding:9px 11px;margin:0 0 14px}
+.scrollbox::-webkit-scrollbar{width:8px}
+.scrollbox::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.35);border-radius:8px}
+.scrollbox p{margin:0;white-space:pre-wrap;font-size:var(--fs-base);line-height:1.7}
+
+/* 燈箱 */
+.lightbox{position:fixed;inset:0;z-index:200;background:rgba(15,15,20,.86);
+  display:none;align-items:center;justify-content:center;padding:30px;cursor:zoom-out}
+.lightbox.show{display:flex}
+.lightbox img{max-width:min(92vw,820px);max-height:90vh;object-fit:contain;
+  border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+
+.skwide{margin-top:2px}
+/* 半透明底板：不完全遮擋背景浮水印 */
+.card{background:rgba(249,248,245,.74);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  border:1px solid var(--hair-2);border-radius:14px;padding:16px 17px;margin-bottom:18px}
+.top3 .card:last-child,.colB .card:last-child,.colC .card:last-child{margin-bottom:0}
+.card > h3{
+  font-family:var(--serif);font-size:var(--fs-md);font-weight:700;letter-spacing:.16em;
+  margin:0 0 13px;color:var(--text-mid);display:flex;align-items:center;gap:8px;
+}
+.card > h3::before{content:"";width:4px;height:14px;background:var(--accent);border-radius:2px;display:inline-block}
+
+/* abilities：單一圓角容器＋細線分隔，避免各格圓角露出底色白邊 */
+.abil{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair-2);
+  border:1px solid var(--hair-2);border-radius:10px;overflow:hidden}
+.ab{display:flex;align-items:center;justify-content:space-between;background:var(--card-2);padding:7px 11px}
+.ab .k{font-size:var(--fs-md);color:var(--text-mid)}
+.ab .v{font-family:var(--mono);font-weight:500;font-size:17px}
+.ab.luck{grid-column:1/-1;background:rgba(var(--accent-rgb),.12)}
+.hpmp{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin-top:9px;
+  background:var(--hair-2);border-radius:10px;overflow:hidden}
+.hpmp .b{padding:8px 12px;color:#fff;display:flex;align-items:baseline;justify-content:space-between}
+.hpmp .b.hp{background:#8a4b52}.hpmp .b.mp{background:#405a86}
+.hpmp .b .k{font-size:var(--fs-sm);letter-spacing:.1em;opacity:.92}
+.hpmp .b .v{font-family:var(--mono);font-weight:500;font-size:20px}
+/* 額外點數 */
+.pt-extra{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+.pt-x{display:flex;align-items:baseline;justify-content:space-between;background:rgba(255,255,255,.5);
+  border:1px solid var(--hair);border-radius:8px;padding:7px 11px}
+.pt-x .k{font-size:var(--fs-sm);color:var(--text-mid)}
+.pt-x .v{font-family:var(--mono);font-weight:500;font-size:var(--fs-md);color:var(--text)}
+
+/* point budgets */
+.pts{display:grid;gap:8px}
+.pt{background:var(--card-2);border:1px solid var(--hair);border-radius:8px;padding:8px 11px}
+.pt .row1{display:flex;justify-content:space-between;align-items:baseline}
+.pt .lab{font-size:var(--fs-md);color:var(--text-mid)}
+.pt .num{font-family:var(--mono);font-size:var(--fs-md)}
+.pt .num b{font-size:16px;color:var(--text)}
+.pt .num .over{color:var(--warn)}
+.pt .bar{height:6px;border-radius:4px;background:#dcd9cf;margin-top:7px;overflow:hidden}
+.pt .bar > i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.pt .bar > i.over{background:var(--warn)}
+.pt .hint{font-size:var(--fs-sm);color:var(--text-dim);margin-top:5px}
+.pt .hint.warn{color:var(--warn)}
+
+/* resonance emotions — signature */
+.reson{position:relative;padding-left:20px}
+.reson::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(var(--accent),rgba(var(--accent-rgb),.15))}
+.emo{position:relative;background:var(--card-2);border:1px solid var(--hair);border-radius:10px;
+  padding:9px 12px;margin-bottom:10px}
+.emo::before{content:"";position:absolute;left:-17px;top:16px;width:9px;height:9px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 3px var(--card)}
+.emo:last-child{margin-bottom:0}
+.emo .slot{font-size:var(--fs-sm);letter-spacing:.22em;color:var(--text-dim);font-weight:700}
+.emo .word{font-family:var(--serif);font-weight:700;font-size:19px;color:var(--accent-ink);margin-top:1px}
+.emo .cat{display:inline-block;margin-top:5px;font-size:var(--fs-sm);color:#fff;background:var(--accent);
+  border-radius:999px;padding:2px 9px;font-weight:700}
+.emo .desc{font-size:var(--fs-sm);color:var(--text-mid);margin-top:6px;line-height:1.5}
+
+/* skill list — 寬表格（欄位標題＋分區） */
+.sk-legend{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 14px;font-size:var(--fs-sm);color:var(--text-mid)}
+.sk-legend span{display:inline-flex;align-items:center;gap:5px}
+.sk-legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sk-wrap{overflow-x:auto}
+.sk-cols{display:grid;grid-template-columns:repeat(3,minmax(300px,1fr));gap:16px;align-items:start}
+.sk-col{display:grid;grid-template-columns:1fr 54px 63px 46px;align-content:start;
+  border:1px solid var(--hair-2);border-radius:10px;overflow:hidden;background:rgba(255,255,255,.42);font-size:var(--fs-md)}
+/* 欄位標題列 */
+.sk-h{background:var(--ink-3);color:#fff;font-family:var(--serif);font-weight:700;font-size:var(--fs-sm);
+  padding:7px 9px;display:flex;align-items:center;letter-spacing:.04em}
+.sk-h.c{justify-content:center;padding-left:0;padding-right:0}
+.sk-h.r{justify-content:flex-end}
+.sk-h-lv{background:var(--ink-3);color:#fff;font-family:var(--serif);font-weight:700;font-size:var(--fs-sm);
+  display:flex;align-items:center;justify-content:center;padding:7px 0;letter-spacing:.04em}
+/* 分區列（技能分類）：深底淺字，與可分配技能區別 */
+.sk-catbar{grid-column:1/-1;background:var(--ink-3);border-top:1px solid var(--ink-3);
+  font-family:var(--serif);font-weight:700;font-size:var(--fs-md);color:#fff;padding:6px 10px;letter-spacing:.06em}
+/* 技能格 */
+.sk-c{border-top:1px solid var(--hair-2);padding:5px 9px;display:flex;align-items:center;min-width:0;background:rgba(255,255,255,.30)}
+.sk-c.on{background:rgba(var(--accent-rgb),.07)}
+.sk-c.name{min-width:0}
+.sk-c.name .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.sk-c.name.on2 .nm{font-weight:700;color:var(--accent-ink)}
+.sk-c.name .mk{font-family:var(--mono);font-weight:700;letter-spacing:-.03em;white-space:pre}
+.sk-c.name .mk.main{color:var(--accent-ink)}
+.sk-c.name .mk.up{color:#a06a2c}
+.sk-c.name .fill{color:var(--text-mid);font-weight:400}
+.sk-c.ab{justify-content:flex-end;font-size:var(--fs-sm);color:var(--text-dim)}
+.sk-c.lv{justify-content:center;padding-left:0;padding-right:0}
+.sk-lv{display:flex;gap:3px}
+.sk-lv i{width:19px;height:19px;border-radius:4px;border:1px solid var(--hair-2);background:rgba(255,255,255,.6);
+  font-family:var(--mono);font-size:13px;line-height:17px;text-align:center;color:var(--text-dim)}
+.sk-lv i.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.sk-c.jd{justify-content:flex-end;font-family:var(--mono);font-weight:500;color:var(--text-dim)}
+.sk-c.jd.on{color:var(--accent-ink)}
+
+/* echo record */
+.echo table{width:100%;border-collapse:collapse;font-size:var(--fs-md)}
+.echo th{text-align:left;font-size:var(--fs-sm);letter-spacing:.1em;color:var(--text-dim);
+  font-weight:700;padding:6px 9px;border-bottom:1px solid var(--hair-2)}
+.echo td{padding:7px 9px;border-bottom:1px solid var(--hair)}
+.echo td:last-child,.echo th:last-child{text-align:center;width:66px}
+.echo .used{color:var(--accent-ink);font-weight:700}
+.echo .box{display:inline-block;width:15px;height:15px;border:1px solid var(--hair-2);border-radius:4px;vertical-align:-2px}
+.echo .box.on{background:var(--accent);border-color:var(--accent)}
+
+/* prose */
+.prose h4{font-size:var(--fs-sm);letter-spacing:.14em;color:var(--text-dim);font-weight:700;margin:0 0 5px}
+.prose p{margin:0 0 14px;white-space:pre-wrap;font-size:var(--fs-base);line-height:1.7}
+.prose .quote{font-family:var(--serif);font-size:17px;color:var(--accent-ink);border-left:3px solid var(--accent);
+  padding:4px 0 4px 14px;margin:2px 0 4px;line-height:1.6}
+.likes{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.likes .lk{flex:1;min-width:130px}
+
+/* empty */
+.empty{max-width:560px;margin:12vh auto;text-align:center;color:var(--text-mid)}
+.empty svg{width:52px;height:52px;color:var(--hair-2);margin-bottom:14px}
+.empty h2{font-family:var(--serif);font-size:22px;color:var(--text);margin:0 0 8px}
+.empty p{font-size:var(--fs-md);margin:0 0 6px}
+
+@media(max-width:1180px){
+  .top3{grid-template-columns:1fr 1fr}
+  .sk-cols{grid-template-columns:1fr 1fr}
+}
+@media(max-width:760px){
+  .side{position:fixed;left:0;top:0;z-index:60;transform:translateX(-100%);transition:transform .2s}
+  .app.nav-open .side{transform:none}
+  .app.nav-open::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50}
+  .menu-btn{display:inline-flex!important}
+  .top3{grid-template-columns:1fr}
+  .sk-cols{grid-template-columns:1fr}
+  .dh{flex-direction:column}
+  .watermark{display:none}
+}
+.menu-btn{display:none}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="side" id="side">
+    <div class="brand">
+      <p class="jp">エモクロア　EMO-KLORE</p>
+      <h1>角色名冊</h1>
+      <p class="sub">Resonance Character Archive</p>
+    </div>
+    <div class="searchwrap">
+      <input class="search" id="search" placeholder="搜尋　姓名・假名・職業・技能・感情…">
+    </div>
+    <button class="homebtn" id="homeBtn" aria-current="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      回到縮圖展示頁
+    </button>
+    <nav class="roster" id="roster"></nav>
+    <div class="side-foot" id="sideFoot">全 <b>0</b> 名</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="tb-btn menu-btn" id="menuBtn" aria-label="選單">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <button class="tb-btn primary" id="btnFolder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        載入資料夾
+      </button>
+      <button class="tb-btn" id="btnCsv">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        只載入角色 CSV
+      </button>
+      <button class="tb-btn" id="btnTpl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        下載 CSV 範本
+      </button>
+      <button class="tb-btn" id="btnExport">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 20h16"/></svg>
+        匯出純檢視網頁
+      </button>
+      <label class="tb-chk"><input type="checkbox" id="embedImgs"> 匯出時內嵌圖片</label>
+      <div class="tb-status" id="status">內建 2 名示範角色</div>
+    </div>
+    <div id="view"></div>
+  </div>
+</div>
+
+<input type="file" id="fileFolder" webkitdirectory directory multiple class="hidden">
+<input type="file" id="fileCsv" accept=".csv" class="hidden">
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()"><img src="" alt=""></div>
+
+<script id="app-data" type="application/json-lines">
+</script>
+<script id="app-script">
+/* ============ 內建 CSV（單一真相來源；開檔即載入） ============ */
+const CSV = {
+角色:`分類,PC姓名,拼音,PL,代表色,頭像,立繪,性別,年齡,職業,出身地,喜歡的東西,討厭的東西,身體,靈巧,精神,五感,智力,魅力,社會,運勢,額外能力點,額外技能點,表_感情,裏_感情,根源_感情,習得技能,殘響紀錄,背景故事,外貌,性格,台詞,差分
+Vestige 小隊,遊佐 敦史,ゆさ アツシ,洛雅,#696662,images/yusa.png,images/yusa_full.png,男,27,法醫,日本,解剖與觀察,被輕視,3,5,3,3,4,3,4,6,0,0,理性,佔有,庇護,"檢索|1||
+洞察|1||
+導航|2|靈巧|
+察覺危險|2|運勢|
+情報靈通|1|社會|
+業界|1|社會|警察
+特技|1|靈巧|
+社交術|1|社會|
+心理|1|智力|
+暗號|1||
+電腦|1||
+藏匿|1|運勢|
+醫術|2|靈巧|
+辯論|2|智力|","殺死萬聖節的方法|希望|否",醫生家庭的獨生子。求學過程發現比起醫治活人，對解剖更有興趣，最後就任法醫職務。認為解剖與解析可以觀察事物的本質。,黑髮黑眼，特徵三白眼。有照法醫，但由於娃娃臉的關係容易被誤判實際年齡而被輕視。,冷靜，會用多方面的觀點去觀察或評論事情，盡可能把握客觀的立場。很在意親友的心情與安危，如果有能幫上忙的地方會盡力而為。,「先別急著下結論，把看到的東西擺到桌上再說。」,images/yusa_v1.png;images/yusa_v2.png;images/yusa_v3.png
+Vestige 小隊,霧島 咲,きりしま さき,範例PL,#7a5c8e,,,女,22,大學生,日本,舊書店,說謊的人,2,4,5,4,4,4,2,5,0,0,純真,依存,戀慕,"洞察|1||
+觀察眼|1||
+聆聽|1||
+魅惑|1||
+社交術|1|社會|
+辯論|1|智力|
+心理|2|智力|
+藝術|1|靈巧|繪畫
+專業知識|1|智力|心理學
+靈感|1|運勢|","殺死萬聖節的方法|不安|否",在都市邊緣舊書店打工的大學生。總覺得自己缺了一塊，於是不停從別人身上尋找填補的方式。,及肩黑髮，眼神偏柔，常帶著一本翻到一半的書。,溫和易近人，卻對親近的人有強烈依賴。面對衝突傾向退讓，事後又反覆自責。,「你不要離開好不好……只要你在，我什麼都可以。」`,
+技能:`分類,技能名,主技,上位,預設能力,能力可變,可自填
+調查技能,調查,是,否,靈巧,否,否
+調查技能,檢索,否,否,智力,否,否
+調查技能,洞察,否,否,智力,否,否
+調查技能,導航,否,否,靈巧,是,否
+調查技能,直覺,否,否,精神,否,否
+調查技能,鑑定,否,否,智力,是,否
+感知技能,感知,是,否,五感,否,否
+感知技能,觀察眼,否,否,五感,否,否
+感知技能,聆聽,否,否,五感,否,否
+感知技能,嗅味,否,否,五感,否,否
+感知技能,察覺危險,否,否,運勢,是,否
+感知技能,靈感,否,是,運勢,是,否
+情報技能,知識,是,否,智力,否,否
+情報技能,專業知識,否,否,智力,是,是
+情報技能,專業知識,否,否,智力,是,是
+情報技能,時事,是,否,社會,否,否
+情報技能,情報靈通,否,否,社會,是,否
+情報技能,業界,否,否,社會,是,是
+情報技能,業界,否,否,社會,是,是
+運動技能,運動,是,否,身體,否,否
+運動技能,速度,否,否,身體,否,否
+運動技能,堅韌,否,否,身體,否,否
+運動技能,特技,否,否,靈巧,是,否
+運動技能,俯衝,否,否,身體,否,否
+運動技能,格鬥,是,否,身體,否,否
+運動技能,武術,否,否,身體,否,否
+運動技能,奧義,否,是,身體,是,是
+運動技能,投擲,是,否,靈巧,否,否
+運動技能,射擊,否,是,靈巧,是,是
+生存技能,生存,是,否,身體,否,否
+生存技能,耐久,否,否,身體,否,否
+生存技能,自我,是,否,精神,否,否
+生存技能,毅力,否,否,精神,否,否
+生存技能,緊急處置,是,否,智力,否,否
+生存技能,醫術,否,否,靈巧,是,否
+生存技能,心肺復甦,否,是,智力,是,否
+交涉技能,交涉,是,否,魅力,否,否
+交涉技能,社交術,否,否,社會,否,否
+交涉技能,辯論,否,否,智力,是,否
+交涉技能,魅惑,否,否,魅力,否,否
+交涉技能,心理,否,否,智力,是,否
+特殊技能,細工,是,否,靈巧,否,否
+特殊技能,藝術,否,否,靈巧,是,是
+特殊技能,藝術,否,否,靈巧,是,是
+特殊技能,藝術,否,否,靈巧,是,是
+特殊技能,操縱,否,否,靈巧,是,是
+特殊技能,操縱,否,否,靈巧,是,是
+特殊技能,操縱,否,否,靈巧,是,是
+特殊技能,暗號,否,否,智力,否,否
+特殊技能,電腦,否,否,智力,否,否
+特殊技能,藏匿,否,否,運勢,是,否
+特殊技能,幸運,是,否,運勢,否,否
+特殊技能,超好運,否,是,運勢,否,否`,
+共鳴感情:`分類,感情,說明
+慾望,佔有,想將對象徹底納為己有的渴求。
+慾望,支配,想依自己意志掌控對象的衝動。
+慾望,依存,無法離開對象、將自身託付於對方。
+慾望,憧憬,想成為、想接近那道光的嚮往。
+慾望,貪婪,永不饜足、想要更多的索求。
+慾望,執著,無論如何都不肯放手的固著。
+情緒,喜悅,由衷湧現的歡快與滿足。
+情緒,憤怒,被冒犯或不義激起的火。
+情緒,悲傷,失去與缺憾帶來的沉重。
+情緒,恐懼,面對威脅時的退縮與顫慄。
+情緒,焦躁,難以平息、坐立難安的躁動。
+情緒,安心,緊繃鬆開後的踏實與平靜。
+情緒,嫉妒,見他人所有而心生的酸楚。
+理想,理性,以冷靜與邏輯把握事物本質。
+理想,正義,對是非對錯不肯妥協的堅持。
+理想,純真,不受污染、如初的信念。
+理想,自由,不願被束縛、追求自主的意志。
+理想,使命,自認必須完成之事的責任感。
+理想,奉獻,願為他者傾盡自身的心意。
+關係,庇護,想保護、想成為對方依靠的心。
+關係,信賴,相信對方、把背後交給對方。
+關係,友情,平等相待、並肩而行的情誼。
+關係,戀慕,想更靠近、心動不已的愛意。
+關係,從屬,甘願追隨、聽從對方的立場。
+關係,對等,彼此不高不低、互為映照。
+心傷,喪失,重要之物被奪走後留下的空洞。
+心傷,背叛,被信任者傷害後的裂痕。
+心傷,孤獨,無人理解、被世界遺落的冷。
+心傷,罪惡感,無法原諒自己的沉重烙印。
+心傷,無力,再怎麼努力也改變不了的挫敗。
+心傷,憎恨,難以熄滅、指向某人的恨意。`
+};
+
+/* ============ 常數 ============ */
+const ABILS = ["身體","靈巧","精神","五感","智力","魅力","社會"];
+const ABIL_BUDGET = 25, SKILL_BUDGET = 30;
+const COST_NORMAL = {1:1,2:5,3:15};
+const COST_UPPER  = {1:2,2:10,3:30};
+const SK_CAT_ORDER = ["調查技能","感知技能","情報技能","運動技能","生存技能","交涉技能","特殊技能"];
+// 技能列表：三直欄，每欄由上而下堆疊分類（「自填技能」彙整可自填技能，接在特殊技能之下）
+const SK_COLUMNS = [
+  ["調查技能","感知技能","情報技能"],
+  ["運動技能","生存技能","交涉技能"],
+  ["特殊技能","自填技能"]
+];
+function skillDispCat(s){ return s.可自填 ? "自填技能" : s.分類; }
+
+/* ============ CSV parser（支援引號內換行） ============ */
+function parseCSV(text){
+  text = text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c==='"'){ if(text[i+1]==='"'){cell+='"';i++;} else q=false; }
+      else cell+=c;
+    }else{
+      if(c==='"') q=true;
+      else if(c===','){ row.push(cell); cell=''; }
+      else if(c==='\n'){ row.push(cell); rows.push(row); row=[]; cell=''; }
+      else cell+=c;
+    }
+  }
+  if(cell!==''||row.length){ row.push(cell); rows.push(row); }
+  if(!rows.length) return [];
+  const head=rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.some(x=>x.trim()!=='')).map(r=>{
+    const o={}; head.forEach((h,i)=>o[h]=(r[i]??'').trim()); return o;
+  });
+}
+
+/* ============ 資料狀態 ============ */
+let CHARS=[], SKILLS=[], EMOS=[], IMG={};
+function emoCat(word){ const m=EMOS.find(e=>e.感情===word); return m?m.分類:''; }
+function emoDesc(word){ const m=EMOS.find(e=>e.感情===word); return m?m.說明:''; }
+
+function loadData(csvChar, csvSkill, csvEmo){
+  if(csvSkill!=null) SKILLS = parseCSV(csvSkill);
+  if(csvEmo!=null)   EMOS   = parseCSV(csvEmo);
+  if(csvChar!=null)  CHARS  = parseCSV(csvChar);
+}
+loadData(CSV.角色, CSV.技能, CSV.共鳴感情);
+
+/* ============ 色彩工具 ============ */
+function hexToRgb(hex){
+  hex=(hex||'').trim().replace('#',''); if(hex.length===3) hex=hex.split('').map(c=>c+c).join('');
+  const n=parseInt(hex||'696662',16); return [(n>>16)&255,(n>>8)&255,n&255];
+}
+function lum(rgb){ return (0.2126*rgb[0]+0.7152*rgb[1]+0.0722*rgb[2])/255; }
+function darken(rgb,f){ return rgb.map(v=>Math.round(v*(1-f))); }
+function inkFor(rgb){ let c=rgb.slice(); while(lum(c)>0.42) c=darken(c,0.16); return c; }
+function setAccent(hex){
+  const rgb=hexToRgb(hex||'#696662'); const ink=inkFor(rgb);
+  const r=document.documentElement.style;
+  r.setProperty('--accent',`rgb(${rgb.join(',')})`);
+  r.setProperty('--accent-rgb',rgb.join(','));
+  r.setProperty('--accent-ink',`rgb(${ink.join(',')})`);
+}
+
+/* ============ 技能等級與點數計算 ============ */
+// 解析角色「習得技能」多列 → [{名,等級,能力,自填}]
+function parseLearned(str){
+  return (str||'').split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
+    const p=line.split('|');
+    return {名:(p[0]||'').trim(), 等級:parseInt(p[1]||'0',10)||0, 能力:(p[2]||'').trim(), 自填:(p[3]||'').trim()};
+  }).filter(x=>x.名);
+}
+// 把技能表 join 角色習得 → 產生 slots（每列一項，含等級/能力/判定值）
+function buildSkillSlots(ch){
+  const learned = parseLearned(ch.習得技能);
+  const slots = SKILLS.map((s,idx)=>({
+    idx, 分類:s.分類, 技能名:s.技能名,
+    主技:s.主技==='是', 上位:s.上位==='是',
+    能力可變:s.能力可變==='是', 可自填:s.可自填==='是',
+    預設能力:s.預設能力||'', 能力:s.預設能力||'', 自填:'', 等級:0
+  }));
+  // 基本技能（*）自動 LV1（免費）
+  slots.forEach(s=>{ if(s.主技) s.等級=1; });
+  // 依技能名分組套用習得
+  const byName={};
+  slots.forEach(s=>{ (byName[s.技能名]=byName[s.技能名]||[]).push(s); });
+  const usedFill={};
+  learned.forEach(L=>{
+    const group=byName[L.名]; if(!group) return;
+    // 可自填技能：依序填入同名空欄
+    if(group[0].可自填){
+      const k=L.名; usedFill[k]=usedFill[k]||0;
+      const slot=group[usedFill[k]]; usedFill[k]++;
+      if(slot){ slot.等級=L.等級||1; slot.自填=L.自填||''; if(L.能力) slot.能力=L.能力; }
+    }else{
+      const slot=group[0];
+      slot.等級=Math.max(slot.等級, L.等級||1);
+      if(L.能力) slot.能力=L.能力;
+    }
+  });
+  return slots;
+}
+function abilVal(ch, key){ // 能力值（含運勢）
+  const v=parseInt(ch[key]||'0',10); return isNaN(v)?0:v;
+}
+function judge(ch, slot){ return abilVal(ch, slot.能力||slot.預設能力) + (slot.等級||0); }
+function slotCost(slot){
+  const lv=slot.等級||0; if(!lv) return 0;
+  if(slot.主技 && lv===1) return 0;           // 基本技能 LV1 免費
+  return (slot.上位?COST_UPPER:COST_NORMAL)[lv]||0;
+}
+function abilUsed(ch){ return ABILS.reduce((a,k)=>a+abilVal(ch,k),0); }
+function skillUsed(ch, slots){ return (slots||buildSkillSlots(ch)).reduce((a,s)=>a+slotCost(s),0); }
+function hp(ch){ return abilVal(ch,'身體')+10; }
+function mp(ch){ return abilVal(ch,'精神')+abilVal(ch,'智力'); }
+
+/* ============ 影像 ============ */
+function imgSrc(path){
+  if(!path) return null;
+  if(/^(https?:|data:)/i.test(path)) return path;
+  const base=path.split('/').pop();
+  return IMG[path]||IMG[base]||null;
+}
+function initColor(ch){ const rgb=hexToRgb(ch.代表色); return `rgb(${rgb.join(',')})`; }
+// 頭像載入失敗 → 移除破圖、顯示首字色塊
+function porFail(img){ img.style.display='none'; const b=img.parentNode&&img.parentNode.querySelector('.init'); if(b) b.style.display='flex'; }
+// 差分載入失敗 → 移除該縮圖；若整區空了就隱藏差分區
+function diffFail(img){
+  const t=img.closest('.diff-thumb'), grid=t&&t.parentNode;
+  if(t) t.remove();
+  if(grid && !grid.querySelector('.diff-thumb')){ const wrap=grid.closest('.diffs'); if(wrap) wrap.style.display='none'; }
+}
+function openLightbox(src){ const lb=document.getElementById('lightbox'); if(!lb) return; lb.querySelector('img').src=src; lb.classList.add('show'); }
+function closeLightbox(){ const lb=document.getElementById('lightbox'); if(lb){ lb.classList.remove('show'); lb.querySelector('img').src=''; } }
+
+/* ============ 描繪：縮圖展示頁 ============ */
+const view=document.getElementById('view');
+const roster=document.getElementById('roster');
+let current=-1, filterStr='', PORCAR=[];
+
+function matchChar(ch){
+  if(!filterStr) return true;
+  const hay=[ch.PC姓名,ch.拼音,ch.職業,ch.分類,ch.PL,ch.表_感情,ch.裏_感情,ch.根源_感情,ch.習得技能].join(' ').toLowerCase();
+  return hay.includes(filterStr.toLowerCase());
+}
+function groupByCat(list){
+  const g={},order=[];
+  list.forEach(o=>{ const k=o.ch.分類||'未分類'; if(!g[k]){g[k]=[];order.push(k);} g[k].push(o); });
+  return order.map(k=>({cat:k,items:g[k]}));
+}
+function renderGallery(){
+  current=-1; document.getElementById('homeBtn').setAttribute('aria-current','true');
+  setAccent('#696662');
+  const list=CHARS.map((ch,i)=>({ch,i})).filter(o=>matchChar(o.ch));
+  if(!CHARS.length){ renderEmpty(); renderRoster(); return; }
+  const groups=groupByCat(list);
+  let html=`<div class="gallery"><div class="g-head"><div class="eye">CHARACTER ARCHIVE</div>`+
+    `<h2>角色一覽</h2><p>全 ${list.length} 名${filterStr?`　·　符合「${esc(filterStr)}」`:''}</p></div>`;
+  groups.forEach(g=>{
+    html+=`<div class="g-cat"><div class="g-cat-h"><span>${esc(g.cat)}</span><em>${g.items.length} 名</em></div><div class="g-grid">`;
+    g.items.forEach(o=>{
+      const ch=o.ch, acc=initColor(ch), src=imgSrc(ch.頭像);
+      const ph = src? `<img src="${esc(src)}" alt="">` :
+        `<div class="init" style="background:${acc}">${esc((ch.PC姓名||'？')[0])}</div>`;
+      html+=`<button class="g-card" style="--gc-acc:${acc}" data-i="${o.i}">`+
+        `<div class="ph">${ph}</div><div class="cap">`+
+        `<div class="nm">${esc(ch.PC姓名)}</div>`+
+        `<div class="rd">${esc(ch.拼音||'')}</div>`+
+        `<div class="jb">${esc([ch.職業,ch.年齡?ch.年齡+'歲':''].filter(Boolean).join('　·　'))}</div>`+
+        `</div></button>`;
+    });
+    html+=`</div></div>`;
+  });
+  html+=`</div>`;
+  view.innerHTML=html;
+  view.querySelectorAll('.g-card').forEach(b=>b.onclick=()=>openChar(+b.dataset.i));
+  renderRoster();
+}
+function renderEmpty(){
+  view.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`+
+    `<h2>尚未載入角色</h2><p>按上方「載入資料夾」選擇整個 <b>emoklore-database</b> 資料夾，</p><p>或「只載入角色 CSV」單獨載入 <b>角色.csv</b>。</p></div>`;
+}
+
+/* ============ 描繪：側欄清單 ============ */
+function renderRoster(){
+  const list=CHARS.map((ch,i)=>({ch,i})).filter(o=>matchChar(o.ch));
+  document.getElementById('sideFoot').innerHTML=`全 <b>${list.length}</b> 名`;
+  const groups=groupByCat(list);
+  let html='';
+  groups.forEach(g=>{
+    html+=`<div class="grp-h">${esc(g.cat)}</div>`;
+    g.items.forEach(o=>{
+      const ch=o.ch, acc=initColor(ch), src=imgSrc(ch.頭像);
+      const av=src?`<img class="av" src="${esc(src)}" alt="">`:
+        `<span class="av" style="background:${acc}">${esc((ch.PC姓名||'？')[0])}</span>`;
+      html+=`<button class="pc" data-i="${o.i}" ${o.i===current?'aria-current="true"':''}>`+
+        `${av}<span class="tx"><span class="nm">${esc(ch.PC姓名)}</span>`+
+        `<span class="rd">${esc(ch.職業||ch.拼音||'')}</span></span></button>`;
+    });
+  });
+  roster.innerHTML=html;
+  roster.querySelectorAll('.pc').forEach(b=>b.onclick=()=>openChar(+b.dataset.i));
+}
+
+/* ============ 描繪：詳情頁 ============ */
+function openChar(i){
+  current=i; const ch=CHARS[i]; if(!ch) return;
+  setAccent(ch.代表色);
+  document.getElementById('homeBtn').setAttribute('aria-current','false');
+  document.getElementById('app').classList.remove('nav-open');
+  view.innerHTML=renderDetail(ch);
+  // 頭像輪播：左右箭頭切換、點圖放大
+  const por=view.querySelector('.por');
+  if(por){
+    const setImg=i=>{ const im=por.querySelector('.por-img'); if(im){ im.style.display=''; im.src=PORCAR[i]; } const ini=por.querySelector('.init'); if(ini) ini.style.display='none'; por.dataset.idx=i; };
+    const img=por.querySelector('.por-img');
+    if(img) img.onclick=()=>{ const i=+(por.dataset.idx||0); openLightbox(PORCAR[i]||img.src); };
+    por.querySelectorAll('.por-nav').forEach(btn=>{
+      btn.onclick=e=>{ e.stopPropagation(); if(PORCAR.length<2) return;
+        let i=(+(por.dataset.idx||0))+(+btn.dataset.dir);
+        i=(i%PORCAR.length+PORCAR.length)%PORCAR.length; setImg(i);
+      };
+    });
+  }
+  // 檢視全身圖
+  const fb=view.querySelector('.fullbtn');
+  if(fb) fb.onclick=()=>{ const f=fb.getAttribute('data-full'); if(f) openLightbox(f); };
+  renderRoster();
+  const cur=roster.querySelector('.pc[aria-current="true"]'); if(cur&&cur.scrollIntoView) cur.scrollIntoView({block:'nearest'});
+  window.scrollTo(0,0);
+}
+
+function ptBar(used,budget){
+  const over=used>budget, pct=Math.min(100, budget?used/budget*100:0);
+  return `<div class="bar"><i class="${over?'over':''}" style="width:${pct}%"></i></div>`;
+}
+function renderDetail(ch){
+  const slots=buildSkillSlots(ch);
+  const aUsed=abilUsed(ch), aBud=ABIL_BUDGET+(parseInt(ch.額外能力點||'0',10)||0);
+  const sUsed=skillUsed(ch,slots), sBud=SKILL_BUDGET+(parseInt(ch.額外技能點||'0',10)||0);
+  const acc=initColor(ch);
+  // 頭像輪播影像集：頭像 ＋ 差分（分隔符：換行／分號／逗號）；無法解析者略過，不破圖
+  const diffs=(ch.差分||'').split(/[\n;；,，]/).map(s=>s.trim()).filter(Boolean).map(p=>imgSrc(p)).filter(Boolean);
+  const carImgs=[imgSrc(ch.頭像), ...diffs].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
+  PORCAR=carImgs;
+  const fullSrc=imgSrc(ch.立繪);
+  const first=carImgs[0]||null;
+  const por =
+    (first?`<img class="por-img" src="${esc(first)}" alt="" onerror="porFail(this)">`:'')+
+    `<div class="init" style="${first?'display:none;':''}background:${acc}">${esc((ch.PC姓名||'？')[0])}</div>`+
+    (carImgs.length>1?`<button class="por-nav prev" data-dir="-1" aria-label="上一張">‹</button><button class="por-nav next" data-dir="1" aria-label="下一張">›</button>`:'');
+  const wm = fullSrc?`<div class="watermark"><img src="${esc(fullSrc)}" alt="" onerror="this.parentNode.style.display='none'"></div>`:'';
+
+  // 身分列只保留 PL；性別/年齡/職業/出身地 併入能力值區
+  const meta=[['PL',ch.PL]].filter(m=>m[1]).map(m=>`<span class="m"><b>${m[0]}</b>${esc(m[1])}</span>`).join('');
+  const profileBlocks=[['性別',ch.性別],['年齡',ch.年齡?ch.年齡+' 歲':''],['職業',ch.職業],['出身地',ch.出身地]]
+    .filter(m=>m[1]).map(m=>`<div class="lk"><h4>${m[0]}</h4><p>${esc(m[1])}</p></div>`).join('');
+
+  // 能力
+  const abilHtml=ABILS.map(k=>`<div class="ab"><span class="k">${k}</span><span class="v">${abilVal(ch,k)}</span></div>`).join('')
+    +`<div class="ab luck"><span class="k">運勢</span><span class="v">${abilVal(ch,'運勢')}</span></div>`;
+
+  // 點數
+  const xAbil=parseInt(ch.額外能力點||'0',10)||0, xSkill=parseInt(ch.額外技能點||'0',10)||0;
+  const aOver=aUsed>aBud, sOver=sUsed>sBud;
+  const ptsHtml=
+    `<div class="pt"><div class="row1"><span class="lab">能力點</span>`+
+      `<span class="num"><b class="${aOver?'over':''}">${aUsed}</b> / ${aBud}</span></div>`+
+      ptBar(aUsed,aBud)+
+      `<div class="hint ${aOver?'warn':''}">剩餘 ${aBud-aUsed} 點${aOver?'（已超出）':''}</div></div>`+
+    `<div class="pt"><div class="row1"><span class="lab">技能點</span>`+
+      `<span class="num"><b class="${sOver?'over':''}">${sUsed}</b> / ${sBud}</span></div>`+
+      ptBar(sUsed,sBud)+
+      `<div class="hint ${sOver?'warn':''}">剩餘 ${sBud-sUsed} 點${sOver?'（已超出）':''}　·　＊基本技能 LV1 免費</div></div>`+
+    `<div class="pt-extra">`+
+      `<div class="pt-x"><span class="k">額外能力點</span><span class="v">${xAbil}</span></div>`+
+      `<div class="pt-x"><span class="k">額外技能點</span><span class="v">${xSkill}</span></div>`+
+    `</div>`;
+
+  // 共鳴感情
+  const emoHtml=[['表',ch.表_感情],['裏',ch.裏_感情],['根源',ch.根源_感情]].map(([slot,raw])=>{
+    if(!raw) return '';
+    let word=raw, cat='';
+    if(/[／/]/.test(raw)){ const p=raw.split(/[／/]/); word=p[0].trim(); cat=(p[1]||'').trim(); }
+    if(!cat) cat=emoCat(word);
+    const d=emoDesc(word);
+    return `<div class="emo"><div class="slot">${slot}</div><div class="word">${esc(word)}</div>`+
+      (cat?`<span class="cat">${esc(cat)}</span>`:'')+(d?`<div class="desc">${esc(d)}</div>`:'')+`</div>`;
+  }).join('');
+
+  // 技能列表（signature）
+  const skHtml=renderSkillList(ch, slots);
+
+  // 殘響
+  const echo=(ch.殘響紀錄||'').split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
+    const p=line.split('|'); return {劇本:(p[0]||'').trim(),感情:(p[1]||'').trim(),消費:/^(是|v|✓|1|true)$/i.test((p[2]||'').trim())};
+  });
+  const echoHtml = echo.length? `<div class="card echo"><h3>殘響紀錄</h3><table><thead><tr><th>劇本名</th><th>感情</th><th>消費</th></tr></thead><tbody>`+
+    echo.map(e=>`<tr><td>${esc(e.劇本)}</td><td class="${e.消費?'used':''}">${esc(e.感情)}</td><td><span class="box ${e.消費?'on':''}"></span></td></tr>`).join('')+
+    `</tbody></table></div>` : '';
+
+  // 個資＋喜歡／討厭：統一標籤格式
+  const infoItems=profileBlocks+
+    (ch.喜歡的東西?`<div class="lk"><h4>喜歡的東西</h4><p>${esc(ch.喜歡的東西)}</p></div>`:'')+
+    (ch.討厭的東西?`<div class="lk"><h4>討厭的東西</h4><p>${esc(ch.討厭的東西)}</p></div>`:'');
+  const infoHtml=infoItems?`<div class="info-blocks">${infoItems}</div>`:'';
+  const hasProse = !!(ch.背景故事||ch.外貌||ch.性格);
+  const hasSettings = !!(infoItems||hasProse);
+  const settingsHtml=`<div class="card prose"><h3>角色設定</h3>`+infoHtml+
+    (ch.背景故事?`<h4>背景故事</h4><div class="scrollbox"><p>${esc(ch.背景故事)}</p></div>`:'')+
+    (ch.外貌?`<h4>外貌</h4><div class="scrollbox"><p>${esc(ch.外貌)}</p></div>`:'')+
+    (ch.性格?`<h4>性格</h4><div class="scrollbox"><p>${esc(ch.性格)}</p></div>`:'')+`</div>`;
+
+  // 標題列：頭像輪播（下方固定保留「檢視全身圖」位）｜ 身分＋台詞
+  const dh=`<div class="dh">`+
+    `<div class="por-col"><div class="por" data-idx="0">${por}</div>`+
+      `<div class="fullbtn-slot">`+(fullSrc?`<button class="fullbtn" data-full="${esc(fullSrc)}">檢視全身圖</button>`:'')+`</div>`+
+    `</div>`+
+    `<div class="hx">`+
+      `<div class="idb">`+
+        (ch.分類?`<span class="cat">${esc(ch.分類)}</span>`:'')+
+        `<h2>${esc(ch.PC姓名)}</h2><div class="rd">${esc(ch.拼音||'')}</div>`+
+        (meta?`<div class="meta">${meta}</div>`:'')+
+      `</div>`+
+      (ch.台詞?`<div class="hx-quote">${esc(ch.台詞)}</div>`:'')+
+    `</div></div>`;
+
+  // 能力值（個資已移至角色設定）
+  const abilCard=`<div class="card"><h3>能力值</h3>`+
+    `<div class="abil">${abilHtml}</div>`+
+    `<div class="hpmp"><div class="b hp"><span class="k">HP</span><span class="v">${hp(ch)}</span></div>`+
+    `<div class="b mp"><span class="k">MP</span><span class="v">${mp(ch)}</span></div></div></div>`;
+  const ptsCard=`<div class="card"><h3>可分配點數</h3><div class="pts">${ptsHtml}</div></div>`;
+  const emoCard=emoHtml?`<div class="card"><h3>共鳴感情</h3><div class="reson">${emoHtml}</div></div>`:'';
+
+  return `<div class="sheet">`+ wm + dh +
+    `<div class="top3">`+
+      `<div class="colA">`+(hasSettings?settingsHtml:'')+`</div>`+
+      `<div class="colB">`+abilCard+ptsCard+`</div>`+
+      `<div class="colC">`+emoCard+echoHtml+`</div>`+
+    `</div>`+
+    `<div class="skwide"><div class="card"><h3>技能列表</h3>`+skillLegend()+skHtml+`</div></div>`+
+  `</div>`;
+}
+
+function skillLegend(){
+  return `<div class="sk-legend">`+
+    `<span><span class="sw" style="background:var(--accent)"></span>已習得</span>`+
+    `<span><span class="mk main" style="color:var(--accent-ink);font-weight:700">＊</span>基本技能（LV1 免費）</span>`+
+    `<span><span class="mk up" style="color:#a06a2c;font-weight:700">★</span>上位技能（點數 ×2）</span>`+
+    `<span>數字＝判定值（能力＋等級）</span></div>`;
+}
+function renderSkillList(ch, slots){
+  const byCat={};
+  slots.forEach(s=>{ const c=skillDispCat(s); (byCat[c]=byCat[c]||[]).push(s); });
+  const header=
+    `<div class="sk-h">技能名稱</div>`+
+    `<div class="sk-h c">能力值</div>`+
+    `<div class="sk-h-lv">技能等級</div>`+
+    `<div class="sk-h c">判定值</div>`;
+  const rowsFor=cat=>{
+    const rows=byCat[cat]||[];
+    let h=`<div class="sk-catbar">${esc(cat)}</div>`;
+    if(!rows.length){ h+=`<div class="sk-c name" style="grid-column:1/-1;color:var(--text-dim)">（無）</div>`; return h; }
+    rows.forEach(s=>{
+      const on=s.等級>0;
+      // ＊基本／★上位緊貼名稱；一般技能前置一個全形空白以對齊
+      const mk = s.上位?`<span class="mk up">★</span>`:(s.主技?`<span class="mk main">＊</span>`:`<span class="mk">　</span>`);
+      let name=esc(s.技能名);
+      if(s.可自填){ name+=`：<span class="fill">${s.自填?esc(s.自填):'———'}</span>`; }
+      const ab = s.能力可變 ? (s.能力||s.預設能力) : s.預設能力;
+      const pips=[1,2,3].map(l=>`<i class="${s.等級===l?'on':''}">${l}</i>`).join('');
+      h+=`<div class="sk-c name${on?' on on2':''}"><span class="nm">${mk}${name}</span></div>`+
+         `<div class="sk-c ab${on?' on':''}">${esc(ab||'')}</div>`+
+         `<div class="sk-c lv${on?' on':''}"><div class="sk-lv">${pips}</div></div>`+
+         `<div class="sk-c jd${on?' on':''}">${judge(ch,s)}</div>`;
+    });
+    return h;
+  };
+  let cols=`<div class="sk-wrap"><div class="sk-cols">`;
+  SK_COLUMNS.forEach(col=>{
+    cols+=`<div class="sk-col">`+header+col.map(rowsFor).join('')+`</div>`;
+  });
+  cols+=`</div></div>`;
+  return cols;
+}
+
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ============ 事件 ============ */
+document.getElementById('search').addEventListener('input',e=>{
+  filterStr=e.target.value.trim();
+  if(current>=0 && !matchChar(CHARS[current])){ renderGallery(); }
+  else if(current>=0){ renderRoster(); }
+  else renderGallery();
+});
+const $=id=>document.getElementById(id);
+const bind=(id,ev,fn)=>{const el=$(id);if(el)el.addEventListener(ev,fn);};
+bind('homeBtn','click',()=>{ renderGallery(); try{window.scrollTo(0,0);}catch(e){} });
+bind('menuBtn','click',()=>$('app').classList.toggle('nav-open'));
+bind('btnFolder','click',()=>$('fileFolder')&&$('fileFolder').click());
+bind('btnCsv','click',()=>$('fileCsv')&&$('fileCsv').click());
+
+bind('fileCsv','change',async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const txt=await f.text(); loadData(txt,null,null);
+  status(`已載入角色 CSV：${CHARS.length} 名`); renderGallery();
+  e.target.value='';
+});
+bind('fileFolder','change',async e=>{
+  const files=[...e.target.files]; if(!files.length) return;
+  let cChar=null,cSkill=null,cEmo=null; IMG={};
+  for(const f of files){
+    const name=f.name, low=name.toLowerCase(), rel=(f.webkitRelativePath||name);
+    if(low.endsWith('.csv')){
+      const t=await f.text();
+      if(name.includes('角色')||low.includes('char')) cChar=t;
+      else if(name.includes('技能')||low.includes('skill')) cSkill=t;
+      else if(name.includes('共鳴')||name.includes('感情')||low.includes('emo')) cEmo=t;
+    }else if(/\.(png|jpe?g|gif|webp|svg|avif)$/i.test(low)){
+      const url=await fileToDataURL(f);
+      IMG[name]=url;
+      const parts=rel.split('/'); const short=parts.slice(-2).join('/'); IMG[short]=url; IMG['images/'+name]=url;
+    }
+  }
+  loadData(cChar,cSkill,cEmo);
+  status(`已載入資料夾：${CHARS.length} 名角色・${Object.keys(IMG).length?'含圖片':'無圖片'}`);
+  renderGallery(); e.target.value='';
+});
+function fileToDataURL(f){return new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f);});}
+function status(t){document.getElementById('status').textContent=t;}
+
+/* 下載 CSV 範本（三檔） */
+bind('btnTpl','click',()=>{
+  dl('角色.csv', currentCharCSV());
+  dl('技能.csv', CSV.技能);
+  dl('共鳴感情.csv', CSV.共鳴感情);
+  status('已下載 CSV 範本（角色／技能／共鳴感情）');
+});
+function currentCharCSV(){
+  const head=["分類","PC姓名","拼音","PL","代表色","頭像","立繪","性別","年齡","職業","出身地","喜歡的東西","討厭的東西","身體","靈巧","精神","五感","智力","魅力","社會","運勢","額外能力點","額外技能點","表_感情","裏_感情","根源_感情","習得技能","殘響紀錄","背景故事","外貌","性格","台詞","差分"];
+  const esc=v=>{v=(v==null?'':String(v)); return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  return head.join(',')+'\n'+CHARS.map(c=>head.map(h=>esc(c[h])).join(',')).join('\n');
+}
+function dl(name,text){
+  const b=new Blob(['\uFEFF'+text],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),500);
+}
+
+/* 匯出純檢視網頁 */
+bind('btnExport','click',()=>{
+  const embed=$('embedImgs')?$('embedImgs').checked:false;
+  const doc=document.documentElement.cloneNode(true);
+  // 注入資料
+  const data={角色:currentCharCSV(),技能:SKILLS_asCSV(),共鳴感情:EMOS_asCSV(),IMG: embed?IMG:{}};
+  const dataScript=doc.querySelector('#app-data');
+  dataScript.textContent=JSON.stringify(data);
+  dataScript.setAttribute('data-mode','viewer');
+  // 移除工具列的編輯按鈕、隱藏 input
+  ['btnFolder','btnCsv','btnTpl','btnExport'].forEach(id=>{const el=doc.querySelector('#'+id);if(el)el.remove();});
+  const chk=doc.querySelector('.tb-chk'); if(chk) chk.remove();
+  const foot=doc.querySelector('#status'); if(foot) foot.textContent='純檢視版';
+  const sfoot=doc.querySelector('#sideFoot'); // keep
+  // 標記側欄底部
+  const html='<!DOCTYPE html>\n'+doc.outerHTML;
+  const b=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='emoklore-character-viewer.html';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),800);
+  status('已匯出純檢視網頁'+(embed?'（含內嵌圖片）':'（相對路徑，需與 images 同放）'));
+});
+function SKILLS_asCSV(){
+  const head=["分類","技能名","主技","上位","預設能力","能力可變","可自填"];
+  return head.join(',')+'\n'+SKILLS.map(s=>head.map(h=>s[h]??'').join(',')).join('\n');
+}
+function EMOS_asCSV(){
+  const head=["分類","感情","說明"];
+  const esc=v=>{v=(v==null?'':String(v));return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  return head.join(',')+'\n'+EMOS.map(e=>head.map(h=>esc(e[h])).join(',')).join('\n');
+}
+
+/* ============ 純檢視模式啟動 ============ */
+(function initViewer(){
+  const ds=document.getElementById('app-data');
+  if(ds && ds.getAttribute('data-mode')==='viewer'){
+    try{
+      const data=JSON.parse(ds.textContent||'{}');
+      IMG=data.IMG||{};
+      loadData(data.角色, data.技能, data.共鳴感情);
+      const sf=document.getElementById('sideFoot');
+    }catch(err){console.error(err);}
+  }
+})();
+
+renderGallery();
+</script>
+</body>
+</html>
