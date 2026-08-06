@@ -298,7 +298,7 @@ img{display:block}
   display:flex;gap:8px;flex-wrap:nowrap;              /* 不換行 */
   max-width:412px;                                     /* 約 5 格；第 6 格起水平捲動 */
   overflow-x:auto;overflow-y:hidden;
-  padding-bottom:6px;                                  /* 留給捲軸，避免蓋到縮圖 */
+  padding:6px 0;                                       /* 上：容納 hover 浮起；下：留給捲軸 */
   scrollbar-width:thin;-webkit-overflow-scrolling:touch;
   overscroll-behavior-x:contain;
 }
@@ -1295,27 +1295,35 @@ function enableThumbDrag(el){
   if(!el) return;
   requestAnimationFrame(markThumbScrollable);   /* 等版面算好再判斷是否可捲 */
 
-  var down=false, moved=false, startX=0, startLeft=0, pid=null;
+  var down=false, moved=false, dragging=false, startX=0, startLeft=0, pid=null;
   el.addEventListener("pointerdown", function(e){
-    if(el.scrollWidth <= el.clientWidth + 1) return;   /* 不可捲時不攔截點擊 */
-    down=true; moved=false; startX=e.clientX; startLeft=el.scrollLeft; pid=e.pointerId;
-    el.classList.add("dragging");
-    try{ el.setPointerCapture(pid); }catch(_){}
+    if(el.scrollWidth <= el.clientWidth + 1) return;   /* 不可捲時完全不介入，點擊照常 */
+    down=true; moved=false; dragging=false;
+    startX=e.clientX; startLeft=el.scrollLeft; pid=e.pointerId;
+    /* 這裡不抓指標、不加 dragging——避免把之後的 click 派送到容器而擋掉燈箱 */
   });
   el.addEventListener("pointermove", function(e){
     if(!down) return;
     var dx = e.clientX - startX;
-    if(Math.abs(dx) > 4) moved=true;
-    el.scrollLeft = startLeft - dx;
+    if(!dragging && Math.abs(dx) > 4){      /* 確定是拖曳，才開始抓取 */
+      dragging=true; moved=true;
+      el.classList.add("dragging");
+      try{ el.setPointerCapture(pid); }catch(_){}
+    }
+    if(dragging) el.scrollLeft = startLeft - dx;
   });
   var end = function(){
     if(!down) return;
-    down=false; el.classList.remove("dragging");
-    try{ el.releasePointerCapture(pid); }catch(_){}
+    down=false;
+    if(dragging){
+      el.classList.remove("dragging");
+      try{ el.releasePointerCapture(pid); }catch(_){}
+    }
+    dragging=false;
   };
   el.addEventListener("pointerup", end);
   el.addEventListener("pointercancel", end);
-  /* 拖曳後別觸發縮圖放大（捕獲階段攔下這次 click） */
+  /* 只有真的拖曳過才攔下這次 click（純點擊 moved 為 false，燈箱正常開） */
   el.addEventListener("click", function(e){
     if(moved){ e.stopPropagation(); e.preventDefault(); moved=false; }
   }, true);
