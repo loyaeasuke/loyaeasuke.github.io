@@ -103,21 +103,26 @@ img{display:block}
 /* ---------- Main ---------- */
 .main{flex:1;min-width:0}
 .topbar{
-  position:sticky;top:0;z-index:20;background:rgba(233,231,225,.86);backdrop-filter:blur(9px);
-  border-bottom:1px solid var(--hair-2);display:flex;gap:9px;align-items:center;
-  padding:11px 22px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:20;background:var(--ink);
+  border-bottom:1px solid #0c0e16;display:flex;gap:9px;align-items:center;
+  padding:10px 20px;flex-wrap:wrap;
 }
+.tb-title{font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.05em;color:#e7e6ef;white-space:nowrap;margin-right:2px}
+.tb-name{background:var(--ink-2);border:1px solid var(--ink-line);color:#eceafc;border-radius:9px;
+  padding:8px 12px;font-size:var(--fs-md);font-family:inherit;min-width:160px;max-width:220px;flex:0 1 auto}
+.tb-name:focus{outline:none;border-color:var(--accent)}
+.tb-name::placeholder{color:#767b93}
 .tb-btn{
-  background:var(--card);border:1px solid var(--hair-2);border-radius:9px;
+  background:var(--ink-2);border:1px solid var(--ink-line);border-radius:9px;color:#d7d6e4;cursor:pointer;
   padding:8px 13px;font-size:var(--fs-md);font-weight:500;display:inline-flex;align-items:center;gap:7px;
 }
-.tb-btn:hover{border-color:var(--accent);color:var(--accent-ink)}
-.tb-btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
-.tb-btn.primary:hover{background:var(--ink-3)}
+.tb-btn:hover{border-color:var(--accent);color:#fff}
+.tb-btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tb-btn.primary:hover{filter:brightness(1.12)}
 .tb-btn svg{width:15px;height:15px}
-.tb-chk{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:var(--text-mid)}
-.tb-status{margin-left:auto;font-size:var(--fs-sm);color:var(--text-mid)}
-.tb-status b{color:var(--text)}
+.tb-chk{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:#b9bccf;cursor:pointer}
+.tb-status{margin-left:auto;font-size:var(--fs-sm);color:#9a9fb8}
+.tb-status b{color:#e7e6ef}
 
 /* ---------- Gallery ---------- */
 .gallery{padding:30px 30px 60px;max-width:1240px;margin:0 auto}
@@ -195,16 +200,20 @@ img{display:block}
 /* 三欄上區：角色設定 ｜ 能力值+點數 ｜ 共鳴+殘響 */
 .top3{display:grid;grid-template-columns:minmax(300px,1.25fr) minmax(190px,.62fr) minmax(250px,1fr);
   gap:20px;align-items:start;margin-bottom:18px}
-/* 個資與喜歡／討厭：統一標籤＋內文格式 */
-.info-blocks{display:flex;flex-wrap:wrap;gap:14px 16px;margin-bottom:14px}
-.info-blocks .lk{flex:1 1 120px;min-width:110px}
+/* 個資與喜歡／討厭：緊密「標籤：內容」單行內嵌 */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;margin-bottom:11px}
+.ib{display:flex;align-items:baseline;gap:2px;font-size:var(--fs-md);min-width:0;line-height:1.45}
+.ib .k{color:var(--text-dim);font-size:var(--fs-sm);flex:0 0 auto;white-space:nowrap}
+.ib .k::after{content:"："}
+.ib .v{color:var(--text);min-width:0;overflow-wrap:anywhere}
+.ib.wide{grid-column:1/-1}
 
-/* 角色設定：固定高度可捲動內容 */
-.scrollbox{max-height:132px;overflow-y:auto;padding-right:6px;
-  border:1px solid var(--hair);border-radius:8px;background:rgba(255,255,255,.42);padding:9px 11px;margin:0 0 14px}
-.scrollbox::-webkit-scrollbar{width:8px}
+/* 角色設定：固定高度可捲動內容（緊密） */
+.scrollbox{max-height:106px;overflow-y:auto;
+  border:1px solid var(--hair);border-radius:8px;background:rgba(255,255,255,.42);padding:7px 10px;margin:0 0 10px}
+.scrollbox::-webkit-scrollbar{width:7px}
 .scrollbox::-webkit-scrollbar-thumb{background:rgba(var(--accent-rgb),.35);border-radius:8px}
-.scrollbox p{margin:0;white-space:pre-wrap;font-size:var(--fs-base);line-height:1.7}
+.scrollbox p{margin:0;white-space:pre-wrap;font-size:var(--fs-md);line-height:1.55}
 
 /* 燈箱 */
 .lightbox{position:fixed;inset:0;z-index:200;background:rgba(15,15,20,.86);
@@ -238,25 +247,29 @@ img{display:block}
 .ab.mp{background:rgba(64,90,134,.11)}
 .ab.mp .v{color:#405a86}
 
-/* point budgets（配合直向能力值：緊密清爽） */
-.pts{display:flex;flex-direction:column;gap:11px}
-.pt{background:rgba(255,255,255,.5);border:1px solid var(--hair);border-radius:9px;padding:8px 11px}
-.pt .row1{display:flex;justify-content:space-between;align-items:baseline}
-.pt .lab{font-size:var(--fs-md);color:var(--text-mid);font-weight:700}
-.pt .num{font-family:var(--mono);font-size:var(--fs-md)}
-.pt .num b{font-size:16px;color:var(--text)}
-.pt .num .over{color:var(--warn)}
-.pt .bar{height:6px;border-radius:4px;background:#dcd9cf;margin-top:7px;overflow:hidden}
-.pt .bar > i{display:block;height:100%;background:var(--accent);border-radius:4px}
-.pt .bar > i.over{background:var(--warn)}
-.pt .hint{font-size:var(--fs-sm);color:var(--text-dim);margin-top:5px}
-.pt .hint.warn{color:var(--warn)}
-/* 額外點數：整列顯示，避免窄欄換行 */
-.pt-extra{display:flex;flex-direction:column;gap:7px}
-.pt-x{display:flex;align-items:baseline;justify-content:space-between;gap:8px;background:var(--card-2);
-  border:1px solid var(--hair);border-radius:8px;padding:6px 11px}
-.pt-x .k{font-size:var(--fs-sm);color:var(--text-mid);white-space:nowrap}
-.pt-x .v{font-family:var(--mono);font-weight:600;font-size:var(--fs-md);color:var(--text)}
+/* 點數預算：能力點併入「能力值」、技能點併入「技能列表」 */
+.budget{border:1px solid var(--hair);border-radius:9px;background:var(--card-2);padding:9px 12px}
+.budget .lab{font-weight:700;color:var(--text-mid);font-size:var(--fs-md)}
+.budget .num{font-family:var(--mono);font-size:var(--fs-md);white-space:nowrap}
+.budget .num b{font-size:17px;color:var(--text)}
+.budget .num .over{color:var(--warn)}
+.budget .bar{height:6px;border-radius:4px;background:#dcd9cf;overflow:hidden}
+.budget .bar > i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.budget .bar > i.over{background:var(--warn)}
+.budget .foot{font-size:var(--fs-sm);color:var(--text-dim)}
+.budget .foot .x{color:var(--text-mid)}
+.budget .foot .x b{font-family:var(--mono);color:var(--text);font-weight:600}
+.budget .foot .warn{color:var(--warn)}
+/* 直式（能力值卡內） */
+.budget.v{margin-bottom:12px;border-left:3px solid var(--accent)}
+.budget.v .top{display:flex;justify-content:space-between;align-items:baseline}
+.budget.v .bar{margin:7px 0}
+.budget.v .foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+/* 橫式（技能列表卡內） */
+.budget.h{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;margin-bottom:14px;border-left:3px solid var(--accent)}
+.budget.h .bar{flex:1 1 120px;min-width:120px}
+.budget.h .foot{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;flex:0 0 auto}
+.budget.h .note{color:var(--text-dim)}
 
 /* resonance emotions — signature */
 .reson{position:relative;padding-left:20px}
@@ -322,8 +335,8 @@ img{display:block}
 .echo .box.on{background:var(--accent);border-color:var(--accent)}
 
 /* prose */
-.prose h4{font-size:var(--fs-sm);letter-spacing:.14em;color:var(--text-dim);font-weight:700;margin:0 0 5px}
-.prose p{margin:0 0 14px;white-space:pre-wrap;font-size:var(--fs-base);line-height:1.7}
+.prose h4{font-size:var(--fs-sm);letter-spacing:.12em;color:var(--text-dim);font-weight:700;margin:0 0 3px}
+.prose p{margin:0 0 10px;white-space:pre-wrap;font-size:var(--fs-md);line-height:1.55}
 .prose .quote{font-family:var(--serif);font-size:17px;color:var(--accent-ink);border-left:3px solid var(--accent);
   padding:4px 0 4px 14px;margin:2px 0 4px;line-height:1.6}
 .likes{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px}
@@ -351,6 +364,73 @@ img{display:block}
 }
 .menu-btn{display:none}
 .hidden{display:none!important}
+
+/* ===== 編輯器 ===== */
+/* 詳情頁編輯列：按鈕位置對齊編輯模式的「儲存角色」 */
+.sheet-bar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:2}
+.editor{max-width:1240px;margin:0 auto;padding:24px 30px 90px}
+.ed-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid var(--hair-2)}
+.ed-bar h2{font-family:var(--serif);font-size:24px;color:var(--accent-ink);margin:0;flex:1;min-width:150px}
+.ed-btn{border:1px solid var(--hair-2);background:var(--card);border-radius:9px;padding:8px 15px;font-size:var(--fs-md);font-weight:700;color:var(--text-mid);cursor:pointer}
+.ed-btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.ed-btn.primary{background:var(--accent-ink);color:#fff;border-color:var(--accent-ink)}
+.ed-btn.primary:hover{filter:brightness(1.14);color:#fff}
+.ed-sec{background:rgba(249,248,245,.74);border:1px solid var(--hair-2);border-radius:14px;padding:16px 18px;margin-bottom:18px}
+.ed-sec > h3{font-family:var(--serif);font-size:var(--fs-md);font-weight:700;letter-spacing:.16em;margin:0 0 14px;color:var(--text-mid);display:flex;align-items:center;gap:8px}
+.ed-sec > h3::before{content:"";width:4px;height:14px;background:var(--accent);border-radius:2px}
+.ed-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px 16px}
+.ed-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ed-f.wide{grid-column:1/-1}
+.ed-f label{font-size:var(--fs-sm);color:var(--text-dim);font-weight:700;letter-spacing:.04em}
+.ed-f input,.ed-f textarea,.ed-f select{font-family:inherit;font-size:var(--fs-md);color:var(--text);border:1px solid var(--hair-2);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
+.ed-f textarea{resize:vertical;min-height:54px;line-height:1.6}
+.ed-f input:focus,.ed-f textarea:focus,.ed-f select:focus{outline:none;border-color:var(--accent)}
+.colorrow{display:flex;gap:8px;align-items:center}
+.colorrow input[type=color]{width:46px;height:36px;padding:2px;flex:0 0 auto;cursor:pointer}
+
+.ed-ptline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:13px;background:var(--card-2);border:1px solid var(--hair);border-left:3px solid var(--accent);border-radius:9px;padding:9px 12px}
+.ed-ptline .lab{font-weight:700;color:var(--text-mid)}
+.ed-ptline .num{font-family:var(--mono)} .ed-ptline .num b{font-size:17px;color:var(--text)} .ed-ptline .num b.over{color:var(--warn)}
+.ed-ptline .bar{flex:1 1 110px;min-width:90px;height:6px;border-radius:4px;background:#dcd9cf;overflow:hidden}
+.ed-ptline .bar>i{display:block;height:100%;background:var(--accent)} .ed-ptline .bar>i.over{background:var(--warn)}
+.ed-ptline .rem{font-size:var(--fs-sm);color:var(--text-dim)} .ed-ptline .rem.warn{color:var(--warn)}
+
+.ed-abil{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.eda{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card-2);border:1px solid var(--hair);border-radius:8px;padding:5px 10px}
+.eda .k{font-size:var(--fs-md);color:var(--text-mid)}
+.eda .stp{display:flex;align-items:center;gap:7px}
+.eda .stp button{width:26px;height:26px;border-radius:6px;border:1px solid var(--hair-2);background:#fff;font-size:16px;line-height:1;cursor:pointer;color:var(--accent-ink);font-weight:700}
+.eda .stp button:hover{border-color:var(--accent);background:rgba(var(--accent-rgb),.08)}
+.eda .stp b{font-family:var(--mono);font-size:16px;min-width:22px;text-align:center}
+.eda.luck{background:rgba(var(--accent-rgb),.10)}
+.ed-derived{display:flex;gap:10px;margin-top:9px}
+.ed-derived .d{flex:1;border-radius:8px;padding:7px 12px;color:#fff;display:flex;justify-content:space-between;align-items:baseline}
+.ed-derived .d.hp{background:#8a4b52}.ed-derived .d.mp{background:#405a86}
+.ed-derived .d .v{font-family:var(--mono);font-weight:600;font-size:18px}
+
+.ed-skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;align-items:start}
+.ed-cat{border:1px solid var(--hair-2);border-radius:10px;overflow:hidden;background:rgba(255,255,255,.42)}
+.ed-cat-h{background:var(--accent-ink);color:#fff;font-family:var(--serif);font-weight:700;padding:6px 11px;letter-spacing:.05em}
+.edsk{padding:6px 10px;border-top:1px solid var(--hair);background:rgba(255,255,255,.5)}
+.edsk.basic{background:rgba(var(--accent-rgb),.05)}
+.edsk .r1{display:flex;align-items:center;gap:6px;min-width:0}
+.edsk .r2{display:flex;align-items:center;gap:8px;margin-top:5px;flex-wrap:wrap}
+.edsk .mk{font-family:var(--mono);font-weight:700;font-size:var(--fs-sm)}
+.edsk .mk.main{color:var(--accent-ink)}.edsk .mk.up{color:#a06a2c}
+.edsk .snm{font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edsk .cnm{flex:1 1 100px;min-width:80px;font-size:var(--fs-md);border:1px solid var(--hair-2);border-radius:6px;padding:4px 7px;background:#fff}
+.edsk select.ab{font-size:var(--fs-sm);border:1px solid var(--hair-2);border-radius:6px;padding:3px 5px;background:#fff}
+.edsk .abfix{font-size:var(--fs-sm);color:var(--text-dim);min-width:42px}
+.edsk .lvbtns{display:flex;gap:3px}
+.edsk .lvbtns button{width:24px;height:24px;border-radius:5px;border:1px solid var(--hair-2);background:#fff;font-family:var(--mono);font-size:var(--fs-sm);cursor:pointer;color:var(--text-dim)}
+.edsk .lvbtns button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.edsk .lvfix{font-size:var(--fs-sm);color:var(--accent-ink);font-weight:700}
+.edsk .up-chk{display:inline-flex;align-items:center;gap:3px;font-size:var(--fs-sm);color:var(--text-mid);cursor:pointer}
+.edsk .jd{font-family:var(--mono);font-weight:600;color:var(--accent-ink);margin-left:auto;min-width:22px;text-align:right}
+.edsk .rm{border:0;background:none;color:var(--warn);cursor:pointer;font-size:15px;padding:0 2px;margin-left:auto}
+.ed-addcustom{width:100%;border:0;border-top:1px dashed var(--hair-2);background:rgba(var(--accent-rgb),.06);color:var(--accent-ink);font-weight:700;font-size:var(--fs-sm);padding:7px;cursor:pointer}
+.ed-addcustom:hover{background:rgba(var(--accent-rgb),.12)}
+@media(max-width:820px){.ed-skills{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -358,7 +438,7 @@ img{display:block}
   <aside class="side" id="side">
     <div class="brand">
       <p class="jp">エモクロア　EMO-KLORE</p>
-      <h1>角色名冊</h1>
+      <h1 id="archiveTitle">您的共鳴者名冊</h1>
       <p class="sub">Resonance Character Archive</p>
     </div>
     <div class="searchwrap">
@@ -377,17 +457,27 @@ img{display:block}
       <button class="tb-btn menu-btn" id="menuBtn" aria-label="選單">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
-      <button class="tb-btn primary" id="btnFolder">
+      <span class="tb-title">エモクロア Emo-klore 角色資料庫編輯器</span>
+      <input class="tb-name" id="archiveName" value="您的共鳴者名冊" placeholder="您的共鳴者名冊" aria-label="名冊名稱">
+      <button class="tb-btn" id="btnFolder">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
         載入資料夾
       </button>
       <button class="tb-btn" id="btnCsv">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        只載入角色 CSV
+        載入角色 CSV
       </button>
       <button class="tb-btn" id="btnTpl">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
         下載 CSV 範本
+      </button>
+      <button class="tb-btn primary" id="btnNew">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        新增角色
+      </button>
+      <button class="tb-btn" id="btnDlChar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        匯出角色 CSV
       </button>
       <button class="tb-btn" id="btnExport">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 20h16"/></svg>
@@ -529,13 +619,16 @@ const ABIL_BUDGET = 25, SKILL_BUDGET = 30;
 const COST_NORMAL = {1:1,2:5,3:15};
 const COST_UPPER  = {1:2,2:10,3:30};
 const SK_CAT_ORDER = ["調查技能","感知技能","情報技能","運動技能","生存技能","交涉技能","特殊技能"];
-// 技能列表：三直欄，每欄由上而下堆疊分類（「自填技能」彙整可自填技能，接在特殊技能之下）
+const SK_ALLCATS = ["調查技能","感知技能","情報技能","運動技能","生存技能","交涉技能","特殊技能"];
+// 技能列表：三直欄（自訂技能歸入對應分類，不再有「自填技能」欄）
 const SK_COLUMNS = [
   ["調查技能","感知技能","情報技能"],
   ["運動技能","生存技能","交涉技能"],
-  ["特殊技能","自填技能"]
+  ["特殊技能"]
 ];
-function skillDispCat(s){ return s.可自填 ? "自填技能" : s.分類; }
+// 基礎技能（LV1 固定、免費）對應能力；緊急處置＝智力/2（無條件進位）
+const BASIC_ABILITY = {調查:'靈巧',感知:'五感',交涉:'魅力',知識:'智力',時事:'社會',運動:'身體',格鬥:'身體',投擲:'靈巧',生存:'身體',自我:'精神',緊急處置:'智力',細工:'靈巧',幸運:'運勢'};
+function skillDispCat(s){ return s.分類; }
 
 /* ============ CSV parser（支援引號內換行） ============ */
 function parseCSV(text){
@@ -562,7 +655,7 @@ function parseCSV(text){
 }
 
 /* ============ 資料狀態 ============ */
-let CHARS=[], SKILLS=[], EMOS=[], IMG={};
+let CHARS=[], SKILLS=[], EMOS=[], IMG={}, VIEWER_MODE=false;
 function emoCat(word){ const m=EMOS.find(e=>e.感情===word); return m?m.分類:''; }
 function emoDesc(word){ const m=EMOS.find(e=>e.感情===word); return m?m.說明:''; }
 
@@ -594,43 +687,52 @@ function setAccent(hex){
 function parseLearned(str){
   return (str||'').split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
     const p=line.split('|');
-    return {名:(p[0]||'').trim(), 等級:parseInt(p[1]||'0',10)||0, 能力:(p[2]||'').trim(), 自填:(p[3]||'').trim()};
+    return {名:(p[0]||'').trim(), 等級:parseInt(p[1]||'0',10)||0, 能力:(p[2]||'').trim(), 自填:(p[3]||'').trim(),
+      分類:(p[4]||'').trim(), 上位custom:/^(是|★|上位|1|true)$/i.test((p[5]||'').trim())};
   }).filter(x=>x.名);
 }
 // 把技能表 join 角色習得 → 產生 slots（每列一項，含等級/能力/判定值）
 function buildSkillSlots(ch){
   const learned = parseLearned(ch.習得技能);
-  const slots = SKILLS.map((s,idx)=>({
+  // 基礎（*）與一般技能；排除「可自填」占位列（改由自訂技能處理）
+  const base = SKILLS.filter(s=>s.可自填!=='是').map((s,idx)=>({
     idx, 分類:s.分類, 技能名:s.技能名,
     主技:s.主技==='是', 上位:s.上位==='是',
-    能力可變:s.能力可變==='是', 可自填:s.可自填==='是',
+    能力可變:s.能力可變==='是', 可自填:false,
     預設能力:s.預設能力||'', 能力:s.預設能力||'', 自填:'', 等級:0
   }));
-  // 基本技能（*）自動 LV1（免費）
-  slots.forEach(s=>{ if(s.主技) s.等級=1; });
-  // 依技能名分組套用習得
-  const byName={};
-  slots.forEach(s=>{ (byName[s.技能名]=byName[s.技能名]||[]).push(s); });
-  const usedFill={};
-  learned.forEach(L=>{
-    const group=byName[L.名]; if(!group) return;
-    // 可自填技能：依序填入同名空欄
-    if(group[0].可自填){
-      const k=L.名; usedFill[k]=usedFill[k]||0;
-      const slot=group[usedFill[k]]; usedFill[k]++;
-      if(slot){ slot.等級=L.等級||1; slot.自填=L.自填||''; if(L.能力) slot.能力=L.能力; }
-    }else{
-      const slot=group[0];
-      slot.等級=Math.max(slot.等級, L.等級||1);
+  base.forEach(s=>{ if(s.主技) s.等級=1; });   // 基礎技能自動 LV1
+  const byName={}; base.forEach(s=>{ if(!byName[s.技能名]) byName[s.技能名]=s; });
+  const custom=[];
+  learned.forEach((L,i)=>{
+    if(L.分類){ // 明確標記的自訂技能
+      custom.push({idx:'c'+i, 分類:L.分類, 技能名:L.名, 主技:false, 上位:!!L.上位custom,
+        能力可變:true, 可自填:false, 預設能力:L.能力||'靈巧', 能力:L.能力||'靈巧', 自填:'', 等級:L.等級||1, custom:true});
+      return;
+    }
+    const slot=byName[L.名];
+    if(slot){
+      if(slot.主技) slot.等級=1; else slot.等級=Math.max(slot.等級, L.等級||1);
       if(L.能力) slot.能力=L.能力;
+    }else{
+      // 可自填或未知技能 → 查完整技能表，歸入其分類的自訂技能
+      const cat=SKILLS.find(s=>s.技能名===L.名);
+      custom.push({idx:'x'+i, 分類:cat?cat.分類:'特殊技能', 技能名:L.名+(L.自填?'：'+L.自填:''),
+        主技:false, 上位:cat?cat.上位==='是':false, 能力可變:true, 可自填:false,
+        預設能力:L.能力||(cat?cat.預設能力:'靈巧'), 能力:L.能力||(cat?cat.預設能力:'靈巧'), 自填:'', 等級:L.等級||1, custom:true});
     }
   });
-  return slots;
+  return base.concat(custom);
 }
 function abilVal(ch, key){ // 能力值（含運勢）
   const v=parseInt(ch[key]||'0',10); return isNaN(v)?0:v;
 }
-function judge(ch, slot){ return abilVal(ch, slot.能力||slot.預設能力) + (slot.等級||0); }
+function judge(ch, slot){
+  let base;
+  if(slot.技能名==='緊急處置') base=Math.ceil(abilVal(ch,'智力')/2);
+  else base=abilVal(ch, slot.能力||slot.預設能力);
+  return base + (slot.等級||0);
+}
 function slotCost(slot){
   const lv=slot.等級||0; if(!lv) return 0;
   if(slot.主技 && lv===1) return 0;           // 基本技能 LV1 免費
@@ -752,10 +854,186 @@ function openChar(i){
   // 檢視全身圖
   const fb=view.querySelector('.fullbtn');
   if(fb) fb.onclick=()=>{ const f=fb.getAttribute('data-full'); if(f) openLightbox(f); };
+  const se=view.querySelector('#sheetEdit'); if(se) se.onclick=()=>renderEditor(current);
   renderRoster();
   const cur=roster.querySelector('.pc[aria-current="true"]'); if(cur&&cur.scrollIntoView) cur.scrollIntoView({block:'nearest'});
   window.scrollTo(0,0);
 }
+
+/* ============ 編輯器 ============ */
+let ED=null;
+const EDIT_FIELDS_TEXT=[
+  ['分類','分類 / 隊伍'],['PC姓名','PC 姓名 *'],['拼音','假名／拼音'],['PL','PL'],
+  ['職業','職業'],['性別','性別'],['年齡','年齡'],['出身地','出身地'],
+  ['頭像','頭像路徑'],['立繪','全身圖路徑'],['差分','差分（; 分隔多張）'],
+  ['喜歡的東西','喜歡的東西'],['討厭的東西','討厭的東西'],
+  ['表_感情','表 感情'],['裏_感情','裏 感情'],['根源_感情','根源 感情'],
+  ['額外能力點','額外能力點'],['額外技能點','額外技能點']
+];
+const EDIT_FIELDS_AREA=[['背景故事','背景故事'],['外貌','外貌'],['性格','性格'],['台詞','台詞'],['殘響紀錄','殘響紀錄（劇本名|感情|消費，每列一項）']];
+const EDIT_ALLKEYS=['分類','PC姓名','拼音','PL','代表色','頭像','立繪','差分','性別','年齡','職業','出身地','喜歡的東西','討厭的東西','身體','靈巧','精神','五感','智力','魅力','社會','運勢','額外能力點','額外技能點','表_感情','裏_感情','根源_感情','背景故事','外貌','性格','台詞','殘響紀錄'];
+
+function regByName(name){ return SKILLS.find(s=>s.技能名===name && s.可自填!=='是' && s.主技!=='是'); }
+function edCatalog(){
+  const out={}; SK_ALLCATS.forEach(c=>out[c]={basic:[],normal:[]});
+  SKILLS.forEach(s=>{ if(s.可自填==='是') return; const c=s.分類; if(!out[c])out[c]={basic:[],normal:[]};
+    if(s.主技==='是') out[c].basic.push(s); else out[c].normal.push(s); });
+  return out;
+}
+function abilSelect(cur,attrs){
+  const opts=['身體','靈巧','精神','五感','智力','魅力','社會','運勢'];
+  return `<select ${attrs}>`+opts.map(o=>`<option ${o===cur?'selected':''}>${o}</option>`).join('')+`</select>`;
+}
+function edAbil(k){ const v=parseInt(ED.f[k]||'0',10); return isNaN(v)?0:v; }
+function edBasicAbilLabel(name){ return name==='緊急處置'?'智力/2':BASIC_ABILITY[name]||''; }
+function edBasicAbilVal(name){ if(name==='緊急處置') return Math.ceil(edAbil('智力')/2); return edAbil(BASIC_ABILITY[name]); }
+function edBasicJudge(name){ return edBasicAbilVal(name)+1; }
+function edAbilUsed(){ return ABILS.reduce((a,k)=>a+edAbil(k),0); }
+function edAbilBud(){ return ABIL_BUDGET+(parseInt(ED.f.額外能力點||'0',10)||0); }
+function edSkillUsed(){
+  let sum=0;
+  for(const nm in ED.reg){ const r=ED.reg[nm]; const lv=r.等級||0; if(lv>0){ const rs=regByName(nm); sum+=((rs&&rs.上位==='是')?COST_UPPER:COST_NORMAL)[lv]||0; } }
+  ED.custom.forEach(c=>{ const lv=c.等級||0; if(lv>0) sum+=(c.上位?COST_UPPER:COST_NORMAL)[lv]||0; });
+  return sum;
+}
+function edSkillBud(){ return SKILL_BUDGET+(parseInt(ED.f.額外技能點||'0',10)||0); }
+
+function edLoad(idx){
+  const src = idx>=0 ? CHARS[idx] : {};
+  const f={}; EDIT_ALLKEYS.forEach(k=>f[k]=src[k]!=null?String(src[k]):'');
+  if(idx<0){
+    f.代表色=f.代表色||'#6b6f86'; f.分類=f.分類||'未分類';
+    ['身體','靈巧','精神','五感','智力','魅力','社會'].forEach(k=>f[k]=f[k]||'1');
+    f.運勢=f.運勢||'3'; f.額外能力點=f.額外能力點||'0'; f.額外技能點=f.額外技能點||'0';
+  }
+  if(!f.代表色) f.代表色='#6b6f86';
+  const reg={}, custom=[]; let cid=0;
+  parseLearned(src.習得技能).forEach(L=>{
+    if(L.分類){ custom.push({分類:L.分類,技能名:L.名,上位:!!L.上位custom,能力:L.能力||'靈巧',等級:L.等級||1,id:'c'+(cid++)}); return; }
+    const rs=regByName(L.名);
+    if(rs){ reg[L.名]={等級:L.等級||1, 能力:L.能力||rs.預設能力}; return; }
+    if(SKILLS.find(s=>s.技能名===L.名 && s.主技==='是')) return; // 基礎技能自動，不需存
+    const cat=SKILLS.find(s=>s.技能名===L.名);
+    custom.push({分類:cat?cat.分類:'特殊技能',技能名:L.名+(L.自填?'：'+L.自填:''),上位:cat?cat.上位==='是':false,能力:L.能力||(cat?cat.預設能力:'靈巧'),等級:L.等級||1,id:'c'+(cid++)});
+  });
+  ED={idx, f, reg, custom, seq:cid};
+}
+
+function renderEditor(idx){
+  edLoad(idx);
+  setAccent(ED.f.代表色||'#6b6f86');
+  current=-1; document.getElementById('homeBtn').setAttribute('aria-current','false');
+  const isNew=idx<0;
+  let h=`<div class="editor"><div class="ed-bar"><h2>${isNew?'新增角色':'編輯角色'}</h2>`+
+    `<button class="ed-btn" id="edCancel">取消</button>`+
+    `<button class="ed-btn primary" id="edSave">儲存角色</button></div>`;
+  h+=`<div class="ed-sec"><h3>基本資料</h3><div class="ed-grid">`;
+  const cVal=/^#([0-9a-fA-F]{6})$/.test(ED.f.代表色)?ED.f.代表色:'#6b6f86';
+  h+=`<div class="ed-f"><label>代表色</label><div class="colorrow"><input type="color" id="edColor" value="${cVal}"><input type="text" data-f="代表色" value="${esc(ED.f.代表色)}" placeholder="#6b6f86"></div></div>`;
+  EDIT_FIELDS_TEXT.forEach(([k,lab])=>{ h+=`<div class="ed-f"><label>${lab}</label><input type="text" data-f="${k}" value="${esc(ED.f[k])}"></div>`; });
+  EDIT_FIELDS_AREA.forEach(([k,lab])=>{ h+=`<div class="ed-f wide"><label>${lab}</label><textarea data-f="${k}">${esc(ED.f[k])}</textarea></div>`; });
+  h+=`</div></div><div id="edCalc"></div></div>`;
+  view.innerHTML=h;
+  view.querySelectorAll('[data-f]').forEach(el=>el.addEventListener('input',()=>{
+    ED.f[el.dataset.f]=el.value;
+    if(el.dataset.f==='代表色' && /^#([0-9a-fA-F]{6})$/.test(el.value)){ const cp=document.getElementById('edColor'); if(cp)cp.value=el.value; setAccent(el.value); }
+    if(el.dataset.f==='額外能力點'||el.dataset.f==='額外技能點') edCalcRender();
+  }));
+  const cp=document.getElementById('edColor');
+  if(cp) cp.addEventListener('input',()=>{ ED.f.代表色=cp.value; const t=view.querySelector('[data-f="代表色"]'); if(t)t.value=cp.value; setAccent(cp.value); });
+  document.getElementById('edCancel').onclick=()=>{ if(ED.idx>=0) openChar(ED.idx); else renderGallery(); };
+  document.getElementById('edSave').onclick=edSave;
+  edCalcRender();
+  window.scrollTo(0,0);
+}
+
+function edCalcRender(){
+  const wrap=document.getElementById('edCalc'); if(!wrap) return;
+  const aUsed=edAbilUsed(), aBud=edAbilBud(), aOver=aUsed>aBud;
+  const sUsed=edSkillUsed(), sBud=edSkillBud(), sOver=sUsed>sBud;
+  let h=`<div class="ed-sec"><h3>能力值分配</h3>`;
+  h+=`<div class="ed-ptline"><span class="lab">能力點</span><span class="num"><b class="${aOver?'over':''}">${aUsed}</b> / ${aBud}</span>`+
+     `<div class="bar"><i class="${aOver?'over':''}" style="width:${Math.min(100,aBud?aUsed/aBud*100:0)}%"></i></div>`+
+     `<span class="rem ${aOver?'warn':''}">剩餘 ${aBud-aUsed} 點${aOver?'（超出）':''}</span></div>`;
+  h+=`<div class="ed-abil">`;
+  ['身體','靈巧','精神','五感','智力','魅力','社會'].forEach(k=>{
+    h+=`<div class="eda"><span class="k">${k}</span><div class="stp"><button data-ab="${k}" data-d="-1">−</button><b>${edAbil(k)}</b><button data-ab="${k}" data-d="1">＋</button></div></div>`;
+  });
+  h+=`<div class="eda luck"><span class="k">運勢</span><div class="stp"><button data-ab="運勢" data-d="-1">−</button><b>${edAbil('運勢')}</b><button data-ab="運勢" data-d="1">＋</button></div></div>`;
+  h+=`</div><div class="ed-derived"><div class="d hp"><span>HP　身體+10</span><span class="v">${edAbil('身體')+10}</span></div>`+
+     `<div class="d mp"><span>MP　精神+智力</span><span class="v">${edAbil('精神')+edAbil('智力')}</span></div></div></div>`;
+
+  h+=`<div class="ed-sec"><h3>技能分配</h3>`;
+  h+=`<div class="ed-ptline"><span class="lab">技能點</span><span class="num"><b class="${sOver?'over':''}">${sUsed}</b> / ${sBud}</span>`+
+     `<div class="bar"><i class="${sOver?'over':''}" style="width:${Math.min(100,sBud?sUsed/sBud*100:0)}%"></i></div>`+
+     `<span class="rem ${sOver?'warn':''}">剩餘 ${sBud-sUsed} 點${sOver?'（超出）':''}　·　＊基礎技能免費、★上位×2</span></div>`;
+  h+=`<div class="ed-skills">`;
+  const cat=edCatalog();
+  SK_ALLCATS.forEach(c=>{
+    const grp=cat[c]||{basic:[],normal:[]};
+    h+=`<div class="ed-cat"><div class="ed-cat-h">${c}</div>`;
+    grp.basic.forEach(s=>{
+      h+=`<div class="edsk basic"><div class="r1"><span class="mk main">＊</span><span class="snm">${esc(s.技能名)}</span>`+
+        `<span class="jd">${edBasicJudge(s.技能名)}</span></div>`+
+        `<div class="r2"><span class="abfix">${edBasicAbilLabel(s.技能名)}</span><span class="lvfix">LV1（免費）</span></div></div>`;
+    });
+    grp.normal.forEach(s=>{
+      const st=ED.reg[s.技能名]||{等級:0,能力:s.預設能力};
+      const variable=s.能力可變==='是';
+      const abCtrl = variable ? abilSelect(st.能力||s.預設能力, `class="ab" data-reg-ab="${esc(s.技能名)}"`) : `<span class="abfix">${esc(s.預設能力)}</span>`;
+      const jd=(variable?edAbil(st.能力||s.預設能力):edAbil(s.預設能力))+(st.等級||0);
+      h+=`<div class="edsk"><div class="r1">`+(s.上位==='是'?`<span class="mk up">★</span>`:'')+
+        `<span class="snm">${esc(s.技能名)}</span><span class="jd">${st.等級?jd:'—'}</span></div>`+
+        `<div class="r2">${abCtrl}<div class="lvbtns" data-reg-lv="${esc(s.技能名)}">`+
+        [1,2,3].map(l=>`<button data-l="${l}" class="${st.等級===l?'on':''}">${l}</button>`).join('')+`</div></div></div>`;
+    });
+    ED.custom.filter(x=>x.分類===c).forEach(cu=>{
+      const jd=edAbil(cu.能力)+(cu.等級||0);
+      h+=`<div class="edsk custom"><div class="r1">`+
+        `<input class="cnm" data-cid="${cu.id}" data-k="技能名" value="${esc(cu.技能名)}" placeholder="自訂技能名">`+
+        `<button class="rm" data-rm="${cu.id}" title="移除">✕</button></div>`+
+        `<div class="r2">`+abilSelect(cu.能力,`class="ab" data-cid="${cu.id}" data-k="能力"`)+
+        `<label class="up-chk"><input type="checkbox" data-cid="${cu.id}" data-k="上位" ${cu.上位?'checked':''}>★上位</label>`+
+        `<div class="lvbtns" data-clv="${cu.id}">`+[1,2,3].map(l=>`<button data-l="${l}" class="${cu.等級===l?'on':''}">${l}</button>`).join('')+`</div>`+
+        `<span class="jd">${cu.等級?jd:'—'}</span></div></div>`;
+    });
+    h+=`<button class="ed-addcustom" data-addcat="${c}">＋ 新增自訂技能</button></div>`;
+  });
+  h+=`</div></div>`;
+  wrap.innerHTML=h;
+  edBindCalc();
+}
+
+function edBindCalc(){
+  const wrap=document.getElementById('edCalc'); if(!wrap) return;
+  wrap.querySelectorAll('.stp button').forEach(b=>b.onclick=()=>{ const k=b.dataset.ab; let v=edAbil(k)+(+b.dataset.d); if(v<0)v=0; if(v>99)v=99; ED.f[k]=String(v); edCalcRender(); });
+  wrap.querySelectorAll('[data-reg-lv]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    const nm=g.dataset.regLv, l=+b.dataset.l, cur=ED.reg[nm], rs=regByName(nm);
+    if(cur&&cur.等級===l) delete ED.reg[nm]; else ED.reg[nm]={等級:l,能力:(cur&&cur.能力)||(rs?rs.預設能力:'靈巧')};
+    edCalcRender();
+  }));
+  wrap.querySelectorAll('select[data-reg-ab]').forEach(s=>s.onchange=()=>{ const nm=s.dataset.regAb, rs=regByName(nm); ED.reg[nm]=ED.reg[nm]||{等級:0,能力:rs?rs.預設能力:'靈巧'}; ED.reg[nm].能力=s.value; edCalcRender(); });
+  wrap.querySelectorAll('.cnm[data-cid]').forEach(inp=>inp.addEventListener('input',()=>{ const c=ED.custom.find(x=>x.id===inp.dataset.cid); if(c)c.技能名=inp.value; }));
+  wrap.querySelectorAll('select.ab[data-cid]').forEach(s=>s.onchange=()=>{ const c=ED.custom.find(x=>x.id===s.dataset.cid); if(c){c.能力=s.value; edCalcRender();} });
+  wrap.querySelectorAll('input[type=checkbox][data-cid]').forEach(cb=>cb.onchange=()=>{ const c=ED.custom.find(x=>x.id===cb.dataset.cid); if(c){c.上位=cb.checked; edCalcRender();} });
+  wrap.querySelectorAll('[data-clv]').forEach(g=>g.querySelectorAll('button').forEach(b=>b.onclick=()=>{ const c=ED.custom.find(x=>x.id===g.dataset.clv); if(c){ c.等級=(c.等級===+b.dataset.l?0:+b.dataset.l); edCalcRender(); } }));
+  wrap.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{ ED.custom=ED.custom.filter(x=>x.id!==b.dataset.rm); edCalcRender(); });
+  wrap.querySelectorAll('[data-addcat]').forEach(b=>b.onclick=()=>{ ED.custom.push({分類:b.dataset.addcat,技能名:'',上位:false,能力:'靈巧',等級:1,id:'c'+(ED.seq++)}); edCalcRender(); });
+}
+
+function edCommit(){
+  view.querySelectorAll('[data-f]').forEach(el=>{ ED.f[el.dataset.f]=el.value; });
+  if(!(ED.f.PC姓名||'').trim()){ alert('請先填寫「PC 姓名」'); return null; }
+  const lines=[];
+  Object.keys(ED.reg).forEach(nm=>{ const r=ED.reg[nm]; if(r.等級>0){ const rs=regByName(nm); const ab=(rs&&rs.能力可變==='是')?(r.能力||rs.預設能力):''; lines.push(`${nm}|${r.等級}|${ab}`); } });
+  ED.custom.forEach(c=>{ const nm=(c.技能名||'').trim(); if(nm && c.等級>0) lines.push(`${nm}|${c.等級}|${c.能力||''}||${c.分類}|${c.上位?'上位':''}`); });
+  ED.f.習得技能=lines.join('\n');
+  const ch={}; EDIT_ALLKEYS.concat('習得技能').forEach(k=>ch[k]=ED.f[k]!=null?ED.f[k]:'');
+  let idx=ED.idx;
+  if(idx>=0) CHARS[idx]=ch; else { CHARS.push(ch); idx=CHARS.length-1; ED.idx=idx; }
+  return idx;
+}
+function edSave(){ const i=edCommit(); if(i==null) return; status('已儲存「'+CHARS[i].PC姓名+'」．全部編輯完後按上方「匯出角色 CSV」保存檔案'); openChar(i); }
 
 function ptBar(used,budget){
   const over=used>budget, pct=Math.min(100, budget?used/budget*100:0);
@@ -781,7 +1059,7 @@ function renderDetail(ch){
   // 身分列只保留 PL；性別/年齡/職業/出身地 併入能力值區
   const meta=[['PL',ch.PL]].filter(m=>m[1]).map(m=>`<span class="m"><b>${m[0]}</b>${esc(m[1])}</span>`).join('');
   const profileBlocks=[['性別',ch.性別],['年齡',ch.年齡?ch.年齡+' 歲':''],['職業',ch.職業],['出身地',ch.出身地]]
-    .filter(m=>m[1]).map(m=>`<div class="lk"><h4>${m[0]}</h4><p>${esc(m[1])}</p></div>`).join('');
+    .filter(m=>m[1]).map(m=>`<div class="ib"><span class="k">${m[0]}</span><span class="v">${esc(m[1])}</span></div>`).join('');
 
   // 能力（直向、指定順序；運勢、HP、MP 併入同列表）
   const ABIL_DISPLAY=['身體','精神','智力','社會','靈巧','五感','魅力'];
@@ -791,22 +1069,22 @@ function renderDetail(ch){
     +`<div class="ab hp"><span class="k">HP</span><span class="v">${hp(ch)}</span></div>`
     +`<div class="ab mp"><span class="k">MP</span><span class="v">${mp(ch)}</span></div>`;
 
-  // 點數
+  // 點數：能力點併入「能力值」、技能點併入「技能列表」
   const xAbil=parseInt(ch.額外能力點||'0',10)||0, xSkill=parseInt(ch.額外技能點||'0',10)||0;
   const aOver=aUsed>aBud, sOver=sUsed>sBud;
-  const ptsHtml=
-    `<div class="pt"><div class="row1"><span class="lab">能力點</span>`+
+  const abilBudget=
+    `<div class="budget v"><div class="top"><span class="lab">能力點</span>`+
       `<span class="num"><b class="${aOver?'over':''}">${aUsed}</b> / ${aBud}</span></div>`+
       ptBar(aUsed,aBud)+
-      `<div class="hint ${aOver?'warn':''}">剩餘 ${aBud-aUsed} 點${aOver?'（已超出）':''}</div></div>`+
-    `<div class="pt"><div class="row1"><span class="lab">技能點</span>`+
-      `<span class="num"><b class="${sOver?'over':''}">${sUsed}</b> / ${sBud}</span></div>`+
+      `<div class="foot"><span class="${aOver?'warn':''}">剩餘 ${aBud-aUsed} 點${aOver?'（已超出）':''}</span>`+
+      `<span class="x">額外能力點 <b>${xAbil}</b></span></div></div>`;
+  const skillBudget=
+    `<div class="budget h"><span class="lab">技能點</span>`+
+      `<span class="num"><b class="${sOver?'over':''}">${sUsed}</b> / ${sBud}</span>`+
       ptBar(sUsed,sBud)+
-      `<div class="hint ${sOver?'warn':''}">剩餘 ${sBud-sUsed} 點${sOver?'（已超出）':''}　·　＊基本技能 LV1 免費</div></div>`+
-    `<div class="pt-extra">`+
-      `<div class="pt-x"><span class="k">額外能力點</span><span class="v">${xAbil}</span></div>`+
-      `<div class="pt-x"><span class="k">額外技能點</span><span class="v">${xSkill}</span></div>`+
-    `</div>`;
+      `<div class="foot"><span class="${sOver?'warn':''}">剩餘 ${sBud-sUsed} 點${sOver?'（已超出）':''}</span>`+
+      `<span class="x">額外技能點 <b>${xSkill}</b></span>`+
+      `<span class="note">＊基本技能 LV1 免費</span></div></div>`;
 
   // 共鳴感情
   const emoHtml=[['表',ch.表_感情],['裏',ch.裏_感情],['根源',ch.根源_感情]].map(([slot,raw])=>{
@@ -831,11 +1109,11 @@ function renderDetail(ch){
     echo.map(e=>`<tr><td>${esc(e.劇本)}</td><td class="${e.消費?'used':''}">${esc(e.感情)}</td><td><span class="box ${e.消費?'on':''}"></span></td></tr>`).join('')+
     `</tbody></table></div>` : '';
 
-  // 個資＋喜歡／討厭：統一標籤格式
+  // 個資＋喜歡／討厭：緊密「標籤：內容」
   const infoItems=profileBlocks+
-    (ch.喜歡的東西?`<div class="lk"><h4>喜歡的東西</h4><p>${esc(ch.喜歡的東西)}</p></div>`:'')+
-    (ch.討厭的東西?`<div class="lk"><h4>討厭的東西</h4><p>${esc(ch.討厭的東西)}</p></div>`:'');
-  const infoHtml=infoItems?`<div class="info-blocks">${infoItems}</div>`:'';
+    (ch.喜歡的東西?`<div class="ib wide"><span class="k">喜歡的東西</span><span class="v">${esc(ch.喜歡的東西)}</span></div>`:'')+
+    (ch.討厭的東西?`<div class="ib wide"><span class="k">討厭的東西</span><span class="v">${esc(ch.討厭的東西)}</span></div>`:'');
+  const infoHtml=infoItems?`<div class="info-grid">${infoItems}</div>`:'';
   const hasProse = !!(ch.背景故事||ch.外貌||ch.性格);
   const hasSettings = !!(infoItems||hasProse);
   const settingsHtml=`<div class="card prose"><h3>角色設定</h3>`+infoHtml+
@@ -857,18 +1135,19 @@ function renderDetail(ch){
       (ch.台詞?`<div class="hx-quote">${esc(ch.台詞)}</div>`:'')+
     `</div></div>`;
 
-  // 能力值（個資已移至角色設定；HP／MP 併入列表）
-  const abilCard=`<div class="card"><h3>能力值</h3><div class="abil">${abilHtml}</div></div>`;
-  const ptsCard=`<div class="card"><h3>可分配點數</h3><div class="pts">${ptsHtml}</div></div>`;
+  // 能力值（含能力點預算；HP／MP 併入列表）
+  const abilCard=`<div class="card"><h3>能力值</h3>`+abilBudget+`<div class="abil">${abilHtml}</div></div>`;
   const emoCard=emoHtml?`<div class="card"><h3>共鳴感情</h3><div class="reson">${emoHtml}</div></div>`:'';
 
-  return `<div class="sheet">`+ wm + dh +
+  return `<div class="sheet">`+ wm +
+    (VIEWER_MODE?'':`<div class="sheet-bar"><button class="ed-btn primary" id="sheetEdit">✎ 編輯此角色</button></div>`)+
+    dh +
     `<div class="top3">`+
       `<div class="colA">`+(hasSettings?settingsHtml:'')+`</div>`+
-      `<div class="colB">`+abilCard+ptsCard+`</div>`+
+      `<div class="colB">`+abilCard+`</div>`+
       `<div class="colC">`+emoCard+echoHtml+`</div>`+
     `</div>`+
-    `<div class="skwide"><div class="card"><h3>技能列表</h3>`+skillLegend()+skHtml+`</div></div>`+
+    `<div class="skwide"><div class="card"><h3>技能列表</h3>`+skillLegend()+skillBudget+skHtml+`</div></div>`+
   `</div>`;
 }
 
@@ -897,7 +1176,7 @@ function renderSkillList(ch, slots){
       const mk = s.上位?`<span class="mk up">★</span>`:(s.主技?`<span class="mk main">＊</span>`:`<span class="mk">　</span>`);
       let name=esc(s.技能名);
       if(s.可自填){ name+=`：<span class="fill">${s.自填?esc(s.自填):'———'}</span>`; }
-      const ab = s.能力可變 ? (s.能力||s.預設能力) : s.預設能力;
+      const ab = s.技能名==='緊急處置' ? '智力/2' : (s.能力可變 ? (s.能力||s.預設能力) : s.預設能力);
       const pips=[1,2,3].map(l=>`<i class="${s.等級===l?'on':''}">${l}</i>`).join('');
       h+=`<div class="sk-c name${on?' on on2':''}"><span class="nm">${mk}${name}</span></div>`+
          `<div class="sk-c ab${on?' on':''}">${esc(ab||'')}</div>`+
@@ -928,6 +1207,13 @@ const bind=(id,ev,fn)=>{const el=$(id);if(el)el.addEventListener(ev,fn);};
 bind('homeBtn','click',()=>{ renderGallery(); try{window.scrollTo(0,0);}catch(e){} });
 bind('menuBtn','click',()=>$('app').classList.toggle('nav-open'));
 bind('btnFolder','click',()=>$('fileFolder')&&$('fileFolder').click());
+bind('btnNew','click',()=>renderEditor(-1));
+bind('btnDlChar','click',()=>{ if(!CHARS.length){ status('目前沒有角色可匯出'); return; } dl('角色.csv', currentCharCSV()); status('已匯出 角色.csv（'+CHARS.length+' 名）'); });
+// 名冊名稱：輸入框 ↔ 側欄標題
+(function(){ const inp=$('archiveName'), t=$('archiveTitle');
+  const apply=()=>{ if(t) t.textContent=(inp.value||'您的共鳴者名冊'); };
+  if(inp){ inp.addEventListener('input',apply); apply(); }
+})();
 bind('btnCsv','click',()=>$('fileCsv')&&$('fileCsv').click());
 
 bind('fileCsv','change',async e=>{
@@ -982,12 +1268,12 @@ bind('btnExport','click',()=>{
   const embed=$('embedImgs')?$('embedImgs').checked:false;
   const doc=document.documentElement.cloneNode(true);
   // 注入資料
-  const data={角色:currentCharCSV(),技能:SKILLS_asCSV(),共鳴感情:EMOS_asCSV(),IMG: embed?IMG:{}};
+  const data={角色:currentCharCSV(),技能:SKILLS_asCSV(),共鳴感情:EMOS_asCSV(),IMG: embed?IMG:{}, archiveName:($('archiveName')?$('archiveName').value:'')};
   const dataScript=doc.querySelector('#app-data');
   dataScript.textContent=JSON.stringify(data);
   dataScript.setAttribute('data-mode','viewer');
   // 移除工具列的編輯按鈕、隱藏 input
-  ['btnFolder','btnCsv','btnTpl','btnExport'].forEach(id=>{const el=doc.querySelector('#'+id);if(el)el.remove();});
+  ['btnFolder','btnCsv','btnTpl','btnExport','btnNew','btnEditCur','btnDlChar','archiveName'].forEach(id=>{const el=doc.querySelector('#'+id);if(el)el.remove();});
   const chk=doc.querySelector('.tb-chk'); if(chk) chk.remove();
   const foot=doc.querySelector('#status'); if(foot) foot.textContent='純檢視版';
   const sfoot=doc.querySelector('#sideFoot'); // keep
@@ -1012,9 +1298,11 @@ function EMOS_asCSV(){
 (function initViewer(){
   const ds=document.getElementById('app-data');
   if(ds && ds.getAttribute('data-mode')==='viewer'){
+    VIEWER_MODE=true;
     try{
       const data=JSON.parse(ds.textContent||'{}');
       IMG=data.IMG||{};
+      if(data.archiveName){ const t=document.getElementById('archiveTitle'); if(t) t.textContent=data.archiveName; }
       loadData(data.角色, data.技能, data.共鳴感情);
       const sf=document.getElementById('sideFoot');
     }catch(err){console.error(err);}
