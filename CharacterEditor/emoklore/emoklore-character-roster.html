@@ -43,12 +43,13 @@ body{
 button{font-family:inherit;color:inherit;cursor:pointer}
 img{display:block}
 ::selection{background:rgba(var(--accent-rgb),.22)}
-.app{display:flex;min-height:100vh}
+.app{display:flex;flex-direction:column;height:100vh}
+.body{display:flex;flex:1;min-height:0}
 
 /* ---------- Sidebar ---------- */
 .side{
   width:var(--sidebar-w);flex:0 0 var(--sidebar-w);
-  background:var(--ink);color:#e7e6ef;position:sticky;top:0;height:100vh;
+  background:var(--ink);color:#e7e6ef;height:100%;
   display:flex;flex-direction:column;border-right:1px solid #0c0e16;
 }
 .brand{padding:20px 20px 16px;border-bottom:1px solid var(--ink-line)}
@@ -101,9 +102,9 @@ img{display:block}
 .side-foot b{color:#aeb2c8;font-weight:700}
 
 /* ---------- Main ---------- */
-.main{flex:1;min-width:0}
+.main{flex:1;min-width:0;overflow-y:auto;height:100%}
 .topbar{
-  position:sticky;top:0;z-index:20;background:var(--ink);
+  flex:0 0 auto;z-index:20;background:var(--ink);
   border-bottom:1px solid #0c0e16;display:flex;gap:9px;align-items:center;
   padding:10px 20px;flex-wrap:wrap;
 }
@@ -365,6 +366,58 @@ img{display:block}
 .menu-btn{display:none}
 .hidden{display:none!important}
 
+/* ===== 檢視模式（角色頁）改版 ===== */
+.sheet.view{padding:26px 30px 80px}
+.v-top{display:grid;grid-template-columns:minmax(250px,330px) minmax(200px,250px) minmax(30px,1fr);gap:8px 20px;align-items:start;margin-bottom:22px;position:relative;z-index:1}
+.v-head{grid-column:1/-1;min-width:0}
+.v-idhead{display:flex;gap:20px;align-items:flex-start;margin-bottom:8px}
+.v-name{min-width:0;padding-top:4px}
+.v-name .cat{display:inline-block;font-size:var(--fs-sm);letter-spacing:.12em;color:#fff;background:var(--accent);padding:3px 10px;border-radius:999px;font-weight:700}
+.v-name h2{font-family:var(--serif);font-weight:900;font-size:30px;margin:9px 0 3px;line-height:1.15;color:var(--accent-ink)}
+.v-name .rd{font-size:var(--fs-md);color:var(--text-mid);letter-spacing:.08em}
+.v-name .v-pl{margin-top:9px;font-size:var(--fs-md);color:var(--text)}
+.v-name .v-pl b{color:var(--text-mid);font-weight:500;margin-right:6px}
+.v-quote{font-family:var(--serif);font-size:17px;color:var(--accent-ink);border-left:3px solid var(--accent);padding:6px 0 6px 15px;margin:2px 0 12px;line-height:1.6;white-space:pre-wrap}
+.v-radar{grid-column:1;max-width:300px;margin:0}
+.v-spacer{grid-column:3}
+.radar{width:100%;height:auto;display:block}
+.radar .rv{font-family:var(--mono);font-weight:700;font-size:19px;fill:var(--text)}
+.radar .rk{font-size:13px;fill:var(--text-mid)}
+
+/* 共鳴感情（菱形，交錯下降；置於雷達圖右側／畫面中間，右方留空） */
+.v-reson{grid-column:2;display:flex;flex-direction:column;min-width:0}
+.v-emo{position:relative;width:150px;height:150px;margin:1px 0}
+.v-emo.p0{align-self:flex-start}
+.v-emo.p1{align-self:flex-end;margin-top:-52px}
+.v-emo.p2{align-self:flex-start;margin-top:-52px}
+.v-emo .lb{position:absolute;top:-1px;left:50%;transform:translateX(-50%);z-index:3;font-size:var(--fs-sm);color:#fff;background:var(--ink-3);border-radius:7px;padding:2px 10px;letter-spacing:.1em;white-space:nowrap}
+.v-emo .dia{position:absolute;inset:23px;transform:rotate(45deg);border:2px solid var(--ink-3);border-radius:16px;background:rgba(252,251,248,.9)}
+.v-emo .inner{position:absolute;inset:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center}
+.v-emo .wd{font-family:var(--serif);font-weight:900;font-size:24px;color:var(--accent-ink);line-height:1.05}
+.v-emo .ct{font-size:var(--fs-sm);color:var(--text-mid)}
+
+/* 下方：技能一覽 / 角色設定 ｜ 殘響 */
+.v-bottom{display:grid;grid-template-columns:1fr minmax(240px,330px);gap:20px;align-items:start;position:relative;z-index:1}
+.v-mainL{min-width:0}
+.v-noskill{color:var(--text-dim);font-size:var(--fs-md)}
+.v-skills{display:flex;flex-direction:column;gap:9px}
+.lvrow{display:flex;align-items:flex-start;gap:10px}
+.lvtag{flex:0 0 auto;background:var(--ink-3);color:#fff;font-family:var(--mono);font-weight:700;font-size:var(--fs-md);border-radius:999px;padding:4px 13px;margin-top:1px}
+.lvskills{display:flex;flex-wrap:wrap;gap:7px 15px;align-items:baseline;min-width:0}
+.lvskills .sk{display:inline-flex;align-items:baseline;gap:3px;font-size:15px}
+.lvskills .sk .st{color:#a06a2c;font-weight:700}
+.lvskills .sk b{font-weight:700;color:var(--text)}
+.lvskills .sk .tag{font-size:var(--fs-sm);background:var(--accent);color:#fff;border-radius:5px;padding:1px 6px;align-self:center}
+.lvskills .sk i{font-family:var(--mono);color:var(--text-mid);font-style:normal;font-size:13px}
+@media(max-width:980px){
+  .v-top{grid-template-columns:1fr}
+  .v-head,.v-radar,.v-reson,.v-spacer{grid-column:auto}
+  .v-spacer{display:none}
+  .v-bottom{grid-template-columns:1fr}
+  .v-reson{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:8px}
+  .v-emo.p1,.v-emo.p2{margin-top:2px;align-self:auto}
+}
+
 /* ===== 編輯器 ===== */
 /* 詳情頁編輯列：按鈕位置對齊編輯模式的「儲存角色」 */
 .sheet-bar{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:14px;position:relative;z-index:2}
@@ -435,6 +488,40 @@ img{display:block}
 </head>
 <body>
 <div class="app" id="app">
+  <div class="topbar">
+    <button class="tb-btn menu-btn" id="menuBtn" aria-label="選單">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <span class="tb-title">エモクロア Emo-klore 角色資料庫編輯器</span>
+    <input class="tb-name" id="archiveName" value="您的共鳴者名冊" placeholder="您的共鳴者名冊" aria-label="名冊名稱">
+    <button class="tb-btn" id="btnCsv">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      載入角色 CSV
+    </button>
+    <button class="tb-btn" id="btnFolder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      載入資料夾
+    </button>
+    <button class="tb-btn primary" id="btnNew">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+      新增角色
+    </button>
+    <button class="tb-btn" id="btnDlChar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      匯出角色 CSV
+    </button>
+    <button class="tb-btn" id="btnTpl">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      下載 CSV 範本
+    </button>
+    <label class="tb-chk"><input type="checkbox" id="embedImgs"> 匯出時內嵌圖片</label>
+    <button class="tb-btn" id="btnExport">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 20h16"/></svg>
+      匯出純檢視網頁
+    </button>
+    <div class="tb-status" id="status">內建 2 名示範角色</div>
+  </div>
+  <div class="body">
   <aside class="side" id="side">
     <div class="brand">
       <p class="jp">エモクロア　EMO-KLORE</p>
@@ -453,40 +540,8 @@ img{display:block}
   </aside>
 
   <div class="main">
-    <div class="topbar">
-      <button class="tb-btn menu-btn" id="menuBtn" aria-label="選單">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <span class="tb-title">エモクロア Emo-klore 角色資料庫編輯器</span>
-      <input class="tb-name" id="archiveName" value="您的共鳴者名冊" placeholder="您的共鳴者名冊" aria-label="名冊名稱">
-      <button class="tb-btn" id="btnFolder">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-        載入資料夾
-      </button>
-      <button class="tb-btn" id="btnCsv">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-        載入角色 CSV
-      </button>
-      <button class="tb-btn" id="btnTpl">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-        下載 CSV 範本
-      </button>
-      <button class="tb-btn primary" id="btnNew">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-        新增角色
-      </button>
-      <button class="tb-btn" id="btnDlChar">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
-        匯出角色 CSV
-      </button>
-      <button class="tb-btn" id="btnExport">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v12H4z"/><path d="M4 20h16"/></svg>
-        匯出純檢視網頁
-      </button>
-      <label class="tb-chk"><input type="checkbox" id="embedImgs"> 匯出時內嵌圖片</label>
-      <div class="tb-status" id="status">內建 2 名示範角色</div>
-    </div>
     <div id="view"></div>
+  </div>
   </div>
 </div>
 
@@ -655,14 +710,14 @@ function parseCSV(text){
 }
 
 /* ============ 資料狀態 ============ */
-let CHARS=[], SKILLS=[], EMOS=[], IMG={}, VIEWER_MODE=false;
+let CHARS=[], SKILLS=[], EMOS=[], IMG={}, VIEWER_MODE=false, EDITED_IDX=new Set();
 function emoCat(word){ const m=EMOS.find(e=>e.感情===word); return m?m.分類:''; }
 function emoDesc(word){ const m=EMOS.find(e=>e.感情===word); return m?m.說明:''; }
 
 function loadData(csvChar, csvSkill, csvEmo){
   if(csvSkill!=null) SKILLS = parseCSV(csvSkill);
   if(csvEmo!=null)   EMOS   = parseCSV(csvEmo);
-  if(csvChar!=null)  CHARS  = parseCSV(csvChar);
+  if(csvChar!=null){ CHARS  = parseCSV(csvChar); if(typeof EDITED_IDX!=='undefined') EDITED_IDX.clear(); }
 }
 loadData(CSV.角色, CSV.技能, CSV.共鳴感情);
 
@@ -857,7 +912,7 @@ function openChar(i){
   const se=view.querySelector('#sheetEdit'); if(se) se.onclick=()=>renderEditor(current);
   renderRoster();
   const cur=roster.querySelector('.pc[aria-current="true"]'); if(cur&&cur.scrollIntoView) cur.scrollIntoView({block:'nearest'});
-  window.scrollTo(0,0);
+  scrollTop();
 }
 
 /* ============ 編輯器 ============ */
@@ -944,7 +999,7 @@ function renderEditor(idx){
   document.getElementById('edCancel').onclick=()=>{ if(ED.idx>=0) openChar(ED.idx); else renderGallery(); };
   document.getElementById('edSave').onclick=edSave;
   edCalcRender();
-  window.scrollTo(0,0);
+  scrollTop();
 }
 
 function edCalcRender(){
@@ -1033,7 +1088,12 @@ function edCommit(){
   if(idx>=0) CHARS[idx]=ch; else { CHARS.push(ch); idx=CHARS.length-1; ED.idx=idx; }
   return idx;
 }
-function edSave(){ const i=edCommit(); if(i==null) return; status('已儲存「'+CHARS[i].PC姓名+'」．全部編輯完後按上方「匯出角色 CSV」保存檔案'); openChar(i); }
+function edSave(){ const i=edCommit(); if(i==null) return; EDITED_IDX.add(i); showEditedStatus(); openChar(i); }
+function showEditedStatus(){
+  const names=[...EDITED_IDX].map(i=>CHARS[i]&&CHARS[i].PC姓名).filter(Boolean);
+  if(!names.length) return;
+  status('已儲存'+names.join('、')+'．全部編輯完後按上方「匯出角色 CSV」保存檔案');
+}
 
 function ptBar(used,budget){
   const over=used>budget, pct=Math.min(100, budget?used/budget*100:0);
@@ -1041,10 +1101,7 @@ function ptBar(used,budget){
 }
 function renderDetail(ch){
   const slots=buildSkillSlots(ch);
-  const aUsed=abilUsed(ch), aBud=ABIL_BUDGET+(parseInt(ch.額外能力點||'0',10)||0);
-  const sUsed=skillUsed(ch,slots), sBud=SKILL_BUDGET+(parseInt(ch.額外技能點||'0',10)||0);
   const acc=initColor(ch);
-  // 頭像輪播影像集：頭像 ＋ 差分（分隔符：換行／分號／逗號）；無法解析者略過，不破圖
   const diffs=(ch.差分||'').split(/[\n;；,，]/).map(s=>s.trim()).filter(Boolean).map(p=>imgSrc(p)).filter(Boolean);
   const carImgs=[imgSrc(ch.頭像), ...diffs].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
   PORCAR=carImgs;
@@ -1056,52 +1113,32 @@ function renderDetail(ch){
     (carImgs.length>1?`<button class="por-nav prev" data-dir="-1" aria-label="上一張">‹</button><button class="por-nav next" data-dir="1" aria-label="下一張">›</button>`:'');
   const wm = fullSrc?`<div class="watermark"><img src="${esc(fullSrc)}" alt="" onerror="this.parentNode.style.display='none'"></div>`:'';
 
-  // 身分列只保留 PL；性別/年齡/職業/出身地 併入能力值區
-  const meta=[['PL',ch.PL]].filter(m=>m[1]).map(m=>`<span class="m"><b>${m[0]}</b>${esc(m[1])}</span>`).join('');
+  // 左上：頭像 ｜ 名字（含拼音）＋玩家名稱
+  const idhead=`<div class="v-idhead">`+
+    `<div class="por-col"><div class="por" data-idx="0">${por}</div>`+
+      `<div class="fullbtn-slot">`+(fullSrc?`<button class="fullbtn" data-full="${esc(fullSrc)}">檢視全身圖</button>`:'')+`</div></div>`+
+    `<div class="v-name">`+
+      (ch.分類?`<span class="cat">${esc(ch.分類)}</span>`:'')+
+      `<h2>${esc(ch.PC姓名)}</h2>`+
+      (ch.拼音?`<div class="rd">${esc(ch.拼音)}</div>`:'')+
+      (ch.PL?`<div class="v-pl"><b>PL</b>${esc(ch.PL)}</div>`:'')+
+    `</div></div>`;
+  const quote = ch.台詞?`<div class="v-quote">${esc(ch.台詞)}</div>`:'';   // 台詞：玩家名稱下、雷達圖上
+
+  // 角色設定（重用緊密排版）
   const profileBlocks=[['性別',ch.性別],['年齡',ch.年齡?ch.年齡+' 歲':''],['職業',ch.職業],['出身地',ch.出身地]]
     .filter(m=>m[1]).map(m=>`<div class="ib"><span class="k">${m[0]}</span><span class="v">${esc(m[1])}</span></div>`).join('');
+  const infoItems=profileBlocks+
+    (ch.喜歡的東西?`<div class="ib wide"><span class="k">喜歡的東西</span><span class="v">${esc(ch.喜歡的東西)}</span></div>`:'')+
+    (ch.討厭的東西?`<div class="ib wide"><span class="k">討厭的東西</span><span class="v">${esc(ch.討厭的東西)}</span></div>`:'');
+  const infoHtml=infoItems?`<div class="info-grid">${infoItems}</div>`:'';
+  const hasSettings=!!(infoItems||ch.背景故事||ch.外貌||ch.性格);
+  const settingsHtml=hasSettings?(`<div class="card prose"><h3>角色設定</h3>`+infoHtml+
+    (ch.背景故事?`<h4>背景故事</h4><div class="scrollbox"><p>${esc(ch.背景故事)}</p></div>`:'')+
+    (ch.外貌?`<h4>外貌</h4><div class="scrollbox"><p>${esc(ch.外貌)}</p></div>`:'')+
+    (ch.性格?`<h4>性格</h4><div class="scrollbox"><p>${esc(ch.性格)}</p></div>`:'')+`</div>`):'';
 
-  // 能力（直向、指定順序；運勢、HP、MP 併入同列表）
-  const ABIL_DISPLAY=['身體','精神','智力','社會','靈巧','五感','魅力'];
-  const abilHtml=
-    ABIL_DISPLAY.map(k=>`<div class="ab"><span class="k">${k}</span><span class="v">${abilVal(ch,k)}</span></div>`).join('')
-    +`<div class="ab luck"><span class="k">運勢</span><span class="v">${abilVal(ch,'運勢')}</span></div>`
-    +`<div class="ab hp"><span class="k">HP</span><span class="v">${hp(ch)}</span></div>`
-    +`<div class="ab mp"><span class="k">MP</span><span class="v">${mp(ch)}</span></div>`;
-
-  // 點數：能力點併入「能力值」、技能點併入「技能列表」
-  const xAbil=parseInt(ch.額外能力點||'0',10)||0, xSkill=parseInt(ch.額外技能點||'0',10)||0;
-  const aOver=aUsed>aBud, sOver=sUsed>sBud;
-  const abilBudget=
-    `<div class="budget v"><div class="top"><span class="lab">能力點</span>`+
-      `<span class="num"><b class="${aOver?'over':''}">${aUsed}</b> / ${aBud}</span></div>`+
-      ptBar(aUsed,aBud)+
-      `<div class="foot"><span class="${aOver?'warn':''}">剩餘 ${aBud-aUsed} 點${aOver?'（已超出）':''}</span>`+
-      `<span class="x">額外能力點 <b>${xAbil}</b></span></div></div>`;
-  const skillBudget=
-    `<div class="budget h"><span class="lab">技能點</span>`+
-      `<span class="num"><b class="${sOver?'over':''}">${sUsed}</b> / ${sBud}</span>`+
-      ptBar(sUsed,sBud)+
-      `<div class="foot"><span class="${sOver?'warn':''}">剩餘 ${sBud-sUsed} 點${sOver?'（已超出）':''}</span>`+
-      `<span class="x">額外技能點 <b>${xSkill}</b></span>`+
-      `<span class="note">＊基本技能 LV1 免費</span></div></div>`;
-
-  // 共鳴感情
-  const emoHtml=[['表',ch.表_感情],['裏',ch.裏_感情],['根源',ch.根源_感情]].map(([slot,raw])=>{
-    if(!raw) return '';
-    let word=raw, cat='';
-    if(/[／/]/.test(raw)){ const p=raw.split(/[／/]/); word=p[0].trim(); cat=(p[1]||'').trim(); }
-    if(!cat) cat=emoCat(word);
-    const d=emoDesc(word);
-    return `<div class="emo"><div class="slot">${slot}</div>`+
-      `<div class="wr"><span class="word">${esc(word)}</span>`+(cat?`<span class="cat">${esc(cat)}</span>`:'')+`</div>`+
-      (d?`<div class="desc">${esc(d)}</div>`:'')+`</div>`;
-  }).join('');
-
-  // 技能列表（signature）
-  const skHtml=renderSkillList(ch, slots);
-
-  // 殘響
+  // 殘響（重用）
   const echo=(ch.殘響紀錄||'').split('\n').map(s=>s.trim()).filter(Boolean).map(line=>{
     const p=line.split('|'); return {劇本:(p[0]||'').trim(),感情:(p[1]||'').trim(),消費:/^(是|v|✓|1|true)$/i.test((p[2]||'').trim())};
   });
@@ -1109,46 +1146,75 @@ function renderDetail(ch){
     echo.map(e=>`<tr><td>${esc(e.劇本)}</td><td class="${e.消費?'used':''}">${esc(e.感情)}</td><td><span class="box ${e.消費?'on':''}"></span></td></tr>`).join('')+
     `</tbody></table></div>` : '';
 
-  // 個資＋喜歡／討厭：緊密「標籤：內容」
-  const infoItems=profileBlocks+
-    (ch.喜歡的東西?`<div class="ib wide"><span class="k">喜歡的東西</span><span class="v">${esc(ch.喜歡的東西)}</span></div>`:'')+
-    (ch.討厭的東西?`<div class="ib wide"><span class="k">討厭的東西</span><span class="v">${esc(ch.討厭的東西)}</span></div>`:'');
-  const infoHtml=infoItems?`<div class="info-grid">${infoItems}</div>`:'';
-  const hasProse = !!(ch.背景故事||ch.外貌||ch.性格);
-  const hasSettings = !!(infoItems||hasProse);
-  const settingsHtml=`<div class="card prose"><h3>角色設定</h3>`+infoHtml+
-    (ch.背景故事?`<h4>背景故事</h4><div class="scrollbox"><p>${esc(ch.背景故事)}</p></div>`:'')+
-    (ch.外貌?`<h4>外貌</h4><div class="scrollbox"><p>${esc(ch.外貌)}</p></div>`:'')+
-    (ch.性格?`<h4>性格</h4><div class="scrollbox"><p>${esc(ch.性格)}</p></div>`:'')+`</div>`;
+  const skillsHtml=skillsByLv(ch, slots);
+  const skillCard=`<div class="card v-skillcard"><h3>技能一覽</h3>`+(skillsHtml||`<div class="v-noskill">尚無已習得技能（基本技能不列於此）</div>`)+`</div>`;
 
-  // 標題列：頭像輪播（下方固定保留「檢視全身圖」位）｜ 身分＋台詞
-  const dh=`<div class="dh">`+
-    `<div class="por-col"><div class="por" data-idx="0">${por}</div>`+
-      `<div class="fullbtn-slot">`+(fullSrc?`<button class="fullbtn" data-full="${esc(fullSrc)}">檢視全身圖</button>`:'')+`</div>`+
-    `</div>`+
-    `<div class="hx">`+
-      `<div class="idb">`+
-        (ch.分類?`<span class="cat">${esc(ch.分類)}</span>`:'')+
-        `<h2>${esc(ch.PC姓名)}</h2><div class="rd">${esc(ch.拼音||'')}</div>`+
-        (meta?`<div class="meta">${meta}</div>`:'')+
-      `</div>`+
-      (ch.台詞?`<div class="hx-quote">${esc(ch.台詞)}</div>`:'')+
-    `</div></div>`;
-
-  // 能力值（含能力點預算；HP／MP 併入列表）
-  const abilCard=`<div class="card"><h3>能力值</h3>`+abilBudget+`<div class="abil">${abilHtml}</div></div>`;
-  const emoCard=emoHtml?`<div class="card"><h3>共鳴感情</h3><div class="reson">${emoHtml}</div></div>`:'';
-
-  return `<div class="sheet">`+ wm +
+  return `<div class="sheet view">`+ wm +
     (VIEWER_MODE?'':`<div class="sheet-bar"><button class="ed-btn primary" id="sheetEdit">✎ 編輯此角色</button></div>`)+
-    dh +
-    `<div class="top3">`+
-      `<div class="colA">`+(hasSettings?settingsHtml:'')+`</div>`+
-      `<div class="colB">`+abilCard+`</div>`+
-      `<div class="colC">`+emoCard+echoHtml+`</div>`+
+    `<div class="v-top">`+
+      `<div class="v-head">`+idhead+quote+`</div>`+
+      `<div class="v-radar">${radarSVG(ch)}</div>`+
+      resonanceDiamonds(ch)+
+      `<div class="v-spacer"></div>`+
     `</div>`+
-    `<div class="skwide"><div class="card"><h3>技能列表</h3>`+skillLegend()+skillBudget+skHtml+`</div></div>`+
+    `<div class="v-bottom">`+
+      `<div class="v-mainL">`+skillCard+settingsHtml+`</div>`+
+      `<div class="v-mainR">`+echoHtml+`</div>`+
+    `</div>`+
   `</div>`;
+}
+
+/* 能力值八角雷達圖（左上起順時針：身體→精神→智力→社會→靈巧→五感→魅力→運勢） */
+function radarSVG(ch){
+  const order=['身體','精神','智力','社會','靈巧','五感','魅力','運勢'];
+  const vals=order.map(k=>abilVal(ch,k));
+  const scaleMax=Math.max(6, ...vals);
+  const cx=190, cy=182, R=116, rings=3, labR=R+32;
+  const ang=i=>(-22.5+i*45)*Math.PI/180;                 // 左上起、順時針
+  const pt=(i,r)=>[cx+r*Math.sin(ang(i)), cy-r*Math.cos(ang(i))];
+  const poly=(r)=>order.map((_,i)=>pt(i,r).map(v=>v.toFixed(1)).join(',')).join(' ');
+  let grid='';
+  for(let g=1;g<=rings;g++){ grid+=`<polygon points="${poly(R*g/rings)}" fill="none" stroke="var(--hair-2)" stroke-width="1" opacity="${g===rings?1:0.55}"/>`; }
+  let spokes=''; order.forEach((_,i)=>{ const [x,y]=pt(i,R); spokes+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--hair-2)" stroke-width="1" opacity=".5"/>`; });
+  const dpoly=vals.map((v,i)=>pt(i,R*v/scaleMax).map(t=>t.toFixed(1)).join(',')).join(' ');
+  const dots=vals.map((v,i)=>{const [x,y]=pt(i,R*v/scaleMax);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="var(--accent)"/>`;}).join('');
+  const labels=order.map((k,i)=>{ const [x,y]=pt(i,labR); return `<text x="${x.toFixed(1)}" y="${(y-5).toFixed(1)}" text-anchor="middle" class="rv">${vals[i]}</text>`+
+    `<text x="${x.toFixed(1)}" y="${(y+13).toFixed(1)}" text-anchor="middle" class="rk">${k}</text>`; }).join('');
+  return `<svg viewBox="0 0 380 372" class="radar" role="img" aria-label="能力雷達圖">`+
+    grid+spokes+`<polygon points="${dpoly}" fill="rgba(var(--accent-rgb),.30)" stroke="var(--accent)" stroke-width="2"/>`+dots+labels+`</svg>`;
+}
+
+/* 共鳴感情：表／裏／根源 菱形 */
+function resonanceDiamonds(ch){
+  const items=[['表感情',ch.表_感情],['裏感情',ch.裏_感情],['根源',ch.根源_感情]];
+  const html=items.map(([label,raw],idx)=>{
+    if(!raw) return '';
+    let word=raw, cat='';
+    if(/[／/]/.test(raw)){ const p=raw.split(/[／/]/); word=p[0].trim(); cat=(p[1]||'').trim(); }
+    if(!cat) cat=emoCat(word);
+    return `<div class="v-emo p${idx}"><span class="lb">${label}</span><div class="dia"></div>`+
+      `<div class="inner"><span class="wd">${esc(word)}</span>${cat?`<span class="ct">（${esc(cat)}）</span>`:''}</div></div>`;
+  }).filter(Boolean).join('');
+  return html?`<div class="v-reson">${html}</div>`:`<div class="v-reson"></div>`;
+}
+
+/* 技能一覽：依 LV1/2/3 分類；LV1 不列基本技能；自填→標籤；★上位 */
+function skillsByLv(ch, slots){
+  const groups={1:[],2:[],3:[]};
+  slots.filter(s=>s.等級>0).forEach(s=>{
+    if(s.等級===1 && s.主技) return;          // LV1 不顯示基本技能
+    if(groups[s.等級]) groups[s.等級].push(s);
+  });
+  const fmt=s=>{
+    const star=s.上位?`<span class="st">★</span>`:'';
+    let nm=s.技能名, tag='';
+    const parts=s.技能名.split(/[:：]/);
+    if(parts.length>1){ tag=`<span class="tag">${esc(parts[0])}</span>`; nm=parts.slice(1).join('：'); }
+    return `<span class="sk">${star}${tag}<b>${esc(nm)}</b><i>(${judge(ch,s)})</i></span>`;
+  };
+  let out='';
+  [1,2,3].forEach(lv=>{ if(groups[lv].length) out+=`<div class="lvrow"><span class="lvtag">Lv.${lv}</span><div class="lvskills">${groups[lv].map(fmt).join('')}</div></div>`; });
+  return out?`<div class="v-skills">${out}</div>`:'';
 }
 
 function skillLegend(){
@@ -1204,11 +1270,11 @@ document.getElementById('search').addEventListener('input',e=>{
 });
 const $=id=>document.getElementById(id);
 const bind=(id,ev,fn)=>{const el=$(id);if(el)el.addEventListener(ev,fn);};
-bind('homeBtn','click',()=>{ renderGallery(); try{window.scrollTo(0,0);}catch(e){} });
+bind('homeBtn','click',()=>{ renderGallery(); scrollTop(); });
 bind('menuBtn','click',()=>$('app').classList.toggle('nav-open'));
 bind('btnFolder','click',()=>$('fileFolder')&&$('fileFolder').click());
 bind('btnNew','click',()=>renderEditor(-1));
-bind('btnDlChar','click',()=>{ if(!CHARS.length){ status('目前沒有角色可匯出'); return; } dl('角色.csv', currentCharCSV()); status('已匯出 角色.csv（'+CHARS.length+' 名）'); });
+bind('btnDlChar','click',()=>{ if(!CHARS.length){ status('目前沒有角色可匯出'); return; } dl('角色.csv', currentCharCSV()); EDITED_IDX.clear(); status('已匯出 角色.csv（'+CHARS.length+' 名）'); });
 // 名冊名稱：輸入框 ↔ 側欄標題
 (function(){ const inp=$('archiveName'), t=$('archiveTitle');
   const apply=()=>{ if(t) t.textContent=(inp.value||'您的共鳴者名冊'); };
@@ -1244,6 +1310,7 @@ bind('fileFolder','change',async e=>{
 });
 function fileToDataURL(f){return new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f);});}
 function status(t){document.getElementById('status').textContent=t;}
+function scrollTop(){ const m=document.querySelector('.main'); if(m) m.scrollTop=0; try{window.scrollTo(0,0);}catch(e){} }
 
 /* 下載 CSV 範本（三檔） */
 bind('btnTpl','click',()=>{
@@ -1280,9 +1347,11 @@ bind('btnExport','click',()=>{
   // 標記側欄底部
   const html='<!DOCTYPE html>\n'+doc.outerHTML;
   const b=new Blob([html],{type:'text/html;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='emoklore-character-viewer.html';a.click();
+  const rawName=($('archiveName')?$('archiveName').value:'').trim()||'您的共鳴者名冊';
+  const fname=rawName.replace(/[\/\\:*?"<>|]/g,'_').replace(/\s+/g,' ').trim()+'.html';
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fname;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),800);
-  status('已匯出純檢視網頁'+(embed?'（含內嵌圖片）':'（相對路徑，需與 images 同放）'));
+  status('已匯出純檢視網頁「'+fname+'」'+(embed?'（含內嵌圖片）':'（相對路徑，需與 images 同放）'));
 });
 function SKILLS_asCSV(){
   const head=["分類","技能名","主技","上位","預設能力","能力可變","可自填"];
