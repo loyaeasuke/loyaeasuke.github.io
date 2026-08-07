@@ -54,7 +54,7 @@ a{color:inherit}
 #toolbar label.chk{display:flex;align-items:center;gap:6px;font-size:var(--fs-sm);color:#aab2c6;cursor:pointer}
 #toolbar .status{margin-left:auto;font-size:var(--fs-sm);color:#98a0b6;font-family:var(--mono)}
 #toolbar .status b{color:var(--star);font-weight:700}
-#toolbar .title-field{display:flex;align-items:center;gap:7px;margin:0 4px 0 2px}
+#toolbar .title-field{display:flex;align-items:center;gap:7px;margin:0 4px 0 6px;padding-left:13px;border-left:1px solid #3a4258}
 #toolbar .title-field label{font-size:var(--fs-sm);color:#8b93a9;white-space:nowrap}
 #toolbar .title-input{
   width:220px;max-width:38vw;padding:6px 10px;font-family:var(--serif);font-size:var(--fs-sm);letter-spacing:.04em;
@@ -400,7 +400,6 @@ body.exported .flaw-box{pointer-events:none}
     魔道書大戦 魔法使名冊
   </span>
   <span class="title-field">
-    <label for="titleInput">網頁名稱</label>
     <input id="titleInput" class="title-input" type="text" value="魔道書大戰 魔法使名冊" placeholder="輸入名冊標題" autocomplete="off">
   </span>
   <button class="tbtn" id="btnFolder">載入資料夾</button>
