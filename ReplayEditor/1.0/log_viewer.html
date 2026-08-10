@@ -19,6 +19,8 @@
   --epi:#8a6d3b; --epi-bg:#f5f0e5; --epi-line:#d9cca9;
   --pro:#46707f; --pro-bg:#e9f0f2; --pro-line:#b5cdd5;
   --round:#8c3d3d; --round-bg:#f7ecea;
+  --order:#7a5230; --order-bg:#f4ede3; --order-line:#d8c4a6;
+  --mad:#8e3b63; --mad-bg:#f3e8ee; --mad-line:#d5b3c6; --mad-ink:#3d2130;
   --hidden:#2b2b38; --hidden-ink:#d8d4e2; --hidden-accent:#9d8fc4;
   --radius:3px;
   --mono:"Roboto Mono","DejaVu Sans Mono",ui-monospace,"Noto Sans TC",monospace;
@@ -305,6 +307,38 @@ body.tocdrag{user-select:none;cursor:col-resize}
 .hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:1.75;
   color:var(--hidden-ink);white-space:pre-wrap;word-break:break-word}
 
+/* COC 發狂（SAN 損失） */
+.madness{margin:20px 0;background:var(--mad-bg);border:1px solid var(--mad-line);
+  border-left:3px solid var(--mad);border-radius:var(--radius);
+  background-image:repeating-linear-gradient(135deg,rgba(142,59,99,.05) 0 9px,transparent 9px 18px)}
+.madness .mhead{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:9px 14px;
+  border-bottom:1px dashed var(--mad-line)}
+.madness .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:#fff;background:var(--mad);
+  padding:2px 8px;border-radius:2px}
+.madness .term{font-family:var(--serif);font-size:12px;letter-spacing:.14em;color:var(--mad);
+  border:1px solid var(--mad);border-radius:2px;padding:1px 8px}
+.madness.short .term{opacity:.95}
+.madness .who{font-family:var(--serif);font-size:15px;letter-spacing:.08em;color:var(--mad);font-weight:700}
+.madness .dur{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--mad);
+  background:var(--panel);border:1px solid var(--mad-line);border-radius:999px;padding:2px 11px}
+.madness .mbody{padding:12px 16px 14px;font-family:var(--serif);font-size:14px;line-height:1.9;
+  color:var(--mad-ink);white-space:pre-wrap;word-break:break-word}
+
+/* 行動順位 */
+.turnorder{margin:22px 0;padding:12px 14px 14px;background:var(--order-bg);
+  border:1px solid var(--order-line);border-left:3px solid var(--order);border-radius:var(--radius)}
+.turnorder .h{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.turnorder .h .mk{font-family:var(--mono);font-size:9.5px;letter-spacing:.24em;color:#fff;
+  background:var(--order);padding:2px 7px;border-radius:2px}
+.turnorder .h .ti{font-family:var(--serif);font-size:14px;letter-spacing:.14em;color:var(--order)}
+.turnorder .seq{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.turnorder .ent{display:flex;align-items:center;gap:8px;background:var(--panel);
+  border:1px solid var(--order-line);border-radius:999px;padding:3px 12px 3px 4px}
+.turnorder .ent .no{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--order);color:#fff;
+  font-family:var(--mono);font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.turnorder .ent .nm{font-size:13px;letter-spacing:.04em;color:var(--ink);white-space:nowrap}
+.turnorder .arw{font-family:var(--mono);font-size:11px;color:var(--order);opacity:.55}
+
 /* 圖片：CG／地圖／道具等 */
 .figure{margin:26px auto;text-align:center;max-width:100%}
 .figure img{max-width:min(560px,100%);max-height:60vh;width:auto;height:auto;border-radius:var(--radius);
@@ -463,6 +497,18 @@ function splitBracketName(text){
   const m=String(text||'').match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
   return m ? [m[1].trim(), String(text).slice(m[0].length)] : ['', String(text||'')];
 }
+const MAD_DUR=/\s*(\d+\s*(?:個月|分鐘|小時|回合|週|天|年|秒|月))\s*$/;
+const MAD_SHORT=/(分鐘|小時|秒|回合)$/;
+function parseMadness(text, fallbackName){
+  let s=String(text||'').trim(), duration='', term='long';
+  const m=s.match(MAD_DUR);
+  if(m){ duration=m[1].replace(/\s+/g,''); s=s.slice(0,s.length-m[0].length).trim();
+         term=MAD_SHORT.test(duration)?'short':'long'; }
+  let name='', content=s;
+  if(/\u3000/.test(s)){ const parts=s.split(/\u3000+/); name=parts.shift().trim(); content=parts.join('\u3000').trim(); }
+  if(!name) name=(fallbackName||'').trim();
+  return {name, content, duration, term};
+}
 function roundNo(text){
   const s=String(text||'');
   const arrow=s.match(/(-?\d+)\s*(?:→|->|＞|=>)\s*(-?\d+)/);   // 「回合 : 1 → 2」取箭頭後
@@ -537,7 +583,7 @@ function render(){
     const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret'||isHO)?'secret':ch;
     if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
         'prologue_start','prologue_end','round','hidden','image',
-        'session_start','session_end','start'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
+        'session_start','session_end','start','turnorder','madness'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
     else if(!state.f[kind]) continue;
     else if(kind==='dice' && (ch==='secret'||isHO) && !state.f.secret) continue;
     if(state.who && r['發言人']!==state.who && type!=='scene') continue;
@@ -585,6 +631,27 @@ function render(){
     if(type==='prologue_end'){
       out.push(`<section class="prologue end"><span class="txt">${esc(r['內容']||'前日談結束')}</span>
         <span class="en">PROLOGUE ／ END</span><span class="orn">❖</span></section>`);
+      continue;
+    }
+    if(type==='madness'){
+      const mp=parseMadness(r['內容'], r['發言人']);
+      const sc=(M[mp.name]&&M[mp.name]['代表色'])||'';
+      const termLabel=mp.term==='short'?'短期發狂':'長期發狂';
+      out.push(`<section class="madness ${mp.term}">
+        <div class="mhead"><span class="mk">SAN ↓</span>
+          <span class="term">${termLabel}</span>
+          ${mp.name?`<span class="who" style="${sc?`color:${esc(sc)}`:''}">${esc((M[mp.name]&&M[mp.name]['顯示名稱'])||mp.name)}</span>`:''}
+          ${mp.duration?`<span class="dur">${esc(mp.duration)}</span>`:''}</div>
+        ${mp.content?`<div class="mbody">${esc(mp.content)}</div>`:''}</section>`);
+      continue;
+    }
+    if(type==='turnorder'){
+      const names=String(r['內容']||'').split(/[\n,，、;；]+/).map(x=>x.trim()).filter(Boolean);
+      const title=(r['發言人']||'').trim() || '行動順位';
+      const ents=names.map((nm,i)=>`<span class="ent"><span class="no">${i+1}</span><span class="nm">${esc(nm)}</span></span>${i<names.length-1?'<span class="arw">▸</span>':''}`).join('');
+      out.push(`<section class="turnorder"><div class="h"><span class="mk">TURN ORDER</span>
+        <span class="ti">${esc(title)}</span></div>
+        <div class="seq">${ents||'<span class="nm" style="color:var(--muted);font-size:13px">（在內容欄依序填入角色名，用逗號或換行分隔）</span>'}</div></section>`);
       continue;
     }
     if(type==='round'){
@@ -864,6 +931,7 @@ function convertLog(htmlText){
       content = flat.replace(/[\s\u3000─—–\-]+/g,' ').trim();
     }
     else if(DICE.test(text) && (text.includes('＞')||text.includes('>'))){ type='dice'; }
+    else if(name==='KP' && MAD_DUR.test(text)){ type='madness'; }   // KP 且以持續時間結尾
     else if(channel==='info'){ type='info'; }
 
     const cname = name==='system' ? sysName : name;
