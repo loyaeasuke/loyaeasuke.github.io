@@ -1,0 +1,418 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>神貓桌 CoC 團錄</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700;900&display=swap" rel="stylesheet"><style>
+:root{
+  --paper:#f2eee4;
+  --paper-deep:#eae4d6;
+  --paper-lift:#f7f4ec;
+  --ink:#211f1a;
+  --ink-soft:#4b463c;
+  --muted:#8a8474;
+  --muted-2:#a9a291;
+  --rule:#d9d1bf;
+  --rule-strong:#c7bda4;
+  --accent:#7c2d2a;
+  --accent-deep:#5c201e;
+  --accent-soft:#ecdfd8;
+  --margin-line:rgba(124,45,42,.30);
+  --brass:#9a7b3f;
+  --danger:#a23a30;
+  --serif:"Noto Serif TC",Georgia,"Songti TC","Times New Roman",serif;
+  --sans:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  --shadow:0 18px 50px rgba(33,31,26,.16);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer;color:inherit;}
+::selection{background:var(--accent-soft);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--rule-strong);border-radius:10px;border:2px solid var(--paper-deep);}
+
+/* ============ TOOLBAR ============ */
+.toolbar{
+  height:62px;flex:0 0 62px;
+  display:flex;align-items:center;padding:0 22px;
+  background:var(--paper-deep);
+  border-bottom:1px solid var(--rule-strong);
+  position:sticky;top:0;z-index:30;
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+}
+.toolbar::-webkit-scrollbar{height:0;display:none;}
+.toolbar>*{flex:0 0 auto;}
+.tb-brand{
+  font-family:var(--serif);font-weight:700;font-size:18px;
+  letter-spacing:.05em;color:var(--ink);white-space:nowrap;
+  display:flex;align-items:baseline;gap:8px;
+}
+.tb-brand .dot{color:var(--accent);font-size:15px;}
+.tb-div{width:1px;height:28px;background:var(--rule-strong);margin:0 20px;flex:0 0 1px;}
+.tb-name{display:flex;align-items:center;gap:12px;min-width:0;}
+.tb-name label{
+  font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+#siteName{
+  width:220px;min-width:0;
+  background:var(--paper-lift);border:1px solid var(--rule-strong);
+  border-radius:8px;padding:9px 13px;
+  font-family:var(--serif);font-size:16px;color:var(--ink);
+  transition:border .12s,box-shadow .12s;
+}
+#siteName:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.tb-actions{margin-left:auto;display:flex;gap:10px;padding-left:16px;}
+.tb-menu{display:flex;align-items:center;gap:8px;}
+.tb-menu-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--paper-lift);
+  border:1px solid var(--rule-strong);
+  border-radius:9px;
+  padding:8px 14px;
+  font-size:15px;font-weight:500;color:var(--ink);letter-spacing:.02em;
+  white-space:nowrap;transition:.14s;
+  box-shadow:0 1px 0 rgba(33,31,26,.04);
+}
+.tb-menu-btn svg{width:16px;height:16px;flex:0 0 auto;opacity:.8;}
+.tb-menu-btn:hover{background:#fff;border-color:var(--accent);color:var(--accent);}
+.tb-menu-btn:hover svg{opacity:1;}
+.tb-menu-btn.active{
+  background:var(--accent);color:#f6ede3;border-color:var(--accent-deep);
+  box-shadow:0 4px 12px rgba(92,32,30,.22);
+}
+.tb-menu-btn.active svg{opacity:1;}
+.btn-export{
+  background:var(--accent);color:#f7efe6;border:1px solid var(--accent-deep);
+  padding:10px 18px;border-radius:9px;font-size:14px;font-weight:500;letter-spacing:.04em;
+  display:inline-flex;align-items:center;gap:8px;transition:.14s;white-space:nowrap;
+}
+.btn-export:hover{background:var(--accent-deep);}
+.btn-export .ic{font-family:var(--mono);font-size:13px;}
+
+/* ============ APP LAYOUT ============ */
+.app{display:flex;flex:1;min-height:0;}
+
+/* ============ SIDEBAR (ledger) ============ */
+.sidebar{
+  width:322px;min-width:322px;
+  background:var(--paper-deep);
+  border-right:1px solid var(--rule-strong);
+  display:flex;flex-direction:column;min-height:0;
+}
+.ledger-head{
+  padding:22px 22px 16px;
+  border-bottom:1px solid var(--rule-strong);
+  display:flex;align-items:baseline;gap:12px;
+}
+.ledger-head .lh-main{
+  font-family:var(--serif);font-weight:700;font-size:22px;color:var(--ink);letter-spacing:.06em;
+}
+.ledger-head .lh-sub{
+  font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--muted);
+  text-transform:uppercase;margin-left:auto;
+}
+.side-scroll{flex:1;overflow-y:auto;min-height:0;padding-bottom:20px;}
+
+.vol{}
+.vol-head{
+  width:100%;background:none;border:none;
+  display:flex;align-items:center;gap:10px;
+  padding:22px 20px 9px;
+  border-bottom:1px solid var(--rule-strong);
+}
+.vol-head:hover .vol-name{color:var(--accent);}
+.vol-name{
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);transition:color .12s;
+}
+.vol-count{font-family:var(--mono);font-size:13px;color:var(--muted-2);}
+.vol-caret{
+  margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--muted);
+  transition:transform .18s;line-height:1;
+}
+.vol:not(.open) .vol-caret{transform:rotate(-90deg);}
+.vol:not(.open) .vol-body{display:none;}
+
+.entry{
+  width:100%;background:none;border:none;text-align:left;
+  display:grid;grid-template-columns:44px 1fr;align-items:stretch;
+  border-bottom:1px solid var(--rule);
+  transition:background .12s;
+}
+.entry:hover{background:var(--paper-lift);}
+.entry .e-num{
+  font-family:var(--mono);font-size:13px;color:var(--muted-2);
+  text-align:right;padding:13px 11px 13px 0;
+  border-right:1.5px solid var(--margin-line);
+  display:flex;align-items:center;justify-content:flex-end;
+}
+.entry .e-name{
+  font-family:var(--serif);font-size:16px;color:var(--ink-soft);
+  padding:12px 16px 12px 15px;line-height:1.55;transition:color .12s;
+}
+.entry:hover .e-name{color:var(--accent);}
+.entry.active{background:var(--accent-soft);}
+.entry.active .e-name{color:var(--accent-deep);font-weight:600;}
+.entry.active .e-num{color:var(--accent);border-right-color:var(--accent);}
+.vol-empty{
+  padding:12px 20px 12px 44px;color:var(--muted-2);font-size:13px;
+  font-style:italic;border-bottom:1px solid var(--rule);
+}
+
+.side-foot{padding:16px;border-top:1px solid var(--rule-strong);}
+.side-foot button{
+  width:100%;background:var(--paper-lift);color:var(--ink);
+  border:1px solid var(--rule-strong);border-radius:9px;
+  padding:12px;font-size:15px;font-weight:500;letter-spacing:.06em;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:.14s;
+}
+.side-foot button:hover{background:var(--accent);color:#f7efe6;border-color:var(--accent-deep);}
+
+/* ============ MAIN ============ */
+.main{flex:1;min-width:0;overflow-y:auto;background:var(--paper);position:relative;}
+
+/* empty */
+.empty-state{
+  height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;color:var(--muted);text-align:center;padding:40px;
+}
+.empty-state .orn{font-family:var(--serif);font-size:28px;color:var(--rule-strong);letter-spacing:.5em;}
+.empty-state p{font-size:17px;margin:0;letter-spacing:.05em;line-height:1.9;}
+
+/* buffer / sealed page */
+.buffer{max-width:720px;margin:0 auto;padding:66px 46px 96px;}
+.buffer .eyebrow{
+  font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);display:inline-flex;align-items:center;gap:12px;margin-bottom:26px;
+}
+.buffer .eyebrow::before{content:"";width:30px;height:1px;background:var(--accent);opacity:.6;}
+.buffer h2{
+  font-family:var(--serif);font-weight:700;font-size:42px;line-height:1.32;
+  margin:0 0 18px;color:var(--ink);letter-spacing:.01em;
+}
+.buffer .byline{
+  font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.05em;margin-bottom:36px;
+}
+.buffer .byline span{margin-right:22px;}
+.plate{
+  position:relative;background:var(--paper-lift);
+  border:1px solid var(--rule-strong);border-left:3px solid var(--accent);
+  border-radius:4px;padding:16px 34px 34px;margin-bottom:36px;
+}
+.plate .plate-tab{
+  font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding:14px 0 18px;border-bottom:1px dashed var(--rule-strong);margin-bottom:22px;
+}
+.plate .warn{
+  display:flex;align-items:center;gap:9px;color:var(--accent);
+  font-weight:700;font-size:14px;letter-spacing:.08em;margin-bottom:16px;font-family:var(--sans);
+}
+.plate .body{
+  font-family:var(--serif);color:var(--ink-soft);font-size:17px;line-height:2.05;
+  white-space:pre-wrap;word-break:break-word;
+}
+.plate .body:empty::after{
+  content:"（此團錄尚未設定緩衝頁文字。）";color:var(--muted-2);font-style:italic;
+}
+.reveal-btn{
+  display:inline-flex;align-items:center;gap:14px;
+  background:var(--accent);color:#f6ede3;border:1px solid var(--accent-deep);
+  padding:15px 30px;border-radius:10px;
+  font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.05em;
+  transition:.14s;box-shadow:0 8px 22px rgba(92,32,30,.24);
+}
+.reveal-btn:hover{background:var(--accent-deep);transform:translateY(-1px);}
+.reveal-btn .seal{
+  width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;
+  display:grid;place-items:center;font-family:var(--serif);font-size:14px;
+}
+
+/* content view */
+.content-view{display:flex;flex-direction:column;height:100%;}
+.content-bar{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:13px 24px;background:var(--paper-deep);border-bottom:1px solid var(--rule-strong);
+}
+.content-bar .ttl{
+  font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);
+  margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.mini-btn{
+  background:var(--paper-lift);border:1px solid var(--rule-strong);color:var(--ink-soft);
+  padding:8px 14px;border-radius:8px;font-size:14px;font-weight:500;
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:.12s;white-space:nowrap;
+}
+.mini-btn:hover{border-color:var(--accent);color:var(--accent);}
+.frame-note{padding:8px 24px;font-size:13px;color:var(--muted);background:var(--paper);border-bottom:1px solid var(--rule);}
+.content-frame{flex:1;border:none;width:100%;background:#fff;}
+
+/* ============ MODAL ============ */
+.overlay{
+  position:fixed;inset:0;background:rgba(33,31,26,.52);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:60;padding:24px;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--paper);border:1px solid var(--rule-strong);border-radius:14px;
+  width:min(940px,100%);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);
+}
+.modal-head{display:flex;align-items:center;padding:20px 26px;border-bottom:1px solid var(--rule-strong);background:var(--paper-deep);}
+.modal-head h3{font-family:var(--serif);font-size:22px;margin:0;color:var(--ink);letter-spacing:.05em;}
+.modal-head .x{margin-left:auto;background:none;border:none;font-size:28px;color:var(--muted);width:38px;height:38px;border-radius:8px;line-height:1;}
+.modal-head .x:hover{background:var(--paper-lift);color:var(--ink);}
+.modal-body{padding:24px 26px;overflow-y:auto;flex:1;}
+.pane{display:none;}
+.pane.active{display:block;}
+
+.field{margin-bottom:16px;}
+.form-title{
+  font-family:var(--serif);font-size:18px;font-weight:700;color:var(--ink);
+  letter-spacing:.04em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:10px;
+}
+.form-title .badge{
+  font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.06em;
+  padding:3px 10px;border-radius:20px;background:var(--paper-deep);color:var(--muted);
+}
+#entryForm.editing .form-title{color:var(--accent-deep);}
+#entryForm.editing .form-title .badge{background:var(--accent-soft);color:var(--accent-deep);}
+.field label{display:block;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:.02em;}
+.field .hint{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 13px;border:1px solid var(--rule-strong);border-radius:9px;
+  font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper-lift);transition:.12s;
+}
+.field textarea{min-height:120px;resize:vertical;line-height:1.7;font-family:var(--serif);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+.btn{border:1px solid transparent;border-radius:9px;padding:11px 20px;font-size:15px;font-weight:600;letter-spacing:.03em;transition:.12s;}
+.btn-primary{background:var(--accent);color:#f6ede3;border-color:var(--accent-deep);}
+.btn-primary:hover{background:var(--accent-deep);}
+.btn-ghost{background:var(--paper-lift);color:var(--ink);border-color:var(--rule-strong);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:var(--paper-lift);color:var(--danger);border-color:#d8b3ad;}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger);}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+
+.list-block{border:1px solid var(--rule-strong);border-radius:12px;overflow:hidden;margin-bottom:20px;background:var(--paper-lift);}
+.list-block .lb-head{background:var(--paper-deep);padding:11px 16px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--rule);}
+.row:first-child{border-top:none;}
+.row .grow{flex:1;min-width:0;}
+.row .r-title{font-weight:500;font-size:16px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.row .r-sub{font-size:13px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chip{display:inline-block;font-family:var(--mono);font-size:13px;padding:2px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent-deep);font-weight:500;}
+.icon-btn{background:var(--paper);border:1px solid var(--rule-strong);border-radius:7px;width:34px;height:34px;color:var(--muted);font-size:16px;display:grid;place-items:center;transition:.12s;flex:0 0 auto;}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+.icon-btn.del:hover{border-color:var(--danger);color:var(--danger);}
+.icon-btn:disabled{opacity:.35;cursor:default;}
+.empty-note{color:var(--muted);font-size:14px;padding:14px 4px;font-style:italic;}
+
+.callout{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.85;color:var(--ink-soft);margin-bottom:18px;}
+.callout code{font-family:var(--mono);background:var(--accent-soft);padding:2px 6px;border-radius:5px;font-size:13px;color:var(--accent-deep);}
+.callout b{color:var(--ink);}
+
+.drop{border:2px dashed var(--rule-strong);border-radius:12px;padding:26px;text-align:center;color:var(--muted);transition:.12s;cursor:pointer;background:var(--paper-lift);}
+.drop:hover,.drop.drag{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-deep);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:13px 22px;border-radius:10px;font-size:15px;opacity:0;pointer-events:none;transition:.25s;z-index:90;box-shadow:var(--shadow);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* mobile */
+.hamburger{display:none;background:var(--paper-lift);color:var(--ink);border:1px solid var(--rule-strong);border-radius:9px;width:42px;height:42px;font-size:20px;margin-right:14px;flex:0 0 auto;}
+.scrim{display:none;position:fixed;inset:0;background:rgba(33,31,26,.4);z-index:40;}
+@media(max-width:860px){
+  .hamburger{display:grid;place-items:center;}
+  .tb-name label{display:none;}
+  .tb-div{margin:0 12px;}
+  .tb-brand{font-size:16px;}
+  .sidebar{position:fixed;left:0;top:62px;bottom:0;z-index:45;transform:translateX(-100%);transition:transform .22s;}
+  .sidebar.open{transform:translateX(0);}
+  .scrim.show{display:block;top:62px;}
+  .buffer{padding:52px 22px 60px;}
+  .buffer h2{font-size:32px;}
+  .grid2{grid-template-columns:1fr;}
+  .btn-export{padding:9px 12px;}
+  .btn-export .lbl{display:none;}
+  .tb-menu-btn{padding:8px 9px;font-size:13px;}
+  .tb-menu-btn .mlbl{display:none;}
+  .tb-menu{gap:6px;}
+  #siteName{width:130px;}
+  .tb-div{margin:0 10px;}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+.toolbar.viewer{justify-content:flex-start;}.tb-titlewrap{display:flex;flex-direction:column;line-height:1.15;}.tb-eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}.tb-title{font-family:var(--serif);font-weight:700;font-size:20px;color:var(--ink);letter-spacing:.04em;}</style></head><body><div class="toolbar viewer"><button class="hamburger" id="hamburger" aria-label="開啟目錄">☰</button><div class="tb-titlewrap"><span class="tb-eyebrow">團錄檢視</span><span class="tb-title">神貓桌 CoC 團錄</span></div></div><div class="scrim" id="scrim"></div><div class="app"><aside class="sidebar" id="sidebar"><div class="ledger-head"><span class="lh-main">目錄</span><span class="lh-sub">Contents</span></div><nav class="side-scroll" id="catList"></nav></aside><main class="main" id="main"></main></div><script>var DB={"meta":{"title":"神貓桌 CoC 團錄"},"categories":[{"id":"msom07k0myz9l","name":"CoC 1-50"},{"id":"msom07k08w1o8","name":"CoC 51-100"},{"id":"msom07k0amob6","name":"CoC 101-150"},{"id":"msom07k0cog3n","name":"CoC 151-200"},{"id":"msom07k0nt6fo","name":"CoC 201-250"},{"id":"msom07k0m6ivn","name":"CoC 251-300"}],"entries":[{"id":"msom07k0uhzbj","categoryId":"msom07k0myz9l","linkName":"18. 我的寵物戀人","title":"神貓桌CoC紀錄18.我的寵物戀人","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄18.我的寵物戀人.pdf","spoiler":"【團務概要】\n兩名探索者受託前往一處密閉公寓，卻發現房門在身後悄然消失……\n\n【防劇透警告】\n本團涉及關鍵謎題與結局揭露，尚未參團或計畫閱讀原記錄者，請斟酌是否繼續。\n\n（此為範例文字，可於「管理團錄」中編輯或刪除。）"},{"id":"msom07k03m13v","categoryId":"msom07k0myz9l","linkName":"22. 溫柔地獄的創造方法","title":"神貓桌CoC紀錄22.溫柔地獄的創造方法","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄22.溫柔地獄的創造方法_含秘密骰結果.pdf","spoiler":""},{"id":"msom07k0fg0a9","categoryId":"msom07k0myz9l","linkName":"23. 28點的聖禮","title":"神貓桌CoC紀錄23.28點的聖禮","kp":"洛雅","pl":"Pusha","url":"CoC/1-50/神貓卓CoC紀錄23.28點的聖禮.pdf","spoiler":""},{"id":"msom07k0v1ucd","categoryId":"msom07k0myz9l","linkName":"25. 在泡沫之夢中起舞","title":"神貓桌CoC紀錄25.在泡沫之夢中起舞","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄25.在泡沫之夢中跳舞吧.pdf","spoiler":""},{"id":"msom07k0riodb","categoryId":"msom07k0myz9l","linkName":"26. 不要迷失在六道的十字路口喔","title":"神貓桌CoC紀錄26.不要迷失在六道的十字路口喔","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄26.不要迷失在六道的十字路口喔.pdf","spoiler":""},{"id":"msom07k0ybawv","categoryId":"msom07k0myz9l","linkName":"41. 咎送的徒花","title":"神貓桌CoC紀錄41.咎送的徒花","kp":"洛雅","pl":"Edo","url":"CoC/1-50/神貓卓CoC紀錄41.咎送的徒花.pdf","spoiler":""},{"id":"msom07k0897x1","categoryId":"msom07k0myz9l","linkName":"44. 咎送的徒花 - 二團","title":"神貓桌CoC紀錄44.咎送的徒花 - 二團","kp":"洛雅","pl":"雅治","url":"CoC/1-50/神貓卓CoC紀錄44.咎送的徒花.pdf","spoiler":""},{"id":"msom07k0cwo2z","categoryId":"msom07k0myz9l","linkName":"46. 星星的眨眼","title":"神貓桌CoC紀錄46.星星的眨眼","kp":"洛雅","pl":"Edo","url":"CoC/1-50/神貓卓CoC紀錄46.星星的眨眼.pdf","spoiler":""},{"id":"msom07k077eix","categoryId":"msom07k0myz9l","linkName":"47. 咎送的徒花 - 三團","title":"神貓桌CoC紀錄47.咎送的徒花 - 三團","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄47.咎送的徒花.pdf","spoiler":""},{"id":"msom07k0o6rql","categoryId":"msom07k0myz9l","linkName":"48. 求死電車","title":"神貓桌CoC紀錄48.求死電車","kp":"洛雅","pl":"Edo","url":"CoC/1-50/神貓卓CoC紀錄48.求死電車.pdf","spoiler":""},{"id":"msom07k0adsyz","categoryId":"msom07k0myz9l","linkName":"50. SCP","title":"神貓桌CoC紀錄50.SCP","kp":"洛雅","pl":"小貴、理人、雅治、Rien","url":"CoC/1-50/神貓卓CoC紀錄50.SCP.pdf","spoiler":""},{"id":"msom07k00j830","categoryId":"msom07k08w1o8","linkName":"52. 用手上的刀子，給予你×。 - 二團","title":"神貓桌CoC紀錄52.用手上的刀子，給予你×。 - 二團","kp":"洛雅","pl":"Rien","url":"CoC/51-100/神貓卓CoC紀錄52.用手上的刀子，給予你×。.pdf","spoiler":""},{"id":"msom07k0qhyb2","categoryId":"msom07k08w1o8","linkName":"63. 不眠者","title":"神貓桌CoC紀錄63.不眠者","kp":"洛雅","pl":"Edo","url":"CoC/51-100/神貓卓CoC紀錄63.不眠者.pdf","spoiler":""},{"id":"msom07k0s4pjh","categoryId":"msom07k08w1o8","linkName":"99. 給藍色的你 - 二團","title":"神貓桌CoC紀錄99.給藍色的你 - 二團","kp":"洛雅","pl":"小貴","url":"CoC/51-100/神貓卓CoC紀錄99.給藍色的你.pdf","spoiler":""},{"id":"msom07k0jss1g","categoryId":"msom07k0amob6","linkName":"101. 明天見","title":"神貓桌CoC紀錄101.明天見","kp":"洛雅","pl":"Rien、六辰、CROC","url":"CoC/101-150/神貓卓CoC紀錄101.明天見。.pdf","spoiler":""},{"id":"msom07k0or2oo","categoryId":"msom07k0cog3n","linkName":"183. VOID","title":"神貓桌CoC紀錄183.VOID","kp":"洛雅","pl":"六辰、Rien、理人、IVAN","url":"CoC/151-200/神貓卓CoC紀錄183.VOID_完整收錄.pdf","spoiler":""},{"id":"msom07k0zxsam","categoryId":"msom07k0nt6fo","linkName":"219. 一室惡夢","title":"神貓桌CoC紀錄219.一室惡夢","kp":"洛雅","pl":"六辰","url":"CoC/201-250/神貓卓CoC紀錄219.一室惡夢.html","spoiler":""},{"id":"msom07k0q7kre","categoryId":"msom07k0nt6fo","linkName":"233. 溫柔地獄的創造方法","title":"神貓桌CoC紀錄233.溫柔地獄的創造方法","kp":"洛雅","pl":"程暮","url":"CoC/201-250/神貓卓CoC紀錄233.溫柔地獄的創造方法.pdf","spoiler":""},{"id":"msom07k0xy8aq","categoryId":"msom07k0nt6fo","linkName":"242. 以心電心","title":"神貓桌CoC紀錄242.以心電心","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/201-250/神貓卓CoC紀錄242.以心電心.html","spoiler":""},{"id":"msom07k0vowx5","categoryId":"msom07k0m6ivn","linkName":"259. Mayday，自電子的戰場。","title":"神貓卓CoC紀錄259.Mayday，自電子的戰場。","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/251-300/神貓卓CoC紀錄259.Mayday，自電子的戰場。.html","spoiler":""},{"id":"msom07k0bq4a3","categoryId":"msom07k0m6ivn","linkName":"260. 那條花園鰻是KPC","title":"神貓卓CoC紀錄260.那條花園鰻是KPC","kp":"洛雅","pl":"程暮","url":"CoC/251-300/神貓卓CoC紀錄260.那條花園鰻是KPC.html","spoiler":""},{"id":"msom07k0nco1h","categoryId":"msom07k0m6ivn","linkName":"271. 為了阻止牛丼漲價而奮鬥的狂信徒的故事","title":"神貓卓CoC紀錄271.為了阻止牛丼漲價而奮鬥的狂信徒的故事","kp":"洛雅","pl":"程暮","url":"CoC/251-300/神貓卓CoC紀錄271.為了阻止牛丼漲價而奮鬥的狂信徒的故事.html","spoiler":""},{"id":"msom07k0ybfzg","categoryId":"msom07k0m6ivn","linkName":"273. AND/HAND","title":"神貓卓CoC紀錄273.AND/HAND","kp":"洛雅","pl":"程暮","url":"CoC/251-300/神貓卓CoC紀錄273.AND_HAND.html","spoiler":""},{"id":"msom07k0zcloh","categoryId":"msom07k0m6ivn","linkName":"274. 死亡比言語更能訴說愛","title":"神貓卓CoC紀錄274.死亡比言語更能訴說愛","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/251-300/神貓卓CoC紀錄274.死亡比言語更能訴說愛.html","spoiler":""}]};</script><script>
+(function(){
+  "use strict";
+  var $=function(s){return document.querySelector(s);};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
+  var openCat=null, activeEntry=null;
+  function entriesOf(id){return DB.entries.filter(function(e){return e.categoryId===id;});}
+  function pad(n){return (n<10?"0":"")+n;}
+
+  function renderSidebar(){
+    var wrap=$("#catList"); wrap.innerHTML="";
+    if(!DB.categories.length){wrap.innerHTML='<div class="vol-empty">尚無團錄。</div>';return;}
+    DB.categories.forEach(function(cat){
+      var links=entriesOf(cat.id);
+      var sec=document.createElement("section");
+      sec.className="vol"+(openCat===cat.id?" open":"");
+      sec.innerHTML='<button class="vol-head" data-cat="'+cat.id+'">'
+        +'<span class="vol-name">'+esc(cat.name)+'</span>'
+        +'<span class="vol-count">'+links.length+'</span>'
+        +'<span class="vol-caret">▾</span></button>'
+        +'<div class="vol-body">'
+        +(links.length?links.map(function(e,i){
+            return '<button class="entry'+(activeEntry===e.id?' active':'')+'" data-entry="'+e.id+'">'
+              +'<span class="e-num">'+pad(i+1)+'</span><span class="e-name">'+esc(e.linkName)+'</span></button>';
+          }).join(''):'<div class="vol-empty">（此分類尚無團錄）</div>')
+        +'</div>';
+      wrap.appendChild(sec);
+    });
+  }
+  function renderEmpty(){
+    activeEntry=null;
+    $("#main").innerHTML='<div class="empty-state"><div class="orn">❦</div><p>自左側目錄選擇一則團錄<br>閱讀前將先顯示防劇透緩衝頁</p></div>';
+  }
+  function renderBuffer(e){
+    var meta=[];
+    if(e.kp)meta.push('<span>KP／'+esc(e.kp)+'</span>');
+    if(e.pl)meta.push('<span>PL／'+esc(e.pl)+'</span>');
+    $("#main").innerHTML='<div class="buffer"><div class="eyebrow">封緘頁 · Sealed</div>'
+      +'<h2>'+esc(e.title||e.linkName)+'</h2>'
+      +'<div class="byline">'+meta.join('')+'</div>'
+      +'<div class="plate"><div class="plate-tab">概要 · 防雷</div>'
+      +'<div class="warn">⚠ 閱讀前請注意</div>'
+      +'<div class="body">'+esc(e.spoiler||'').trim()+'</div></div>'
+      +'<button class="reveal-btn" id="revealBtn"><span class="seal">封</span>翻開此頁，顯示團錄內容</button></div>';
+    $("#revealBtn").onclick=function(){renderContent(e);};
+  }
+  function renderContent(e){
+    var url=(e.url||'').trim();
+    if(!url){
+      $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button></div><div class="empty-state"><div class="orn">—</div><p>此團錄尚未設定連結網址。</p></div></div>';
+      $("#backBuf").onclick=function(){renderBuffer(e);};return;
+    }
+    $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button><a class="mini-btn" href="'+esc(url)+'" target="_blank" rel="noopener">在新分頁開啟 ↗</a></div><div class="frame-note">若下方空白，代表該網站不允許被嵌入；請點「在新分頁開啟」。</div><iframe class="content-frame" src="'+esc(url)+'" referrerpolicy="no-referrer"></iframe></div>';
+    $("#backBuf").onclick=function(){renderBuffer(e);};
+  }
+  $("#catList").addEventListener("click",function(ev){
+    var cb=ev.target.closest(".vol-head");
+    if(cb){var id=cb.dataset.cat;openCat=(openCat===id)?null:id;renderSidebar();return;}
+    var li=ev.target.closest(".entry");
+    if(li){var e=DB.entries.find(function(x){return x.id===li.dataset.entry;});
+      if(e){activeEntry=e.id;renderSidebar();renderBuffer(e);closeNav();}}
+  });
+  function openNav(){$("#sidebar").classList.add("open");$("#scrim").classList.add("show");}
+  function closeNav(){$("#sidebar").classList.remove("open");$("#scrim").classList.remove("show");}
+  var hb=$("#hamburger");if(hb)hb.onclick=openNav;
+  var sc=$("#scrim");if(sc)sc.onclick=closeNav;
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeNav();});
+  openCat=null; renderSidebar(); renderEmpty();
+})();
+</script></body></html>
