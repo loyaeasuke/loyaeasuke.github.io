@@ -96,14 +96,18 @@ ruby rt{font-size:.68em;letter-spacing:.04em;line-height:1.25;color:#5b626f;font
 /* ── scene / dice / system / info ─────────── */
 .scene{margin:46px 0 32px;text-align:center}
 .scene .idx{font-family:var(--mono);font-size:13px;letter-spacing:.3em;color:var(--muted);display:block;margin-bottom:12px}
-.scene .bar{display:flex;align-items:center;gap:18px}
-.scene .bar::before,.scene .bar::after{content:"";flex:1;height:1px;background:var(--line)}
+.scene .rulebar{display:flex;align-items:center;gap:18px}
+.scene .rulebar::before,.scene .rulebar::after{content:"";flex:1;height:1px;background:var(--line)}
 .scene .label{font-family:var(--serif);font-size:16px;letter-spacing:.5em;text-indent:.5em;color:var(--ink);
   flex:0 1 auto;max-width:70%}
 
 .dice{display:flex;gap:10px;align-items:baseline;font-family:var(--mono);font-size:14px;
   background:var(--dice-bg);border-left:3px solid var(--dice);padding:7px 12px;margin:6px 0}
 .dice .who{color:var(--dice);font-weight:700;flex:0 0 auto}
+.dice .whisper{flex:0 0 auto}
+.dice .rolls{flex:1;min-width:0;display:flex;flex-direction:column}
+.dice .roll{display:flex;gap:10px;align-items:baseline}
+.dice .roll + .roll{margin-top:.5em}
 .dice .expr{flex:1;word-break:break-all;color:#33414a}
 .dice .res{font-weight:700;padding:1px 8px;border:1px solid currentColor;white-space:nowrap}
 .dice.sec{background:
@@ -603,17 +607,26 @@ function render(){
   const M=spkMap(), out=[], toc=[]; let shown=0, sceneNo=0, prevSecret='', anchorNo=0;
   const anchor=(kind,label)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label}); return id; };
 
-  // 合併鍵：僅 talk／system／hidden，且發言人相同（talk 另需頻道相同）才可合併
+  // 合併鍵：talk／system／hidden／dice，發言人相同才可合併
+  // talk、dice 另需頻道相同；頻道為 secret 時，還需秘匿對象相同才合併
+  const chKey=(r)=>{
+    const ch=(r['頻道']||'main').trim();
+    return ch==='secret' ? 'secret|'+(r['秘匿對象']||'') : ch;
+  };
   const mergeKey=(r)=>{
     const ty=r['類型']||'talk';
     if(ty==='talk'){
       const nm=r['發言人']||''; if(!nm) return null;
-      return 'talk|'+(r['頻道']||'main').trim()+'|'+nm;
+      return 'talk|'+chKey(r)+'|'+nm;
     }
     if(ty==='system'||ty==='hidden'){
       let nm=r['發言人']||''; if(!nm) nm=splitBracketName(r['內容']||'').name;
       if(!nm) return null;
       return ty+'|'+nm;
+    }
+    if(ty==='dice'){
+      const nm=r['發言人']||''; if(!nm) return null;
+      return 'dice|'+chKey(r)+'|'+nm;
     }
     return null;
   };
@@ -642,7 +655,7 @@ function render(){
       sceneNo++;
       const sid=anchor('scene',`SCENE ${String(sceneNo).padStart(2,'0')}　${r['內容']||''}`.trim());
       out.push(`<section class="scene" id="${sid}" data-anchor><span class="idx">SCENE ${String(sceneNo).padStart(2,'0')}</span>
-        <div class="bar"><span class="label">${esc(r['內容']||'◆')}</span></div></section>`);
+        <div class="rulebar"><span class="label">${esc(r['內容']||'◆')}</span></div></section>`);
       continue;
     }
     if(type==='battle_start'){
@@ -776,14 +789,16 @@ function render(){
     const s=M[r['發言人']];
     if(type==='dice'){
       const sec = ch==='secret'||isHO;
-      const parts=(r['內容']||'').split(/＞|=>/).map(x=>x.trim());
-      const last=parts.length>1?parts.pop():'';
+      const rolls=(r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map(c=>{
+        const parts=c.split(/＞|=>/).map(x=>x.trim());
+        const last=parts.length>1?parts.pop():'';
+        return `<div class="roll"><span class="expr">${esc(parts.join(' ＞ '))}</span>${last?`<span class="res ${resultClass(last)}">${esc(last)}</span>`:''}</div>`;
+      }).join('') || '<div class="roll"></div>';
       out.push(`<div class="dice ${sec?'sec':''}">
         ${sec?`<span class="tag">秘匿</span>`:''}
         ${r['發言人']?`<span class="who">${esc((s&&s['顯示名稱'])||r['發言人'])}</span>`:''}
-        <span class="expr">${esc(parts.join(' ＞ '))}</span>
         ${sec&&secTarget?`<span class="whisper">${esc(secTarget)}</span>`:''}
-        ${last?`<span class="res ${resultClass(last)}">${esc(last)}</span>`:''}</div>`);
+        <div class="rolls">${rolls}</div></div>`);
       continue;
     }
 
