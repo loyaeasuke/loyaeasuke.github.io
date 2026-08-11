@@ -818,7 +818,7 @@ function render(){
   }
   document.getElementById('log').innerHTML=out.join('');
   renderTOC(toc);
-  document.getElementById('count').textContent=`${shown} / ${LOG.length} 行`;
+  document.getElementById('count').textContent=`${shown} / ${merged.length} 行`;
 }
 
 const TITLE_ROW = r => (r['類型']||'')==='title';
