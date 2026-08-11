@@ -247,8 +247,13 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
   text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:.12s;white-space:nowrap;
 }
 .mini-btn:hover{border-color:var(--accent);color:var(--accent);}
-.frame-note{padding:8px 24px;font-size:13px;color:var(--muted);background:var(--paper);border-bottom:1px solid var(--rule);}
-.content-frame{flex:1;border:none;width:100%;background:#fff;}
+.frame-note{padding:11px 24px;font-size:14px;color:var(--accent-deep);background:var(--accent-soft);border-bottom:1px solid var(--rule-strong);}
+.frame-wrap{flex:1;position:relative;background:#fff;min-height:0;}
+.content-frame{position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff;}
+.frame-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:var(--paper);transition:opacity .3s;}
+.frame-loading.hide{opacity:0;pointer-events:none;}
+.spinner{width:16px;height:16px;border:2px solid var(--rule-strong);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
 /* ============ MODAL ============ */
 .overlay{
@@ -345,13 +350,13 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
   #siteName{width:130px;}
   .tb-div{margin:0 10px;}
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
-.toolbar.viewer{justify-content:flex-start;}.tb-titlewrap{display:flex;flex-direction:column;line-height:1.15;}.tb-eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}.tb-title{font-family:var(--serif);font-weight:700;font-size:20px;color:var(--ink);letter-spacing:.04em;}</style></head><body><div class="toolbar viewer"><button class="hamburger" id="hamburger" aria-label="開啟目錄">☰</button><div class="tb-titlewrap"><span class="tb-eyebrow">團錄檢視</span><span class="tb-title">神貓桌 CoC 團錄</span></div></div><div class="scrim" id="scrim"></div><div class="app"><aside class="sidebar" id="sidebar"><div class="ledger-head"><span class="lh-main">目錄</span><span class="lh-sub">Contents</span></div><nav class="side-scroll" id="catList"></nav></aside><main class="main" id="main"></main></div><script>var DB={"meta":{"title":"神貓桌 CoC 團錄"},"categories":[{"id":"msom07k0myz9l","name":"CoC 1-50"},{"id":"msom07k08w1o8","name":"CoC 51-100"},{"id":"msom07k0amob6","name":"CoC 101-150"},{"id":"msom07k0cog3n","name":"CoC 151-200"},{"id":"msom07k0nt6fo","name":"CoC 201-250"},{"id":"msom07k0m6ivn","name":"CoC 251-300"}],"entries":[{"id":"msom07k0uhzbj","categoryId":"msom07k0myz9l","linkName":"18. 我的寵物戀人","title":"神貓桌CoC紀錄18.我的寵物戀人","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄18.我的寵物戀人.pdf","spoiler":"【團務概要】\n兩名探索者受託前往一處密閉公寓，卻發現房門在身後悄然消失……\n\n【防劇透警告】\n本團涉及關鍵謎題與結局揭露，尚未參團或計畫閱讀原記錄者，請斟酌是否繼續。\n\n（此為範例文字，可於「管理團錄」中編輯或刪除。）"},{"id":"msom07k03m13v","categoryId":"msom07k0myz9l","linkName":"22. 溫柔地獄的創造方法","title":"神貓桌CoC紀錄22.溫柔地獄的創造方法","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄22.溫柔地獄的創造方法_含秘密骰結果.pdf","spoiler":""},{"id":"msom07k0fg0a9","categoryId":"msom07k0myz9l","linkName":"23. 28點的聖禮","title":"神貓桌CoC紀錄23.28點的聖禮","kp":"洛雅","pl":"Pusha","url":"CoC/1-50/神貓卓CoC紀錄23.28點的聖禮.pdf","spoiler":""},{"id":"msom07k0v1ucd","categoryId":"msom07k0myz9l","linkName":"25. 在泡沫之夢中起舞","title":"神貓桌CoC紀錄25.在泡沫之夢中起舞","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄25.在泡沫之夢中跳舞吧.pdf","spoiler":""},{"id":"msom07k0riodb","categoryId":"msom07k0myz9l","linkName":"26. 不要迷失在六道的十字路口喔","title":"神貓桌CoC紀錄26.不要迷失在六道的十字路口喔","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄26.不要迷失在六道的十字路口喔.pdf","spoiler":""},{"id":"msom07k0ybawv","categoryId":"msom07k0myz9l","linkName":"41. 咎送的徒花","title":"神貓桌CoC紀錄41.咎送的徒花","kp":"洛雅","pl":"Edo","url":"CoC/1-50/神貓卓CoC紀錄41.咎送的徒花.pdf","spoiler":""},{"id":"msom07k0897x1","categoryId":"msom07k0myz9l","linkName":"44. 咎送的徒花 - 二團","title":"神貓桌CoC紀錄44.咎送的徒花 - 二團","kp":"洛雅","pl":"雅治","url":"CoC/1-50/神貓卓CoC紀錄44.咎送的徒花.pdf","spoiler":""},{"id":"msom07k0cwo2z","categoryId":"msom07k0myz9l","linkName":"46. 星星的眨眼","title":"神貓桌CoC紀錄46.星星的眨眼","kp":"洛雅","pl":"Edo","url":"CoC/1-50/神貓卓CoC紀錄46.星星的眨眼.pdf","spoiler":""},{"id":"msom07k077eix","categoryId":"msom07k0myz9l","linkName":"47. 咎送的徒花 - 三團","title":"神貓桌CoC紀錄47.咎送的徒花 - 三團","kp":"洛雅","pl":"Rien","url":"CoC/1-50/神貓卓CoC紀錄47.咎送的徒花.pdf","spoiler":""},{"id":"msom07k0o6rql","categoryId":"msom07k0myz9l","linkName":"48. 求死電車","title":"神貓桌CoC紀錄48.求死電車","kp":"洛雅","pl":"Edo","url":"CoC/1-50/神貓卓CoC紀錄48.求死電車.pdf","spoiler":""},{"id":"msom07k0adsyz","categoryId":"msom07k0myz9l","linkName":"50. SCP","title":"神貓桌CoC紀錄50.SCP","kp":"洛雅","pl":"小貴、理人、雅治、Rien","url":"CoC/1-50/神貓卓CoC紀錄50.SCP.pdf","spoiler":""},{"id":"msom07k00j830","categoryId":"msom07k08w1o8","linkName":"52. 用手上的刀子，給予你×。 - 二團","title":"神貓桌CoC紀錄52.用手上的刀子，給予你×。 - 二團","kp":"洛雅","pl":"Rien","url":"CoC/51-100/神貓卓CoC紀錄52.用手上的刀子，給予你×。.pdf","spoiler":""},{"id":"msom07k0qhyb2","categoryId":"msom07k08w1o8","linkName":"63. 不眠者","title":"神貓桌CoC紀錄63.不眠者","kp":"洛雅","pl":"Edo","url":"CoC/51-100/神貓卓CoC紀錄63.不眠者.pdf","spoiler":""},{"id":"msom07k0s4pjh","categoryId":"msom07k08w1o8","linkName":"99. 給藍色的你 - 二團","title":"神貓桌CoC紀錄99.給藍色的你 - 二團","kp":"洛雅","pl":"小貴","url":"CoC/51-100/神貓卓CoC紀錄99.給藍色的你.pdf","spoiler":""},{"id":"msom07k0jss1g","categoryId":"msom07k0amob6","linkName":"101. 明天見","title":"神貓桌CoC紀錄101.明天見","kp":"洛雅","pl":"Rien、六辰、CROC","url":"CoC/101-150/神貓卓CoC紀錄101.明天見。.pdf","spoiler":""},{"id":"msom07k0or2oo","categoryId":"msom07k0cog3n","linkName":"183. VOID","title":"神貓桌CoC紀錄183.VOID","kp":"洛雅","pl":"六辰、Rien、理人、IVAN","url":"CoC/151-200/神貓卓CoC紀錄183.VOID_完整收錄.pdf","spoiler":""},{"id":"msom07k0zxsam","categoryId":"msom07k0nt6fo","linkName":"219. 一室惡夢","title":"神貓桌CoC紀錄219.一室惡夢","kp":"洛雅","pl":"六辰","url":"CoC/201-250/神貓卓CoC紀錄219.一室惡夢.html","spoiler":""},{"id":"msom07k0q7kre","categoryId":"msom07k0nt6fo","linkName":"233. 溫柔地獄的創造方法","title":"神貓桌CoC紀錄233.溫柔地獄的創造方法","kp":"洛雅","pl":"程暮","url":"CoC/201-250/神貓卓CoC紀錄233.溫柔地獄的創造方法.pdf","spoiler":""},{"id":"msom07k0xy8aq","categoryId":"msom07k0nt6fo","linkName":"242. 以心電心","title":"神貓桌CoC紀錄242.以心電心","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/201-250/神貓卓CoC紀錄242.以心電心.html","spoiler":""},{"id":"msom07k0vowx5","categoryId":"msom07k0m6ivn","linkName":"259. Mayday，自電子的戰場。","title":"神貓卓CoC紀錄259.Mayday，自電子的戰場。","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/251-300/神貓卓CoC紀錄259.Mayday，自電子的戰場。.html","spoiler":""},{"id":"msom07k0bq4a3","categoryId":"msom07k0m6ivn","linkName":"260. 那條花園鰻是KPC","title":"神貓卓CoC紀錄260.那條花園鰻是KPC","kp":"洛雅","pl":"程暮","url":"CoC/251-300/神貓卓CoC紀錄260.那條花園鰻是KPC.html","spoiler":""},{"id":"msom07k0nco1h","categoryId":"msom07k0m6ivn","linkName":"271. 為了阻止牛丼漲價而奮鬥的狂信徒的故事","title":"神貓卓CoC紀錄271.為了阻止牛丼漲價而奮鬥的狂信徒的故事","kp":"洛雅","pl":"程暮","url":"CoC/251-300/神貓卓CoC紀錄271.為了阻止牛丼漲價而奮鬥的狂信徒的故事.html","spoiler":""},{"id":"msom07k0ybfzg","categoryId":"msom07k0m6ivn","linkName":"273. AND/HAND","title":"神貓卓CoC紀錄273.AND/HAND","kp":"洛雅","pl":"程暮","url":"CoC/251-300/神貓卓CoC紀錄273.AND_HAND.html","spoiler":""},{"id":"msom07k0zcloh","categoryId":"msom07k0m6ivn","linkName":"274. 死亡比言語更能訴說愛","title":"神貓卓CoC紀錄274.死亡比言語更能訴說愛","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/251-300/神貓卓CoC紀錄274.死亡比言語更能訴說愛.html","spoiler":""}]};</script><script>
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}.spinner{animation:none!important;}}
+.toolbar.viewer{justify-content:flex-start;}.tb-titlewrap{display:flex;flex-direction:column;line-height:1.15;}.tb-eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}.tb-title{font-family:var(--serif);font-weight:700;font-size:20px;color:var(--ink);letter-spacing:.04em;}</style></head><body><div class="toolbar viewer"><button class="hamburger" id="hamburger" aria-label="開啟目錄">☰</button><div class="tb-titlewrap"><span class="tb-eyebrow">團錄檢視</span><span class="tb-title">神貓桌 CoC 團錄</span></div></div><div class="scrim" id="scrim"></div><div class="app"><aside class="sidebar" id="sidebar"><div class="ledger-head"><span class="lh-main">目錄</span><span class="lh-sub">Contents</span></div><nav class="side-scroll" id="catList"></nav></aside><main class="main" id="main"></main></div><script>var DB={"meta":{"title":"神貓桌 CoC 團錄"},"categories":[{"id":"msomv8gps8t7w","name":"CoC 1-50"},{"id":"msomv8gpbo25m","name":"CoC 51-100"},{"id":"msomv8gp95lgb","name":"CoC 101-150"},{"id":"msomv8gp1ut47","name":"CoC 151-200"},{"id":"msomv8gpmgxsq","name":"CoC 201-250"},{"id":"msomv8gpa4wm0","name":"CoC 251-300"}],"entries":[{"id":"msomv8gpk4f9p","categoryId":"msomv8gps8t7w","linkName":"18. 我的寵物戀人","title":"神貓桌CoC紀錄18.我的寵物戀人","kp":"洛雅","pl":"Rien","url":"CoC/1-50/018-my-pet-lover.pdf","spoiler":"【團務概要】\n兩名探索者受託前往一處密閉公寓，卻發現房門在身後悄然消失……\n\n【防劇透警告】\n本團涉及關鍵謎題與結局揭露，尚未參團或計畫閱讀原記錄者，請斟酌是否繼續。\n\n（此為範例文字，可於「管理團錄」中編輯或刪除。）"},{"id":"msomv8gppi3kk","categoryId":"msomv8gps8t7w","linkName":"22. 溫柔地獄的創造方法","title":"神貓桌CoC紀錄22.溫柔地獄的創造方法","kp":"洛雅","pl":"Rien","url":"CoC/1-50/022-how-to-create-a-gentle-hell.pdf","spoiler":""},{"id":"msomv8gp6lck7","categoryId":"msomv8gps8t7w","linkName":"23. 28點的聖禮","title":"神貓桌CoC紀錄23.28點的聖禮","kp":"洛雅","pl":"Pusha","url":"CoC/1-50/023-sacrament-at-28.pdf","spoiler":""},{"id":"msomv8gp7w591","categoryId":"msomv8gps8t7w","linkName":"25. 在泡沫之夢中起舞","title":"神貓桌CoC紀錄25.在泡沫之夢中起舞","kp":"洛雅","pl":"Rien","url":"CoC/1-50/025-dancing-in-a-bubble-dream.pdf","spoiler":""},{"id":"msomv8gpbm1f1","categoryId":"msomv8gps8t7w","linkName":"26. 不要迷失在六道的十字路口喔","title":"神貓桌CoC紀錄26.不要迷失在六道的十字路口喔","kp":"洛雅","pl":"Rien","url":"CoC/1-50/026-crossroads-of-the-six-realms.pdf","spoiler":""},{"id":"msomv8gpassx4","categoryId":"msomv8gps8t7w","linkName":"41. 咎送的徒花","title":"神貓桌CoC紀錄41.咎送的徒花","kp":"洛雅","pl":"Edo","url":"CoC/1-50/041-barren-blossom-of-farewell.pdf","spoiler":""},{"id":"msomv8gptwjio","categoryId":"msomv8gps8t7w","linkName":"44. 咎送的徒花 - 二團","title":"神貓桌CoC紀錄44.咎送的徒花 - 二團","kp":"洛雅","pl":"雅治","url":"CoC/1-50/044-barren-blossom-of-farewell-run-2.pdf","spoiler":""},{"id":"msomv8gpj3p78","categoryId":"msomv8gps8t7w","linkName":"46. 星星的眨眼","title":"神貓桌CoC紀錄46.星星的眨眼","kp":"洛雅","pl":"Edo","url":"CoC/1-50/046-twinkle-of-a-star.pdf","spoiler":""},{"id":"msomv8gpeddmp","categoryId":"msomv8gps8t7w","linkName":"47. 咎送的徒花 - 三團","title":"神貓桌CoC紀錄47.咎送的徒花 - 三團","kp":"洛雅","pl":"Rien","url":"CoC/1-50/047-barren-blossom-of-farewell-run-3.pdf","spoiler":""},{"id":"msomv8gpw8q5h","categoryId":"msomv8gps8t7w","linkName":"48. 求死電車","title":"神貓桌CoC紀錄48.求死電車","kp":"洛雅","pl":"Edo","url":"CoC/1-50/048-death-seeking-train.pdf","spoiler":""},{"id":"msomv8gp92r6z","categoryId":"msomv8gps8t7w","linkName":"50. SCP","title":"神貓桌CoC紀錄50.SCP","kp":"洛雅","pl":"小貴、理人、雅治、Rien","url":"CoC/1-50/050-scp.pdf","spoiler":""},{"id":"msomv8gpmzyki","categoryId":"msomv8gpbo25m","linkName":"52. 用手上的刀子，給予你×。 - 二團","title":"神貓桌CoC紀錄52.用手上的刀子，給予你×。 - 二團","kp":"洛雅","pl":"Rien","url":"CoC/51-100/052-with-the-knife-in-my-hand-run-2.pdf","spoiler":""},{"id":"msomv8gpic9zh","categoryId":"msomv8gpbo25m","linkName":"63. 不眠者","title":"神貓桌CoC紀錄63.不眠者","kp":"洛雅","pl":"Edo","url":"CoC/51-100/063-the-sleepless.pdf","spoiler":""},{"id":"msomv8gpngvne","categoryId":"msomv8gpbo25m","linkName":"99. 給藍色的你 - 二團","title":"神貓桌CoC紀錄99.給藍色的你 - 二團","kp":"洛雅","pl":"小貴","url":"CoC/51-100/099-to-you-in-blue-run-2.pdf","spoiler":""},{"id":"msomv8gpz2flt","categoryId":"msomv8gp95lgb","linkName":"101. 明天見 - 二團","title":"神貓桌CoC紀錄101.明天見 - 二團","kp":"洛雅","pl":"Rien、六辰、CROC","url":"CoC/101-150/101-see-you-tomorrow-run-2.pdf","spoiler":""},{"id":"msomv8gpinii8","categoryId":"msomv8gp1ut47","linkName":"183. VOID","title":"神貓桌CoC紀錄183.VOID","kp":"洛雅","pl":"六辰、Rien、理人、IVAN","url":"CoC/151-200/183-void.pdf","spoiler":""},{"id":"msomv8gph6099","categoryId":"msomv8gpmgxsq","linkName":"219. 一室惡夢 - 四團","title":"神貓桌CoC紀錄219.一室惡夢 - 四團","kp":"洛雅","pl":"六辰","url":"CoC/201-250/219-one-room-nightmare-run-4.html","spoiler":""},{"id":"msomv8gpcmopa","categoryId":"msomv8gpmgxsq","linkName":"233. 溫柔地獄的創造方法 - 五團","title":"神貓桌CoC紀錄233.溫柔地獄的創造方法 - 五團","kp":"洛雅","pl":"程暮","url":"CoC/201-250/233-how-to-create-a-gentle-hell-run-5.pdf","spoiler":""},{"id":"msomv8gp9hyc7","categoryId":"msomv8gpmgxsq","linkName":"242. 以心電心 - 二團","title":"神貓桌CoC紀錄242.以心電心 - 二團","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/201-250/242-heart-to-heart-run-2.html","spoiler":""},{"id":"msomv8gpv0p3h","categoryId":"msomv8gpa4wm0","linkName":"259. Mayday，自電子的戰場。 - 三團","title":"神貓卓CoC紀錄259.Mayday，自電子的戰場。 - 三團","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/251-300/259-mayday-from-the-electronic-battlefield-run-3.html","spoiler":""},{"id":"msomv8gpo3zm2","categoryId":"msomv8gpa4wm0","linkName":"260. 那條花園鰻是KPC - 三團","title":"神貓卓CoC紀錄260.那條花園鰻是KPC - 三團","kp":"洛雅","pl":"程暮","url":"CoC/251-300/260-that-garden-eel-is-the-kpc-run-3.html","spoiler":""},{"id":"msomv8gpqtfl9","categoryId":"msomv8gpa4wm0","linkName":"271. 為了阻止牛丼漲價而奮鬥的狂信徒的故事 - 六團","title":"神貓卓CoC紀錄271.為了阻止牛丼漲價而奮鬥的狂信徒的故事 - 六團","kp":"洛雅","pl":"理人","url":"CoC/251-300/271-fanatic-vs-gyudon-inflation-run-6.html","spoiler":""},{"id":"msomv8gp0t5nd","categoryId":"msomv8gpa4wm0","linkName":"273. AND/HAND - 五團","title":"神貓卓CoC紀錄273.AND/HAND - 五團","kp":"洛雅","pl":"程暮","url":"CoC/251-300/273-and-hand-run-5.html","spoiler":""},{"id":"msomv8gp02d9h","categoryId":"msomv8gpa4wm0","linkName":"274. 死亡比言語更能訴說愛 - 三團","title":"神貓卓CoC紀錄274.死亡比言語更能訴說愛 - 三團","kp":"洛雅","pl":"ㄇㄙ","url":"CoC/251-300/274-death-speaks-of-love-better-than-words-run-3.html","spoiler":""}]};</script><script>
 (function(){
   "use strict";
   var $=function(s){return document.querySelector(s);};
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
-  var openCat=null, activeEntry=null;
+  var openCats={}, activeEntry=null;
   function entriesOf(id){return DB.entries.filter(function(e){return e.categoryId===id;});}
   function pad(n){return (n<10?"0":"")+n;}
 
@@ -361,7 +366,7 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
     DB.categories.forEach(function(cat){
       var links=entriesOf(cat.id);
       var sec=document.createElement("section");
-      sec.className="vol"+(openCat===cat.id?" open":"");
+      sec.className="vol"+(openCats[cat.id]?" open":"");
       sec.innerHTML='<button class="vol-head" data-cat="'+cat.id+'">'
         +'<span class="vol-name">'+esc(cat.name)+'</span>'
         +'<span class="vol-count">'+links.length+'</span>'
@@ -390,7 +395,34 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
       +'<div class="warn">⚠ 閱讀前請注意</div>'
       +'<div class="body">'+esc(e.spoiler||'').trim()+'</div></div>'
       +'<button class="reveal-btn" id="revealBtn"><span class="seal">封</span>翻開此頁，顯示團錄內容</button></div>';
-    $("#revealBtn").onclick=function(){renderContent(e);};
+    fitTitle(document.querySelector(".buffer h2"));$("#revealBtn").onclick=function(){renderContent(e);};
+  }
+  function wireFrame(url){
+    var iframe=document.getElementById("contentFrame");
+    var note=document.getElementById("frameNote");
+    var loading=document.getElementById("frameLoading");
+    if(!iframe)return;
+    function hideLoading(){if(loading)loading.classList.add("hide");}
+    function showNote(){hideLoading();if(note)note.hidden=false;}
+    function hideNote(){hideLoading();if(note)note.hidden=true;}
+    var timer=setTimeout(showNote,6000);
+    iframe.onload=function(){
+      clearTimeout(timer);
+      var failed=false;
+      try{
+        var doc=iframe.contentDocument;
+        if(doc){
+          var b=doc.body;
+          var txt=b?((b.innerText||b.textContent||"").trim()):"";
+          if(!b||(b.children.length===0&&txt.length===0))failed=true;
+          var probe=((doc.title||"")+" "+txt.slice(0,200)).toLowerCase();
+          if(txt.length<300&&/(404|not found|403|forbidden|can.t be found|無法找到|找不到|頁面不存在)/.test(probe))failed=true;
+        }
+      }catch(err){/* cross-origin: cannot inspect, assume loaded */}
+      if(failed)showNote();else hideNote();
+    };
+    iframe.onerror=function(){clearTimeout(timer);showNote();};
+    iframe.src=url;
   }
   function renderContent(e){
     var url=(e.url||'').trim();
@@ -398,12 +430,13 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
       $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button></div><div class="empty-state"><div class="orn">—</div><p>此團錄尚未設定連結網址。</p></div></div>';
       $("#backBuf").onclick=function(){renderBuffer(e);};return;
     }
-    $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button><a class="mini-btn" href="'+esc(url)+'" target="_blank" rel="noopener">在新分頁開啟 ↗</a></div><div class="frame-note">若下方空白，代表該網站不允許被嵌入；請點「在新分頁開啟」。</div><iframe class="content-frame" src="'+esc(url)+'" referrerpolicy="no-referrer"></iframe></div>';
+    $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button><a class="mini-btn" href="'+esc(url)+'" target="_blank" rel="noopener">在新分頁開啟 ↗</a></div><div class="frame-note" id="frameNote" hidden>⚠ 此連結可能無法嵌入或已失效，請點右上角「在新分頁開啟」。</div><div class="frame-wrap"><iframe class="content-frame" id="contentFrame" referrerpolicy="no-referrer"></iframe><div class="frame-loading" id="frameLoading"><span class="spinner"></span>載入中…</div></div></div>';
     $("#backBuf").onclick=function(){renderBuffer(e);};
+  wireFrame(url);
   }
   $("#catList").addEventListener("click",function(ev){
     var cb=ev.target.closest(".vol-head");
-    if(cb){var id=cb.dataset.cat;openCat=(openCat===id)?null:id;renderSidebar();return;}
+    if(cb){var id=cb.dataset.cat;if(openCats[id]){delete openCats[id];}else{openCats[id]=true;}renderSidebar();return;}
     var li=ev.target.closest(".entry");
     if(li){var e=DB.entries.find(function(x){return x.id===li.dataset.entry;});
       if(e){activeEntry=e.id;renderSidebar();renderBuffer(e);closeNav();}}
@@ -413,6 +446,9 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
   var hb=$("#hamburger");if(hb)hb.onclick=openNav;
   var sc=$("#scrim");if(sc)sc.onclick=closeNav;
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeNav();});
-  openCat=null; renderSidebar(); renderEmpty();
+  function fitTitle(el){if(!el)return;el.style.fontSize="";el.style.whiteSpace="nowrap";var size=parseFloat(getComputedStyle(el).fontSize)||42;var min=18,guard=0;while(el.scrollWidth>el.clientWidth+0.5&&size>min&&guard<90){size-=1;el.style.fontSize=size+"px";guard++;}if(el.scrollWidth>el.clientWidth+0.5)el.style.whiteSpace="normal";}
+  window.addEventListener("resize",function(){var h=document.querySelector(".buffer h2");if(h)fitTitle(h);});
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){var h=document.querySelector(".buffer h2");if(h)fitTitle(h);});}
+  openCats={}; renderSidebar(); renderEmpty();
 })();
 </script></body></html>
