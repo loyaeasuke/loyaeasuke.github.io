@@ -17,6 +17,7 @@
   --pc:#355a7a; --pc-bg:#eef2f6; --pc-line:#c3d0dd; --pc-accent:#b98a2e;
   --battle:#a83232; --battle-bg:#f6e9e7; --battle-end:#5a6472; --battle-end-bg:#eceef1;
   --epi:#8a6d3b; --epi-bg:#f5f0e5; --epi-line:#d9cca9;
+  --chapter:#2a2f3a; --chapter-ink:#f2f0ea; --chapter-accent:#9a6a4a;
   --pro:#46707f; --pro-bg:#e9f0f2; --pro-line:#b5cdd5;
   --round:#8c3d3d; --round-bg:#f7ecea;
   --order:#7a5230; --order-bg:#f4ede3; --order-line:#d8c4a6;
@@ -72,6 +73,37 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .body{flex:1;min-width:0}
 .name{font-weight:700;font-size:14px;letter-spacing:.06em;margin-bottom:1px}
 .text{white-space:pre-wrap;word-break:break-word}
+/* 聊天訊息 message */
+.msg{display:flex;gap:10px;margin:10px 0;align-items:flex-start}
+.msg.right{flex-direction:row-reverse}
+.msg .col{display:flex;flex-direction:column;gap:4px;min-width:0;max-width:76%}
+.msg.right .col{align-items:flex-end}
+.msg .who{font-size:13px;font-weight:700;letter-spacing:.05em;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.msg.right .who{justify-content:flex-end}
+.msg .to{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted)}
+.msg .mtag{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:#fff;background:var(--secret);
+  padding:1px 6px;border-radius:2px}
+.msg .bubbles{display:flex;flex-direction:column;gap:4px;width:100%}
+.msg.right .bubbles{align-items:flex-end}
+.msg.left .bubbles{align-items:flex-start}
+.msg .bubble{position:relative;max-width:100%;padding:8px 13px;border-radius:14px;line-height:1.75;
+  word-break:break-word;white-space:pre-wrap;background:var(--bub,var(--panel));border:1px solid var(--bubln,var(--line))}
+.msg.left .bubble.first{border-top-left-radius:4px}
+.msg.right .bubble.first{border-top-right-radius:4px}
+.msg .bubble:has(ruby){line-height:2.2}
+/* 尖角：只在第一顆氣泡、指向頭像側 */
+.msg .bubble.first::after{content:"";position:absolute;top:9px;width:9px;height:9px;transform:rotate(45deg);
+  background:var(--bub,var(--panel));border:1px solid var(--bubln,var(--line))}
+.msg.left .bubble.first::after{left:-5px;border-right:0;border-top:0}
+.msg.right .bubble.first::after{right:-5px;border-left:0;border-bottom:0}
+/* 秘匿訊息：紫色斜紋 */
+.msg.secret .bubble{background:
+    repeating-linear-gradient(135deg,rgba(106,75,156,.06) 0 6px,transparent 6px 12px),var(--secret-bg);
+  border-color:var(--secret-line)}
+.msg.secret .bubble.first::after{background:var(--secret-bg);border-color:var(--secret-line)}
+.msg.secret .who{color:var(--secret)}
+.msg.secret .to{color:var(--secret);opacity:.85}
+
 .text p,.hidden-info .tx p,.sys .tx p{margin:0}
 .text p + p{margin-top:.6em}
 .hidden-info .tx p + p,.sys .tx p + p{margin-top:.4em}
@@ -177,9 +209,12 @@ body.tocdrag{user-select:none;cursor:col-resize}
 .toc-list a{display:block;padding:3px 7px;border-radius:2px;text-decoration:none;color:var(--ink);
   border-left:2px solid transparent;line-height:1.35}
 .toc-list a:hover{background:var(--paper);border-left-color:var(--ink)}
-.toc-list a .k{display:block;font-family:var(--mono);font-size:13px;letter-spacing:.18em;opacity:.8}
+.toc-list a .k{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;opacity:.8}
 .toc-list a .t{display:block;font-size:13px;letter-spacing:.02em;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toc-list a.k-chp .k{color:var(--chapter-accent)}
+.toc-list a.k-chp:hover{border-left-color:var(--chapter)}
+.toc-list a.k-chp .t{font-weight:700}
 .toc-list a.k-scene .k{color:var(--muted)}
 .toc-list a.k-pro .k{color:var(--pro)}
 .toc-list a.k-epi .k{color:var(--epi)}
@@ -288,6 +323,25 @@ body.tocdrag{user-select:none;cursor:col-resize}
 .epilogue .en{font-family:var(--mono);font-size:13px;letter-spacing:.42em;text-indent:.42em;opacity:.75;display:block}
 .epilogue.start{border-top:3px double var(--epi)}
 .epilogue.end{border-bottom:3px double var(--epi)}
+
+/* 章節：戰役進入下一段劇情的章節標題（與前/後日談明顯不同的實心書卷帶） */
+.chapter{margin:66px 0 34px}
+.chapter .band{position:relative;padding:22px 26px;text-align:center;border-radius:2px}
+.chapter.start .band{background:var(--chapter);color:var(--chapter-ink);
+  box-shadow:0 2px 0 var(--chapter-accent)}
+.chapter.start .tag{display:block;font-family:var(--mono);font-size:13px;letter-spacing:.38em;text-indent:.38em;
+  color:var(--chapter-accent);margin-bottom:9px}
+.chapter.start .title{display:block;font-family:var(--serif);font-size:clamp(21px,4vw,29px);
+  letter-spacing:.28em;text-indent:.28em;font-weight:700}
+.chapter.start .band::before,.chapter.start .band::after{content:"";position:absolute;left:14px;right:14px;
+  height:1px;background:var(--chapter-accent);opacity:.5}
+.chapter.start .band::before{top:8px} .chapter.start .band::after{bottom:8px}
+.chapter.end .band{background:transparent;color:var(--chapter);border:1px solid var(--chapter);
+  border-top-width:3px}
+.chapter.end .title{display:block;font-family:var(--serif);font-size:clamp(17px,3vw,22px);
+  letter-spacing:.3em;text-indent:.3em}
+.chapter.end .tag{display:block;font-family:var(--mono);font-size:13px;letter-spacing:.38em;text-indent:.38em;
+  color:var(--chapter-accent);margin-top:8px}
 
 /* 前日談：與後日談對稱，改用晨青色調 */
 .prologue{margin:52px auto;max-width:74%;text-align:center;padding:18px 26px;background:var(--pro-bg);
@@ -484,6 +538,7 @@ const state={f:{main:1,other:1,info:1,secret:1,dice:1},who:'',q:''};
 const spkMap=()=>Object.fromEntries(SPK.map(s=>[s['發言人'],s]));
 const esc=s=>(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 // ((主文字上方小字)) → <ruby>；空 (()) 為切刀；其餘照常轉義（僅用於對話類文字）
+function stripRuby(text){ return String(text??'').replace(/\(\(.*?\)\)/g,''); }
 function renderRuby(text){
   const s=String(text??'');
   if(s.indexOf('((')<0) return esc(s);
@@ -557,19 +612,20 @@ function avatarHTML(s, cls, override){
   const url = (override && override.trim()) || (s && s['頭像網址']) || '';
   const nm  = (s && (s['顯示名稱']||s['發言人'])) || '';
   const col = (s && s['代表色']) || '#888888';
-  if(url) return `<img class="avatar ${cls}" src="${esc(url)}" alt="${esc(nm)}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ph ${cls}',style:'background:${col}'}))">`;
+  const wash = hexRGBA(col, 0.15) || 'var(--panel)';   // 有頭像時：刷淡的代表色當底
+  if(url) return `<img class="avatar ${cls}" src="${esc(url)}" alt="${esc(nm)}" style="background:${wash}" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'avatar ph ${cls}',style:'background:${col}'}))">`;
   if(!s) return '';
   return `<span class="avatar ph ${cls}" style="background:${esc(col)}"></span>`;
 }
 
-const TOC_KEY={scene:'SCENE',pro:'PROLOGUE',epi:'AFTER STORY',rwd:'REWARD'};
+const TOC_KEY={chp:'CHAPTER',scene:'SCENE',pro:'PROLOGUE',epi:'AFTER STORY',rwd:'REWARD'};
 let tocOpen=true, tocWidth=0;   // tocWidth 僅存在本次瀏覽，重新開啟即回預設
 function renderTOC(items){
   const host=document.getElementById('toc');
   if(!items || !items.length){ host.innerHTML=''; host.className=''; return; }
   const rows=items.map(it=>`<a href="#${it.id}" class="k-${it.kind}">
-      <span class="k">${TOC_KEY[it.kind]||''}</span>
-      <span class="t">${esc(it.label)}</span></a>`).join('');
+      <span class="k">${esc(it.keyText || TOC_KEY[it.kind] || '')}</span>
+      <span class="t">${esc(stripRuby(it.label))}</span></a>`).join('');
   host.className = tocOpen ? '' : 'collapsed';
   if(tocWidth) host.style.setProperty('--tocw', tocWidth+'px'); else host.style.removeProperty('--tocw');
   host.innerHTML=`<div class="toc-box">
@@ -605,7 +661,7 @@ function renderTOC(items){
 
 function render(){
   const M=spkMap(), out=[], toc=[]; let shown=0, sceneNo=0, prevSecret='', anchorNo=0;
-  const anchor=(kind,label)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label}); return id; };
+  const anchor=(kind,label,keyText)=>{ const id='sec-'+(++anchorNo); toc.push({id,kind,label,keyText}); return id; };
 
   // 合併鍵：talk／system／hidden／dice，發言人相同才可合併
   // talk、dice 另需頻道相同；頻道為 secret 時，還需秘匿對象相同才合併
@@ -628,6 +684,11 @@ function render(){
       const nm=r['發言人']||''; if(!nm) return null;
       return 'dice|'+chKey(r)+'|'+nm;
     }
+    if(ty==='message'){
+      const nm=r['發言人']||''; if(!nm) return null;
+      const side=(r['備註']||'').trim().toUpperCase()==='R'?'R':'L';
+      return 'message|'+chKey(r)+'|'+side+'|'+(r['秘匿對象']||'')+'|'+nm;
+    }
     return null;
   };
   const merged=[];
@@ -644,7 +705,8 @@ function render(){
     const kind = (type==='dice')?'dice':(type==='info'||ch==='info')?'info':(ch==='secret'||isHO)?'secret':ch;
     if(['scene','system','end','reward','note','battle_start','battle_end','epilogue_start','epilogue_end',
         'prologue_start','prologue_end','round','hidden','image',
-        'session_start','session_end','start','turnorder','madness'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
+        'session_start','session_end','start','turnorder','madness',
+        'chapter','chapter_start','chapter_end'].includes(type)){ /* 永遠顯示，作為結構標記 */ }
     else if(!state.f[kind]) continue;
     else if(kind==='dice' && (ch==='secret'||isHO) && !state.f.secret) continue;
     if(state.who && r['發言人']!==state.who && type!=='scene') continue;
@@ -653,9 +715,22 @@ function render(){
 
     if(type==='scene'){
       sceneNo++;
-      const sid=anchor('scene',`SCENE ${String(sceneNo).padStart(2,'0')}　${r['內容']||''}`.trim());
+      const sid=anchor('scene', (r['內容']||'◆').trim(), 'SCENE '+String(sceneNo).padStart(2,'0'));
       out.push(`<section class="scene" id="${sid}" data-anchor><span class="idx">SCENE ${String(sceneNo).padStart(2,'0')}</span>
         <div class="rulebar"><span class="label">${esc(r['內容']||'◆')}</span></div></section>`);
+      continue;
+    }
+    if(type==='chapter' || type==='chapter_start'){
+      const cid=anchor('chp', r['內容']||'章節');
+      out.push(`<section class="chapter start" id="${cid}" data-anchor><div class="band">
+        <span class="tag">CHAPTER</span>
+        <span class="title">${r['內容'] ? renderRuby(r['內容']) : '章節'}</span></div></section>`);
+      continue;
+    }
+    if(type==='chapter_end'){
+      out.push(`<section class="chapter end"><div class="band">
+        <span class="title">${r['內容'] ? renderRuby(r['內容']) : '完'}</span>
+        <span class="tag">CHAPTER END</span></div></section>`);
       continue;
     }
     if(type==='battle_start'){
@@ -799,6 +874,33 @@ function render(){
         ${r['發言人']?`<span class="who">${esc((s&&s['顯示名稱'])||r['發言人'])}</span>`:''}
         ${sec&&secTarget?`<span class="whisper">${esc(secTarget)}</span>`:''}
         <div class="rolls">${rolls}</div></div>`);
+      continue;
+    }
+
+    if(type==='message'){
+      const side = (r['備註']||'').trim().toUpperCase()==='R' ? 'right' : 'left';
+      const sec = ch==='secret'||isHO;
+      const nm = r['發言人']||'';
+      const col = (s&&s['代表色'])||'';
+      const styleVars = (!sec && col) ? `--bub:${hexRGBA(col,0.16)||'var(--panel)'};--bubln:${hexRGBA(col,0.42)||'var(--line)'}` : '';
+      const bubbles = (r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map((p,i)=>
+        `<div class="bubble ${i===0?'first':''}">${renderRuby(p)}</div>`).join('') || '<div class="bubble first"></div>';
+      out.push(`<div class="msg ${side} ${sec?'secret':''}" style="${styleVars}">
+        ${avatarHTML(s,'',r['頭像'])}
+        <div class="col">
+          <div class="who" style="${col&&!sec?`color:${esc(col)}`:''}">
+            ${(()=>{
+              const tag = sec?`<span class="mtag">秘匿</span>`:'';
+              const name = `<span>${esc((s&&s['顯示名稱'])||nm||'（未署名）')}</span>`;
+              if(side==='right'){
+                const to = secTarget?`<span class="to">${esc(secTarget)} ←</span>`:'';
+                return tag+to+name;   // 接收者 ← 發送者（名字靠右／頭像側）
+              }
+              const to = secTarget?`<span class="to">→ ${esc(secTarget)}</span>`:'';
+              return tag+name+to;     // 發送者 → 接收者
+            })()}</div>
+          <div class="bubbles">${bubbles}</div>
+        </div></div>`);
       continue;
     }
 
