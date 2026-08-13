@@ -6,8 +6,9 @@
 <title>神貓卓團錄編輯器1.0版</title>
 <style>
 :root{
-  --paper:#e7e9ef; --panel:#fbfcfe; --ink:#191d29; --ink-2:#3c4considered;
+  --paper:#e7e9ef; --panel:#fbfcfe; --ink:#191d29; --ink-2:#3c4759;
   --muted:#6d7689; --line:#c9cedb;
+  --bar-bg:rgba(231,233,239,.93); --accent:var(--ink); --accent-ink:var(--panel);
   --secret:#6a4b9c; --secret-bg:#efeaf7; --secret-line:#b9a5d8;
   --dice:#0e6a66; --dice-bg:#e6f1f0;
   --info:#8a5a12; --info-bg:#f6efe2;
@@ -30,6 +31,63 @@
   --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
   --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
 }
+
+/* ── 風格樣板 ───────────────────────────── */
+html[data-theme="ledger"]{
+  --paper:#ece7d9;--panel:#f6f2e7;--ink:#3a3025;--ink-2:#5a4f3e;--muted:#8a7c64;--line:#d6ccb5;
+  --bar-bg:rgba(236,231,217,.93);--accent:#8a3d2f;--accent-ink:#f6f2e7;
+  --recall-edge:rgba(176,148,86,.30);--hidden:#2c2620;--hidden-ink:#e6ddca;--hidden-accent:#c9a24a;
+}
+html[data-theme="forest"]{
+  --paper:#eef0e3;--panel:#f7f8f0;--ink:#2f3826;--ink-2:#4a543c;--muted:#79856a;--line:#d2d8c2;
+  --bar-bg:rgba(238,240,227,.93);--accent:#4a7a3a;--accent-ink:#f7f8f0;
+  --recall-edge:rgba(150,160,90,.28);--hidden:#26301f;--hidden-ink:#dfe6cf;--hidden-accent:#8fb56a;
+}
+html[data-theme="darkfantasy"]{
+  --paper:#17130d;--panel:#221a12;--ink:#e9dcc0;--ink-2:#c9b284;--muted:#9a8a6a;--line:#3a3123;
+  --bar-bg:rgba(23,19,13,.92);--accent:#c9a24a;--accent-ink:#221a12;
+  --hidden:#0c0a06;--secret:#a988d8;--dice:#4aa39d;--reward:#5aa06f;--pro:#6f9fb0;--info:#c69a4a;
+  --secret-bg:var(--panel);--dice-bg:var(--panel);--info-bg:var(--panel);--reward-bg:var(--panel);
+  --note-bg:var(--panel);--pc-bg:var(--panel);--battle-bg:var(--panel);--battle-end-bg:var(--panel);
+  --epi-bg:var(--panel);--pro-bg:var(--panel);--round-bg:var(--panel);--order-bg:var(--panel);--mad-bg:var(--panel);
+  --secret-line:var(--line);--reward-line:var(--line);--note-line:var(--line);--pc-line:var(--line);
+  --epi-line:var(--line);--pro-line:var(--line);--order-line:var(--line);--mad-line:var(--line);--recall-line:var(--line);
+  --note-ink:var(--ink);--mad-ink:var(--ink);--recall-ink:var(--ink);--hidden-ink:var(--ink);
+  --recall-edge:rgba(190,175,120,.16);
+  --chapter:var(--panel);--chapter-ink:var(--ink);--chapter-accent:var(--accent);
+  --pc-accent:var(--accent);--order:#a9824f;--pc:#5f8bb0;
+  --hidden-accent:var(--accent);
+}
+html[data-theme="urbanhorror"]{
+  --paper:#0d0d10;--panel:#17171b;--ink:#d0d3da;--ink-2:#a7abb4;--muted:#7c828e;--line:#2a2b31;
+  --bar-bg:rgba(13,13,16,.92);--accent:#c0392b;--accent-ink:#ffffff;
+  --hidden:#050507;--secret:#9b7fd0;--dice:#3fa39c;--reward:#4f9e6a;--pro:#5f93a8;--info:#c08a3a;--mad:#c0506f;--battle:#c0392b;
+  --secret-bg:var(--panel);--dice-bg:var(--panel);--info-bg:var(--panel);--reward-bg:var(--panel);
+  --note-bg:var(--panel);--pc-bg:var(--panel);--battle-bg:var(--panel);--battle-end-bg:var(--panel);
+  --epi-bg:var(--panel);--pro-bg:var(--panel);--round-bg:var(--panel);--order-bg:var(--panel);--mad-bg:var(--panel);
+  --secret-line:var(--line);--reward-line:var(--line);--note-line:var(--line);--pc-line:var(--line);
+  --epi-line:var(--line);--pro-line:var(--line);--order-line:var(--line);--mad-line:var(--line);--recall-line:var(--line);
+  --note-ink:var(--ink);--mad-ink:var(--ink);--recall-ink:var(--ink);--hidden-ink:var(--ink);
+  --recall-edge:rgba(190,175,120,.16);
+  --chapter:var(--panel);--chapter-ink:var(--ink);--chapter-accent:var(--accent);
+  --pc-accent:var(--accent);--order:#a9824f;--pc:#5f8bb0;
+  --hidden-accent:var(--accent);
+}
+html[data-theme="cthulhu"]{
+  --paper:#0e1310;--panel:#161d18;--ink:#cdd8c9;--ink-2:#a3b3a2;--muted:#7d8c7c;--line:#263029;
+  --bar-bg:rgba(14,19,16,.92);--accent:#6f9e77;--accent-ink:#0e1310;
+  --hidden:#070b08;--secret:#9986c8;--dice:#4aa8a0;--reward:#5aa06f;--pro:#6f9fa8;--info:#bfa14a;
+  --secret-bg:var(--panel);--dice-bg:var(--panel);--info-bg:var(--panel);--reward-bg:var(--panel);
+  --note-bg:var(--panel);--pc-bg:var(--panel);--battle-bg:var(--panel);--battle-end-bg:var(--panel);
+  --epi-bg:var(--panel);--pro-bg:var(--panel);--round-bg:var(--panel);--order-bg:var(--panel);--mad-bg:var(--panel);
+  --secret-line:var(--line);--reward-line:var(--line);--note-line:var(--line);--pc-line:var(--line);
+  --epi-line:var(--line);--pro-line:var(--line);--order-line:var(--line);--mad-line:var(--line);--recall-line:var(--line);
+  --note-ink:var(--ink);--mad-ink:var(--ink);--recall-ink:var(--ink);--hidden-ink:var(--ink);
+  --recall-edge:rgba(190,175,120,.16);
+  --chapter:var(--panel);--chapter-ink:var(--ink);--chapter-accent:var(--accent);
+  --pc-accent:var(--accent);--order:#a9824f;--pc:#5f8bb0;
+  --hidden-accent:var(--accent);
+}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.85;
@@ -49,12 +107,17 @@ header.mast{padding:52px 0 26px;border-bottom:1px solid var(--line)}
 [contenteditable][data-ph]:empty::before{content:attr(data-ph);color:var(--muted);opacity:.55}
 
 /* ── toolbar ──────────────────────────────── */
-.bar{position:sticky;top:0;z-index:20;background:rgba(231,233,239,.93);backdrop-filter:blur(8px);
+.bar{position:sticky;top:0;z-index:20;background:var(--bar-bg);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:26px}
 .bar .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .chip{font-family:var(--mono);font-size:13px;letter-spacing:.08em;padding:5px 11px;border:1px solid var(--line);
   background:var(--panel);color:var(--muted);border-radius:var(--radius);cursor:pointer}
 .chip[aria-pressed="true"]{color:var(--panel);background:var(--ink);border-color:var(--ink)}
+#expHtml[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.style-pick{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;
+  letter-spacing:.08em;color:var(--muted)}
+.style-pick select{font-family:var(--mono);font-size:13px;padding:4px 8px;border:1px solid var(--line);
+  background:var(--panel);color:var(--ink);border-radius:var(--radius);cursor:pointer}
 .chip.k-secret[aria-pressed="true"]{background:var(--secret);border-color:var(--secret)}
 .chip.k-dice[aria-pressed="true"]{background:var(--dice);border-color:var(--dice)}
 .chip.k-info[aria-pressed="true"]{background:var(--info);border-color:var(--info)}
@@ -76,7 +139,7 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .name{font-weight:700;font-size:14px;letter-spacing:.06em;margin-bottom:1px}
 .text{white-space:pre-wrap;word-break:break-word}
 /* 心靈感應 telepathy：無框柔光心聲泡泡 */
-.tele{display:flex;gap:10px;margin:12px 0;align-items:flex-start}
+.tele{display:flex;gap:10px;margin:18px 0;align-items:flex-start}
 .tele.right{flex-direction:row-reverse}
 .tele .col{display:flex;flex-direction:column;gap:5px;min-width:0;max-width:76%}
 .tele.right .col{align-items:flex-end}
@@ -85,19 +148,19 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .tele .to{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted)}
 .tele .mtag{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:#fff;background:var(--secret);
   padding:1px 6px;border-radius:2px}
-.tele .bubbles{display:flex;flex-direction:column;gap:6px;width:100%}
+.tele .bubbles{display:flex;flex-direction:column;gap:11px;width:100%}
 .tele.right .bubbles{align-items:flex-end}.tele.left .bubbles{align-items:flex-start}
 .tele .bubble{position:relative;max-width:100%;padding:9px 17px;border-radius:26px/17px;
   line-height:1.75;word-break:break-word;white-space:pre-wrap;
   color:var(--ink);background:var(--tbub,rgba(109,91,156,.12));
-  border:1px dashed var(--tln,rgba(109,91,156,.34));box-shadow:0 0 0 5px var(--tglow,rgba(109,91,156,.14))}
+  border:1px dashed var(--tln,rgba(109,91,156,.34));box-shadow:0 0 9px 0 var(--tglow,rgba(109,91,156,.14))}
 .tele .bubble:has(ruby){line-height:2.3}
 .tele .bubble .q{font-style:normal;opacity:.5;padding:0 2px}
 .tele.secret .bubble{background:
     repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),var(--tbub,rgba(109,91,156,.12))}
 
 /* 回憶 recall（A-1：連續 recall 為一段，頻道 secret 走秘匿） */
-.recall{margin:0;padding:9px 24px;background:transparent;color:var(--recall-ink);position:relative}
+.recall{margin:0;padding:6px 24px;background:transparent;color:var(--recall-ink);position:relative}
 .recall::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
   background:linear-gradient(to right,var(--recall-edge),transparent 48px) no-repeat,
              linear-gradient(to left,var(--recall-edge),transparent 48px) no-repeat}
@@ -108,17 +171,17 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .recall .rc-cap{padding:4px 0 10px;margin-bottom:4px}
 .recall .rc-cap .rc-title{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--recall);
   font-weight:700}
-.recall .rc-line{display:flex;gap:11px;align-items:flex-start;padding:5px 0}
+.recall .rc-line{display:flex;gap:11px;align-items:flex-start;padding:4px 0}
 .recall .rc-body{flex:1;min-width:0}
 .recall .rc-name{font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:2px;
   display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .recall .rc-name .mtag{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:#fff;
   background:var(--secret);padding:1px 6px;border-radius:2px}
 .recall .rc-name .to{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted)}
-.recall .rc-text,.recall .rc-narr{white-space:pre-wrap;word-break:break-word;line-height:1.9}
-.recall .rc-narr{font-family:var(--serif);font-style:italic;padding:6px 0 6px 14px;color:var(--recall-ink);opacity:.92}
+.recall .rc-text,.recall .rc-narr{white-space:pre-wrap;word-break:break-word;line-height:1.82}
+.recall .rc-narr{font-family:var(--serif);font-style:italic;padding:4px 0 4px 14px;color:var(--recall-ink);opacity:.92}
 .recall .rc-text p,.recall .rc-narr p{margin:0}
-.recall .rc-text p + p,.recall .rc-narr p + p{margin-top:.5em}
+.recall .rc-text p + p,.recall .rc-narr p + p{margin-top:.6em}
 .recall .rc-text.sec,.recall .rc-narr.sec{
   background:repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),transparent;
   border-left:2px solid var(--sac,var(--secret));padding-left:10px;border-radius:2px}
@@ -157,7 +220,7 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
     repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),var(--sbub,var(--secret-bg));
   border-color:var(--sln,var(--secret-line))}
 .msg.secret .bubble.first::after{background:var(--sbub,var(--secret-bg));border-color:var(--sln,var(--secret-line))}
-.msg.secret .who{color:var(--secret)}
+
 .msg.secret .to{color:var(--secret);opacity:.85}
 
 .text p,.hidden-info .tx p,.sys .tx p{margin:0}
@@ -535,6 +598,15 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
       <button class="chip" id="expSpk" aria-pressed="false">匯出 speakers.csv</button>
       <button class="chip" id="expPcs" aria-pressed="false">匯出 pcs.csv</button>
       <button class="chip" id="expHtml" aria-pressed="true">匯出成 HTML</button>
+      <span class="style-pick">風格
+        <select id="stylePick" title="選擇檢視版風格">
+          <option value="chronicle">紀事</option>
+          <option value="ledger">帳冊</option>
+          <option value="darkfantasy">黑暗奇幻</option>
+          <option value="urbanhorror">都市恐怖</option>
+          <option value="cthulhu">克蘇魯</option>
+          <option value="forest">森林清新</option>
+        </select></span>
     </div><!--EDIT_END-->
   </div>
 
@@ -959,7 +1031,7 @@ function render(){
             ${(()=>{
               const tag = sec?`<span class="mtag">秘匿</span>`:'';
               const name = `<span>${esc((s&&s['顯示名稱'])||nm||'（未署名）')}</span>`;
-              if(side==='right'){ const to=secTarget?`<span class="to">${esc(secTarget)} ←</span>`:''; return tag+to+name; }
+              if(side==='right'){ const to=secTarget?`<span class="to">${esc(secTarget)} ←</span>`:''; return to+name+tag; }
               const to=secTarget?`<span class="to">→ ${esc(secTarget)}</span>`:''; return tag+name+to;
             })()}</div>
           <div class="bubbles">${bubbles}</div>
@@ -1004,16 +1076,16 @@ function render(){
       out.push(`<div class="msg ${side} ${sec?'secret':''}" style="${styleVars}">
         ${avatarHTML(s,'',r['頭像'])}
         <div class="col">
-          <div class="who" style="${col&&!sec?`color:${esc(col)}`:''}">
+          <div class="who" style="${col?`color:${esc(col)}`:''}">
             ${(()=>{
               const tag = sec?`<span class="mtag">秘匿</span>`:'';
               const name = `<span>${esc((s&&s['顯示名稱'])||nm||'（未署名）')}</span>`;
               if(side==='right'){
                 const to = secTarget?`<span class="to">${esc(secTarget)} ←</span>`:'';
-                return tag+to+name;   // 接收者 ← 發送者（名字靠右／頭像側）
+                return to+name+tag;   // 鏡像：接收者 ← 發送者 秘匿（秘匿靠頭像側）
               }
               const to = secTarget?`<span class="to">→ ${esc(secTarget)}</span>`:'';
-              return tag+name+to;     // 發送者 → 接收者
+              return tag+name+to;     // 秘匿 發送者 → 接收者
             })()}</div>
           <div class="bubbles">${bubbles}</div>
         </div></div>`);
@@ -1349,6 +1421,16 @@ document.getElementById('dlgSave').onclick=()=>{
   const close=()=>{ lb.classList.remove('on'); lbi.removeAttribute('src'); };
   lb.addEventListener('click',close);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+})();
+
+(function(){
+  const sel=document.getElementById('stylePick');
+  if(sel){
+    const apply=v=>{ if(v && v!=='chronicle') document.documentElement.setAttribute('data-theme',v);
+                     else document.documentElement.removeAttribute('data-theme'); };
+    sel.addEventListener('change',()=>apply(sel.value));
+    apply(sel.value);   // 依當前選項套用
+  }
 })();
 
 fillSpeakers(); render(); renderPCs();
