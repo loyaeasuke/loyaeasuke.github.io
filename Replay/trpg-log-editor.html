@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>團錄檢視編輯器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700;900&display=swap" rel="stylesheet">
+<style id="appcss">
+:root{
+  --paper:#f2eee4;
+  --paper-deep:#eae4d6;
+  --paper-lift:#f7f4ec;
+  --ink:#211f1a;
+  --ink-soft:#4b463c;
+  --muted:#8a8474;
+  --muted-2:#a9a291;
+  --rule:#d9d1bf;
+  --rule-strong:#c7bda4;
+  --accent:#7c2d2a;
+  --accent-deep:#5c201e;
+  --accent-soft:#ecdfd8;
+  --on-accent:#f6ede3;
+  --margin-line:rgba(124,45,42,.30);
+  --brass:#9a7b3f;
+  --danger:#a23a30;
+  --serif:"Noto Serif TC",Georgia,"Songti TC","Times New Roman",serif;
+  --sans:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Roboto Mono",Menlo,monospace;
+  --shadow:0 18px 50px rgba(33,31,26,.16);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--paper);
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer;color:inherit;}
+::selection{background:var(--accent-soft);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--rule-strong);border-radius:10px;border:2px solid var(--paper-deep);}
+
+/* ============ TOOLBAR ============ */
+.toolbar{
+  height:62px;flex:0 0 62px;
+  display:flex;align-items:center;padding:0 22px;
+  background:var(--paper-deep);
+  border-bottom:1px solid var(--rule-strong);
+  position:sticky;top:0;z-index:30;
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;
+}
+.toolbar::-webkit-scrollbar{height:0;display:none;}
+.toolbar>*{flex:0 0 auto;}
+.tb-brand{
+  font-family:var(--serif);font-weight:700;font-size:18px;
+  letter-spacing:.05em;color:var(--ink);white-space:nowrap;
+  display:flex;align-items:baseline;gap:8px;
+}
+.tb-brand .dot{color:var(--accent);font-size:15px;}
+.tb-div{width:1px;height:28px;background:var(--rule-strong);margin:0 20px;flex:0 0 1px;}
+.tb-name{display:flex;align-items:center;gap:12px;min-width:0;}
+.tb-name label{
+  font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);white-space:nowrap;
+}
+#siteName{
+  width:220px;min-width:0;
+  background:var(--paper-lift);border:1px solid var(--rule-strong);
+  border-radius:8px;padding:9px 13px;
+  font-family:var(--serif);font-size:16px;color:var(--ink);
+  transition:border .12s,box-shadow .12s;
+}
+#siteName:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.tb-actions{margin-left:auto;display:flex;gap:10px;padding-left:16px;align-items:center;}
+.tb-style{display:inline-flex;align-items:center;gap:8px;}
+.tb-style .tb-style-lbl{font-size:13px;color:var(--muted);letter-spacing:.04em;white-space:nowrap;}
+#viewStyle{
+  background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:9px;
+  padding:9px 12px;font-family:inherit;font-size:15px;color:var(--ink);cursor:pointer;transition:.12s;
+}
+#viewStyle:hover{border-color:var(--accent);}
+#viewStyle:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.tb-menu{display:flex;align-items:center;gap:8px;}
+.tb-menu-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--paper-lift);
+  border:1px solid var(--rule-strong);
+  border-radius:9px;
+  padding:8px 14px;
+  font-size:15px;font-weight:500;color:var(--ink);letter-spacing:.02em;
+  white-space:nowrap;transition:.14s;
+  box-shadow:0 1px 0 rgba(33,31,26,.04);
+}
+.tb-menu-btn svg{width:16px;height:16px;flex:0 0 auto;opacity:.8;}
+.tb-menu-btn:hover{background:#fff;border-color:var(--accent);color:var(--accent);}
+.tb-menu-btn:hover svg{opacity:1;}
+.tb-menu-btn.active{
+  background:var(--accent);color:var(--on-accent);border-color:var(--accent-deep);
+  box-shadow:0 4px 12px rgba(92,32,30,.22);
+}
+.tb-menu-btn.active svg{opacity:1;}
+.btn-export{
+  background:var(--accent);color:var(--on-accent);border:1px solid var(--accent-deep);
+  padding:10px 18px;border-radius:9px;font-size:14px;font-weight:500;letter-spacing:.04em;
+  display:inline-flex;align-items:center;gap:8px;transition:.14s;white-space:nowrap;
+}
+.btn-export:hover{background:var(--accent-deep);}
+.btn-export .ic{font-family:var(--mono);font-size:13px;}
+
+/* ============ APP LAYOUT ============ */
+.app{display:flex;flex:1;min-height:0;}
+
+/* ============ SIDEBAR (ledger) ============ */
+.sidebar{
+  width:322px;min-width:322px;
+  background:var(--paper-deep);
+  border-right:1px solid var(--rule-strong);
+  display:flex;flex-direction:column;min-height:0;
+}
+.ledger-head{
+  padding:16px 20px 12px;
+  border-bottom:1px solid var(--rule-strong);
+  display:flex;align-items:baseline;gap:12px;
+}
+.ledger-head .lh-main{
+  font-family:var(--serif);font-weight:700;font-size:22px;color:var(--ink);letter-spacing:.06em;
+}
+.ledger-head .lh-sub{
+  font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--muted);
+  text-transform:uppercase;margin-left:auto;
+}
+.side-scroll{flex:1;overflow-y:auto;min-height:0;padding-bottom:12px;}
+.viewer-foot{
+  flex:0 0 auto;padding:12px 18px;border-top:1px solid var(--rule-strong);
+  font-size:13px;line-height:1.5;color:var(--muted);letter-spacing:.03em;text-align:center;
+}
+
+.vol{}
+.vol-head{
+  width:100%;background:none;border:none;
+  display:flex;align-items:center;gap:10px;
+  padding:13px 18px 7px;
+  border-bottom:1px solid var(--rule-strong);
+}
+.vol-head:hover .vol-name{color:var(--accent);}
+.vol-name{
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--ink-soft);transition:color .12s;
+}
+.vol-count{font-family:var(--mono);font-size:13px;color:var(--muted-2);}
+.vol-caret{
+  margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--muted);
+  transition:transform .18s;line-height:1;
+}
+.vol:not(.open) .vol-caret{transform:rotate(-90deg);}
+.vol:not(.open) .vol-body{display:none;}
+
+.entry{
+  width:100%;background:none;border:none;text-align:left;
+  display:grid;grid-template-columns:38px 1fr;align-items:stretch;
+  border-bottom:1px solid var(--rule);
+  transition:background .12s;
+}
+.entry:hover{background:var(--paper-lift);}
+.entry .e-num{
+  font-family:var(--mono);font-size:13px;color:var(--muted-2);
+  text-align:right;padding:7px 9px 7px 0;line-height:1.3;
+  border-right:1.5px solid var(--margin-line);
+  display:flex;align-items:center;justify-content:flex-end;
+}
+.entry .e-name{
+  font-family:var(--serif);font-size:13px;color:var(--ink-soft);
+  padding:7px 14px 7px 12px;line-height:1.4;transition:color .12s;
+}
+.entry:hover .e-name{color:var(--accent);}
+.entry.active{background:var(--accent-soft);}
+.entry.active .e-name{color:var(--accent-deep);font-weight:600;}
+.entry.active .e-num{color:var(--accent);border-right-color:var(--accent);}
+.vol-empty{
+  padding:8px 18px 8px 38px;color:var(--muted-2);font-size:13px;
+  font-style:italic;border-bottom:1px solid var(--rule);
+}
+
+.side-foot{padding:16px;border-top:1px solid var(--rule-strong);}
+.side-foot button{
+  width:100%;background:var(--paper-lift);color:var(--ink);
+  border:1px solid var(--rule-strong);border-radius:9px;
+  padding:12px;font-size:15px;font-weight:500;letter-spacing:.06em;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:.14s;
+}
+.side-foot button:hover{background:var(--accent);color:var(--on-accent);border-color:var(--accent-deep);}
+
+/* ============ MAIN ============ */
+.main{flex:1;min-width:0;overflow-y:auto;background:var(--paper);position:relative;}
+
+/* empty */
+.empty-state{
+  height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;color:var(--muted);text-align:center;padding:40px;
+}
+.empty-state .orn{font-family:var(--serif);font-size:28px;color:var(--rule-strong);letter-spacing:.5em;}
+.empty-state p{font-size:17px;margin:0;letter-spacing:.05em;line-height:1.9;}
+
+/* buffer / sealed page */
+.buffer{max-width:720px;margin:0 auto;padding:66px 46px 96px;}
+.buffer .eyebrow{
+  font-family:var(--mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);display:inline-flex;align-items:center;gap:12px;margin-bottom:26px;
+}
+.buffer .eyebrow::before{content:"";width:30px;height:1px;background:var(--accent);opacity:.6;}
+.buffer h2{
+  font-family:var(--serif);font-weight:700;font-size:42px;line-height:1.32;
+  margin:0 0 18px;color:var(--ink);letter-spacing:.01em;
+}
+.buffer .byline{
+  font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:.05em;margin-bottom:36px;
+}
+.buffer .byline span{margin-right:22px;}
+.plate{
+  position:relative;background:var(--paper-lift);
+  border:1px solid var(--rule-strong);border-left:3px solid var(--accent);
+  border-radius:4px;padding:16px 34px 34px;margin-bottom:36px;
+}
+.plate .plate-tab{
+  font-family:var(--mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding:14px 0 18px;border-bottom:1px dashed var(--rule-strong);margin-bottom:22px;
+}
+.plate .warn{
+  display:flex;align-items:center;gap:9px;color:var(--accent);
+  font-weight:700;font-size:14px;letter-spacing:.08em;margin-bottom:16px;font-family:var(--sans);
+}
+.plate .body{
+  font-family:var(--serif);color:var(--ink-soft);font-size:17px;line-height:2.05;
+  white-space:pre-wrap;word-break:break-word;
+}
+.plate .body:empty::after{
+  content:"（此團錄尚未設定緩衝頁文字。）";color:var(--muted-2);font-style:italic;
+}
+.reveal-btn{
+  display:inline-flex;align-items:center;gap:14px;
+  background:var(--accent);color:var(--on-accent);border:1px solid var(--accent-deep);
+  padding:15px 30px;border-radius:10px;
+  font-family:var(--serif);font-size:17px;font-weight:600;letter-spacing:.05em;
+  transition:.14s;box-shadow:0 8px 22px rgba(92,32,30,.24);
+}
+.reveal-btn:hover{background:var(--accent-deep);transform:translateY(-1px);}
+.reveal-btn .seal{
+  width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;
+  display:grid;place-items:center;font-family:var(--serif);font-size:14px;
+}
+
+/* content view */
+.content-view{display:flex;flex-direction:column;height:100%;}
+.content-bar{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:13px 24px;background:var(--paper-deep);border-bottom:1px solid var(--rule-strong);
+}
+.content-bar .ttl{
+  font-family:var(--serif);font-weight:600;font-size:18px;color:var(--ink);
+  margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.mini-btn{
+  background:var(--paper-lift);border:1px solid var(--rule-strong);color:var(--ink-soft);
+  padding:8px 14px;border-radius:8px;font-size:14px;font-weight:500;
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:.12s;white-space:nowrap;
+}
+.mini-btn:hover{border-color:var(--accent);color:var(--accent);}
+.frame-note{padding:11px 24px;font-size:14px;color:var(--accent-deep);background:var(--accent-soft);border-bottom:1px solid var(--rule-strong);}
+.frame-wrap{flex:1;position:relative;background:#fff;min-height:0;}
+.content-frame{position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff;}
+.frame-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:14px;background:var(--paper);transition:opacity .3s;}
+.frame-loading.hide{opacity:0;pointer-events:none;}
+.spinner{width:16px;height:16px;border:2px solid var(--rule-strong);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ============ MODAL ============ */
+.overlay{
+  position:fixed;inset:0;background:rgba(33,31,26,.52);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:60;padding:24px;
+}
+.overlay.show{display:flex;}
+.modal{
+  background:var(--paper);border:1px solid var(--rule-strong);border-radius:14px;
+  width:min(940px,100%);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);
+}
+.modal-head{display:flex;align-items:center;padding:20px 26px;border-bottom:1px solid var(--rule-strong);background:var(--paper-deep);}
+.modal-head h3{font-family:var(--serif);font-size:22px;margin:0;color:var(--ink);letter-spacing:.05em;}
+.modal-head .x{margin-left:auto;background:none;border:none;font-size:28px;color:var(--muted);width:38px;height:38px;border-radius:8px;line-height:1;}
+.modal-head .x:hover{background:var(--paper-lift);color:var(--ink);}
+.modal-body{padding:24px 26px;overflow-y:auto;flex:1;}
+.pane{display:none;}
+.pane.active{display:block;}
+
+.field{margin-bottom:16px;}
+.form-title{
+  font-family:var(--serif);font-size:18px;font-weight:700;color:var(--ink);
+  letter-spacing:.04em;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--rule);
+  display:flex;align-items:center;gap:10px;
+}
+.form-title .badge{
+  font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.06em;
+  padding:3px 10px;border-radius:20px;background:var(--paper-deep);color:var(--muted);
+}
+#entryForm.editing .form-title{color:var(--accent-deep);}
+#entryForm.editing .form-title .badge{background:var(--accent-soft);color:var(--accent-deep);}
+.field label{display:block;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:.02em;}
+.field .hint{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px;}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 13px;border:1px solid var(--rule-strong);border-radius:9px;
+  font-family:inherit;font-size:15px;color:var(--ink);background:var(--paper-lift);transition:.12s;
+}
+.field textarea{min-height:120px;resize:vertical;line-height:1.7;font-family:var(--serif);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+.btn{border:1px solid transparent;border-radius:9px;padding:11px 20px;font-size:15px;font-weight:600;letter-spacing:.03em;transition:.12s;}
+.btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent-deep);}
+.btn-primary:hover{background:var(--accent-deep);}
+.btn-ghost{background:var(--paper-lift);color:var(--ink);border-color:var(--rule-strong);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:var(--paper-lift);color:var(--danger);border-color:#d8b3ad;}
+.btn-danger:hover{background:var(--danger);color:#fff;border-color:var(--danger);}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+
+.list-block{border:1px solid var(--rule-strong);border-radius:12px;overflow:hidden;margin-bottom:20px;background:var(--paper-lift);}
+.list-block .lb-head{background:var(--paper-deep);padding:11px 16px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;justify-content:space-between;}
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--rule);}
+.row:first-child{border-top:none;}
+.row .grow{flex:1;min-width:0;}
+.row .r-title{font-weight:500;font-size:16px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.row .r-sub{font-size:13px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chip{display:inline-block;font-family:var(--mono);font-size:13px;padding:2px 9px;border-radius:20px;background:var(--accent-soft);color:var(--accent-deep);font-weight:500;}
+.icon-btn{background:var(--paper);border:1px solid var(--rule-strong);border-radius:7px;width:34px;height:34px;color:var(--muted);font-size:16px;display:grid;place-items:center;transition:.12s;flex:0 0 auto;}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+.icon-btn.del:hover{border-color:var(--danger);color:var(--danger);}
+.icon-btn:disabled{opacity:.35;cursor:default;}
+.empty-note{color:var(--muted);font-size:14px;padding:14px 4px;font-style:italic;}
+
+.callout{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.85;color:var(--ink-soft);margin-bottom:18px;}
+.callout code{font-family:var(--mono);background:var(--accent-soft);padding:2px 6px;border-radius:5px;font-size:13px;color:var(--accent-deep);}
+.callout b{color:var(--ink);}
+
+.drop{border:2px dashed var(--rule-strong);border-radius:12px;padding:26px;text-align:center;color:var(--muted);transition:.12s;cursor:pointer;background:var(--paper-lift);}
+.drop:hover,.drop.drag{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-deep);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:13px 22px;border-radius:10px;font-size:15px;opacity:0;pointer-events:none;transition:.25s;z-index:90;box-shadow:var(--shadow);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* mobile */
+.hamburger{display:none;background:var(--paper-lift);color:var(--ink);border:1px solid var(--rule-strong);border-radius:9px;width:42px;height:42px;font-size:20px;margin-right:14px;flex:0 0 auto;}
+.scrim{display:none;position:fixed;inset:0;background:rgba(33,31,26,.4);z-index:40;}
+@media(max-width:860px){
+  .hamburger{display:grid;place-items:center;}
+  .tb-name label{display:none;}
+  .tb-div{margin:0 12px;}
+  .tb-brand{font-size:16px;}
+  .sidebar{position:fixed;left:0;top:62px;bottom:0;z-index:45;transform:translateX(-100%);transition:transform .22s;}
+  .sidebar.open{transform:translateX(0);}
+  .scrim.show{display:block;top:62px;}
+  .buffer{padding:52px 22px 60px;}
+  .buffer h2{font-size:32px;}
+  .grid2{grid-template-columns:1fr;}
+  .btn-export{padding:9px 12px;}
+  .btn-export .lbl{display:none;}
+  .tb-menu-btn{padding:8px 9px;font-size:13px;}
+  .tb-menu-btn .mlbl{display:none;}
+  .tb-menu{gap:6px;}
+  #siteName{width:130px;}
+  .tb-div{margin:0 10px;}
+  .tb-style-lbl{display:none;}
+  #viewStyle{padding:8px 8px;font-size:13px;}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}.spinner{animation:none!important;}}
+
+/* ===== THEME TOKENS — each theme re-skins the whole UI (toolbar included) by overriding variables ===== */
+
+/* 紀事 Chronicle — clean white + indigo */
+body.sty-chronicle{
+  --paper:#ffffff;--paper-deep:#f6f6fa;--paper-lift:#ffffff;
+  --ink:#232329;--ink-soft:#494955;--muted:#8f8f9b;--muted-2:#bcbcc6;
+  --rule:#ededf1;--rule-strong:#e2e2e8;
+  --accent:#6d5bd0;--accent-deep:#5647b4;--accent-soft:#efecfb;
+  --on-accent:#ffffff;--margin-line:#e2e2e8;
+}
+body.sty-chronicle .buffer .eyebrow{letter-spacing:.18em;}
+
+/* 黑暗奇幻 Dark Fantasy — leather + gold, dark */
+body.sty-darkfantasy{
+  --paper:#17130e;--paper-deep:#100c08;--paper-lift:#211a12;
+  --ink:#ece0c8;--ink-soft:#c6b48f;--muted:#93835f;--muted-2:#6b5f43;
+  --rule:#2c2417;--rule-strong:#40341f;
+  --accent:#c9a24a;--accent-deep:#e2bd66;--accent-soft:#2a2213;
+  --on-accent:#1a1408;--margin-line:rgba(201,162,74,.34);
+}
+body.sty-darkfantasy .buffer h2{font-size:44px;letter-spacing:.02em;}
+body.sty-darkfantasy .buffer .eyebrow,body.sty-darkfantasy .vol-name{letter-spacing:.24em;}
+body.sty-darkfantasy .plate{border-left-width:4px;}
+body.sty-darkfantasy .reveal-btn{box-shadow:0 0 0 1px rgba(201,162,74,.35),0 10px 26px rgba(201,162,74,.16);}
+
+/* 都市恐怖 Urban Horror — cold, stark, blood red */
+body.sty-urbanhorror{
+  --paper:#121316;--paper-deep:#0c0d0f;--paper-lift:#1c1e22;
+  --ink:#e0e4e9;--ink-soft:#aab0b9;--muted:#727a84;--muted-2:#4d525b;
+  --rule:#23262b;--rule-strong:#33373d;
+  --accent:#c0392b;--accent-deep:#e04b3b;--accent-soft:#2a1512;
+  --on-accent:#fdece9;--margin-line:rgba(192,57,43,.4);
+}
+body.sty-urbanhorror .buffer h2{font-family:var(--sans);font-size:38px;letter-spacing:0;}
+body.sty-urbanhorror .vol-name,body.sty-urbanhorror .buffer .eyebrow{letter-spacing:.26em;}
+body.sty-urbanhorror .reveal-btn{font-family:var(--sans);box-shadow:0 8px 22px rgba(192,57,43,.24);}
+body.sty-urbanhorror .reveal-btn,body.sty-urbanhorror .mini-btn,body.sty-urbanhorror .plate,body.sty-urbanhorror #viewStyle,body.sty-urbanhorror .btn-export,body.sty-urbanhorror .tb-menu-btn{border-radius:2px;}
+
+/* 克蘇魯 Cthulhu — abyssal green-black, phosphorescent */
+body.sty-cthulhu{
+  --paper:#0e1613;--paper-deep:#0a110e;--paper-lift:#152420;
+  --ink:#cdd9cf;--ink-soft:#9fb4a5;--muted:#6f8577;--muted-2:#4e6154;
+  --rule:#1c2b25;--rule-strong:#2a3d34;
+  --accent:#79b58f;--accent-deep:#9ad3ac;--accent-soft:#14201b;
+  --on-accent:#0a1a12;--margin-line:rgba(121,181,143,.32);
+}
+body.sty-cthulhu .buffer h2{font-size:44px;letter-spacing:.03em;}
+body.sty-cthulhu .buffer .eyebrow,body.sty-cthulhu .vol-name{letter-spacing:.3em;}
+body.sty-cthulhu .buffer .byline{font-style:italic;}
+body.sty-cthulhu .reveal-btn{box-shadow:0 0 20px rgba(121,181,143,.28),0 8px 22px rgba(6,14,10,.5);}
+
+/* 森林清新 Forest Fresh — light, airy, green, rounded */
+body.sty-forest{
+  --paper:#f5f8f0;--paper-deep:#eef3e6;--paper-lift:#ffffff;
+  --ink:#273023;--ink-soft:#4c5a45;--muted:#88977e;--muted-2:#b3c0a8;
+  --rule:#e3e9d9;--rule-strong:#d3ddc5;
+  --accent:#5a8f4e;--accent-deep:#487a3f;--accent-soft:#e7f0e0;
+  --on-accent:#ffffff;--margin-line:rgba(90,143,78,.3);
+}
+body.sty-forest .buffer h2{font-size:40px;}
+body.sty-forest .buffer .eyebrow,body.sty-forest .vol-name{letter-spacing:.14em;}
+body.sty-forest .buffer{padding-top:74px;}
+body.sty-forest .entry .e-name{padding-top:9px;padding-bottom:9px;}
+body.sty-forest .plate{border-radius:16px;}
+body.sty-forest .reveal-btn,body.sty-forest .mini-btn,body.sty-forest #viewStyle,body.sty-forest .btn-export,body.sty-forest .tb-menu-btn,body.sty-forest #siteName{border-radius:999px;}
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <button class="hamburger" id="hamburger" aria-label="開啟目錄">☰</button>
+  <div class="tb-brand"><span class="dot">◆</span>團錄清冊編輯器</div>
+  <div class="tb-div"></div>
+  <div class="tb-name">
+    <label for="siteName">網頁名稱</label>
+    <input id="siteName" placeholder="輸入網頁名稱…">
+  </div>
+  <div class="tb-div"></div>
+  <nav class="tb-menu" id="tbMenu">
+    <button class="tb-menu-btn" data-pane="entries" title="團錄編輯">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="M9 13h6M9 16.5h4"/></svg>
+      <span class="mlbl">團錄編輯</span>
+    </button>
+    <button class="tb-menu-btn" data-pane="cats" title="分類編輯">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a1 1 0 0 1 1-1h4.5l2 2H20a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>
+      <span class="mlbl">分類編輯</span>
+    </button>
+    <button class="tb-menu-btn" data-pane="io" title="匯入匯出">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4M8 4 5 7M8 4l3 3"/><path d="M16 9v11M16 20l3-3M16 20l-3-3"/></svg>
+      <span class="mlbl">匯入匯出</span>
+    </button>
+    <button class="tb-menu-btn" data-pane="settings" title="資料設定">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h8M17 8h3M4 16h3M12 16h8"/><circle cx="15" cy="8" r="2.2"/><circle cx="9" cy="16" r="2.2"/></svg>
+      <span class="mlbl">資料設定</span>
+    </button>
+  </nav>
+  <div class="tb-actions">
+    <label class="tb-style" title="選擇匯出檢視版要使用的風格">
+      <span class="tb-style-lbl">風格</span>
+      <select id="viewStyle">
+        <option value="ledger">帳冊</option>
+        <option value="chronicle">紀事</option>
+        <option value="darkfantasy">黑暗奇幻</option>
+        <option value="urbanhorror">都市恐怖</option>
+        <option value="cthulhu">克蘇魯</option>
+        <option value="forest">森林清新</option>
+      </select>
+    </label>
+    <button class="btn-export" id="btnExportView">
+      <span class="ic">↧</span><span class="lbl">匯出檢視版 HTML</span>
+    </button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="scrim" id="scrim"></div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="ledger-head">
+      <span class="lh-main">目錄</span>
+      <span class="lh-sub">Contents</span>
+    </div>
+    <nav class="side-scroll" id="catList"></nav>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<!-- MANAGE MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">團錄編輯</h3>
+      <button class="x" id="modalClose" aria-label="關閉">×</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="pane active" id="pane-entries">
+        <div class="callout">
+          <b>指定連結</b>是右側要載入的團錄頁面網址；<b>緩衝頁文字</b>會在載入前先顯示，用來寫團務概要與防雷警告。
+        </div>
+        <form id="entryForm">
+          <div class="form-title" id="entryFormTitle">新增團錄</div>
+          <input type="hidden" id="entryId">
+          <div class="grid2">
+            <div class="field"><label>所屬分類</label><select id="f_cat" required></select></div>
+            <div class="field"><label>連結名稱 <span class="hint">目錄顯示文字</span></label><input id="f_linkName" placeholder="例：219. 一室惡夢" required></div>
+          </div>
+          <div class="field"><label>團錄標題 <span class="hint">緩衝頁大標，留空沿用連結名稱</span></label><input id="f_title" placeholder="例：神貓桌CoC紀錄219.一室惡夢"></div>
+          <div class="grid2">
+            <div class="field"><label>KP</label><input id="f_kp" placeholder="例：洛雅"></div>
+            <div class="field"><label>PL</label><input id="f_pl" placeholder="例：六辰"></div>
+          </div>
+          <div class="field"><label>指定連結 <span class="hint">完整網址或相對路徑皆可，如 logs/219.html</span></label><input id="f_url" placeholder="https://…　或　219.html、logs/219.html" type="text"></div>
+          <div class="field"><label>防劇透緩衝頁文字 <span class="hint">團務概要／防雷警告，可換行</span></label><textarea id="f_spoiler" placeholder="本團涉及重大劇情揭露，未參團者請斟酌閱讀……"></textarea></div>
+          <div class="btn-row">
+            <button type="submit" class="btn btn-primary" id="entrySubmit">新增團錄</button>
+            <button type="button" class="btn btn-ghost" id="entryReset" style="display:none">取消編輯</button>
+          </div>
+        </form>
+        <div style="height:22px"></div>
+        <div id="entryList"></div>
+      </div>
+
+      <div class="pane" id="pane-cats">
+        <div class="callout">分類是目錄的分卷標題（例：<code>CoC 201-250</code>）。刪除分類前請先移除其中的團錄。</div>
+        <form id="catForm" class="btn-row" style="margin-bottom:22px;align-items:flex-end">
+          <div class="field" style="flex:1;margin:0"><label>新增分類名稱</label><input id="catName" placeholder="例：CoC 251-300" required></div>
+          <button type="submit" class="btn btn-primary">新增分類</button>
+        </form>
+        <div id="catManageList"></div>
+      </div>
+
+      <div class="pane" id="pane-io">
+        <div class="callout">
+          <b>CSV 欄位順序：</b><br>
+          <code>分類, 連結名稱, 標題, KP, PL, 連結網址, 防劇透文字</code><br>
+          第一列為標題列（會被略過）。含逗號或換行的欄位請以雙引號包住。匯入會<b>附加</b>到現有資料。
+        </div>
+        <div class="field">
+          <label>匯入 CSV 檔</label>
+          <div class="drop" id="csvDrop">點此選擇 CSV 檔，或將檔案拖曳到這裡<input type="file" id="csvFile" accept=".csv,text/csv" hidden></div>
+        </div>
+        <div class="field">
+          <label>或直接貼上 CSV 內容</label>
+          <textarea id="csvPaste" style="font-family:var(--mono);font-size:13px" placeholder="分類,連結名稱,標題,KP,PL,連結網址,防劇透文字"></textarea>
+          <div class="btn-row"><button class="btn btn-primary" id="btnImportPaste">匯入貼上的內容</button></div>
+        </div>
+        <div class="list-block" style="margin-top:24px">
+          <div class="lb-head">備份與匯出</div>
+          <div class="row"><div class="grow"><div class="r-title">匯出 CSV</div><div class="r-sub">下載所有團錄，可用試算表編輯</div></div><button class="btn btn-ghost" id="btnExportCsv">下載 CSV</button></div>
+          <div class="row"><div class="grow"><div class="r-title">匯出 JSON 備份</div><div class="r-sub">含分類與排序的完整備份</div></div><button class="btn btn-ghost" id="btnExportJson">下載 JSON</button></div>
+          <div class="row"><div class="grow"><div class="r-title">還原 JSON 備份</div><div class="r-sub">將覆蓋目前所有資料</div></div><button class="btn btn-ghost" id="btnImportJson">選擇 JSON</button><input type="file" id="jsonFile" accept=".json,application/json" hidden></div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-settings">
+        <div class="callout">網頁名稱請直接在上方工具列的輸入欄修改，會同步套用到分頁標題與匯出的檢視版。</div>
+        <div class="list-block">
+          <div class="lb-head">危險操作</div>
+          <div class="row"><div class="grow"><div class="r-title">清空所有資料</div><div class="r-sub">刪除全部分類與團錄，無法復原</div></div><button class="btn btn-danger" id="btnWipe">全部清空</button></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Viewer runtime (embedded verbatim into exported view-only file; not executed here) -->
+<script type="text/plain" id="viewer-js">
+(function(){
+  "use strict";
+  var $=function(s){return document.querySelector(s);};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
+  var openCats={}, activeEntry=null;
+  function entriesOf(id){return DB.entries.filter(function(e){return e.categoryId===id;});}
+  function pad(n){return (n<10?"0":"")+n;}
+
+  function renderSidebar(){
+    var wrap=$("#catList"); wrap.innerHTML="";
+    if(!DB.categories.length&&!DB.entries.length){wrap.innerHTML='<div class="vol-empty">尚無團錄。</div>';return;}
+    DB.categories.forEach(function(cat){
+      var links=entriesOf(cat.id);
+      var sec=document.createElement("section");
+      sec.className="vol"+(openCats[cat.id]?" open":"");
+      sec.innerHTML='<button class="vol-head" data-cat="'+cat.id+'">'
+        +'<span class="vol-name">'+esc(cat.name)+'</span>'
+        +'<span class="vol-count">'+links.length+'</span>'
+        +'<span class="vol-caret">▾</span></button>'
+        +'<div class="vol-body">'
+        +(links.length?links.map(function(e,i){
+            return '<button class="entry'+(activeEntry===e.id?' active':'')+'" data-entry="'+e.id+'">'
+              +'<span class="e-num">'+pad(i+1)+'</span><span class="e-name">'+esc(e.linkName)+'</span></button>';
+          }).join(''):'<div class="vol-empty">（此分類尚無團錄）</div>')
+        +'</div>';
+      wrap.appendChild(sec);
+    });
+    var orphans=DB.entries.filter(function(e){return !DB.categories.some(function(c){return c.id===e.categoryId;});});
+    if(orphans.length){
+      var os=document.createElement("section");
+      os.className="vol"+(openCats["__uncat__"]?" open":"");
+      os.innerHTML='<button class="vol-head" data-cat="__uncat__">'
+        +'<span class="vol-name">未分類</span>'
+        +'<span class="vol-count">'+orphans.length+'</span>'
+        +'<span class="vol-caret">▾</span></button>'
+        +'<div class="vol-body">'
+        +orphans.map(function(e,i){return '<button class="entry'+(activeEntry===e.id?' active':'')+'" data-entry="'+e.id+'"><span class="e-num">'+pad(i+1)+'</span><span class="e-name">'+esc(e.linkName)+'</span></button>';}).join('')
+        +'</div>';
+      wrap.appendChild(os);
+    }
+  }
+  function renderEmpty(){
+    activeEntry=null;
+    $("#main").innerHTML='<div class="empty-state"><div class="orn">❦</div><p>自左側目錄選擇一則團錄<br>閱讀前將先顯示防劇透緩衝頁</p></div>';
+  }
+  function renderBuffer(e){
+    var meta=[];
+    if(e.kp)meta.push('<span>KP／'+esc(e.kp)+'</span>');
+    if(e.pl)meta.push('<span>PL／'+esc(e.pl)+'</span>');
+    $("#main").innerHTML='<div class="buffer"><div class="eyebrow">封緘頁 · Sealed</div>'
+      +'<h2>'+esc(e.title||e.linkName)+'</h2>'
+      +'<div class="byline">'+meta.join('')+'</div>'
+      +'<div class="plate"><div class="plate-tab">概要 · 防雷</div>'
+      +'<div class="warn">⚠ 閱讀前請注意</div>'
+      +'<div class="body">'+esc(e.spoiler||'').trim()+'</div></div>'
+      +'<button class="reveal-btn" id="revealBtn"><span class="seal">封</span>翻開此頁，顯示團錄內容</button></div>';
+    fitTitle(document.querySelector(".buffer h2"));$("#revealBtn").onclick=function(){renderContent(e);};
+  }
+  function wireFrame(url){
+    var iframe=document.getElementById("contentFrame");
+    var note=document.getElementById("frameNote");
+    var loading=document.getElementById("frameLoading");
+    if(!iframe)return;
+    function hideLoading(){if(loading)loading.classList.add("hide");}
+    function showNote(){hideLoading();if(note)note.hidden=false;}
+    function hideNote(){hideLoading();if(note)note.hidden=true;}
+    var timer=setTimeout(showNote,6000);
+    iframe.onload=function(){
+      clearTimeout(timer);
+      var failed=false;
+      try{
+        var doc=iframe.contentDocument;
+        if(doc){
+          var b=doc.body;
+          var txt=b?((b.innerText||b.textContent||"").trim()):"";
+          if(!b||(b.children.length===0&&txt.length===0))failed=true;
+          var probe=((doc.title||"")+" "+txt.slice(0,200)).toLowerCase();
+          if(txt.length<300&&/(404|not found|403|forbidden|can.t be found|無法找到|找不到|頁面不存在)/.test(probe))failed=true;
+        }
+      }catch(err){/* cross-origin: cannot inspect, assume loaded */}
+      if(failed)showNote();else hideNote();
+    };
+    iframe.onerror=function(){clearTimeout(timer);showNote();};
+    iframe.src=url;
+  }
+  function renderContent(e){
+    var url=(e.url||'').trim();
+    if(!url){
+      $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button></div><div class="empty-state"><div class="orn">—</div><p>此團錄尚未設定連結網址。</p></div></div>';
+      $("#backBuf").onclick=function(){renderBuffer(e);};return;
+    }
+    $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button><a class="mini-btn" href="'+esc(url)+'" target="_blank" rel="noopener">在新分頁開啟 ↗</a></div><div class="frame-note" id="frameNote" hidden>⚠ 此連結可能無法嵌入或已失效，請點右上角「在新分頁開啟」。</div><div class="frame-wrap"><iframe class="content-frame" id="contentFrame" referrerpolicy="no-referrer"></iframe><div class="frame-loading" id="frameLoading"><span class="spinner"></span>載入中…</div></div></div>';
+    $("#backBuf").onclick=function(){renderBuffer(e);};
+  wireFrame(url);
+  }
+  $("#catList").addEventListener("click",function(ev){
+    var cb=ev.target.closest(".vol-head");
+    if(cb){var id=cb.dataset.cat;if(openCats[id]){delete openCats[id];}else{openCats[id]=true;}renderSidebar();return;}
+    var li=ev.target.closest(".entry");
+    if(li){var e=DB.entries.find(function(x){return x.id===li.dataset.entry;});
+      if(e){activeEntry=e.id;renderSidebar();renderBuffer(e);closeNav();}}
+  });
+  function openNav(){$("#sidebar").classList.add("open");$("#scrim").classList.add("show");}
+  function closeNav(){$("#sidebar").classList.remove("open");$("#scrim").classList.remove("show");}
+  var hb=$("#hamburger");if(hb)hb.onclick=openNav;
+  var sc=$("#scrim");if(sc)sc.onclick=closeNav;
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeNav();});
+  function fitTitle(el){if(!el)return;el.style.fontSize="";el.style.whiteSpace="nowrap";var size=parseFloat(getComputedStyle(el).fontSize)||42;var min=18,guard=0;while(el.scrollWidth>el.clientWidth+0.5&&size>min&&guard<90){size-=1;el.style.fontSize=size+"px";guard++;}if(el.scrollWidth>el.clientWidth+0.5)el.style.whiteSpace="normal";}
+  window.addEventListener("resize",function(){var h=document.querySelector(".buffer h2");if(h)fitTitle(h);});
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){var h=document.querySelector(".buffer h2");if(h)fitTitle(h);});}
+  openCats={}; renderSidebar(); renderEmpty();
+})();
+</script>
+
+<script>
+"use strict";
+
+/* ---------- storage ---------- */
+var KEY="coc_log_editor_db_v2";
+var mem={};
+var store={
+  get:function(){try{var v=localStorage.getItem(KEY);return v?JSON.parse(v):null;}catch(e){return mem[KEY]?JSON.parse(mem[KEY]):null;}},
+  set:function(o){var s=JSON.stringify(o);try{localStorage.setItem(KEY,s);}catch(e){mem[KEY]=s;}}
+};
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);};
+function seed(){
+  return{meta:{title:""},categories:[],entries:[]};
+}
+var db=store.get();
+if(!db||!db.categories){db=seed();store.set(db);}
+if(!db.meta)db.meta={title:"團錄檢視"};
+function save(){store.set(db);}
+
+/* ---------- helpers ---------- */
+var $=function(s){return document.querySelector(s);};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});};
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},2200);}
+function catById(id){return db.categories.find(function(c){return c.id===id;});}
+function entriesOf(id){return db.entries.filter(function(e){return e.categoryId===id;});}
+function pad(n){return (n<10?"0":"")+n;}
+
+/* ---------- state ---------- */
+var openCats={}, activeEntry=null;
+
+/* ---------- sidebar ---------- */
+function renderSidebar(){
+  var wrap=$("#catList");wrap.innerHTML="";
+  if(!db.categories.length&&!db.entries.length){wrap.innerHTML='<div class="vol-empty" style="padding:22px 20px">尚無資料，請由上方「分類編輯」與「團錄編輯」新增。</div>';return;}
+  db.categories.forEach(function(cat){
+    var links=entriesOf(cat.id);
+    var sec=document.createElement("section");
+    sec.className="vol"+(openCats[cat.id]?" open":"");
+    sec.innerHTML='<button class="vol-head" data-cat="'+cat.id+'">'
+      +'<span class="vol-name">'+esc(cat.name)+'</span>'
+      +'<span class="vol-count">'+links.length+'</span>'
+      +'<span class="vol-caret">▾</span></button>'
+      +'<div class="vol-body">'
+      +(links.length?links.map(function(e,i){
+          return '<button class="entry'+(activeEntry===e.id?' active':'')+'" data-entry="'+e.id+'">'
+            +'<span class="e-num">'+pad(i+1)+'</span><span class="e-name">'+esc(e.linkName)+'</span></button>';
+        }).join(''):'<div class="vol-empty">（此分類尚無團錄）</div>')
+      +'</div>';
+    wrap.appendChild(sec);
+  });
+  var orphans=db.entries.filter(function(e){return !catById(e.categoryId);});
+  if(orphans.length){
+    var os=document.createElement("section");
+    os.className="vol"+(openCats["__uncat__"]?" open":"");
+    os.innerHTML='<button class="vol-head" data-cat="__uncat__">'
+      +'<span class="vol-name">未分類</span>'
+      +'<span class="vol-count">'+orphans.length+'</span>'
+      +'<span class="vol-caret">▾</span></button>'
+      +'<div class="vol-body">'
+      +orphans.map(function(e,i){return '<button class="entry'+(activeEntry===e.id?' active':'')+'" data-entry="'+e.id+'"><span class="e-num">'+pad(i+1)+'</span><span class="e-name">'+esc(e.linkName)+'</span></button>';}).join('')
+      +'</div>';
+    wrap.appendChild(os);
+  }
+}
+function renderEmpty(){
+  activeEntry=null;
+  $("#main").innerHTML='<div class="empty-state"><div class="orn">❦</div><p>自左側目錄選擇一則團錄<br>閱讀前將先顯示防劇透緩衝頁</p></div>';
+}
+function renderBuffer(e){
+  var meta=[];
+  if(e.kp)meta.push('<span>KP／'+esc(e.kp)+'</span>');
+  if(e.pl)meta.push('<span>PL／'+esc(e.pl)+'</span>');
+  $("#main").innerHTML='<div class="buffer"><div class="eyebrow">封緘頁 · Sealed</div>'
+    +'<h2>'+esc(e.title||e.linkName)+'</h2>'
+    +'<div class="byline">'+meta.join('')+'</div>'
+    +'<div class="plate"><div class="plate-tab">概要 · 防雷</div>'
+    +'<div class="warn">⚠ 閱讀前請注意</div>'
+    +'<div class="body">'+esc(e.spoiler||'').trim()+'</div></div>'
+    +'<button class="reveal-btn" id="revealBtn"><span class="seal">封</span>翻開此頁，顯示團錄內容</button></div>';
+  fitTitle(document.querySelector(".buffer h2"));$("#revealBtn").onclick=function(){renderContent(e);};
+}
+function wireFrame(url){
+  var iframe=document.getElementById("contentFrame");
+  var note=document.getElementById("frameNote");
+  var loading=document.getElementById("frameLoading");
+  if(!iframe)return;
+  function hideLoading(){if(loading)loading.classList.add("hide");}
+  function showNote(){hideLoading();if(note)note.hidden=false;}
+  function hideNote(){hideLoading();if(note)note.hidden=true;}
+  var timer=setTimeout(showNote,6000);
+  iframe.onload=function(){
+    clearTimeout(timer);
+    var failed=false;
+    try{
+      var doc=iframe.contentDocument;
+      if(doc){
+        var b=doc.body;
+        var txt=b?((b.innerText||b.textContent||"").trim()):"";
+        if(!b||(b.children.length===0&&txt.length===0))failed=true;
+        var probe=((doc.title||"")+" "+txt.slice(0,200)).toLowerCase();
+        if(txt.length<300&&/(404|not found|403|forbidden|can.t be found|無法找到|找不到|頁面不存在)/.test(probe))failed=true;
+      }
+    }catch(err){/* cross-origin: cannot inspect, assume loaded */}
+    if(failed)showNote();else hideNote();
+  };
+  iframe.onerror=function(){clearTimeout(timer);showNote();};
+  iframe.src=url;
+}
+function renderContent(e){
+  var url=(e.url||'').trim();
+  if(!url){
+    $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button></div><div class="empty-state"><div class="orn">—</div><p>此團錄尚未設定「指定連結」。<br>請於上方「團錄編輯」中補上網址或相對路徑。</p></div></div>';
+    $("#backBuf").onclick=function(){renderBuffer(e);};return;
+  }
+  $("#main").innerHTML='<div class="content-view"><div class="content-bar"><div class="ttl">'+esc(e.title||e.linkName)+'</div><button class="mini-btn" id="backBuf">← 返回緩衝頁</button><a class="mini-btn" href="'+esc(url)+'" target="_blank" rel="noopener">在新分頁開啟 ↗</a></div><div class="frame-note" id="frameNote" hidden>⚠ 此連結可能無法嵌入或已失效，請點右上角「在新分頁開啟」。</div><div class="frame-wrap"><iframe class="content-frame" id="contentFrame" referrerpolicy="no-referrer"></iframe><div class="frame-loading" id="frameLoading"><span class="spinner"></span>載入中…</div></div></div>';
+  $("#backBuf").onclick=function(){renderBuffer(e);};
+  wireFrame(url);
+}
+$("#catList").addEventListener("click",function(ev){
+  var cb=ev.target.closest(".vol-head");
+  if(cb){var id=cb.dataset.cat;if(openCats[id]){delete openCats[id];}else{openCats[id]=true;}renderSidebar();return;}
+  var li=ev.target.closest(".entry");
+  if(li){var e=db.entries.find(function(x){return x.id===li.dataset.entry;});
+    if(e){activeEntry=e.id;renderSidebar();renderBuffer(e);closeNav();}}
+});
+
+/* ---------- site name (toolbar) ---------- */
+var siteInput=$("#siteName");
+function applyName(){document.title=(db.meta.title||"團錄檢視")+"｜編輯器";}
+siteInput.value=db.meta.title||"";
+applyName();
+siteInput.addEventListener("input",function(){db.meta.title=siteInput.value;save();applyName();});
+
+/* ---------- mobile nav ---------- */
+function openNav(){$("#sidebar").classList.add("open");$("#scrim").classList.add("show");}
+function closeNav(){$("#sidebar").classList.remove("open");$("#scrim").classList.remove("show");}
+$("#hamburger").onclick=openNav;
+$("#scrim").onclick=closeNav;
+
+/* ================= MODAL ================= */
+var overlay=$("#overlay");
+var PANE_TITLES={entries:"團錄編輯",cats:"分類編輯",io:"匯入 / 匯出",settings:"資料設定"};
+function showPane(pane){
+  document.querySelectorAll(".pane").forEach(function(x){x.classList.remove("active");});
+  var el=$("#pane-"+pane);if(el)el.classList.add("active");
+  $("#modalTitle").textContent=PANE_TITLES[pane]||"管理";
+  document.querySelectorAll(".tb-menu-btn").forEach(function(b){b.classList.toggle("active",b.dataset.pane===pane);});
+}
+function openManage(pane){
+  overlay.classList.add("show");
+  renderModal();
+  showPane(pane);
+  if(pane==="entries")fillForm(null);
+  var mb=document.querySelector(".modal-body");if(mb)mb.scrollTop=0;
+}
+function closeModal(){overlay.classList.remove("show");document.querySelectorAll(".tb-menu-btn").forEach(function(b){b.classList.remove("active");});}
+document.querySelectorAll(".tb-menu-btn").forEach(function(b){b.onclick=function(){openManage(b.dataset.pane);};});
+$("#modalClose").onclick=closeModal;
+overlay.addEventListener("click",function(e){if(e.target===overlay)closeModal();});
+function renderModal(){
+  $("#f_cat").innerHTML='<option value="">未分類</option>'+db.categories.map(function(c){return '<option value="'+c.id+'">'+esc(c.name)+'</option>';}).join("");
+  renderEntryList();renderCatManage();
+}
+
+/* entries */
+function renderEntryList(){
+  var box=$("#entryList");
+  if(!db.entries.length){box.innerHTML='<div class="empty-note">尚無團錄。</div>';return;}
+  var html="";
+  db.categories.forEach(function(cat){
+    var es=entriesOf(cat.id);if(!es.length)return;
+    html+='<div class="list-block"><div class="lb-head">'+esc(cat.name)+'<span class="chip">'+es.length+'</span></div>';
+    es.forEach(function(e){
+      html+='<div class="row"><div class="grow"><div class="r-title">'+esc(e.linkName)+'</div><div class="r-sub">'+(e.url?esc(e.url):"（未設定連結）")+' · '+(e.spoiler?"已設緩衝頁":"無緩衝頁")+'</div></div>'
+        +'<button class="icon-btn" data-edit="'+e.id+'" title="編輯">✎</button>'
+        +'<button class="icon-btn del" data-del="'+e.id+'" title="刪除">🗑</button></div>';
+    });
+    html+="</div>";
+  });
+  var orphan=db.entries.filter(function(e){return !catById(e.categoryId);});
+  if(orphan.length){
+    html+='<div class="list-block"><div class="lb-head">未分類<span class="chip">'+orphan.length+'</span></div>';
+    orphan.forEach(function(e){html+='<div class="row"><div class="grow"><div class="r-title">'+esc(e.linkName)+'</div></div><button class="icon-btn" data-edit="'+e.id+'">✎</button><button class="icon-btn del" data-del="'+e.id+'">🗑</button></div>';});
+    html+="</div>";
+  }
+  box.innerHTML=html;
+  box.querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){editEntry(b.dataset.edit);};});
+  box.querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){delEntry(b.dataset.del);};});
+}
+function fillForm(e){
+  $("#entryId").value=e?e.id:"";
+  $("#f_cat").value=e?e.categoryId:(db.categories[0]?db.categories[0].id:"");
+  $("#f_linkName").value=e?e.linkName:"";
+  $("#f_title").value=e?e.title:"";
+  $("#f_kp").value=e?e.kp:"";
+  $("#f_pl").value=e?e.pl:"";
+  $("#f_url").value=e?e.url:"";
+  $("#f_spoiler").value=e?e.spoiler:"";
+  $("#entrySubmit").textContent=e?"儲存變更":"新增團錄";
+  $("#entryReset").style.display=e?"inline-block":"none";
+  $("#entryForm").classList.toggle("editing",!!e);
+  $("#entryFormTitle").innerHTML=e
+    ? '編輯團錄<span class="badge">'+esc(e.linkName)+'</span>'
+    : '新增團錄';
+}
+function editEntry(id){
+  var e=db.entries.find(function(x){return x.id===id;});if(!e)return;
+  fillForm(e);
+  overlay.classList.add("show");
+  showPane("entries");
+  var mb=document.querySelector('.modal-body');if(mb)mb.scrollTop=0;
+  $("#f_linkName").focus();
+}
+function delEntry(id){var e=db.entries.find(function(x){return x.id===id;});if(!e)return;if(!confirm('確定刪除團錄「'+e.linkName+'」？'))return;db.entries=db.entries.filter(function(x){return x.id!==id;});if(activeEntry===id)renderEmpty();save();renderModal();renderSidebar();toast("已刪除團錄");}
+$("#entryForm").addEventListener("submit",function(ev){
+  ev.preventDefault();
+  var id=$("#entryId").value;
+  var data={categoryId:$("#f_cat").value,linkName:$("#f_linkName").value.trim(),title:$("#f_title").value.trim(),kp:$("#f_kp").value.trim(),pl:$("#f_pl").value.trim(),url:$("#f_url").value.trim(),spoiler:$("#f_spoiler").value};
+  if(!data.linkName){toast("請填寫連結名稱");return;}
+  if(id){Object.assign(db.entries.find(function(x){return x.id===id;}),data);toast("已儲存變更");}
+  else{db.entries.push(Object.assign({id:uid()},data));toast("已新增團錄");}
+  save();fillForm(null);renderModal();renderSidebar();
+});
+$("#entryReset").onclick=function(){fillForm(null);};
+
+/* categories */
+function renderCatManage(){
+  var box=$("#catManageList");
+  if(!db.categories.length){box.innerHTML='<div class="empty-note">尚無分類。</div>';return;}
+  box.innerHTML='<div class="list-block"><div class="lb-head">現有分類</div>'+db.categories.map(function(c,i){
+    return '<div class="row"><div class="grow"><div class="r-title">'+esc(c.name)+'</div><div class="r-sub">'+entriesOf(c.id).length+' 篇團錄</div></div>'
+      +'<button class="icon-btn" data-up="'+c.id+'" '+(i===0?"disabled":"")+'>↑</button>'
+      +'<button class="icon-btn" data-down="'+c.id+'" '+(i===db.categories.length-1?"disabled":"")+'>↓</button>'
+      +'<button class="icon-btn" data-ren="'+c.id+'">✎</button>'
+      +'<button class="icon-btn del" data-delcat="'+c.id+'">🗑</button></div>';
+  }).join("")+'</div>';
+  box.querySelectorAll("[data-up]").forEach(function(b){b.onclick=function(){moveCat(b.dataset.up,-1);};});
+  box.querySelectorAll("[data-down]").forEach(function(b){b.onclick=function(){moveCat(b.dataset.down,1);};});
+  box.querySelectorAll("[data-ren]").forEach(function(b){b.onclick=function(){renameCat(b.dataset.ren);};});
+  box.querySelectorAll("[data-delcat]").forEach(function(b){b.onclick=function(){delCat(b.dataset.delcat);};});
+}
+function moveCat(id,dir){var i=db.categories.findIndex(function(c){return c.id===id;});var j=i+dir;if(j<0||j>=db.categories.length)return;var t=db.categories[i];db.categories[i]=db.categories[j];db.categories[j]=t;save();renderModal();renderSidebar();}
+function renameCat(id){var c=catById(id);var n=prompt("分類名稱：",c.name);if(n===null)return;var v=n.trim();if(!v)return;c.name=v;save();renderModal();renderSidebar();toast("已更新分類");}
+function delCat(id){var c=catById(id);var n=entriesOf(id).length;var msg=n>0?('刪除分類「'+c.name+'」？其中 '+n+' 篇團錄將移至「未分類」。'):('刪除分類「'+c.name+'」？');if(!confirm(msg))return;db.entries.forEach(function(e){if(e.categoryId===id)e.categoryId="";});db.categories=db.categories.filter(function(x){return x.id!==id;});delete openCats[id];save();renderModal();renderSidebar();toast(n>0?("已刪除分類，"+n+" 篇移至未分類"):"已刪除分類");}
+$("#catForm").addEventListener("submit",function(ev){ev.preventDefault();var v=$("#catName").value.trim();if(!v)return;db.categories.push({id:uid(),name:v});$("#catName").value="";save();renderModal();renderSidebar();toast("已新增分類");});
+
+/* wipe */
+$("#btnWipe").onclick=function(){if(!confirm("將刪除所有分類與團錄，且無法復原。確定？"))return;db={meta:{title:db.meta.title},categories:[],entries:[]};openCats={};activeEntry=null;save();renderModal();renderSidebar();renderEmpty();toast("已清空");};
+
+/* ================= CSV ================= */
+function parseCSV(text){
+  var rows=[],row=[],field="",inQ=false;
+  text=text.replace(/\r\n/g,"\n").replace(/\r/g,"\n");
+  for(var i=0;i<text.length;i++){var c=text[i];
+    if(inQ){if(c==='"'){if(text[i+1]==='"'){field+='"';i++;}else inQ=false;}else field+=c;}
+    else{if(c==='"')inQ=true;else if(c===","){row.push(field);field="";}else if(c==="\n"){row.push(field);rows.push(row);row=[];field="";}else field+=c;}
+  }
+  row.push(field);rows.push(row);
+  if(rows.length&&rows[rows.length-1].length===1&&rows[rows.length-1][0]==="")rows.pop();
+  return rows;
+}
+function csvCell(v){v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function importCSV(text){
+  var rows=parseCSV(text);
+  if(rows.length<2){toast("CSV 內容不足（需標題列＋至少一筆）");return;}
+  var added=0;
+  for(var i=1;i<rows.length;i++){
+    var r=rows[i];if(!r||r.every(function(x){return !String(x).trim();}))continue;
+    var catName=r[0]||"",linkName=r[1]||"",title=r[2]||"",kp=r[3]||"",pl=r[4]||"",url=r[5]||"",spoiler=r[6]||"";
+    if(!String(linkName).trim())continue;
+    var cn=String(catName).trim();
+    var categoryId="";
+    if(cn){var cat=db.categories.find(function(c){return c.name===cn;});if(!cat){cat={id:uid(),name:cn};db.categories.push(cat);}categoryId=cat.id;}
+    db.entries.push({id:uid(),categoryId:categoryId,linkName:String(linkName).trim(),title:String(title).trim(),kp:String(kp).trim(),pl:String(pl).trim(),url:String(url).trim(),spoiler:String(spoiler)});
+    added++;
+  }
+  save();renderModal();renderSidebar();toast(added?"已匯入 "+added+" 筆團錄":"未匯入任何資料");
+}
+function exportCSV(){
+  var header=["分類","連結名稱","標題","KP","PL","連結網址","防劇透文字"];
+  var lines=[header.map(csvCell).join(",")];
+  db.categories.forEach(function(cat){entriesOf(cat.id).forEach(function(e){lines.push([cat.name,e.linkName,e.title,e.kp,e.pl,e.url,e.spoiler].map(csvCell).join(","));});});
+  db.entries.filter(function(e){return !catById(e.categoryId);}).forEach(function(e){lines.push(["",e.linkName,e.title,e.kp,e.pl,e.url,e.spoiler].map(csvCell).join(","));});
+  download((db.meta.title||"團錄")+".csv","\uFEFF"+lines.join("\r\n"),"text/csv");
+}
+function download(name,content,type){var blob=new Blob([content],{type:type+";charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);}
+$("#btnExportCsv").onclick=exportCSV;
+$("#btnExportJson").onclick=function(){download((db.meta.title||"團錄")+"-備份.json",JSON.stringify(db,null,2),"application/json");};
+$("#btnImportPaste").onclick=function(){var t=$("#csvPaste").value;if(!t.trim()){toast("請先貼上內容");return;}importCSV(t);$("#csvPaste").value="";};
+var drop=$("#csvDrop"),csvFile=$("#csvFile");
+drop.onclick=function(){csvFile.click();};
+csvFile.onchange=function(){var f=csvFile.files[0];if(f)readFile(f,importCSV);csvFile.value="";};
+["dragover","dragenter"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add("drag");});});
+["dragleave","drop"].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove("drag");});});
+drop.addEventListener("drop",function(e){var f=e.dataTransfer.files[0];if(f)readFile(f,importCSV);});
+function readFile(file,cb){var r=new FileReader();r.onload=function(){cb(r.result);};r.readAsText(file,"utf-8");}
+var jsonFile=$("#jsonFile");
+$("#btnImportJson").onclick=function(){jsonFile.click();};
+jsonFile.onchange=function(){var f=jsonFile.files[0];if(!f)return;readFile(f,function(txt){try{var o=JSON.parse(txt);if(!o.categories||!o.entries)throw 0;if(!confirm("還原備份將覆蓋目前所有資料，確定？"))return;db=o;if(!db.meta)db.meta={title:"團錄檢視"};openCats={};activeEntry=null;siteInput.value=db.meta.title||"";applyName();save();renderModal();renderSidebar();renderEmpty();toast("已還原備份");}catch(e){toast("JSON 格式錯誤，無法還原");}});jsonFile.value="";};
+
+/* ================= EXPORT VIEW-ONLY HTML ================= */
+var STYLES=["ledger","chronicle","darkfantasy","urbanhorror","cthulhu","forest"];
+var STYLE_LABELS={ledger:"帳冊",chronicle:"紀事",darkfantasy:"黑暗奇幻",urbanhorror:"都市恐怖",cthulhu:"克蘇魯",forest:"森林清新"};
+function curStyle(){return STYLES.indexOf(db.meta.exportStyle)>=0?db.meta.exportStyle:"ledger";}
+function buildViewer(style){
+  style=(STYLES.indexOf(style)>=0)?style:"ledger";
+  var name=(db.meta.title||"團錄檢視").trim()||"團錄檢視";
+  var css=document.getElementById("appcss").textContent;
+  var viewerJS=document.getElementById("viewer-js").textContent;
+  var data={meta:{title:name},categories:db.categories,entries:db.entries};
+  var json=JSON.stringify(data).replace(/</g,"\\u003c").replace(/-->/g,"--\\>");
+  var fonts='<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700;900&display=swap" rel="stylesheet">';
+  var extraCss='.toolbar.viewer{justify-content:flex-start;}.tb-titlewrap{display:flex;flex-direction:column;line-height:1.15;}.tb-eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}.tb-title{font-family:var(--serif);font-weight:700;font-size:20px;color:var(--ink);letter-spacing:.04em;}';
+  var headSub="Contents";
+  var body=''
+    +'<div class="toolbar viewer">'
+    +'<button class="hamburger" id="hamburger" aria-label="開啟目錄">☰</button>'
+    +'<div class="tb-titlewrap"><span class="tb-eyebrow">團錄檢視</span><span class="tb-title">'+esc(name)+'</span></div>'
+    +'</div>'
+    +'<div class="scrim" id="scrim"></div>'
+    +'<div class="app">'
+    +'<aside class="sidebar" id="sidebar"><div class="ledger-head"><span class="lh-main">目錄</span><span class="lh-sub">'+esc(headSub)+'</span></div><nav class="side-scroll" id="catList"></nav><div class="viewer-foot">使用神貓卓團錄清冊編輯器匯出檢視</div></aside>'
+    +'<main class="main" id="main"></main></div>';
+  var html='<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8">'
+    +'<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+    +'<title>'+esc(name)+'</title>'+fonts
+    +'<style>'+css+extraCss+'</style></head><body class="sty-'+style+'">'
+    +body
+    +'<script>var DB='+json+';<\/script>'
+    +'<script>'+viewerJS+'<\/script>'
+    +'</body></html>';
+  return html;
+}
+var styleSel=$("#viewStyle");
+function applyStylePreview(){
+  var b=document.body;
+  STYLES.forEach(function(x){if(x!=="ledger")b.classList.remove("sty-"+x);});
+  var s=curStyle();
+  if(s!=="ledger")b.classList.add("sty-"+s);
+}
+if(styleSel){
+  styleSel.value=curStyle();
+  styleSel.addEventListener("change",function(){db.meta.exportStyle=styleSel.value;save();applyStylePreview();});
+}
+applyStylePreview();
+$("#btnExportView").onclick=function(){
+  if(!db.entries.length){toast("尚無團錄可匯出");return;}
+  var name=(db.meta.title||"團錄檢視").trim()||"團錄檢視";
+  var st=curStyle();
+  var lbl=STYLE_LABELS[st]||"帳冊";
+  download(name+"-檢視版("+lbl+").html",buildViewer(st),"text/html");
+  toast("已匯出純檢視版 HTML（"+lbl+"）");
+};
+
+/* keyboard */
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeModal();closeNav();}});
+
+/* boot */
+function fitTitle(el){if(!el)return;el.style.fontSize="";el.style.whiteSpace="nowrap";var size=parseFloat(getComputedStyle(el).fontSize)||42;var min=18,guard=0;while(el.scrollWidth>el.clientWidth+0.5&&size>min&&guard<90){size-=1;el.style.fontSize=size+"px";guard++;}if(el.scrollWidth>el.clientWidth+0.5)el.style.whiteSpace="normal";}
+window.addEventListener("resize",function(){var h=document.querySelector(".buffer h2");if(h)fitTitle(h);});
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){var h=document.querySelector(".buffer h2");if(h)fitTitle(h);});}
+renderSidebar();
+renderEmpty();
+</script>
+</body>
+</html>
