@@ -13,6 +13,8 @@
   --info:#8a5a12; --info-bg:#f6efe2;
   --other:#7a8194;
   --reward:#2f6b45; --reward-bg:#eaf2ec; --reward-line:#a9c6b4;
+  --tele:#6d5b9c; --recall:#8a7a52; --recall-line:#ddceac; --recall-ink:#4c4530;
+  --recall-edge:rgba(176,148,86,.30);
   --note:#a24a6d; --note-bg:#f7eef2; --note-line:#dcbccb; --note-ink:#4a2233;
   --pc:#355a7a; --pc-bg:#eef2f6; --pc-line:#c3d0dd; --pc-accent:#b98a2e;
   --battle:#a83232; --battle-bg:#f6e9e7; --battle-end:#5a6472; --battle-end-bg:#eceef1;
@@ -73,6 +75,54 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .body{flex:1;min-width:0}
 .name{font-weight:700;font-size:14px;letter-spacing:.06em;margin-bottom:1px}
 .text{white-space:pre-wrap;word-break:break-word}
+/* 心靈感應 telepathy：無框柔光心聲泡泡 */
+.tele{display:flex;gap:10px;margin:12px 0;align-items:flex-start}
+.tele.right{flex-direction:row-reverse}
+.tele .col{display:flex;flex-direction:column;gap:5px;min-width:0;max-width:76%}
+.tele.right .col{align-items:flex-end}
+.tele .who{font-size:13px;font-weight:700;letter-spacing:.05em;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tele.right .who{justify-content:flex-end}
+.tele .to{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted)}
+.tele .mtag{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:#fff;background:var(--secret);
+  padding:1px 6px;border-radius:2px}
+.tele .bubbles{display:flex;flex-direction:column;gap:6px;width:100%}
+.tele.right .bubbles{align-items:flex-end}.tele.left .bubbles{align-items:flex-start}
+.tele .bubble{position:relative;max-width:100%;padding:9px 17px;border-radius:26px/17px;
+  line-height:1.75;word-break:break-word;white-space:pre-wrap;
+  color:var(--ink);background:var(--tbub,rgba(109,91,156,.12));
+  border:1px dashed var(--tln,rgba(109,91,156,.34));box-shadow:0 0 0 5px var(--tglow,rgba(109,91,156,.14))}
+.tele .bubble:has(ruby){line-height:2.3}
+.tele .bubble .q{font-style:normal;opacity:.5;padding:0 2px}
+.tele.secret .bubble{background:
+    repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),var(--tbub,rgba(109,91,156,.12))}
+
+/* 回憶 recall（A-1：連續 recall 為一段，頻道 secret 走秘匿） */
+.recall{margin:0;padding:9px 24px;background:transparent;color:var(--recall-ink);position:relative}
+.recall::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:linear-gradient(to right,var(--recall-edge),transparent 48px) no-repeat,
+             linear-gradient(to left,var(--recall-edge),transparent 48px) no-repeat}
+.recall > *{position:relative;z-index:1}
+.recall.is-first{margin-top:42px;box-shadow:inset 0 22px 24px -16px var(--recall-edge)}
+.recall.is-last{margin-bottom:42px;box-shadow:inset 0 -22px 24px -16px var(--recall-edge)}
+.recall.is-first.is-last{box-shadow:inset 0 22px 24px -16px var(--recall-edge),inset 0 -22px 24px -16px var(--recall-edge)}
+.recall .rc-cap{padding:4px 0 10px;margin-bottom:4px}
+.recall .rc-cap .rc-title{font-family:var(--serif);font-size:15px;letter-spacing:.14em;color:var(--recall);
+  font-weight:700}
+.recall .rc-line{display:flex;gap:11px;align-items:flex-start;padding:5px 0}
+.recall .rc-body{flex:1;min-width:0}
+.recall .rc-name{font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:2px;
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.recall .rc-name .mtag{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:#fff;
+  background:var(--secret);padding:1px 6px;border-radius:2px}
+.recall .rc-name .to{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted)}
+.recall .rc-text,.recall .rc-narr{white-space:pre-wrap;word-break:break-word;line-height:1.9}
+.recall .rc-narr{font-family:var(--serif);font-style:italic;padding:6px 0 6px 14px;color:var(--recall-ink);opacity:.92}
+.recall .rc-text p,.recall .rc-narr p{margin:0}
+.recall .rc-text p + p,.recall .rc-narr p + p{margin-top:.5em}
+.recall .rc-text.sec,.recall .rc-narr.sec{
+  background:repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),transparent;
+  border-left:2px solid var(--sac,var(--secret));padding-left:10px;border-radius:2px}
+
 /* 聊天訊息 message */
 .msg{display:flex;gap:10px;margin:10px 0;align-items:flex-start}
 .msg.right{flex-direction:row-reverse}
@@ -98,9 +148,9 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .msg.right .bubble.first::after{right:-5px;border-left:0;border-bottom:0}
 /* 秘匿訊息：紫色斜紋 */
 .msg.secret .bubble{background:
-    repeating-linear-gradient(135deg,rgba(106,75,156,.06) 0 6px,transparent 6px 12px),var(--secret-bg);
-  border-color:var(--secret-line)}
-.msg.secret .bubble.first::after{background:var(--secret-bg);border-color:var(--secret-line)}
+    repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),var(--sbub,var(--secret-bg));
+  border-color:var(--sln,var(--secret-line))}
+.msg.secret .bubble.first::after{background:var(--sbub,var(--secret-bg));border-color:var(--sln,var(--secret-line))}
 .msg.secret .who{color:var(--secret)}
 .msg.secret .to{color:var(--secret);opacity:.85}
 
@@ -116,9 +166,9 @@ ruby rt{font-size:.68em;letter-spacing:.04em;line-height:1.25;color:#5b626f;font
 
 /* ── secret ───────────────────────────────── */
 .line.secret{background:
-    repeating-linear-gradient(135deg,rgba(106,75,156,.055) 0 6px,transparent 6px 12px),var(--secret-bg);
-  border-left:3px solid var(--secret);border-right:1px solid var(--secret-line);
-  border-top:1px solid var(--secret-line);border-bottom:1px solid var(--secret-line);
+    repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.055)) 0 6px,transparent 6px 12px),var(--sbub,var(--secret-bg));
+  border-left:3px solid var(--sac,var(--secret));border-right:1px solid var(--sln,var(--secret-line));
+  border-top:1px solid var(--sln,var(--secret-line));border-bottom:1px solid var(--sln,var(--secret-line));
   padding:11px 14px 11px 16px;margin-top:4px}
 .seal{position:absolute;top:-1px;right:-1px;background:var(--secret);color:#fff;font-family:var(--mono);
   font-size:13px;letter-spacing:.22em;padding:2px 7px}
@@ -143,9 +193,9 @@ ruby rt{font-size:.68em;letter-spacing:.04em;line-height:1.25;color:#5b626f;font
 .dice .expr{flex:1;word-break:break-all;color:#33414a}
 .dice .res{font-weight:700;padding:1px 8px;border:1px solid currentColor;white-space:nowrap}
 .dice.sec{background:
-    repeating-linear-gradient(135deg,rgba(106,75,156,.06) 0 6px,transparent 6px 12px),var(--secret-bg);
-  border-left-color:var(--secret);border-top:1px dashed var(--secret-line);
-  border-bottom:1px dashed var(--secret-line);border-right:1px dashed var(--secret-line)}
+    repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),var(--sbub,var(--secret-bg));
+  border-left-color:var(--sac,var(--secret));border-top:1px dashed var(--sln,var(--secret-line));
+  border-bottom:1px dashed var(--sln,var(--secret-line));border-right:1px dashed var(--sln,var(--secret-line))}
 .dice.sec .who{color:var(--secret)}
 .dice.sec .expr{color:#4a4159}
 .dice .tag{font-family:var(--mono);font-size:13px;letter-spacing:.2em;color:#fff;background:var(--secret);
@@ -684,10 +734,14 @@ function render(){
       const nm=r['發言人']||''; if(!nm) return null;
       return 'dice|'+chKey(r)+'|'+nm;
     }
-    if(ty==='message'){
+    if(ty==='message'||ty==='telepathy'){
       const nm=r['發言人']||''; if(!nm) return null;
       const side=(r['備註']||'').trim().toUpperCase()==='R'?'R':'L';
-      return 'message|'+chKey(r)+'|'+side+'|'+(r['秘匿對象']||'')+'|'+nm;
+      return ty+'|'+chKey(r)+'|'+side+'|'+(r['秘匿對象']||'')+'|'+nm;
+    }
+    if(ty==='recall'){
+      const nm=r['發言人']||''; if(!nm) return null;   // 純敘述不合併
+      return 'recall|'+chKey(r)+'|'+nm;
     }
     return null;
   };
@@ -696,6 +750,12 @@ function render(){
     const k=mergeKey(r), prev=merged[merged.length-1];
     if(k && prev && prev._key===k){ prev._parts.push(r['內容']||''); }
     else { const c=Object.assign({}, r); c._key=k; c._parts=[r['內容']||'']; merged.push(c); }
+  }
+  // 連續 recall 視為一段：標記第一列／最後一列
+  for(let i=0;i<merged.length;i++){
+    if((merged[i]['類型']||'')!=='recall') continue;
+    merged[i]._recallFirst = i===0 || (merged[i-1]['類型']||'')!=='recall';
+    merged[i]._recallLast  = i===merged.length-1 || (merged[i+1]['類型']||'')!=='recall';
   }
 
   for(const r of merged){
@@ -877,12 +937,58 @@ function render(){
       continue;
     }
 
+    if(type==='telepathy'){
+      const side = (r['備註']||'').trim().toUpperCase()==='R' ? 'right' : 'left';
+      const sec = ch==='secret'||isHO;
+      const nm = r['發言人']||'';
+      const col = (s&&s['代表色'])||'';
+      const styleVars = teleStyle(col) + (sec ? ';'+secStyle(col) : '');
+      const bubbles = (r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map(p=>
+        `<div class="bubble"><span class="q">⟨</span>${renderRuby(p)}<span class="q">⟩</span></div>`).join('')
+        || '<div class="bubble"><span class="q">⟨ ⟩</span></div>';
+      out.push(`<div class="tele ${side} ${sec?'secret':''}" style="${styleVars}">
+        ${avatarHTML(s,'',r['頭像'])}
+        <div class="col">
+          <div class="who" style="${col?`color:${esc(col)}`:''}">
+            ${(()=>{
+              const tag = sec?`<span class="mtag">秘匿</span>`:'';
+              const name = `<span>${esc((s&&s['顯示名稱'])||nm||'（未署名）')}</span>`;
+              if(side==='right'){ const to=secTarget?`<span class="to">${esc(secTarget)} ←</span>`:''; return tag+to+name; }
+              const to=secTarget?`<span class="to">→ ${esc(secTarget)}</span>`:''; return tag+name+to;
+            })()}</div>
+          <div class="bubbles">${bubbles}</div>
+        </div></div>`);
+      continue;
+    }
+    if(type==='recall'){
+      const first=r._recallFirst, last=r._recallLast;
+      const sec = ch==='secret'||isHO;
+      const nm = r['發言人']||'';
+      const col = (s&&s['代表色'])||'';
+      const secV = sec ? secStyle(col) : '';
+      const body = (r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map(p=>`<p>${renderRuby(p)}</p>`).join('') || '<p></p>';
+      let inner='';
+      if(first){
+        const title=(r['備註']||'').trim();
+        if(title) inner += `<div class="rc-cap"><span class="rc-title">${esc(stripRuby(title))}</span></div>`;
+      }
+      if(nm){
+        inner += `<div class="rc-line">${avatarHTML(s,'',r['頭像'])}<div class="rc-body">
+          <div class="rc-name" style="${col?`color:${esc(col)}`:''}">${sec?`<span class="mtag">秘匿</span>`:''}<span>${esc((s&&s['顯示名稱'])||nm)}</span>${sec&&secTarget?`<span class="to">→ ${esc(secTarget)}</span>`:''}</div>
+          <div class="rc-text ${sec?'sec':''}">${body}</div></div></div>`;
+      } else {
+        inner += `<div class="rc-narr ${sec?'sec':''}">${body}</div>`;
+      }
+      out.push(`<section class="recall ${first?'is-first':''} ${last?'is-last':''} ${sec?'secret':''}" style="${secV}">${inner}</section>`);
+      continue;
+    }
     if(type==='message'){
       const side = (r['備註']||'').trim().toUpperCase()==='R' ? 'right' : 'left';
       const sec = ch==='secret'||isHO;
       const nm = r['發言人']||'';
       const col = (s&&s['代表色'])||'';
-      const styleVars = (!sec && col) ? `--bub:${hexRGBA(col,0.16)||'var(--panel)'};--bubln:${hexRGBA(col,0.42)||'var(--line)'}` : '';
+      const styleVars = sec ? secStyle(col)
+        : (col ? `--bub:${hexRGBA(col,0.16)||'var(--panel)'};--bubln:${hexRGBA(col,0.42)||'var(--line)'}` : '');
       const bubbles = (r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map((p,i)=>
         `<div class="bubble ${i===0?'first':''}">${renderRuby(p)}</div>`).join('') || '<div class="bubble first"></div>';
       out.push(`<div class="msg ${side} ${sec?'secret':''}" style="${styleVars}">
@@ -959,6 +1065,27 @@ function hexRGBA(hex,a){
   if(!/^[0-9a-fA-F]{6}$/.test(h)) return '';
   const n=parseInt(h,16);
   return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+function toHex6(hex){ let h=(hex||'').trim().replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); return /^[0-9a-fA-F]{6}$/.test(h)?h:''; }
+function mixHex(a,b,t){ // a,b 為 hex；t=b 佔比
+  const ha=toHex6(a), hb=toHex6(b); if(!ha||!hb) return ha?('#'+ha):(hb?('#'+hb):'');
+  const na=parseInt(ha,16), nb=parseInt(hb,16);
+  const mix=(sa,sb)=>Math.round(sa*(1-t)+sb*t);
+  const r=mix((na>>16)&255,(nb>>16)&255), g=mix((na>>8)&255,(nb>>8)&255), bl=mix(na&255,nb&255);
+  return '#'+[r,g,bl].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+// 秘匿氣泡／橫幅用：底＝代表色淡；斜紋、邊框＝代表色混一點紫（方案B）
+function secStyle(col){
+  const base=toHex6(col)?('#'+toHex6(col)):'#6a4b9c';     // 無代表色→退回紫
+  const blend=mixHex(base,'#6a4b9c',0.28);                 // 代表色混 28% 紫
+  return `--sbub:${hexRGBA(base,0.14)};--sstripe:${hexRGBA(blend,0.10)};`+
+         `--sln:${hexRGBA(blend,0.5)};--sac:${hexRGBA(blend,0.9)}`;
+}
+// 心靈感應：底＝代表色拉往霧紫、低彩度柔光
+function teleStyle(col){
+  const base=toHex6(col)?('#'+toHex6(col)):'#6d5b9c';
+  const mist=mixHex(base,'#6d5b9c',0.4);
+  return `--tbub:${hexRGBA(mist,0.12)};--tln:${hexRGBA(mist,0.34)};--tglow:${hexRGBA(mist,0.16)}`;
 }
 function renderPCs(){
   const host=document.getElementById('pcs');
@@ -1064,7 +1191,6 @@ function convertLog(htmlText){
     return (tmp.textContent||'').replace(/\u00a0/g,' ').trim();
   };
   const DICE = /(CCB?<?=|choice\[|\d+[dDbB]\d+|1D100)/;
-  const SEP  = /^[\s\u3000─—–\-=＝_]*$/;
   const rows = [], colors = {};
 
   [...doc.querySelectorAll('p')].forEach((p,i)=>{
@@ -1094,10 +1220,6 @@ function convertLog(htmlText){
       type=/回合/.test(text) ? 'round' : 'system';
       const m=text.match(/^\s*[\[［]\s*([^\]］]{1,20}?)\s*[\]］]\s*/);
       if(m){ sysName=m[1].trim(); content=text.slice(m[0].length); }
-    }
-    else if(SEP.test(flat) || (flat.split('─').length-1)>=4){
-      type='scene';
-      content = flat.replace(/[\s\u3000─—–\-]+/g,' ').trim();
     }
     else if(DICE.test(text) && (text.includes('＞')||text.includes('>'))){ type='dice'; }
     else if(name==='KP' && MAD_DUR.test(text)){ type='madness'; }   // KP 且以持續時間結尾
