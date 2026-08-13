@@ -141,6 +141,12 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .msg.left .bubble.first{border-top-left-radius:4px}
 .msg.right .bubble.first{border-top-right-radius:4px}
 .msg .bubble:has(ruby){line-height:2.2}
+.msg .bubble.sticker{background:none;border:0;box-shadow:none;padding:0}
+.msg .bubble.sticker.first::after{content:none;display:none}
+.msg .msg-sticker{display:block;max-width:min(190px,60vw);max-height:190px;width:auto;height:auto;
+  border-radius:12px;border:1px solid var(--line);background:var(--panel)}
+.msg .msg-sticker.ph{display:inline-flex;align-items:center;justify-content:center;min-width:130px;min-height:90px;
+  border:1px dashed var(--line);color:var(--muted);font-family:var(--mono);font-size:13px;padding:14px}
 /* 尖角：只在第一顆氣泡、指向頭像側 */
 .msg .bubble.first::after{content:"";position:absolute;top:9px;width:9px;height:9px;transform:rotate(45deg);
   background:var(--bub,var(--panel));border:1px solid var(--bubln,var(--line))}
@@ -989,8 +995,12 @@ function render(){
       const col = (s&&s['代表色'])||'';
       const styleVars = sec ? secStyle(col)
         : (col ? `--bub:${hexRGBA(col,0.16)||'var(--panel)'};--bubln:${hexRGBA(col,0.42)||'var(--line)'}` : '');
-      const bubbles = (r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map((p,i)=>
-        `<div class="bubble ${i===0?'first':''}">${renderRuby(p)}</div>`).join('') || '<div class="bubble first"></div>';
+      const IMG=/^\[\[img:\s*([^\]]+?)\s*\]\]$/i;
+      const bubbles = (r._parts||[r['內容']||'']).filter(x=>x.trim()!=='').map((p,i)=>{
+        const m=p.trim().match(IMG);
+        if(m) return `<div class="bubble sticker ${i===0?'first':''}"><img class="msg-sticker" src="${esc(m[1])}" alt="貼圖" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'msg-sticker ph',textContent:'圖片無法載入'}))"></div>`;
+        return `<div class="bubble ${i===0?'first':''}">${renderRuby(p)}</div>`;
+      }).join('') || '<div class="bubble first"></div>';
       out.push(`<div class="msg ${side} ${sec?'secret':''}" style="${styleVars}">
         ${avatarHTML(s,'',r['頭像'])}
         <div class="col">
