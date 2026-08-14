@@ -137,7 +137,7 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .line.other .avatar{flex-basis:28px;width:28px;height:28px}
 .body{flex:1;min-width:0}
 .name{font-weight:700;font-size:14px;letter-spacing:.06em;margin-bottom:1px}
-.text{white-space:pre-wrap;word-break:break-word}
+.text{white-space:pre-wrap;word-break:break-word;line-height:2}
 /* 心靈感應 telepathy：無框柔光心聲泡泡 */
 .tele{display:flex;gap:10px;margin:18px 0;align-items:flex-start}
 .tele.right{flex-direction:row-reverse}
@@ -151,10 +151,9 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .tele .bubbles{display:flex;flex-direction:column;gap:11px;width:100%}
 .tele.right .bubbles{align-items:flex-end}.tele.left .bubbles{align-items:flex-start}
 .tele .bubble{position:relative;max-width:100%;padding:9px 17px;border-radius:26px/17px;
-  line-height:1.75;word-break:break-word;white-space:pre-wrap;
+  line-height:2;word-break:break-word;white-space:pre-wrap;
   color:var(--ink);background:var(--tbub,rgba(109,91,156,.12));
   border:1px dashed var(--tln,rgba(109,91,156,.34));box-shadow:0 0 9px 0 var(--tglow,rgba(109,91,156,.14))}
-.tele .bubble:has(ruby){line-height:2.3}
 .tele .bubble .q{font-style:normal;opacity:.5;padding:0 2px}
 .tele.secret .bubble{background:
     repeating-linear-gradient(135deg,var(--sstripe,rgba(106,75,156,.06)) 0 6px,transparent 6px 12px),var(--tbub,rgba(109,91,156,.12))}
@@ -199,11 +198,10 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .msg .bubbles{display:flex;flex-direction:column;gap:4px;width:100%}
 .msg.right .bubbles{align-items:flex-end}
 .msg.left .bubbles{align-items:flex-start}
-.msg .bubble{position:relative;max-width:100%;padding:8px 13px;border-radius:14px;line-height:1.75;
+.msg .bubble{position:relative;max-width:100%;padding:8px 13px;border-radius:14px;line-height:2;
   word-break:break-word;white-space:pre-wrap;background:var(--bub,var(--panel));border:1px solid var(--bubln,var(--line))}
 .msg.left .bubble.first{border-top-left-radius:4px}
 .msg.right .bubble.first{border-top-right-radius:4px}
-.msg .bubble:has(ruby){line-height:2.2}
 .msg .bubble.sticker{background:none;border:0;box-shadow:none;padding:0}
 .msg .bubble.sticker.first::after{content:none;display:none}
 .msg .msg-sticker{display:block;max-width:min(190px,60vw);max-height:190px;width:auto;height:auto;
@@ -227,8 +225,7 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .text p + p{margin-top:.6em}
 .hidden-info .tx p + p,.sys .tx p + p{margin-top:.4em}
 /* 有注音的行加大行高，讓上方小字有空間；普通行不受影響 */
-.text:has(ruby),.hidden-info .tx:has(ruby){line-height:2.35}
-ruby{ruby-align:center;ruby-position:over}
+ruby{ruby-align:space-around;ruby-position:over}
 ruby rt{font-size:.68em;letter-spacing:.04em;line-height:1.25;color:#5b626f;font-weight:400;
   margin-bottom:1px;user-select:text}
 .line.nameless .text{padding-left:0}
@@ -489,7 +486,7 @@ body.tocdrag{user-select:none;cursor:col-resize}
   line-height:1.4;margin-top:3px}
 .hidden-info .lb{font-family:var(--mono);letter-spacing:.12em;color:var(--hidden-accent);
   flex:0 0 auto;line-height:1.75}
-.hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:1.75;
+.hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:2;
   color:var(--hidden-ink);white-space:pre-wrap;word-break:break-word}
 
 /* COC 發狂（SAN 損失） */
