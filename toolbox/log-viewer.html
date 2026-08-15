@@ -177,7 +177,7 @@ input[type=search],select{font-family:var(--sans);font-size:14px;padding:5px 9px
 .recall .rc-name .mtag{font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:#fff;
   background:var(--secret);padding:1px 6px;border-radius:2px}
 .recall .rc-name .to{font-family:var(--mono);font-size:13px;font-weight:400;color:var(--muted)}
-.recall .rc-text,.recall .rc-narr{white-space:pre-wrap;word-break:break-word;line-height:1.82}
+.recall .rc-text,.recall .rc-narr{white-space:pre-wrap;word-break:break-word;line-height:2}
 .recall .rc-narr{font-family:var(--serif);font-style:italic;padding:4px 0 4px 14px;color:var(--recall-ink);opacity:.92}
 .recall .rc-text p,.recall .rc-narr p{margin:0}
 .recall .rc-text p + p,.recall .rc-narr p + p{margin-top:.6em}
@@ -364,6 +364,50 @@ body.tocdrag{user-select:none;cursor:col-resize}
   #toc.collapsed .toc-tab{display:inline-block;position:static;writing-mode:horizontal-tb;
     border-right:1px solid var(--line);border-radius:var(--radius);padding:6px 12px}
 }
+
+/* ── 編輯模式 ───────────────────────────── */
+#editor-wrap{display:none}
+body.editing #log,body.editing #toc,body.editing #pcs{display:none!important}
+body.editing #editor-wrap{display:block}
+.ed-bar{position:sticky;top:0;z-index:19;display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  padding:10px 0;background:var(--paper);border-bottom:1px solid var(--line);margin-bottom:8px}
+.ed-bar .ed-sel{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.ed-bar .ed-sel b{color:var(--ink)}
+.ed-bar .ed-batch{display:inline-flex;align-items:center;gap:6px}
+.ed-bar .ed-moveto{font-family:var(--mono);font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+.ed-bar .count{margin-left:auto}
+.chip.danger{color:#fff;background:var(--note);border-color:var(--note)}
+.chip:disabled{opacity:.4;cursor:not-allowed}
+
+#ed-scroll{position:relative;height:calc(100vh - 210px);min-height:340px;overflow-y:auto;
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--panel)}
+#ed-spacer{position:absolute;top:0;left:0;width:1px;pointer-events:none}
+#ed-rows{position:absolute;top:0;left:0;right:0}
+.ed-row{position:absolute;left:0;right:0;box-sizing:border-box;height:132px;padding:8px 10px;
+  border-bottom:1px solid var(--line);display:flex;gap:10px;background:var(--panel)}
+.ed-row.sel{background:color-mix(in srgb,var(--accent) 8%,var(--panel))}
+.ed-gutter{flex:0 0 128px;display:flex;flex-direction:column;gap:4px;align-items:stretch;
+  font-family:var(--mono);font-size:12px;color:var(--muted)}
+.ed-gutter .gt-top{display:flex;align-items:center;gap:6px}
+.ed-gutter .gt-no{font-weight:700;color:var(--ink)}
+.ed-gutter .gt-btns{display:flex;flex-wrap:wrap;gap:3px}
+.ed-gutter button{font-family:var(--mono);font-size:11px;padding:1px 6px;border:1px solid var(--line);
+  background:var(--paper);color:var(--ink);border-radius:3px;cursor:pointer;line-height:1.4}
+.ed-gutter button:hover{border-color:var(--ink)}
+.ed-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.ed-line{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ed-main select,.ed-main input,.ed-main textarea{font-family:var(--sans);font-size:13px;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:4px;padding:3px 6px}
+.ed-main select{font-family:var(--mono)}
+.ed-main .f-type{min-width:120px}
+.ed-main .f-ch{width:96px}.ed-main .f-spk{width:120px}
+.ed-main .f-av,.ed-main .f-to,.ed-main .f-note{flex:1;min-width:90px}
+.ed-main .f-content{width:100%;height:38px;resize:none;line-height:1.5;font-family:var(--sans)}
+.ed-thumbs{display:flex;gap:5px;align-items:center}
+.ed-thumbs img{width:52px;height:52px;object-fit:cover;border-radius:4px;border:1px solid var(--line);background:var(--paper)}
+.ed-thumbs .ph{width:auto;min-width:52px;height:52px;display:inline-flex;align-items:center;justify-content:center;
+  border:1px dashed var(--line);border-radius:4px;color:var(--muted);font-family:var(--mono);font-size:10px;padding:0 8px;text-align:center}
+.ed-lbl{font-family:var(--mono);font-size:11px;color:var(--muted);align-self:center}
 
 /* ── PC 隊伍資訊 ─────────────────────────── */
 #pcs{margin:26px 0 8px}
@@ -594,6 +638,7 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
       <button class="chip" id="expLog" aria-pressed="false">匯出 log.csv</button>
       <button class="chip" id="expSpk" aria-pressed="false">匯出 speakers.csv</button>
       <button class="chip" id="expPcs" aria-pressed="false">匯出 pcs.csv</button>
+      <button class="chip" id="btnEdit" aria-pressed="false">編輯模式</button>
       <button class="chip" id="expHtml" aria-pressed="true">匯出成 HTML</button>
       <span class="style-pick">風格
         <select id="stylePick" title="選擇檢視版風格">
@@ -612,6 +657,23 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
   <nav id="toc"></nav>
 
   <main id="log"></main>
+
+  <!--EDIT_START--><div id="editor-wrap">
+    <div class="ed-bar">
+      <button class="chip" id="edAdd">＋ 新增列（末尾）</button>
+      <button class="chip" id="edUndo" disabled>復原一步</button>
+      <span class="ed-sel">已選 <b id="edSelN">0</b> 列</span>
+      <span class="ed-batch">
+        <button class="chip" id="edUp">▲ 上移</button>
+        <button class="chip" id="edDown">▼ 下移</button>
+        <label class="ed-moveto">移到列號 <input type="number" id="edMoveTo" min="1" style="width:72px"></label>
+        <button class="chip" id="edMove">移動</button>
+        <button class="chip danger" id="edDel">刪除</button>
+      </span>
+      <span class="count" id="edCount"></span>
+    </div>
+    <datalist id="ed-ch-list"><option value="main"><option value="other"><option value="info"><option value="secret"><option value="HO"></datalist><datalist id="ed-spk-list"></datalist><div id="ed-scroll"><div id="ed-spacer"></div><div id="ed-rows"></div></div>
+  </div><!--EDIT_END-->
 
   <div class="lightbox" id="lightbox"><span class="x">✕</span>
     <img id="lbimg" alt=""><div class="cap" id="lbcap"></div></div>
@@ -1241,6 +1303,7 @@ function pullTitleRows(){                       // CSV 裡的 title 列 → 標�
   LOG = LOG.filter(r=>!TITLE_ROW(r));
 }
 function logForCSV(){                           // 匯出時把標題寫回第一列
+  if(typeof edNormalizeAll==='function') edNormalizeAll();
   return [{'序號':0,'類型':'title','頻道':'','秘匿對象':META['眉標']||'','發言人':'',
            '頭像':'','內容':META['標題']||'','備註':META['副標題']||''}].concat(LOG);
 }
@@ -1249,6 +1312,8 @@ function fillSpeakers(){
   sel.innerHTML='<option value="">全部發言人</option>'+
     SPK.map(s=>`<option value="${esc(s['發言人'])}">${esc(s['顯示名稱']||s['發言人'])}</option>`).join('');
   sel.value=cur;
+  const dl=document.getElementById('ed-spk-list');
+  if(dl) dl.innerHTML=SPK.map(s=>`<option value="${esc(s['發言人'])}">`).join('');
   applyMeta();
 }
 
@@ -1320,7 +1385,7 @@ function convertLog(htmlText){
   return {rows, spk};
 }
 
-document.getElementById('fHtml').onchange=e=>{
+(document.getElementById('fHtml')||{}).onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
   const rd=new FileReader();
   rd.onload=()=>{
@@ -1334,22 +1399,25 @@ document.getElementById('fHtml').onchange=e=>{
   e.target.value='';
 };
 
-document.getElementById('fLog').onchange=e=>{const f=e.target.files[0];if(!f)return;
+(document.getElementById('fLog')||{}).onchange=e=>{const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();rd.onload=()=>{LOG=parseCSV(rd.result);pullTitleRows();fillSpeakers();render();};rd.readAsText(f,'utf-8');};
-document.getElementById('fSpk').onchange=e=>{const f=e.target.files[0];if(!f)return;
+(document.getElementById('fSpk')||{}).onchange=e=>{const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();rd.onload=()=>{SPK=parseCSV(rd.result);fillSpeakers();render();};rd.readAsText(f,'utf-8');};
-document.getElementById('fPcs').onchange=e=>{const f=e.target.files[0];if(!f)return;
+(document.getElementById('fPcs')||{}).onchange=e=>{const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();rd.onload=()=>{PCS=parseCSV(rd.result);renderPCs();};rd.readAsText(f,'utf-8');};
-document.getElementById('expLog').onclick=()=>download('log.csv',toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
-document.getElementById('expSpk').onclick=()=>download('speakers.csv',toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
-document.getElementById('expPcs').onclick=()=>download('pcs.csv',toCSV(PCS,PC_COLS));
+(document.getElementById('expLog')||{}).onclick=()=>download('log.csv',toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
+(document.getElementById('expSpk')||{}).onclick=()=>download('speakers.csv',toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
+(document.getElementById('expPcs')||{}).onclick=()=>download('pcs.csv',toCSV(PCS,PC_COLS));
 
-document.getElementById('expHtml').onclick=()=>{
+(document.getElementById('expHtml')||{}).onclick=()=>{
   const logEl=document.getElementById('log'), edEl=document.getElementById('editor'),
         whoEl=document.getElementById('who'), qEl=document.getElementById('q'),
         chips=[...document.querySelectorAll('.chip[data-f]')];
   const keepLog=logEl.innerHTML, keepEd=edEl.innerHTML, keepWho=whoEl.value, keepQ=qEl.value,
         keepChips=chips.map(c=>c.getAttribute('aria-pressed'));
+  if(typeof edNormalizeAll==='function') edNormalizeAll();      // 正規化類型
+  const wasEditing=document.body.classList.contains('editing');
+  document.body.classList.remove('editing');                    // 避免檢視版被 editing 隱藏
   // 匯出乾淨版本：清掉畫面上的暫存狀態，只留資料
   const heads=['eyebrow','title','subtitle'].map(id=>document.getElementById(id));
   logEl.innerHTML=''; edEl.innerHTML=''; whoEl.selectedIndex=0; qEl.setAttribute('value','');
@@ -1361,6 +1429,7 @@ document.getElementById('expHtml').onclick=()=>{
   qEl.setAttribute('value',keepQ); chips.forEach((c,i)=>c.setAttribute('aria-pressed',keepChips[i]));
   heads.forEach((e,i)=>{e.setAttribute('contenteditable','plaintext-only');
     e.setAttribute('data-ph',['CALL OF CTHULHU TRPG','（標題）','（副標題，可留空）'][i]);});
+  if(wasEditing) document.body.classList.add('editing');
   applyMeta();
 
   const a=html.indexOf('/*DATA_START*/'), b=html.indexOf('/*DATA_END*/');
@@ -1393,7 +1462,7 @@ document.getElementById('expHtml').onclick=()=>{
   });
 
 const dlg=document.getElementById('dlg');
-document.getElementById('btnAvatar').onclick=()=>{
+(document.getElementById('btnAvatar')||{}).onclick=()=>{
   document.getElementById('editor').innerHTML=SPK.map((s,i)=>`<div class="erow">
     ${avatarHTML(s,'')}
     <input data-i="${i}" data-k="顯示名稱" value="${esc(s['顯示名稱']||s['發言人'])}" />
@@ -1401,8 +1470,8 @@ document.getElementById('btnAvatar').onclick=()=>{
   </div>`).join('');
   dlg.showModal();
 };
-document.getElementById('dlgClose').onclick=()=>dlg.close();
-document.getElementById('dlgSave').onclick=()=>{
+(document.getElementById('dlgClose')||{}).onclick=()=>dlg.close();
+(document.getElementById('dlgSave')||{}).onclick=()=>{
   document.querySelectorAll('#editor input').forEach(i=>{SPK[+i.dataset.i][i.dataset.k]=i.value.trim();});
   dlg.close(); fillSpeakers(); render();
 };
@@ -1429,6 +1498,161 @@ document.getElementById('dlgSave').onclick=()=>{
     apply(sel.value);   // 依當前選項套用
   }
 })();
+
+
+/* ══════════════ 編輯模式 ══════════════ */
+const ED_TYPES=['talk','dice','scene','system','hidden','image','message','telepathy','recall',
+  'session_start','session_end','reward','note','battle_start','battle_end','round','turnorder','madness',
+  'chapter_start','chapter_end','prologue_start','prologue_end','epilogue_start','epilogue_end'];
+const ED_TYPE_ALIAS={'start':'session_start','chapter':'chapter_start','session_end':'session_end','chapter_end':'chapter_end','end':'end'};
+const ED_FIELDS=['類型','頻道','秘匿對象','發言人','頭像','內容','備註'];
+const ED_ROW_H=132;
+let editMode=false, edSel=new Set(), edUndo=null, edRange=[-1,-1];
+
+function edNormalizeType(v){ v=(v||'').trim(); return (v==='start')?'session_start':(v==='chapter')?'chapter_start':v; }
+function edNormalizeAll(){ LOG.forEach(r=>{ r['類型']=edNormalizeType(r['類型']||'talk'); }); }
+function edSnapshot(){ edUndo=JSON.parse(JSON.stringify(LOG)); (document.getElementById('edUndo')||{}).disabled=false; }
+function edImgUrls(r){
+  const t=(r['類型']||'').trim(), urls=[];
+  if(t==='image'){ const u=((r['頭像']||r['內容']||'')).trim(); if(u) urls.push(u); }
+  const re=/\[\[img:\s*([^\]]+?)\s*\]\]/gi; let m;
+  while((m=re.exec(r['內容']||''))) urls.push(m[1].trim());
+  return urls;
+}
+function edThumbHTML(r){
+  const urls=edImgUrls(r);
+  if(!urls.length) return '';
+  return `<div class="ed-thumbs"><span class="ed-lbl">預覽</span>`+
+    urls.map(u=>`<img loading="lazy" src="${esc(u)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph',textContent:'無法載入'}))">`).join('')+
+    `</div>`;
+}
+function edTypeOptions(cur){
+  cur=(cur||'talk');
+  let opts=ED_TYPES.map(x=>`<option value="${x}"${x===cur?' selected':''}>${x}</option>`).join('');
+  if(cur && !ED_TYPES.includes(cur)) opts=`<option value="${esc(cur)}" selected>(未知) ${esc(cur)}</option>`+opts;
+  return opts;
+}
+function edRowHTML(i){
+  const r=LOG[i]||{};
+  const spkList=SPK.map(s=>`<option value="${esc(s['發言人'])}">`).join('');
+  return `<div class="ed-row ${edSel.has(i)?'sel':''}" data-i="${i}" style="top:${i*ED_ROW_H}px">
+    <div class="ed-gutter">
+      <div class="gt-top"><input type="checkbox" class="gt-chk" ${edSel.has(i)?'checked':''}><span class="gt-no">${i+1}</span></div>
+      <div class="gt-btns">
+        <button data-act="up">▲</button><button data-act="down">▼</button>
+        <button data-act="ins">＋下</button><button data-act="del">刪</button>
+      </div>
+    </div>
+    <div class="ed-main">
+      <div class="ed-line">
+        <select class="f-type" data-k="類型">${edTypeOptions(r['類型'])}</select>
+        <input class="f-ch" data-k="頻道" list="ed-ch-list" placeholder="頻道" value="${esc(r['頻道']||'')}">
+        <input class="f-spk" data-k="發言人" list="ed-spk-list" placeholder="發言人" value="${esc(r['發言人']||'')}">
+        <input class="f-to" data-k="秘匿對象" placeholder="秘匿對象/接收者" value="${esc(r['秘匿對象']||'')}">
+      </div>
+      <textarea class="f-content" data-k="內容" placeholder="內容">${esc(r['內容']||'')}</textarea>
+      <div class="ed-line">
+        <input class="f-av" data-k="頭像" placeholder="頭像網址(覆寫)" value="${esc(r['頭像']||'')}">
+        <input class="f-note" data-k="備註" placeholder="備註(R/L、標題…)" value="${esc(r['備註']||'')}">
+        <span class="ed-thumb-slot">${edThumbHTML(r)}</span>
+      </div>
+    </div></div>`;
+}
+function edRenderWindow(force){
+  const sc=document.getElementById('ed-scroll'); if(!sc) return;
+  const total=LOG.length;
+  document.getElementById('ed-spacer').style.height=(total*ED_ROW_H)+'px';
+  const vh=sc.clientHeight, top=sc.scrollTop;
+  const buf=6;
+  let a=Math.max(0,Math.floor(top/ED_ROW_H)-buf);
+  let b=Math.min(total,Math.ceil((top+vh)/ED_ROW_H)+buf);
+  if(!force && a===edRange[0] && b===edRange[1]) return;
+  edRange=[a,b];
+  let html=''; for(let i=a;i<b;i++) html+=edRowHTML(i);
+  document.getElementById('ed-rows').innerHTML=html;
+  document.getElementById('edCount').textContent=`共 ${total} 列`;
+}
+function edUpdateThumb(row){
+  const i=+row.dataset.i, r=LOG[i]; if(!r) return;
+  const slot=row.querySelector('.ed-thumb-slot'); if(slot) slot.innerHTML=edThumbHTML(r);
+}
+function edSelCount(){ document.getElementById('edSelN').textContent=edSel.size; }
+
+// 事件委派：輸入寫回 LOG（不重繪檢視）
+function edBind(){
+  const rows=document.getElementById('ed-rows'); if(!rows) return;
+  rows.addEventListener('input',e=>{
+    const row=e.target.closest('.ed-row'); if(!row) return;
+    const i=+row.dataset.i, k=e.target.dataset.k; if(k==null) return;
+    (LOG[i]=LOG[i]||{})[k]= (k==='類型')?edNormalizeType(e.target.value):e.target.value;
+    if(k==='內容'||k==='頭像'||k==='類型') edUpdateThumb(row);
+  });
+  rows.addEventListener('change',e=>{
+    const row=e.target.closest('.ed-row'); if(!row) return;
+    const i=+row.dataset.i;
+    if(e.target.classList.contains('gt-chk')){
+      if(e.target.checked) edSel.add(i); else edSel.delete(i);
+      row.classList.toggle('sel',e.target.checked); edSelCount(); return;
+    }
+    if(e.target.dataset.k==='類型'){ LOG[i]['類型']=edNormalizeType(e.target.value); edUpdateThumb(row); }
+  });
+  rows.addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-act]'); if(!btn) return;
+    const row=e.target.closest('.ed-row'); const i=+row.dataset.i;
+    const act=btn.dataset.act;
+    if(act==='up') edMoveRows([i], i-1);
+    else if(act==='down') edMoveRows([i], i+1);
+    else if(act==='ins'){ edSnapshot(); LOG.splice(i+1,0,{'類型':'talk','頻道':'','秘匿對象':'','發言人':'','頭像':'','內容':'','備註':''}); edSel.clear(); edSelCount(); edRenderWindow(true); }
+    else if(act==='del'){ edSnapshot(); LOG.splice(i,1); edSel.clear(); edSelCount(); edRenderWindow(true); }
+  });
+  document.getElementById('ed-scroll').addEventListener('scroll',()=>edRenderWindow(false));
+}
+
+// 把 idxs（依現況索引）整組移到 dest 之前，維持相對順序
+function edMoveRows(idxs, dest){
+  idxs=[...new Set(idxs)].sort((a,b)=>a-b);
+  if(!idxs.length) return;
+  edSnapshot();
+  const picked=idxs.map(i=>LOG[i]);
+  // 目標實際落點：以「移除選取列之前，dest 位置的元素」為錨
+  dest=Math.max(0,Math.min(LOG.length,dest));
+  const anchor = dest>=LOG.length ? null : LOG[dest];
+  const set=new Set(idxs);
+  const rest=LOG.filter((_,i)=>!set.has(i));
+  let at = anchor==null ? rest.length : rest.indexOf(anchor);
+  if(at<0) at=rest.length;
+  rest.splice(at,0,...picked);
+  LOG.length=0; LOG.push(...rest);
+  edSel.clear(); edSelCount(); edRenderWindow(true);
+}
+function edSelectedIdx(){ return [...edSel].sort((a,b)=>a-b); }
+
+function edBindBar(){
+  (document.getElementById('edAdd')||{}).onclick=()=>{ edSnapshot(); LOG.push({'類型':'talk','頻道':'','秘匿對象':'','發言人':'','頭像':'','內容':'','備註':''}); edRenderWindow(true); };
+  (document.getElementById('edUndo')||{}).onclick=()=>{ if(!edUndo) return; LOG.length=0; LOG.push(...edUndo); edUndo=null; (document.getElementById('edUndo')||{}).disabled=true; edSel.clear(); edSelCount(); edRenderWindow(true); };
+  (document.getElementById('edUp')||{}).onclick=()=>{ const s=edSelectedIdx(); if(s.length) edMoveRows(s, s[0]-1); };
+  (document.getElementById('edDown')||{}).onclick=()=>{ const s=edSelectedIdx(); if(s.length) edMoveRows(s, s[s.length-1]+2); };
+  (document.getElementById('edMove')||{}).onclick=()=>{ const s=edSelectedIdx(); if(!s.length) return;
+    let n=parseInt(document.getElementById('edMoveTo').value,10); if(isNaN(n)) return;
+    n=Math.max(1,Math.min(LOG.length,n)); edMoveRows(s, n-1); };
+  (document.getElementById('edDel')||{}).onclick=()=>{ const s=edSelectedIdx(); if(!s.length) return;
+    edSnapshot(); const set=new Set(s); const rest=LOG.filter((_,i)=>!set.has(i)); LOG.length=0; LOG.push(...rest);
+    edSel.clear(); edSelCount(); edRenderWindow(true); };
+}
+
+function enterEdit(){ editMode=true; edNormalizeAll(); document.body.classList.add('editing');
+  (document.getElementById('btnEdit')||{}).setAttribute('aria-pressed','true');
+  edSel.clear(); edSelCount(); edRange=[-1,-1]; edRenderWindow(true); }
+function exitEdit(){ editMode=false; document.body.classList.remove('editing');
+  (document.getElementById('btnEdit')||{}).setAttribute('aria-pressed','false');
+  fillSpeakers(); render(); renderPCs(); }   // 切回檢視 → 渲染一次
+
+
+if(document.getElementById('editor-wrap')){
+  (document.getElementById('btnEdit')||{}).onclick=()=>{ if(editMode) exitEdit(); else enterEdit(); };
+  edBind(); edBindBar();
+  window.addEventListener('resize',()=>{ if(editMode) edRenderWindow(true); });
+}
 
 fillSpeakers(); render(); renderPCs();
 </script>
