@@ -117,6 +117,32 @@ function parseLinks(v) {
 function linksToStr(arr) {
   return (arr || []).filter((l) => l && l.url).map((l) => (l.name ? `${l.name}|${l.url}` : l.url)).join(";");
 }
+// 顏色：把多個關聯角色的代表色混成中間色 / 做成漸層
+function hexToRgb(h) {
+  h = String(h || "").trim().replace("#", "");
+  if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+  if (h.length !== 6) return null;
+  const n = parseInt(h, 16);
+  if (!Number.isFinite(n)) return null;
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+function rgbToHex(r, g, b) {
+  const c = (x) => ("0" + Math.round(x).toString(16)).slice(-2);
+  return "#" + c(r) + c(g) + c(b);
+}
+function blendColors(colors) {
+  const rgbs = (colors || []).map(hexToRgb).filter(Boolean);
+  if (!rgbs.length) return null;
+  const s = rgbs.reduce((a, c) => ({ r: a.r + c.r, g: a.g + c.g, b: a.b + c.b }), { r: 0, g: 0, b: 0 });
+  const n = rgbs.length;
+  return rgbToHex(s.r / n, s.g / n, s.b / n);
+}
+function barGradient(colors) {
+  const list = (colors || []).filter(Boolean);
+  if (!list.length) return "#146b64";
+  if (list.length === 1) return list[0];
+  return `linear-gradient(180deg, ${list.join(", ")})`;
+}
 function estimateHeight(e, chars, editing) {
   if (editing) return 430;
   let h = 24;
@@ -256,6 +282,8 @@ function App() {
 
   const [heights, setHeights] = useState({});
   const cardRefs = useRef({});
+  const scrollRef = useRef(null);
+  const dragRef = useRef(null);
   const charInputRef = useRef(null);
   const eventInputRef = useRef(null);
 
@@ -412,6 +440,37 @@ function App() {
 
   useEffect(() => { document.title = (title && title.trim()) ? title : "紀年時間軸"; }, [title]);
 
+  // 拖曳平移：在卡片以外的空白處按住左鍵拖曳，左右平移時間軸
+  const onCanvasMouseDown = (e) => {
+    if (e.button !== 0) return;
+    const t = e.target;
+    if (t && t.closest && t.closest(".tl-card, button, a, input, textarea, select")) return;
+    const el = scrollRef.current;
+    if (!el) return;
+    dragRef.current = { startX: e.clientX, startLeft: el.scrollLeft };
+    el.classList.add("dragging");
+    e.preventDefault();
+  };
+  useEffect(() => {
+    const onMove = (e) => {
+      const d = dragRef.current, el = scrollRef.current;
+      if (!d || !el) return;
+      el.scrollLeft = d.startLeft - (e.clientX - d.startX);
+    };
+    const onUp = () => {
+      if (!dragRef.current) return;
+      dragRef.current = null;
+      const el = scrollRef.current;
+      if (el) el.classList.remove("dragging");
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, []);
+
   const applyCsv = () => {
     try {
       const c = csvToChars(charCsv);
@@ -455,7 +514,9 @@ function App() {
     .tl-title-input:hover { border-bottom-color:var(--line); }
     .tl-title-input:focus { outline:none; border-bottom-color:var(--accent); background:#fff; }
     .tl-card { position:absolute; background:var(--paper2); border:1px solid var(--line);
-      border-radius:10px; padding:10px 12px; box-shadow:0 1px 2px rgba(24,30,40,.05); text-align:left; }
+      border-radius:10px; padding:10px 12px; box-shadow:0 1px 2px rgba(24,30,40,.05); text-align:left; cursor:default; }
+    .tl-scroll { cursor:grab; }
+    .tl-scroll.dragging { cursor:grabbing; user-select:none; }
     .tl-card.editing { box-shadow:0 12px 34px rgba(24,30,40,.20); z-index:30; }
     .tl-line { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
     .tl-scroll::-webkit-scrollbar { height:12px; }
@@ -580,7 +641,7 @@ function App() {
       )}
 
       {/* Timeline canvas */}
-      <div className="tl-scroll" style={{ overflowX: "auto", overflowY: "hidden", padding: "6px 0 10px" }}>
+      <div className="tl-scroll" ref={scrollRef} onMouseDown={onCanvasMouseDown} style={{ overflowX: "auto", overflowY: "hidden", padding: "6px 0 10px" }}>
         <div style={{ position: "relative", width: layout.width, height: layout.height, margin: "0 auto", minWidth: "100%" }}>
           {layout.empty ? (
             <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", color: "var(--muted)", fontSize: T.md }}>
@@ -607,17 +668,15 @@ function App() {
               ))}
 
               {layout.laid.map((e) => {
-                const related = e.related || [];
-                const primary = related.length && charByName[related[0]] ? charByName[related[0]] : null;
-                const accent = primary ? primary.color : "#146b64";
+                const relColors = (e.related || []).map((n) => charByName[n]).filter(Boolean).map((c) => c.color);
+                const accent = blendColors(relColors) || "#146b64";
                 return (
                   <div key={"c" + e.id} style={{ position: "absolute", left: e.x, top: e.connTop, width: 2, height: Math.max(0, e.connBottom - e.connTop), background: accent, opacity: 0.5, transform: "translateX(-1px)" }} />
                 );
               })}
               {layout.laid.map((e) => {
-                const related = e.related || [];
-                const primary = related.length && charByName[related[0]] ? charByName[related[0]] : null;
-                const accent = primary ? primary.color : "#146b64";
+                const relColors = (e.related || []).map((n) => charByName[n]).filter(Boolean).map((c) => c.color);
+                const accent = blendColors(relColors) || "#146b64";
                 return (
                   <div key={"d" + e.id} style={{ position: "absolute", left: e.x, top: layout.axisY, transform: "translate(-50%,-50%)", width: 12, height: 12, borderRadius: "50%", background: accent, border: "2px solid var(--paper2)", boxShadow: "0 0 0 1px rgba(31,37,48,.15)" }} />
                 );
@@ -628,12 +687,14 @@ function App() {
                 const related = e.related || [];
                 const links = e.links || [];
                 const relChars = related.map((n) => charByName[n]).filter(Boolean);
-                const primary = relChars.length ? relChars[0] : null;
-                const accent = primary ? primary.color : "#146b64";
+                const relColors = relChars.map((c) => c.color);
+                const accent = blendColors(relColors) || "#146b64";
+                const barBg = barGradient(relColors);
                 return (
                   <div key={e.id} ref={(el) => { if (el) cardRefs.current[e.id] = el; }}
                     className={"tl-card" + (editing ? " editing" : "")}
-                    style={{ left: e.x - e.w / 2, top: e.top, width: e.w, borderLeft: `3px solid ${accent}` }}>
+                    style={{ left: e.x - e.w / 2, top: e.top, width: e.w, overflow: "hidden" }}>
+                    <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 4, background: barBg }} />
                     {editing ? (
                       <EventCardForm e={e} chars={chars} onUpdate={updateEvent}
                         onDelete={() => delEvent(e.id)} onDone={() => setEditingId(null)} T={T} />
