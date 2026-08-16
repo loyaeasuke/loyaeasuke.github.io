@@ -106,7 +106,7 @@ function parseLinks(v) {
   if (Array.isArray(v)) return v.filter((l) => l && l.url).map((l) => ({ name: String(l.name || "").trim(), url: String(l.url).trim() }));
   const s = String(v ?? "").trim();
   if (!s) return [];
-  return s.split(/[;；\n]+/).map((part) => {
+  return s.split(/[\r\n]+/).map((part) => {
     const t = part.trim();
     if (!t) return null;
     const i = t.indexOf("|");
@@ -115,7 +115,7 @@ function parseLinks(v) {
   }).filter((l) => l && l.url);
 }
 function linksToStr(arr) {
-  return (arr || []).filter((l) => l && l.url).map((l) => (l.name ? `${l.name}|${l.url}` : l.url)).join(";");
+  return (arr || []).filter((l) => l && l.url).map((l) => (l.name ? `${l.name}|${l.url}` : l.url)).join("\n");
 }
 // 顏色：把多個關聯角色的代表色混成中間色 / 做成漸層
 function hexToRgb(h) {
@@ -157,6 +157,8 @@ function estimateHeight(e, chars, editing) {
   }
   const links = (e.links || []);
   if (links.length) h += 10 + links.length * 34;
+  const noteN = e.note ? e.note.split("\n").filter((s) => s.trim()).length : 0;
+  if (noteN) h += 8 + 18 * noteN;
   const rel = (e.related || []).length;
   if (rel) h += 12 + 24 * Math.ceil(rel / 3);
   return h;
@@ -198,8 +200,8 @@ const seedChars = [
 const seedEvents = [
   { id: uid(), title: "王國肇建", type: "建國史", mode: "rel", year: 1, month: 1, day: 1, related: [], desc: "三大氏族締結盟約，共立王國，訂為紀元元年。", links: [{ name: "維基：王國", url: "https://zh.wikipedia.org/wiki/王國" }] },
   { id: uid(), title: "艾德里安誕生", type: "人物", mode: "rel", year: 1, month: 1, day: 1, related: ["艾德里安"], desc: "開國之王的長子於立國同日降生。", links: [] },
-  { id: uid(), title: "星隕之夜", type: "奇聞", mode: "rel", year: 2, month: 8, day: 3, related: ["露娜"], desc: "天穹落下流星雨，露娜於此夜首度覺醒魔力。\n傳說當夜的星光在湖面停留了整整一炷香。", links: [{ name: "維基：流星", url: "https://zh.wikipedia.org/wiki/流星" }, { name: "維基：星圖", url: "https://zh.wikipedia.org/wiki/星圖" }] },
-  { id: uid(), title: "邊境戰役", type: "戰爭", mode: "rel", year: 4, month: 5, day: 10, related: ["凱恩·維斯", "艾德里安"], desc: "凱恩率殘部死守東境隘口，擋下入侵。", links: [] },
+  { id: uid(), title: "星隕之夜", type: "奇聞", mode: "rel", year: 2, month: 8, day: 3, related: ["露娜"], desc: "天穹落下流星雨，露娜於此夜首度覺醒魔力。\n傳說當夜的星光在湖面停留了整整一炷香。", note: "settei：此夜之後露娜開始怕黑。\n未確認：是否與白塔之會有關。", links: [{ name: "維基：流星", url: "https://zh.wikipedia.org/wiki/流星" }, { name: "維基：星圖", url: "https://zh.wikipedia.org/wiki/星圖" }] },
+  { id: uid(), title: "邊境戰役", type: "戰爭", mode: "rel", year: 4, month: 5, day: 10, related: ["凱恩·維斯", "艾德里安"], desc: "凱恩率殘部死守東境隘口，擋下入侵。", note: "傷亡數字待補。", links: [] },
   { id: uid(), title: "王都大典", type: "慶典", mode: "rel", year: 6, month: 6, day: 15, related: ["艾德里安"], desc: "艾德里安於王都受封為儲君。", links: [{ name: "維基：加冕", url: "https://zh.wikipedia.org/wiki/加冕" }] },
   { id: uid(), title: "白塔之會", type: "會議", mode: "rel", year: 8, month: 11, day: 2, related: ["露娜", "凱恩·維斯"], desc: "各國法師齊聚白塔，露娜提出以魔力共治的構想。", links: [] },
 ];
@@ -213,7 +215,7 @@ const INIT_SET = (BOOT && BOOT.settings) || {};
 
 /* ---------------- CSV <-> data ---------------- */
 const CHAR_HEADERS = ["角色", "年份模式", "年", "月", "日", "顏色"];
-const EVENT_HEADERS = ["事件", "類型", "年份模式", "年", "月", "日", "角色", "說明", "連結"];
+const EVENT_HEADERS = ["事件", "類型", "年份模式", "年", "月", "日", "角色", "說明", "註記", "連結"];
 
 function charsToCsv(chars) {
   const rows = chars.map((c) => ({
@@ -226,7 +228,7 @@ function eventsToCsv(events) {
   const rows = events.map((e) => ({
     事件: e.title, 類型: e.type || "", 年份模式: e.mode === "rel" ? "相對" : "絕對",
     年: e.year ?? "", 月: e.month ?? "", 日: e.day ?? "",
-    角色: relatedToStr(e.related), 說明: e.desc || "", 連結: linksToStr(e.links),
+    角色: relatedToStr(e.related), 說明: e.desc || "", 註記: e.note || "", 連結: linksToStr(e.links),
   }));
   return Papa.unparse({ fields: EVENT_HEADERS, data: rows });
 }
@@ -252,6 +254,7 @@ function csvToEvents(text) {
       year: toInt(r["年"]) ?? 1, month: toInt(r["月"]), day: toInt(r["日"]),
       related: parseRelated(r["角色"]),
       desc: String(r["說明"] ?? "").trim(),
+      note: String(r["註記"] ?? "").replace(/\r\n/g, "\n").trim(),
       links: parseLinks(r["連結"]),
     };
   }).filter(Boolean);
@@ -305,7 +308,7 @@ function App() {
   const delChar = (id) => commit(chars.filter((c) => c.id !== id), events);
 
   const addEvent = () => {
-    const ne = { id: uid(), title: "新事件", type: "", mode: "rel", year: 1, month: null, day: null, related: [], desc: "", links: [] };
+    const ne = { id: uid(), title: "新事件", type: "", mode: "rel", year: 1, month: null, day: null, related: [], desc: "", note: "", links: [] };
     commit(chars, [...events, ne]);
     setEditingId(ne.id);
   };
@@ -620,7 +623,8 @@ function App() {
               <div style={{ marginBottom: 6 }}><b>年份模式</b>：「相對」＝第 N 年、「絕對」＝西元年（也接受 rel／abs）。<b>月、日</b>可留空。</div>
               <div style={{ marginBottom: 6 }}><b>角色（關聯）</b>：可多個，用「、」分隔；以小標籤顯示在卡片最下方。年齡則一律列出全部角色。</div>
               <div style={{ marginBottom: 6 }}><b>說明</b>：可換行，照原樣顯示。</div>
-              <div><b>連結</b>：每筆寫成 <code>名稱|網址</code>，多筆用 <code>;</code> 分隔；點擊一律開新視窗。</div>
+              <div style={{ marginBottom: 6 }}><b>註記</b>：事件的追加備註，<b>每行一條</b>，以 12px 小字（前綴▸）顯示，與說明有所區別。</div>
+              <div><b>連結</b>：每筆寫成 <code>名稱|網址</code>，多筆用<b>換行</b>分隔；點擊一律開新視窗。</div>
             </div>
           )}
         </div>
@@ -723,6 +727,17 @@ function App() {
 
                         {e.desc && <p style={{ margin: "8px 0 0", fontSize: T.sm, lineHeight: 1.6, whiteSpace: "pre-wrap", color: "var(--ink)" }}>{e.desc}</p>}
 
+                        {(e.note || "").split("\n").filter((s) => s.trim()).length > 0 && (
+                          <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 2 }}>
+                            {(e.note || "").split("\n").filter((s) => s.trim()).map((ln, i) => (
+                              <div key={i} style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5, display: "flex", gap: 5, alignItems: "flex-start" }}>
+                                <span style={{ color: accent, flexShrink: 0, fontWeight: 700 }}>▸</span>
+                                <span style={{ whiteSpace: "pre-wrap" }}>{ln}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
                         {links.length > 0 && (
                           <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                             {links.map((l, i) => (
@@ -801,6 +816,7 @@ function EventCardForm({ e, chars, onUpdate, onDelete, onDone, T }) {
         })}
       </div>
       <textarea className="ed-field" value={e.desc} onChange={(ev) => onUpdate(e.id, { desc: ev.target.value })} placeholder="說明（可換行）" rows={3} style={{ resize: "vertical", lineHeight: 1.5 }} />
+      <textarea className="ed-field" value={e.note || ""} onChange={(ev) => onUpdate(e.id, { note: ev.target.value })} placeholder="註記（每行一條，12px 小字顯示）" rows={2} style={{ resize: "vertical", lineHeight: 1.5, fontSize: 12 }} />
       <div>
         <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>連結（可多筆）</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
