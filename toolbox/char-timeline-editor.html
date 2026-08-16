@@ -50,6 +50,7 @@ const Plus = (p) => <Svg {...p}><line x1="12" y1="5" x2="12" y2="19" /><line x1=
 const Trash = (p) => <Svg {...p}><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /></Svg>;
 const Pencil = (p) => <Svg {...p}><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z" /></Svg>;
 const Check = (p) => <Svg {...p}><polyline points="20 6 9 17 4 12" /></Svg>;
+const BookOpen = (p) => <Svg {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></Svg>;
 
 /* ---------------- helpers ---------------- */
 const uid = () => Math.random().toString(36).slice(2, 9);
@@ -157,8 +158,9 @@ function estimateHeight(e, chars, editing) {
   }
   const links = (e.links || []);
   if (links.length) h += 10 + links.length * 34;
-  const noteN = e.note ? e.note.split("\n").filter((s) => s.trim()).length : 0;
+  const noteN = e.note ? e.note.split(/[|\r\n]+/).filter((s) => s.trim()).length : 0;
   if (noteN) h += 8 + 18 * noteN;
+  if (e.story && e.story.trim()) h += 10 + 34;
   const rel = (e.related || []).length;
   if (rel) h += 12 + 24 * Math.ceil(rel / 3);
   return h;
@@ -200,7 +202,7 @@ const seedChars = [
 const seedEvents = [
   { id: uid(), title: "王國肇建", type: "建國史", mode: "rel", year: 1, month: 1, day: 1, related: [], desc: "三大氏族締結盟約，共立王國，訂為紀元元年。", links: [{ name: "維基：王國", url: "https://zh.wikipedia.org/wiki/王國" }] },
   { id: uid(), title: "艾德里安誕生", type: "人物", mode: "rel", year: 1, month: 1, day: 1, related: ["艾德里安"], desc: "開國之王的長子於立國同日降生。", links: [] },
-  { id: uid(), title: "星隕之夜", type: "奇聞", mode: "rel", year: 2, month: 8, day: 3, related: ["露娜"], desc: "天穹落下流星雨，露娜於此夜首度覺醒魔力。\n傳說當夜的星光在湖面停留了整整一炷香。", note: "settei：此夜之後露娜開始怕黑。\n未確認：是否與白塔之會有關。", links: [{ name: "維基：流星", url: "https://zh.wikipedia.org/wiki/流星" }, { name: "維基：星圖", url: "https://zh.wikipedia.org/wiki/星圖" }] },
+  { id: uid(), title: "星隕之夜", type: "奇聞", mode: "rel", year: 2, month: 8, day: 3, related: ["露娜"], desc: "天穹落下流星雨，露娜於此夜首度覺醒魔力。\n傳說當夜的星光在湖面停留了整整一炷香。", note: "settei：此夜之後露娜開始怕黑。|未確認：是否與白塔之會有關。", links: [{ name: "維基：流星", url: "https://zh.wikipedia.org/wiki/流星" }, { name: "維基：星圖", url: "https://zh.wikipedia.org/wiki/星圖" }], story: "那年夏末，露娜獨自坐在湖畔。\n\n第一顆星墜落時，她以為是眼淚；直到整片夜空都亮了起來，她才明白，有什麼正從她體內甦醒。\n\n「別怕。」湖面倒映的光輕聲說。她伸出手，指尖第一次泛起微光——那是她與魔力初次相認的夜晚。" },
   { id: uid(), title: "邊境戰役", type: "戰爭", mode: "rel", year: 4, month: 5, day: 10, related: ["凱恩·維斯", "艾德里安"], desc: "凱恩率殘部死守東境隘口，擋下入侵。", note: "傷亡數字待補。", links: [] },
   { id: uid(), title: "王都大典", type: "慶典", mode: "rel", year: 6, month: 6, day: 15, related: ["艾德里安"], desc: "艾德里安於王都受封為儲君。", links: [{ name: "維基：加冕", url: "https://zh.wikipedia.org/wiki/加冕" }] },
   { id: uid(), title: "白塔之會", type: "會議", mode: "rel", year: 8, month: 11, day: 2, related: ["露娜", "凱恩·維斯"], desc: "各國法師齊聚白塔，露娜提出以魔力共治的構想。", links: [] },
@@ -214,8 +216,9 @@ const INIT_EVENTS = BOOT && Array.isArray(BOOT.events) ? BOOT.events : seedEvent
 const INIT_SET = (BOOT && BOOT.settings) || {};
 
 /* ---------------- CSV <-> data ---------------- */
+const STORY_LABEL = "小記"; // 短篇故事欄位名稱（要改名改這裡即可）
 const CHAR_HEADERS = ["角色", "年份模式", "年", "月", "日", "顏色"];
-const EVENT_HEADERS = ["事件", "類型", "年份模式", "年", "月", "日", "角色", "說明", "註記", "連結"];
+const EVENT_HEADERS = ["事件", "類型", "年份模式", "年", "月", "日", "角色", "說明", "註記", "連結", STORY_LABEL];
 
 function charsToCsv(chars) {
   const rows = chars.map((c) => ({
@@ -228,7 +231,7 @@ function eventsToCsv(events) {
   const rows = events.map((e) => ({
     事件: e.title, 類型: e.type || "", 年份模式: e.mode === "rel" ? "相對" : "絕對",
     年: e.year ?? "", 月: e.month ?? "", 日: e.day ?? "",
-    角色: relatedToStr(e.related), 說明: e.desc || "", 註記: e.note || "", 連結: linksToStr(e.links),
+    角色: relatedToStr(e.related), 說明: e.desc || "", 註記: e.note || "", 連結: linksToStr(e.links), [STORY_LABEL]: e.story || "",
   }));
   return Papa.unparse({ fields: EVENT_HEADERS, data: rows });
 }
@@ -256,6 +259,7 @@ function csvToEvents(text) {
       desc: String(r["說明"] ?? "").trim(),
       note: String(r["註記"] ?? "").replace(/\r\n/g, "\n").trim(),
       links: parseLinks(r["連結"]),
+      story: String(r[STORY_LABEL] ?? "").replace(/\r\n/g, "\n"),
     };
   }).filter(Boolean);
 }
@@ -275,6 +279,8 @@ function App() {
   const [title, setTitle] = useState(INIT_SET.title ?? "紀年時間軸");
 
   const [editingId, setEditingId] = useState(null);
+  const [tip, setTip] = useState(null);
+  const [story, setStory] = useState(null);
   const [charsOpen, setCharsOpen] = useState(false);
   const [csvOpen, setCsvOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -308,7 +314,7 @@ function App() {
   const delChar = (id) => commit(chars.filter((c) => c.id !== id), events);
 
   const addEvent = () => {
-    const ne = { id: uid(), title: "新事件", type: "", mode: "rel", year: 1, month: null, day: null, related: [], desc: "", note: "", links: [] };
+    const ne = { id: uid(), title: "新事件", type: "", mode: "rel", year: 1, month: null, day: null, related: [], desc: "", note: "", links: [], story: "" };
     commit(chars, [...events, ne]);
     setEditingId(ne.id);
   };
@@ -474,6 +480,13 @@ function App() {
     };
   }, []);
 
+  // 即時提示（僅在文字被截斷時顯示，無瀏覽器預設延遲）
+  const showTip = (ev, text) => {
+    const el = ev.currentTarget;
+    if (el && el.scrollWidth > el.clientWidth + 1) setTip({ text, x: ev.clientX, y: ev.clientY });
+  };
+  const hideTip = () => setTip(null);
+
   const applyCsv = () => {
     try {
       const c = csvToChars(charCsv);
@@ -623,8 +636,9 @@ function App() {
               <div style={{ marginBottom: 6 }}><b>年份模式</b>：「相對」＝第 N 年、「絕對」＝西元年（也接受 rel／abs）。<b>月、日</b>可留空。</div>
               <div style={{ marginBottom: 6 }}><b>角色（關聯）</b>：可多個，用「、」分隔；以小標籤顯示在卡片最下方。年齡則一律列出全部角色。</div>
               <div style={{ marginBottom: 6 }}><b>說明</b>：可換行，照原樣顯示。</div>
-              <div style={{ marginBottom: 6 }}><b>註記</b>：事件的追加備註，<b>每行一條</b>，以 12px 小字（前綴▸）顯示，與說明有所區別。</div>
+              <div style={{ marginBottom: 6 }}><b>註記</b>：事件的追加備註，多筆用 <code>|</code> 分隔，以 12px 小字（前綴▸）逐筆顯示，與說明有所區別。</div>
               <div><b>連結</b>：每筆寫成 <code>名稱,網址</code>，多筆用 <code>|</code> 分隔；點擊一律開新視窗。</div>
+              <div style={{ marginTop: 6 }}><b>{STORY_LABEL}</b>：短篇故事（可換行）。有填寫時，卡片會出現「閱讀{STORY_LABEL}」按鈕，點擊以頁內視窗閱讀；留空則不顯示按鈕。</div>
             </div>
           )}
         </div>
@@ -694,6 +708,7 @@ function App() {
                 const relColors = relChars.map((c) => c.color);
                 const accent = blendColors(relColors) || "#146b64";
                 const barBg = barGradient(relColors);
+                const noteLines = (e.note || "").split(/[|\r\n]+/).map((s) => s.trim()).filter(Boolean);
                 return (
                   <div key={e.id} ref={(el) => { if (el) cardRefs.current[e.id] = el; }}
                     className={"tl-card" + (editing ? " editing" : "")}
@@ -707,7 +722,7 @@ function App() {
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 6 }}>
                           <div style={{ minWidth: 0, flex: 1 }}>
                             {e.type && <div className="tl-line" style={{ fontSize: 13, color: accent, fontWeight: 600, letterSpacing: ".02em", marginBottom: 2 }}>{e.type}</div>}
-                            <div className="serif tl-line" title={e.title} style={{ fontSize: T.md, fontWeight: 600, lineHeight: 1.2 }}>{e.title}</div>
+                            <div className="serif tl-line" onMouseEnter={(ev) => showTip(ev, e.title)} onMouseLeave={hideTip} style={{ fontSize: T.md, fontWeight: 600, lineHeight: 1.2 }}>{e.title}</div>
                           </div>
                           <div style={{ display: "flex", alignItems: "center", gap: 2, flexShrink: 0 }}>
                             {links.length > 0 && <Link2 size={14} style={{ color: accent, marginTop: 2 }} />}
@@ -727,9 +742,9 @@ function App() {
 
                         {e.desc && <p style={{ margin: "8px 0 0", fontSize: T.sm, lineHeight: 1.6, whiteSpace: "pre-wrap", color: "var(--ink)" }}>{e.desc}</p>}
 
-                        {(e.note || "").split("\n").filter((s) => s.trim()).length > 0 && (
+                        {noteLines.length > 0 && (
                           <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 2 }}>
-                            {(e.note || "").split("\n").filter((s) => s.trim()).map((ln, i) => (
+                            {noteLines.map((ln, i) => (
                               <div key={i} style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5, display: "flex", gap: 5, alignItems: "flex-start" }}>
                                 <span style={{ color: accent, flexShrink: 0, fontWeight: 700 }}>▸</span>
                                 <span style={{ whiteSpace: "pre-wrap" }}>{ln}</span>
@@ -738,11 +753,17 @@ function App() {
                           </div>
                         )}
 
+                        {e.story && e.story.trim() && (
+                          <button className="tl-btn" style={{ marginTop: 10, padding: "6px 10px", borderColor: accent, color: accent }} onClick={() => setStory({ title: e.title, text: e.story })}>
+                            <BookOpen size={14} /> 閱讀{STORY_LABEL}
+                          </button>
+                        )}
+
                         {links.length > 0 && (
                           <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
                             {links.map((l, i) => (
                               <a key={i} className="tl-btn" style={{ padding: "6px 9px", textDecoration: "none", justifyContent: "flex-start", maxWidth: "100%" }} href={l.url} target="_blank" rel="noreferrer">
-                                <ExternalLink size={13} style={{ flexShrink: 0 }} /> <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.name || l.url}</span>
+                                <ExternalLink size={13} style={{ flexShrink: 0 }} /> <span onMouseEnter={(ev) => showTip(ev, l.name || l.url)} onMouseLeave={hideTip} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>{l.name || l.url}</span>
                               </a>
                             ))}
                           </div>
@@ -774,6 +795,37 @@ function App() {
           ? "檢視版：資料唯讀，無法編輯。年份標示於時間軸橫線上方；日期下方小標籤為關聯角色，卡片最下方列出全部角色的當時年齡；連結開新視窗。"
           : "年份標示於時間軸橫線上方；日期下方小標籤為關聯角色，卡片最下方列出全部角色的當時年齡。點卡片右上鉛筆鈕就地編輯；連結一律開新視窗。"}
       </div>
+
+      {story && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(20,24,32,.55)", zIndex: 150, display: "flex", padding: "4vh 4vw" }} onClick={() => setStory(null)}>
+          <div style={{ display: "flex", flexDirection: "column", margin: "auto", width: "100%", maxWidth: 640, maxHeight: "88vh", background: "var(--paper2)", borderRadius: 14, overflow: "hidden", boxShadow: "0 24px 70px rgba(0,0,0,.42)" }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 18px", borderBottom: "1px solid var(--line)" }}>
+              <BookOpen size={17} style={{ color: "var(--accent)", flexShrink: 0 }} />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: T.xs, color: "var(--muted)" }}>{STORY_LABEL}</div>
+                <div className="serif" style={{ fontSize: T.lg, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{story.title}</div>
+              </div>
+              <button className="tl-btn" onClick={() => setStory(null)}><X size={14} /> 關閉</button>
+            </div>
+            <div style={{ padding: "20px 22px", overflowY: "auto" }}>
+              <div style={{ fontSize: T.md, lineHeight: 1.9, whiteSpace: "pre-wrap", color: "var(--ink)" }}>{story.text}</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tip && (() => {
+        const vw = typeof window !== "undefined" ? window.innerWidth : 1200;
+        const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+        const maxW = 340;
+        let left = tip.x + 14;
+        if (left + maxW > vw - 8) left = Math.max(8, tip.x - maxW - 14);
+        let top = tip.y + 18;
+        if (top > vh - 60) top = Math.max(8, tip.y - 40);
+        return (
+          <div style={{ position: "fixed", left, top, maxWidth: maxW, background: "var(--ink)", color: "#fff", fontSize: 13, lineHeight: 1.4, padding: "6px 9px", borderRadius: 7, boxShadow: "0 6px 20px rgba(0,0,0,.28)", zIndex: 200, pointerEvents: "none", whiteSpace: "normal", wordBreak: "break-word" }}>{tip.text}</div>
+        );
+      })()}
     </div>
   );
 }
@@ -816,7 +868,7 @@ function EventCardForm({ e, chars, onUpdate, onDelete, onDone, T }) {
         })}
       </div>
       <textarea className="ed-field" value={e.desc} onChange={(ev) => onUpdate(e.id, { desc: ev.target.value })} placeholder="說明（可換行）" rows={3} style={{ resize: "vertical", lineHeight: 1.5 }} />
-      <textarea className="ed-field" value={e.note || ""} onChange={(ev) => onUpdate(e.id, { note: ev.target.value })} placeholder="註記（每行一條，12px 小字顯示）" rows={2} style={{ resize: "vertical", lineHeight: 1.5, fontSize: 12 }} />
+      <textarea className="ed-field" value={e.note || ""} onChange={(ev) => onUpdate(e.id, { note: ev.target.value })} placeholder="註記（每筆用 | 分隔，12px 小字顯示）" rows={2} style={{ resize: "vertical", lineHeight: 1.5, fontSize: 12 }} />
       <div>
         <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>連結（可多筆）</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -829,6 +881,10 @@ function EventCardForm({ e, chars, onUpdate, onDelete, onDone, T }) {
           ))}
         </div>
         <button className="tl-btn" style={{ marginTop: 6 }} onClick={addLink}><Plus size={14} /> 新增連結</button>
+      </div>
+      <div>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>{STORY_LABEL}（短篇故事；填了才會在卡片顯示閱讀按鈕）</div>
+        <textarea className="ed-field" value={e.story || ""} onChange={(ev) => onUpdate(e.id, { story: ev.target.value })} placeholder="在此填寫短篇故事…（留空則不顯示按鈕）" rows={4} style={{ width: "100%", resize: "vertical", lineHeight: 1.6 }} />
       </div>
       <button className="tl-btn danger" onClick={onDelete} style={{ justifyContent: "center", marginTop: 2 }}><Trash size={14} /> 刪除此事件</button>
     </div>
