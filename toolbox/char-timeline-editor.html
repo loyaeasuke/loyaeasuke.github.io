@@ -139,12 +139,14 @@ function estimateHeight(e, chars, editing) {
 /* ---------------- 匯出檢視版 HTML（唯讀） ---------------- */
 function buildExportHtml(boot, script) {
   const dataJson = JSON.stringify(boot).replace(/</g, "\\u003c");
+  const rawTitle = (boot.settings && boot.settings.title && String(boot.settings.title).trim()) ? String(boot.settings.title) : "紀年時間軸";
+  const pageTitle = rawTitle.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   return [
     '<!DOCTYPE html>',
     '<html lang="zh-Hant"><head>',
     '<meta charset="UTF-8" />',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',
-    '<title>紀年時間軸（檢視版）</title>',
+    '<title>' + pageTitle + '</title>',
     '<link rel="preconnect" href="https://fonts.googleapis.com" />',
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />',
     '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />',
@@ -241,6 +243,7 @@ function App() {
   const [slot, setSlot] = useState(INIT_SET.slot ?? 250);
   const [fs, setFs] = useState(INIT_SET.fs ?? 14);
   const [showBirthdays, setShowBirthdays] = useState(INIT_SET.showBirthdays ?? true);
+  const [title, setTitle] = useState(INIT_SET.title ?? "紀年時間軸");
 
   const [editingId, setEditingId] = useState(null);
   const [charsOpen, setCharsOpen] = useState(false);
@@ -293,7 +296,7 @@ function App() {
   };
   const exportView = () => {
     try {
-      const boot = { readOnly: true, chars, events, settings: { epoch, axisMode, slot, fs, showBirthdays } };
+      const boot = { readOnly: true, chars, events, settings: { epoch, axisMode, slot, fs, showBirthdays, title } };
       const el = document.querySelector('script[type="text/babel"]');
       const script = el ? el.textContent : "";
       const html = buildExportHtml(boot, script);
@@ -337,7 +340,7 @@ function App() {
     for (let i = 0; i < laneMaxH.length; i++) { off[i] = acc; acc += (laneMaxH[i] || 0) + LANE_GAP; }
     const belowTotal = laneMaxH.length ? acc : 30;
 
-    const aboveArea = 18;
+    const aboveArea = 30;
     const bandTop = TOP_PAD + aboveArea;
     const bandBottom = bandTop + BAND;
     const axisY = bandTop + BAND / 2;
@@ -363,7 +366,7 @@ function App() {
       const label = axisMode === "rel" ? `第 ${g.iy - epoch + 1} 年`
         : axisMode === "abs" ? `${g.iy}`
         : (allRel ? `第 ${g.iy - epoch + 1} 年` : `${g.iy}`);
-      return { left, width: right - left, on: gi % 2 === 0, label, labelLeft: first.x - first.w / 2, labelTop: first.top - 22 };
+      return { left, width: right - left, on: gi % 2 === 0, label, labelCenter: first.x, labelTop: 24 };
     });
 
     const firstOrd = withOrd[0].ord, lastOrd = withOrd[n - 1].ord;
@@ -407,6 +410,8 @@ function App() {
     }
   }, []);
 
+  useEffect(() => { document.title = (title && title.trim()) ? title : "紀年時間軸"; }, [title]);
+
   const applyCsv = () => {
     try {
       const c = csvToChars(charCsv);
@@ -446,6 +451,9 @@ function App() {
     .tl-btn:focus-visible, .tl-icon:focus-visible, textarea:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
     .tl-icon { border:0; background:transparent; color:var(--muted); cursor:pointer; padding:3px; border-radius:6px; display:inline-flex; flex-shrink:0; }
     .tl-icon:hover { color:var(--accent); background:rgba(20,107,100,.10); }
+    .tl-title-input { margin:0; border:0; background:transparent; padding:2px 6px; border-radius:7px; border-bottom:1px dashed transparent; max-width:100%; }
+    .tl-title-input:hover { border-bottom-color:var(--line); }
+    .tl-title-input:focus { outline:none; border-bottom-color:var(--accent); background:#fff; }
     .tl-card { position:absolute; background:var(--paper2); border:1px solid var(--line);
       border-radius:10px; padding:10px 12px; box-shadow:0 1px 2px rgba(24,30,40,.05); text-align:left; }
     .tl-card.editing { box-shadow:0 12px 34px rgba(24,30,40,.20); z-index:30; }
@@ -469,7 +477,13 @@ function App() {
       {/* Header */}
       <div style={{ padding: "18px 20px 12px", borderBottom: "1px solid var(--line)", background: "var(--paper2)" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-          <h1 className="serif" style={{ margin: 0, fontSize: T.xl, fontWeight: 600, letterSpacing: "-.01em" }}>紀年時間軸</h1>
+          {READONLY ? (
+            <h1 className="serif" style={{ margin: 0, fontSize: T.xl, fontWeight: 600, letterSpacing: "-.01em" }}>{title || "紀年時間軸"}</h1>
+          ) : (
+            <input className="serif tl-title-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="網頁名稱" aria-label="網頁名稱"
+              title="自訂網頁名稱"
+              style={{ fontSize: T.xl, fontWeight: 600, letterSpacing: "-.01em", color: "var(--ink)", width: Math.max(140, (title || "").length * T.xl + 34) }} />
+          )}
           <span style={{ fontSize: T.sm, color: "var(--muted)" }}>{READONLY ? "檢視版（唯讀）" : "依序排列 · 全員年齡自動計算"}</span>
         </div>
 
@@ -587,9 +601,9 @@ function App() {
                 <div key={b.id} title={`${b.name} 生日`} style={{ position: "absolute", left: b.x, top: layout.axisY, transform: "translate(-50%,-50%) rotate(45deg)", width: 9, height: 9, background: b.color, border: "1.5px solid var(--paper2)", borderRadius: 2 }} />
               ))}
 
-              {/* 年份：顯示在該年第一張卡片上方 */}
+              {/* 年份：顯示在時間軸橫線上方 */}
               {layout.groups.map((g, i) => (
-                <div key={"y" + i} style={{ position: "absolute", left: g.labelLeft, top: g.labelTop, fontSize: T.sm, color: "var(--muted)", fontWeight: 700, whiteSpace: "nowrap" }}>{g.label}</div>
+                <div key={"y" + i} style={{ position: "absolute", left: g.labelCenter, top: g.labelTop, transform: "translateX(-50%)", fontSize: T.sm, color: "var(--muted)", fontWeight: 700, whiteSpace: "nowrap" }}>{g.label}</div>
               ))}
 
               {layout.laid.map((e) => {
@@ -638,14 +652,10 @@ function App() {
 
                         <div style={{ fontSize: T.xs, color: "var(--muted)", marginTop: 3 }}>{fmtDate(e)}</div>
 
-                        {chars.length > 0 && (
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px", marginTop: 6 }}>
-                            {chars.map((c) => (
-                              <span key={c.id} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: T.sm }}>
-                                <span style={{ width: 11, height: 11, borderRadius: 3, background: c.color, display: "inline-block", flexShrink: 0 }} />
-                                <span style={{ fontWeight: 600 }}>{c.name}</span>
-                                <span style={{ color: "var(--muted)" }}>{ageLabel(c, e, epoch)}</span>
-                              </span>
+                        {relChars.length > 0 && (
+                          <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {relChars.map((c) => (
+                              <span key={c.id} style={{ fontSize: 13, padding: "2px 9px", borderRadius: 999, border: `1px solid ${c.color}`, color: c.color, background: "var(--paper2)" }}>{c.name}</span>
                             ))}
                           </div>
                         )}
@@ -662,10 +672,14 @@ function App() {
                           </div>
                         )}
 
-                        {relChars.length > 0 && (
-                          <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--line)", display: "flex", flexWrap: "wrap", gap: 6 }}>
-                            {relChars.map((c) => (
-                              <span key={c.id} style={{ fontSize: 13, padding: "2px 9px", borderRadius: 999, border: `1px solid ${c.color}`, color: c.color, background: "var(--paper2)" }}>{c.name}</span>
+                        {chars.length > 0 && (
+                          <div style={{ marginTop: 10, paddingTop: 8, borderTop: "1px dashed var(--line)", display: "flex", flexWrap: "wrap", gap: "4px 12px" }}>
+                            {chars.map((c) => (
+                              <span key={c.id} style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: T.sm }}>
+                                <span style={{ width: 11, height: 11, borderRadius: 3, background: c.color, display: "inline-block", flexShrink: 0 }} />
+                                <span style={{ fontWeight: 600 }}>{c.name}</span>
+                                <span style={{ color: "var(--muted)" }}>{ageLabel(c, e, epoch)}</span>
+                              </span>
                             ))}
                           </div>
                         )}
@@ -681,8 +695,8 @@ function App() {
 
       <div style={{ padding: "8px 20px 22px", fontSize: T.xs, color: "var(--muted)" }}>
         {READONLY
-          ? "檢視版：資料唯讀，無法編輯。年份標示於該年第一張卡片上方；每張卡片列出全部角色的當時年齡，最下方小標籤為關聯角色；連結開新視窗。"
-          : "年份顯示於該年第一張卡片上方；每張卡片列出全部角色的當時年齡，最下方小標籤為關聯角色。點卡片右上鉛筆鈕就地編輯；連結一律開新視窗。"}
+          ? "檢視版：資料唯讀，無法編輯。年份標示於時間軸橫線上方；日期下方小標籤為關聯角色，卡片最下方列出全部角色的當時年齡；連結開新視窗。"
+          : "年份標示於時間軸橫線上方；日期下方小標籤為關聯角色，卡片最下方列出全部角色的當時年齡。點卡片右上鉛筆鈕就地編輯；連結一律開新視窗。"}
       </div>
     </div>
   );
