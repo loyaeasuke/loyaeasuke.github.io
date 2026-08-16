@@ -160,7 +160,7 @@ function estimateHeight(e, chars, editing) {
   if (links.length) h += 10 + links.length * 34;
   const noteN = e.note ? e.note.split(/[|\r\n]+/).filter((s) => s.trim()).length : 0;
   if (noteN) h += 8 + 18 * noteN;
-  if (e.story && e.story.trim()) h += 10 + 34;
+  if ((e.story && e.story.trim()) || (e.afterword && e.afterword.trim())) h += 10 + 34;
   const rel = (e.related || []).length;
   if (rel) h += 12 + 24 * Math.ceil(rel / 3);
   return h;
@@ -202,7 +202,7 @@ const seedChars = [
 const seedEvents = [
   { id: uid(), title: "王國肇建", type: "建國史", mode: "rel", year: 1, month: 1, day: 1, related: [], desc: "三大氏族締結盟約，共立王國，訂為紀元元年。", links: [{ name: "維基：王國", url: "https://zh.wikipedia.org/wiki/王國" }] },
   { id: uid(), title: "艾德里安誕生", type: "人物", mode: "rel", year: 1, month: 1, day: 1, related: ["艾德里安"], desc: "開國之王的長子於立國同日降生。", links: [] },
-  { id: uid(), title: "星隕之夜", type: "奇聞", mode: "rel", year: 2, month: 8, day: 3, related: ["露娜"], desc: "天穹落下流星雨，露娜於此夜首度覺醒魔力。\n傳說當夜的星光在湖面停留了整整一炷香。", note: "settei：此夜之後露娜開始怕黑。|未確認：是否與白塔之會有關。", links: [{ name: "維基：流星", url: "https://zh.wikipedia.org/wiki/流星" }, { name: "維基：星圖", url: "https://zh.wikipedia.org/wiki/星圖" }], story: "那年夏末，露娜獨自坐在湖畔。\n\n第一顆星墜落時，她以為是眼淚；直到整片夜空都亮了起來，她才明白，有什麼正從她體內甦醒。\n\n「別怕。」湖面倒映的光輕聲說。她伸出手，指尖第一次泛起微光——那是她與魔力初次相認的夜晚。" },
+  { id: uid(), title: "星隕之夜", type: "奇聞", mode: "rel", year: 2, month: 8, day: 3, related: ["露娜"], desc: "天穹落下流星雨，露娜於此夜首度覺醒魔力。\n傳說當夜的星光在湖面停留了整整一炷香。", note: "settei：此夜之後露娜開始怕黑。|未確認：是否與白塔之會有關。", links: [{ name: "維基：流星", url: "https://zh.wikipedia.org/wiki/流星" }, { name: "維基：星圖", url: "https://zh.wikipedia.org/wiki/星圖" }], story: "那年夏末，露娜獨自坐在湖畔。\n\n第一顆星墜落時，她以為是眼淚；直到整片夜空都亮了起來，她才明白，有什麼正從她體內甦醒。\n\n「別怕。」湖面倒映的光輕聲說。她伸出手，指尖第一次泛起微光——那是她與魔力初次相認的夜晚。", afterword: "後來露娜很少提起這一夜。\n只有在極安靜的時候，她會抬頭望向沒有星星的天空，像在等誰回來。" },
   { id: uid(), title: "邊境戰役", type: "戰爭", mode: "rel", year: 4, month: 5, day: 10, related: ["凱恩·維斯", "艾德里安"], desc: "凱恩率殘部死守東境隘口，擋下入侵。", note: "傷亡數字待補。", links: [] },
   { id: uid(), title: "王都大典", type: "慶典", mode: "rel", year: 6, month: 6, day: 15, related: ["艾德里安"], desc: "艾德里安於王都受封為儲君。", links: [{ name: "維基：加冕", url: "https://zh.wikipedia.org/wiki/加冕" }] },
   { id: uid(), title: "白塔之會", type: "會議", mode: "rel", year: 8, month: 11, day: 2, related: ["露娜", "凱恩·維斯"], desc: "各國法師齊聚白塔，露娜提出以魔力共治的構想。", links: [] },
@@ -217,8 +217,9 @@ const INIT_SET = (BOOT && BOOT.settings) || {};
 
 /* ---------------- CSV <-> data ---------------- */
 const STORY_LABEL = "小記"; // 短篇故事欄位名稱（要改名改這裡即可）
+const AFTER_LABEL = "後記"; // 小記後記欄位名稱
 const CHAR_HEADERS = ["角色", "年份模式", "年", "月", "日", "顏色"];
-const EVENT_HEADERS = ["事件", "類型", "年份模式", "年", "月", "日", "角色", "說明", "註記", "連結", STORY_LABEL];
+const EVENT_HEADERS = ["事件", "類型", "年份模式", "年", "月", "日", "角色", "說明", "註記", "連結", STORY_LABEL, AFTER_LABEL];
 
 function charsToCsv(chars) {
   const rows = chars.map((c) => ({
@@ -231,7 +232,7 @@ function eventsToCsv(events) {
   const rows = events.map((e) => ({
     事件: e.title, 類型: e.type || "", 年份模式: e.mode === "rel" ? "相對" : "絕對",
     年: e.year ?? "", 月: e.month ?? "", 日: e.day ?? "",
-    角色: relatedToStr(e.related), 說明: e.desc || "", 註記: e.note || "", 連結: linksToStr(e.links), [STORY_LABEL]: e.story || "",
+    角色: relatedToStr(e.related), 說明: e.desc || "", 註記: e.note || "", 連結: linksToStr(e.links), [STORY_LABEL]: e.story || "", [AFTER_LABEL]: e.afterword || "",
   }));
   return Papa.unparse({ fields: EVENT_HEADERS, data: rows });
 }
@@ -260,6 +261,7 @@ function csvToEvents(text) {
       note: String(r["註記"] ?? "").replace(/\r\n/g, "\n").trim(),
       links: parseLinks(r["連結"]),
       story: String(r[STORY_LABEL] ?? "").replace(/\r\n/g, "\n"),
+      afterword: String(r[AFTER_LABEL] ?? "").replace(/\r\n/g, "\n"),
     };
   }).filter(Boolean);
 }
@@ -314,7 +316,7 @@ function App() {
   const delChar = (id) => commit(chars.filter((c) => c.id !== id), events);
 
   const addEvent = () => {
-    const ne = { id: uid(), title: "新事件", type: "", mode: "rel", year: 1, month: null, day: null, related: [], desc: "", note: "", links: [], story: "" };
+    const ne = { id: uid(), title: "新事件", type: "", mode: "rel", year: 1, month: null, day: null, related: [], desc: "", note: "", links: [], story: "", afterword: "" };
     commit(chars, [...events, ne]);
     setEditingId(ne.id);
   };
@@ -639,6 +641,7 @@ function App() {
               <div style={{ marginBottom: 6 }}><b>註記</b>：事件的追加備註，多筆用 <code>|</code> 分隔，以 12px 小字（前綴▸）逐筆顯示，與說明有所區別。</div>
               <div><b>連結</b>：每筆寫成 <code>名稱,網址</code>，多筆用 <code>|</code> 分隔；點擊一律開新視窗。</div>
               <div style={{ marginTop: 6 }}><b>{STORY_LABEL}</b>：短篇故事（可換行）。有填寫時，卡片會出現「閱讀{STORY_LABEL}」按鈕，點擊以頁內視窗閱讀；留空則不顯示按鈕。</div>
+              <div style={{ marginTop: 6 }}><b>{AFTER_LABEL}</b>：顯示於{STORY_LABEL}內文最後的後記（可換行），以分隔線與斜體淡色呈現。</div>
             </div>
           )}
         </div>
@@ -753,8 +756,8 @@ function App() {
                           </div>
                         )}
 
-                        {e.story && e.story.trim() && (
-                          <button className="tl-btn" style={{ marginTop: 10, padding: "6px 10px", borderColor: accent, color: accent }} onClick={() => setStory({ title: e.title, text: e.story })}>
+                        {((e.story && e.story.trim()) || (e.afterword && e.afterword.trim())) && (
+                          <button className="tl-btn" style={{ marginTop: 10, padding: "6px 10px", borderColor: accent, color: accent }} onClick={() => setStory({ title: e.title, text: e.story, afterword: e.afterword })}>
                             <BookOpen size={14} /> 閱讀{STORY_LABEL}
                           </button>
                         )}
@@ -808,7 +811,13 @@ function App() {
               <button className="tl-btn" onClick={() => setStory(null)}><X size={14} /> 關閉</button>
             </div>
             <div style={{ padding: "20px 22px", overflowY: "auto" }}>
-              <div style={{ fontSize: T.md, lineHeight: 1.9, whiteSpace: "pre-wrap", color: "var(--ink)" }}>{story.text}</div>
+              {story.text && story.text.trim() && <div style={{ fontSize: T.md, lineHeight: 1.9, whiteSpace: "pre-wrap", color: "var(--ink)" }}>{story.text}</div>}
+              {story.afterword && story.afterword.trim() && (
+                <div style={{ marginTop: (story.text && story.text.trim()) ? 24 : 0, paddingTop: (story.text && story.text.trim()) ? 16 : 0, borderTop: (story.text && story.text.trim()) ? "1px solid var(--line)" : "none" }}>
+                  <div style={{ fontSize: T.xs, color: "var(--muted)", fontWeight: 600, letterSpacing: ".08em", marginBottom: 8 }}>{AFTER_LABEL}</div>
+                  <div style={{ fontSize: T.sm, lineHeight: 1.85, whiteSpace: "pre-wrap", color: "var(--muted)", fontStyle: "italic" }}>{story.afterword}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -885,6 +894,10 @@ function EventCardForm({ e, chars, onUpdate, onDelete, onDone, T }) {
       <div>
         <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>{STORY_LABEL}（短篇故事；填了才會在卡片顯示閱讀按鈕）</div>
         <textarea className="ed-field" value={e.story || ""} onChange={(ev) => onUpdate(e.id, { story: ev.target.value })} placeholder="在此填寫短篇故事…（留空則不顯示按鈕）" rows={4} style={{ width: "100%", resize: "vertical", lineHeight: 1.6 }} />
+      </div>
+      <div>
+        <div style={{ fontSize: 13, color: "var(--muted)", marginBottom: 4 }}>{AFTER_LABEL}（顯示於{STORY_LABEL}內文最後，可換行）</div>
+        <textarea className="ed-field" value={e.afterword || ""} onChange={(ev) => onUpdate(e.id, { afterword: ev.target.value })} placeholder="在此填寫後記…" rows={3} style={{ width: "100%", resize: "vertical", lineHeight: 1.6, fontStyle: "italic" }} />
       </div>
       <button className="tl-btn danger" onClick={onDelete} style={{ justifyContent: "center", marginTop: 2 }}><Trash size={14} /> 刪除此事件</button>
     </div>
