@@ -106,16 +106,16 @@ function parseLinks(v) {
   if (Array.isArray(v)) return v.filter((l) => l && l.url).map((l) => ({ name: String(l.name || "").trim(), url: String(l.url).trim() }));
   const s = String(v ?? "").trim();
   if (!s) return [];
-  return s.split(/[\r\n]+/).map((part) => {
+  return s.split(/[|\r\n]+/).map((part) => {
     const t = part.trim();
     if (!t) return null;
-    const i = t.indexOf("|");
+    const i = t.indexOf(",");
     if (i >= 0) return { name: t.slice(0, i).trim(), url: t.slice(i + 1).trim() };
     return { name: "", url: t };
   }).filter((l) => l && l.url);
 }
 function linksToStr(arr) {
-  return (arr || []).filter((l) => l && l.url).map((l) => (l.name ? `${l.name}|${l.url}` : l.url)).join("\n");
+  return (arr || []).filter((l) => l && l.url).map((l) => `${l.name || ""},${l.url}`).join("|");
 }
 // 顏色：把多個關聯角色的代表色混成中間色 / 做成漸層
 function hexToRgb(h) {
@@ -624,7 +624,7 @@ function App() {
               <div style={{ marginBottom: 6 }}><b>角色（關聯）</b>：可多個，用「、」分隔；以小標籤顯示在卡片最下方。年齡則一律列出全部角色。</div>
               <div style={{ marginBottom: 6 }}><b>說明</b>：可換行，照原樣顯示。</div>
               <div style={{ marginBottom: 6 }}><b>註記</b>：事件的追加備註，<b>每行一條</b>，以 12px 小字（前綴▸）顯示，與說明有所區別。</div>
-              <div><b>連結</b>：每筆寫成 <code>名稱|網址</code>，多筆用<b>換行</b>分隔；點擊一律開新視窗。</div>
+              <div><b>連結</b>：每筆寫成 <code>名稱,網址</code>，多筆用 <code>|</code> 分隔；點擊一律開新視窗。</div>
             </div>
           )}
         </div>
