@@ -641,7 +641,7 @@ function App() {
               <div style={{ marginBottom: 6 }}><b>註記</b>：事件的追加備註，多筆用 <code>|</code> 分隔，以 12px 小字（前綴▸）逐筆顯示，與說明有所區別。</div>
               <div><b>連結</b>：每筆寫成 <code>名稱,網址</code>，多筆用 <code>|</code> 分隔；點擊一律開新視窗。</div>
               <div style={{ marginTop: 6 }}><b>{STORY_LABEL}</b>：短篇故事（可換行）。有填寫時，卡片會出現「閱讀{STORY_LABEL}」按鈕，點擊以頁內視窗閱讀；留空則不顯示按鈕。</div>
-              <div style={{ marginTop: 6 }}><b>{AFTER_LABEL}</b>：顯示於{STORY_LABEL}內文最後的後記（可換行），以分隔線與斜體淡色呈現。</div>
+              <div style={{ marginTop: 6 }}><b>{AFTER_LABEL}</b>：顯示於{STORY_LABEL}內文最後的後記（可換行），以分隔線與斜體淡色呈現（標題為🖋️）。</div>
             </div>
           )}
         </div>
@@ -814,7 +814,7 @@ function App() {
               {story.text && story.text.trim() && <div style={{ fontSize: T.md, lineHeight: 1.9, whiteSpace: "pre-wrap", color: "var(--ink)" }}>{story.text}</div>}
               {story.afterword && story.afterword.trim() && (
                 <div style={{ marginTop: (story.text && story.text.trim()) ? 24 : 0, paddingTop: (story.text && story.text.trim()) ? 16 : 0, borderTop: (story.text && story.text.trim()) ? "1px solid var(--line)" : "none" }}>
-                  <div style={{ fontSize: T.xs, color: "var(--muted)", fontWeight: 600, letterSpacing: ".08em", marginBottom: 8 }}>{AFTER_LABEL}</div>
+                  <div title={AFTER_LABEL} aria-label={AFTER_LABEL} style={{ fontSize: T.lg, marginBottom: 8, lineHeight: 1 }}>🖋️</div>
                   <div style={{ fontSize: T.sm, lineHeight: 1.85, whiteSpace: "pre-wrap", color: "var(--muted)", fontStyle: "italic" }}>{story.afterword}</div>
                 </div>
               )}
