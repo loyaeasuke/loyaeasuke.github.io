@@ -4,21 +4,21 @@
 
 | 檔案 | 用途 |
 | --- | --- |
-| `PC資料庫工具.html` | 編輯／預覽用。匯入PC資料包、預覽、匯出資料包／純檢視網頁 |
+| `coc6th-pc-roster.html` | 編輯／預覽用。匯入PC資料包、預覽、匯出資料包／純檢視網頁 |
 | `PC範本.csv` | CSV 範本，直接改成自己的資料 |
-| `示範_純檢視版.html` | 匯出成品的樣子（圖片是佔位圖，可直接刪掉） |
+| `coc6th-pc-roster-demo.html` | 匯出成品的樣子（圖片是佔位圖，可直接刪掉） |
 
 ## 流程
 
 1. 用 Excel／Google 試算表／記事本編輯 `PC範本.csv`
-2. 把 CSV 和 `PC資料庫工具.html`、`images/` 資料夾放在同一層
-3. 用瀏覽器打開 `PC資料庫工具.html` → **匯入PC資料包**（可選 `.csv` 或工具匯出的 `.zip` 資料包）→ 預覽（也可以直接按「＋ 新增PC」在網頁上加人，見下方章節）
+2. 把 CSV 和 `coc6th-pc-roster.html`、`images/` 資料夾放在同一層
+3. 用瀏覽器打開 `coc6th-pc-roster.html` → **匯入PC資料包**（可選 `.csv` 或工具匯出的 `.zip` 資料包）→ 預覽（也可以直接按「＋ 新增PC」在網頁上加人，見下方章節）
 4. （本機圖片沒顯示時）按 **載入圖片資料夾**，選 `images/`
 5. 按 **匯出純檢視網頁** → 得到一份沒有任何按鈕的成品 HTML
 
 ```
 我的PC資料庫/
-├─ PC資料庫工具.html
+├─ coc6th-pc-roster.html
 ├─ PC範本.csv
 └─ images/
    ├─ axel_icon.png
