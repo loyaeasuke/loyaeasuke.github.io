@@ -17,7 +17,8 @@
   --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
   --sans:"Noto Sans TC","Hiragino Sans","Microsoft JhengHei",system-ui,sans-serif;
   --mono:"Space Mono","Noto Sans TC",monospace;
-  --sidebar-w:284px;
+  --sidebar-w:268px;
+  --topbar-h:52px;
   /* 全站字級基準：最小 13px */
   --fs-min:13px; --fs-sm:13px; --fs-base:15px; --fs-md:14px;
 }
@@ -35,7 +36,7 @@ a{color:inherit}
 
 /* ── 工具列（匯出純檢視版會移除） ─────────────────── */
 #toolbar{
-  position:sticky;top:0;z-index:60;display:flex;flex-wrap:wrap;gap:9px;align-items:center;
+  position:fixed;top:0;left:0;right:0;z-index:60;display:flex;flex-wrap:wrap;gap:9px;align-items:center;
   padding:10px 16px;background:var(--ink);color:#e7e9f2;border-bottom:1px solid #05060c;
 }
 #toolbar .brand{
@@ -64,13 +65,12 @@ a{color:inherit}
 #toolbar .title-input:focus{outline:none;border-color:rgba(var(--accent-rgb),.6);background:var(--ink-3)}
 
 /* ── 版面骨架 ─────────────────────────────────── */
-#app{display:flex;min-height:calc(100vh - 48px)}
+#app{display:block}
 #sidebar{
-  width:var(--sidebar-w);flex:none;background:var(--ink);color:#cfd5e6;
-  border-right:1px solid #05060c;display:flex;flex-direction:column;position:sticky;top:48px;
-  height:calc(100vh - 48px);
+  position:fixed;top:var(--topbar-h);left:0;bottom:0;width:var(--sidebar-w);z-index:50;
+  background:var(--ink);color:#cfd5e6;border-right:1px solid #05060c;display:flex;flex-direction:column;
 }
-body.exported #sidebar{top:0;height:100vh}
+body.exported{--topbar-h:0px}
 .sb-top{padding:16px 15px 12px;border-bottom:1px solid var(--ink-line)}
 .sb-title{
   font-family:var(--serif);font-weight:700;font-size:15px;letter-spacing:.14em;color:#efeaf9;
@@ -111,7 +111,7 @@ body.exported #sidebar{top:0;height:100vh}
 .item .rd{display:block;font-family:var(--mono);font-size:var(--fs-min);color:#7b83a0;letter-spacing:.04em}
 
 /* ── 右側主區 ─────────────────────────────────── */
-#main{flex:1;min-width:0;position:relative}
+#main{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:calc(100vh - var(--topbar-h));min-width:0;position:relative}
 .wrap{max-width:1120px;margin:0 auto;padding:30px 34px 70px;position:relative;z-index:1}
 
 /* 縮圖展示頁 */
@@ -135,14 +135,14 @@ body.exported #sidebar{top:0;height:100vh}
 }
 .gp-card .pic{
   width:100%;aspect-ratio:1;border-radius:4px;overflow:hidden;position:relative;
-  background:var(--cc,#cdbfe0);border:1px solid var(--hair-2);
+  background:var(--card-2);background:color-mix(in srgb,var(--cc,#8a7fa8) 12%,#fff);border:1px solid var(--hair-2);
   box-shadow:0 2px 10px rgba(20,22,40,.1);
   transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .16s,border-color .16s;
   will-change:transform;
 }
 .gp-card:hover .pic{transform:translateY(-6px);border-color:var(--cc,var(--accent));box-shadow:0 0 0 2px rgba(var(--accent-rgb),.18),0 10px 20px rgba(20,22,40,.18)}
 .gp-card .pic img{width:100%;height:100%;object-fit:cover}
-.gp-card .pic .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--serif);font-weight:700;font-size:52px;color:#fff;text-shadow:0 1px 5px rgba(0,0,0,.28)}
+.gp-card .pic .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--serif);font-weight:900;font-size:52px;color:var(--cc,#8a7fa8);color:color-mix(in srgb,var(--cc,#8a7fa8) 46%,#fff)}
 .gp-card .nm{font-family:var(--serif);font-weight:700;font-size:16px;line-height:1.3;color:var(--cc,var(--text));text-align:center;margin-top:2px}
 .gp-card .rd{font-family:var(--mono);font-size:var(--fs-min);color:var(--text-dim);min-height:1em;letter-spacing:.03em;text-align:center}
 .gp-card .mg{font-size:var(--fs-min);color:var(--text-mid);text-align:center;line-height:1.35}
@@ -165,39 +165,70 @@ body.exported #sidebar{top:0;height:100vh}
 @media (prefers-reduced-motion:reduce){#charWM{transition:none}}
 .sheet>*{position:relative;z-index:1}
 
-.dh{display:flex;gap:20px;align-items:flex-start;border-bottom:2px solid var(--accent);padding-bottom:16px;margin-bottom:24px}
-.dh-av{width:104px;height:104px;flex:none;border-radius:4px;overflow:hidden;border:1px solid var(--hair-2);
-  background:var(--accent);box-shadow:0 2px 8px rgba(20,22,40,.1)}
+/* 詳情標頭：頭像 + 全身圖連結 + 差分（右） */
+.dh{display:flex;gap:20px;align-items:flex-start;border-bottom:2px solid var(--accent);padding-bottom:16px;margin-bottom:20px}
+.dh-avcol{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
+.dh-av{width:112px;height:112px;border-radius:4px;overflow:hidden;border:1px solid var(--hair-2);
+  background:var(--card-2);background:color-mix(in srgb,var(--accent) 12%,#fff);box-shadow:0 2px 8px rgba(20,22,40,.1)}
 .dh-av img{width:100%;height:100%;object-fit:cover}
-.dh-av .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--serif);font-weight:700;font-size:46px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.25)}
-.dh-main{flex:1;min-width:0}
-.dh .cat{font-family:var(--mono);font-size:var(--fs-sm);letter-spacing:.24em;color:var(--accent-ink);text-transform:uppercase;margin-bottom:7px}
-.dh h1{font-family:var(--serif);font-weight:900;font-size:33px;letter-spacing:.06em;margin:0;line-height:1.15;color:var(--accent-ink)}
-.dh .rd{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text-mid);letter-spacing:.1em;margin-top:5px}
-.dh .mg{font-family:var(--serif);font-size:var(--fs-md);color:var(--text-mid);margin-top:3px;font-style:italic}
-.dh .meta{display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:14px}
-.dh .meta .m{font-size:var(--fs-sm);color:var(--text-mid);background:var(--card-2);border:1px solid var(--hair);border-radius:2px;padding:3px 9px}
-.dh .meta .m b{color:var(--text);font-weight:700}
-.dh .meta .m.hl{background:rgba(var(--accent-rgb),.12);border-color:rgba(var(--accent-rgb),.4);color:var(--accent-ink)}
-.dh .meta .m.hl b{color:var(--accent-ink)}
+.dh-av .ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--serif);font-weight:900;font-size:50px;color:var(--accent-ink)}
+.viewfull{font-size:var(--fs-min);color:var(--accent-ink);background:none;border:none;cursor:pointer;padding:2px 4px;text-decoration:underline;text-underline-offset:2px}
+.viewfull:hover{color:var(--accent)}
+.dh-variants{flex:1;min-width:0}
+.dh-variants .dv-lb{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.14em;color:var(--text-mid);margin-bottom:7px}
+.dh-variants .dv-imgs{display:flex;flex-wrap:wrap;gap:8px}
+.dh-variants .dv-imgs img{width:88px;height:88px;object-fit:cover;border-radius:3px;border:1px solid var(--hair-2);cursor:pointer;background:color-mix(in srgb,var(--accent) 10%,#fff);transition:border-color .14s}
+.dh-variants .dv-imgs img:hover{border-color:var(--accent)}
 
-/* 詳情兩欄：左＝身分/故事/關係，右＝特技/藏書 */
+/* 上排：基本資料 | 魔力 | 特技表 */
+.dtop{display:grid;grid-template-columns:minmax(0,232px) auto minmax(0,1fr);gap:26px;align-items:start;margin-bottom:22px}
+@media (max-width:1040px){.dtop{grid-template-columns:1fr;gap:22px}}
+.dtop-info{min-width:0}
+.dtop-info .bi-nrow{display:flex;align-items:baseline;flex-wrap:wrap;gap:9px}
+.dtop-info .bi-name{font-family:var(--serif);font-weight:900;font-size:30px;letter-spacing:.05em;line-height:1.12;margin:0;color:var(--accent-ink)}
+.dtop-info .bi-cat{font-size:var(--fs-min);font-weight:700;letter-spacing:.06em;color:#fff;background:var(--accent);border-radius:3px;padding:2px 9px}
+.dtop-info .bi-read{font-family:var(--mono);font-size:var(--fs-sm);color:var(--text-mid);letter-spacing:.08em;margin-top:6px}
+.dtop-info .bi-magic{font-family:var(--serif);font-size:var(--fs-md);color:var(--text-mid);font-style:italic;margin-top:4px;line-height:1.4}
+.dtop-info .bi-meta{display:flex;flex-direction:column;gap:3px;margin-top:11px}
+.dtop-info .bi-m{font-size:var(--fs-sm);color:var(--text-mid)}
+.dtop-info .bi-m b{color:var(--text);font-weight:700}
+.dtop-info .bi-stats{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}
+.bstat{flex:1 1 0;min-width:56px;display:flex;flex-direction:column;align-items:center;background:var(--accent);border-radius:3px;padding:6px 4px}
+.bstat .k{font-family:var(--mono);font-size:var(--fs-min);color:rgba(255,255,255,.85)}
+.bstat .v{font-family:var(--serif);font-weight:900;font-size:20px;line-height:1.1;color:#fff}
+.dtop-skill{min-width:0}
+.dtop-skill>.sec{margin:0}
+.dtop-mana{justify-self:start}
+
+/* 魔力／臨時魔力 直向菱形 widget */
+.mana-wid{display:inline-flex;flex-direction:column;border:1px solid var(--hair-2);border-radius:4px;overflow:hidden;background:var(--card)}
+.mana-cols{display:flex}
+.mana-col{width:64px;display:flex;flex-direction:column;align-items:center}
+.mana-col+.mana-col{border-left:1px solid var(--hair-2)}
+.mana-h{width:100%;text-align:center;font-size:var(--fs-min);font-weight:700;color:#e9e7f0;background:#3a3d47;padding:5px 2px;line-height:1.25}
+.mana-n{font-family:var(--serif);font-weight:900;font-size:20px;padding:5px 0 3px;color:var(--text)}
+.mana-dias{display:flex;flex-direction:column;align-items:center;gap:5px;padding:5px 0 11px}
+.dia{width:13px;height:13px;transform:rotate(45deg);border:1.6px solid #6a7fb0;background:transparent;border-radius:2px}
+.mana-col.temp .dia{border-color:#c08a4a}
+.dia.fill{background:#1c1e27;border-color:#1c1e27}
+.dia.over{background:var(--accent-ink);border-color:var(--accent-ink)}
+.mana-max{border-top:1px solid var(--hair-2)}
+.mana-max .mm-lb{text-align:center;font-size:var(--fs-min);font-weight:700;color:#e9e7f0;background:#3a3d47;padding:4px 0}
+.mana-max .mm-v{text-align:center;font-family:var(--serif);font-weight:900;font-size:24px;color:var(--accent-ink);padding:5px 0 8px}
+
+/* 義務對象下拉 */
+.duty-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.duty-row .lb{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.12em;color:var(--text-mid)}
+.duty-row select{font-family:inherit;font-size:var(--fs-sm);padding:4px 9px;border:1px solid var(--hair-2);border-radius:2px;background:#fff;color:var(--text)}
+.duty-row select:disabled{background:var(--card-2);color:var(--text);opacity:1}
+.duty-warn{font-size:var(--fs-min);color:#b05a5a}
+
+/* 詳情下排兩欄：左＝故事/關係，右＝魂/藏書 */
 .dbody{display:grid;grid-template-columns:340px minmax(0,1fr);gap:8px 36px;align-items:start}
 @media (max-width:1000px){.dbody{grid-template-columns:1fr;gap:0}}
 .dcol{min-width:0}
 .dcol-left>.sec:first-child,.dcol-right>.sec:first-child{margin-top:0}
 
-/* 能力數值 */
-.stats{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 9px}
-.stats.sub{margin-bottom:24px}
-.stats .stat{flex:1 1 0}
-.stat{background:var(--card);border:1px solid var(--hair);border-radius:3px;padding:9px 10px;text-align:center;min-width:64px}
-.stat .k{font-family:var(--mono);font-size:var(--fs-min);letter-spacing:.1em;color:var(--text-dim)}
-.stat .v{font-family:var(--serif);font-weight:900;font-size:24px;line-height:1.1;color:var(--text);margin-top:1px}
-.stat.big{background:var(--accent);border-color:var(--accent)}
-.stat.big .k{color:rgba(255,255,255,.82)}
-.stat.big .v{color:#fff}
-.stat.sm .v{font-size:19px}
 
 
 /* 區塊 */
@@ -442,17 +473,18 @@ body.exported .flaw-box{pointer-events:none}
    內建示範 CSV（＝範本內容，單一來源）
    ══════════════════════════════════════════════════ */
 var DEMO = {};
-DEMO["角色.csv"] = `分類,偽名,拼音,魔法名,PL,代表色,頭像,全身圖,差分,性別,年齡,階梯數,階梯名,攻擊力,防禦力,根源力,魔力,臨時魔力,最大值,功績點,經歷,經歷信條,機關,機關信條,表面身分,領域,疵,判定特技,魂之特技,魂之特技判定,魂之特技備註,習得特技,真實之姿,真實之姿效果,真實之姿說明,個性,義務對象,義務願望,藏書,初期背景設定,追加設定,台詞
-戶口,明星 紫名,アカボシ シナ,ディバイン・ゾディアク-Divine Zodiac-／神諭星座,洛雅,#9280A4,images/shina_icon.png,images/shina_full.png,,女,614,4,哲人,4,4,4,0,0,4,,書警,阻止魔法災厄,戶口,盡可能溫和地解決事件,圖書館司書,星,,寂靜,星座審判,6,魔力1消費,"寂靜
+DEMO["角色.csv"] = `分類,偽名,拼音,魔法名,PL,代表色,頭像,全身圖,差分,性別,年齡,階梯數,階梯名,攻擊力,防禦力,根源力,魔力,臨時魔力,最大值,功績點,經歷,經歷信條,機關,機關信條,表面身分,領域,疵,判定特技,魂之特技,魂之特技判定,魂之特技備註,習得特技,真實之姿,真實之姿效果,真實之姿說明,個性,義務對象,義務願望,錨點,藏書,初期背景設定,追加設定,台詞
+戶口,明星 紫名,アカボシ シナ,ディバイン・ゾディアク-Divine Zodiac-／神諭星座,洛雅,#9280A4,images/shina_icon.png,images/shina_full.png,,女,614,4,哲人,4,4,4,6,0,4,,書警,阻止魔法災厄,戶口,盡可能溫和地解決事件,圖書館司書,星,,寂靜,星座審判,6,魔力1消費,"寂靜
 大地
 光
 物語
-祈禱",幽暗星海的天秤,魔力解放,"顯露真身時，背後浮現無盡的幽暗星海與一座衡量命運的巨大天秤。","性格冷靜，不太多話，但認為溝通是必要的，所以會好好想辦法表達自己的想法與傳達任務。",,,緊急召喚|魔劍召喚※|火花|書刑|約定|流砂|嘆願,"曾經隸屬圓桌的書警，從外顯個性上看不出來的戰鬥狂。在一次的禁書討伐中失利，分科會崩潰且喪失一名錨點後退出圓桌，轉而進入戶口支援與人界相關的處理業務。對一線作戰有點提不起勁，若真有必要還是會前往支援組成分科會，畢竟大法典終年人手不足。",,
-圓桌,初見 蒼衣,ハツミ アオイ,スターゲイザー-Stargazer-／觀星之瞳,範例PL,#4C8FB0,,,,女,19,3,實踐者,3,3,3,0,0,3,,學徒,精進學業,圓桌,討伐禁書,天文社社員,力,,光,無,,,"光
+祈禱",幽暗星海的天秤,魔力解放,顯露真身時，背後浮現無盡的幽暗星海與一座衡量命運的巨大天秤。,性格冷靜，不太多話，但認為溝通是必要的，所以會好好想辦法表達自己的想法與傳達任務。,神代 皐,找回過去失去的羈絆,"神代 皐:3:血緣:百年前交好的人類友人的子孫。把紫名當成小妹妹，但有些脫線，時常處於被紫名訓話的立場。過去事件結識的錨點。
+緋色 月:創傷:興趣:曾經夢想成為天文學家。受到魔法災厄波及而死亡。",緊急召喚|魔劍召喚※|火花|書刑|約定|流砂|嘆願,曾經隸屬圓桌的書警，從外顯個性上看不出來的戰鬥狂。在一次的禁書討伐中失利，分科會崩潰且喪失一名錨點後退出圓桌，轉而進入戶口支援與人界相關的處理業務。對一線作戰有點提不起勁，若真有必要還是會前往支援組成分科會，畢竟大法典終年人手不足。,,
+圓桌,初見 蒼衣,ハツミ アオイ,スターゲイザー-Stargazer-／觀星之瞳,範例PL,#4C8FB0,,,,女,19,3,實踐者,3,3,3,11,2,3,,學徒,精進學業,圓桌,討伐禁書,天文社社員,力,,光,,,,"光
 水
 物語
 希望
-大地",灼熱的獅子王,追加傷害,"真身現形時，化作被烈焰包覆的獅子，象徵不服輸的熾熱意志。","開朗好奇，總想弄懂魔法背後的原理，遇到難題會兩眼發光。",紫名,想成為能獨當一面的魔法使,緊急召喚|火花|流砂|嘆願|約定,"這是一名以「第三階梯・實踐者」預設值製作的範例角色（攻/防/根源皆 3，除緊急召喚外習得 4 個魔法），示範資料庫如何共用魔法、經歷、機關等 CSV。可自由刪除或改寫。",,總有一天，我要看遍所有星星背後的故事。`;
+大地",灼熱的獅子王,追加傷害,真身現形時，化作被烈焰包覆的獅子，象徵不服輸的熾熱意志。,開朗好奇，總想弄懂魔法背後的原理，遇到難題會兩眼發光。,明星 紫名,想成為能獨當一面的魔法使,明星 紫名:2:尊敬:亦師亦友的前輩魔法使，蒼衣憧憬並追趕的目標。,緊急召喚|火花|流砂|嘆願|約定,這是一名以「第三階梯・實踐者」預設值製作的範例角色（攻/防/根源皆 3，除緊急召喚外習得 4 個魔法），示範資料庫如何共用魔法、經歷、機關等 CSV。可自由刪除或改寫。,,總有一天，我要看遍所有星星背後的故事。`;
 
 DEMO["特技.csv"] = `領域,骰值,特技名
 星,2,黃金
@@ -570,9 +602,6 @@ DEMO["魔素.csv"] = `魔素,圖片路徑
 全,images/mana_all.png
 無,images/mana_none.png`;
 
-DEMO["錨點關係.csv"] = `角色,錨點名,命運,屬性,設定
-明星 紫名,神代 皐,3,血緣,百年前交好的人類友人的子孫。把紫名當成小妹妹，但有些脫線，時常處於被紫名訓話的立場。過去事件結識的錨點。
-明星 紫名,緋色 月,創傷,興趣,曾經夢想成為天文學家。受到魔法災厄波及而死亡。`;
 
 /* 錨點下拉選單值 */
 var FATE_OPTS = ["1","2","3","4","5","創傷"];
@@ -623,7 +652,7 @@ function objectsToCSV(head,objs){
    狀態
    ══════════════════════════════════════════════════ */
 var state={
-  chars:[], skillGrid:{}, exp:{}, org:{}, trueforms:{}, spells:{}, anchors:{}, ranks:{}, mana:{},
+  chars:[], skillGrid:{}, exp:{}, org:{}, trueforms:{}, spells:{}, ranks:{}, mana:{},
   title:"魔道書大戰 魔法使名冊", cur:null
 };
 var imgURLs={}, imgFiles={};
@@ -633,7 +662,7 @@ function buildFromCSV(files){
   var g=function(n){return files[n]!=null?files[n]:DEMO[n];};
   /* 保留原始 CSV 文字，讓匯出／範本能保存使用者載入的參照資料庫 */
   state.rawCSV={};
-  ["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv","錨點關係.csv"].forEach(function(n){ state.rawCSV[n]=g(n); });
+  ["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv"].forEach(function(n){ state.rawCSV[n]=g(n); });
   state.chars = csvToObjects(g("角色.csv"));
 
   /* 特技表 → grid[領域][骰值]=特技名 */
@@ -654,15 +683,17 @@ function buildFromCSV(files){
   state.trueforms={}; csvToObjects(g("真實之姿.csv")).forEach(function(r){ state.trueforms[String(r["效果"]).trim()]=r; });
   state.spells={}; csvToObjects(g("藏書_魔法.csv")).forEach(function(r){ state.spells[String(r["魔法名"]).trim()]=r; });
   state.mana={}; csvToObjects(g("魔素.csv")).forEach(function(r){ var k=String(r["魔素"]).trim(); if(k)state.mana[k]=String(r["圖片路徑"]||"").trim(); });
+}
 
-  state.anchors={};
-  csvToObjects(g("錨點關係.csv")).forEach(function(r){
-    var key=String(r["角色"]).trim();
-    (state.anchors[key]=state.anchors[key]||[]).push({
-      name:String(r["錨點名"]).trim(), fate:String(r["命運"]).trim(),
-      attr:String(r["屬性"]).trim(), setting:String(r["設定"]).trim()
-    });
+/* 錨點：存於角色.csv 的「錨點」欄，每列一個 "錨點名:命運:屬性:設定" */
+function parseAnchors(c){
+  return String(c["錨點"]||"").split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean).map(function(line){
+    var p=line.split(":");
+    return {name:(p[0]||"").trim(), fate:(p[1]||"").trim(), attr:(p[2]||"").trim(), setting:p.slice(3).join(":").trim()};
   });
+}
+function serializeAnchors(arr){
+  return arr.map(function(a){return [a.name,a.fate,a.attr,a.setting].join(":");}).join("\n");
 }
 
 /* 解析習得特技欄：每列一個特技名（可選 "特技名:備註"） */
@@ -917,8 +948,8 @@ function expOrgHTML(c){
 }
 
 function anchorsHTML(c){
-  var key=charKey(c);
-  var list=state.anchors[key]||[];
+  var list=parseAnchors(c);
+  var exported=document.body.classList.contains('exported');
   var h='';
   list.forEach(function(a,idx){
     var trauma=(a.fate==="創傷");
@@ -926,9 +957,10 @@ function anchorsHTML(c){
        '<span class="an">'+esc(a.name||"（未命名錨點）")+'</span>'+
        (a.fate?'<span class="chip fate'+(trauma?' trauma':'')+'">命運 '+esc(a.fate)+'</span>':'')+
        (a.attr?'<span class="chip attr">'+esc(a.attr)+'</span>':'')+
-       '<button class="del" title="刪除錨點" data-del="'+idx+'">×</button></div>'+
+       (exported?'':'<button class="del" title="刪除錨點" data-del="'+idx+'">×</button>')+'</div>'+
        (a.setting?'<div class="set">'+esc(a.setting)+'</div>':'')+'</div>';
   });
+  if(exported) return h || '<p class="prose mid">（無錨點）</p>';
   /* 編輯器 */
   var fateOpts=FATE_OPTS.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('');
   var attrOpts=ATTR_OPTS.map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+'</option>';}).join('');
@@ -1045,6 +1077,49 @@ function setWatermark(c){
   if(art){ wm.style.backgroundImage='url("'+art+'")'; wm.classList.add('on'); }
   else{ wm.style.backgroundImage='none'; wm.classList.remove('on'); }
 }
+/* 魔力／臨時魔力：直向菱形，由上往下填黑；超過 10 則頂端轉代表色深色版 */
+function manaColHTML(label,valStr,kind){
+  var v=parseInt(valStr,10); if(isNaN(v))v=0; if(v<0)v=0;
+  var N=10, cells='';
+  for(var i=0;i<N;i++){
+    var cls='dia';
+    if(v>N){ var ov=Math.min(v-N,N); if(i<ov)cls+=' over'; else cls+=' fill'; }
+    else if(i<v){ cls+=' fill'; }
+    cells+='<span class="'+cls+'"></span>';
+  }
+  var num=(valStr==null||String(valStr).trim()==="")?"0":String(valStr).trim();
+  return '<div class="mana-col '+kind+'"><div class="mana-h">'+esc(label)+'</div>'+
+    '<div class="mana-n">'+esc(num)+'</div><div class="mana-dias">'+cells+'</div></div>';
+}
+function manaWidgetHTML(c){
+  return '<div class="mana-wid">'+
+    '<div class="mana-cols">'+
+      manaColHTML("魔力",c["魔力"],"main")+
+      manaColHTML("臨時魔力",c["臨時魔力"],"temp")+
+    '</div>'+
+    '<div class="mana-max"><div class="mm-lb">最大值</div><div class="mm-v">'+esc(c["最大值"]||"—")+'</div></div>'+
+  '</div>';
+}
+/* 義務對象：只能從錨點名選擇（下拉），不重複 */
+function dutyHTML(c){
+  var anchors=parseAnchors(c).map(function(a){return a.name;}).filter(Boolean);
+  var cur=String(c["義務對象"]||"").trim();
+  var wish=String(c["義務願望"]||"").trim();
+  if(!anchors.length && !cur && !wish) return "";
+  var exported=document.body.classList.contains('exported');
+  var opts=[]; var seen={};
+  if(cur && anchors.indexOf(cur)<0){ opts.push(cur); seen[cur]=1; }
+  anchors.forEach(function(o){ if(!seen[o]){ seen[o]=1; opts.push(o); } });
+  var sel='<select id="duty_target"'+(exported?' disabled':'')+'>'+
+    '<option value="">（未選）</option>'+
+    opts.map(function(o){return '<option value="'+esc(o)+'"'+(o===cur?' selected':'')+'>'+esc(o)+'</option>';}).join('')+
+    '</select>';
+  var warn=(cur && anchors.indexOf(cur)<0)?'<span class="duty-warn">※ 非錨點對象</span>':'';
+  return '<div class="sec"><div class="sec-h">義務</div><div class="card-block">'+
+    '<div class="duty-row"><span class="lb">對象</span>'+sel+warn+'</div>'+
+    (wish?'<div class="desc" style="margin-top:8px">願望：'+esc(wish)+'</div>':'')+
+  '</div></div>';
+}
 function renderDetail(c){
   var content=document.getElementById('content');
   var full=resolveImg(c["全身圖"]);
@@ -1054,64 +1129,61 @@ function renderDetail(c){
   var ageSex=[c["性別"],c["年齡"]?c["年齡"]+' 歲':''].filter(Boolean).join(' ／ ');
 
   var meta='';
-  if(c["PL"])meta+='<span class="m">PL <b>'+esc(c["PL"])+'</b></span>';
-  if(stairs)meta+='<span class="m"><b>'+stairs+'</b>'+(rk&&rk["英文"]&&rk["英文"]!=="—"?' <span style="color:var(--text-dim)">'+esc(rk["英文"])+'</span>':'')+'</span>';
-  if(ageSex)meta+='<span class="m">'+esc(ageSex)+'</span>';
-  if(c["表面身分"])meta+='<span class="m">表面身分 <b>'+esc(c["表面身分"])+'</b></span>';
+  if(ageSex)meta+='<span class="bi-m">'+esc(ageSex)+'</span>';
+  if(stairs)meta+='<span class="bi-m"><b>'+stairs+'</b>'+(rk&&rk["英文"]&&rk["英文"]!=="—"?' <span style="color:var(--text-dim)">'+esc(rk["英文"])+'</span>':'')+'</span>';
+  if(c["PL"])meta+='<span class="bi-m">PL '+esc(c["PL"])+'</span>';
+  if(c["表面身分"])meta+='<span class="bi-m">表面身分 '+esc(c["表面身分"])+'</span>';
 
-  var statsBig='<div class="stats">'+
-    '<div class="stat big"><div class="k">攻擊力</div><div class="v">'+esc(c["攻擊力"]||"—")+'</div></div>'+
-    '<div class="stat big"><div class="k">防禦力</div><div class="v">'+esc(c["防禦力"]||"—")+'</div></div>'+
-    '<div class="stat big"><div class="k">根源力</div><div class="v">'+esc(c["根源力"]||"—")+'</div></div>'+
-  '</div>';
-  var statsSub='<div class="stats sub">'+
-    '<div class="stat sm"><div class="k">魔力</div><div class="v">'+esc(c["魔力"]||"0")+'</div></div>'+
-    '<div class="stat sm"><div class="k">臨時魔力</div><div class="v">'+esc(c["臨時魔力"]||"0")+'</div></div>'+
-    '<div class="stat sm"><div class="k">最大值</div><div class="v">'+esc(c["最大值"]||"—")+'</div></div>'+
-    (c["功績點"]?'<div class="stat sm"><div class="k">功績點</div><div class="v">'+esc(c["功績點"])+'</div></div>':'')+
+  var statsRow='<div class="bi-stats">'+
+    '<div class="bstat"><span class="k">攻擊力</span><span class="v">'+esc(c["攻擊力"]||"—")+'</span></div>'+
+    '<div class="bstat"><span class="k">防禦力</span><span class="v">'+esc(c["防禦力"]||"—")+'</span></div>'+
+    '<div class="bstat"><span class="k">根源力</span><span class="v">'+esc(c["根源力"]||"—")+'</span></div>'+
+    (c["功績點"]?'<div class="bstat"><span class="k">功績點</span><span class="v">'+esc(c["功績點"])+'</span></div>':'')+
   '</div>';
 
-  var duty='';
-  if(String(c["義務對象"]||"").trim()||String(c["義務願望"]||"").trim()){
-    duty='<div class="sec"><div class="sec-h">義務</div><div class="card-block"><div class="desc">'+
-      (c["義務對象"]?'對象：<b>'+esc(c["義務對象"])+'</b>　':'')+(c["義務願望"]?'願望：'+esc(c["義務願望"]):'')+'</div></div></div>';
-  }
+  var basicInfo='<div class="dtop-info">'+
+    '<div class="bi-nrow"><h1 class="bi-name">'+esc(c["偽名"]||"未命名")+'</h1>'+
+      (c["分類"]?'<span class="bi-cat">'+esc(c["分類"])+'</span>':'')+'</div>'+
+    (c["拼音"]?'<div class="bi-read">'+esc(c["拼音"])+'</div>':'')+
+    (c["魔法名"]?'<div class="bi-magic">'+esc(c["魔法名"])+'</div>':'')+
+    (meta?'<div class="bi-meta">'+meta+'</div>':'')+
+    statsRow+
+  '</div>';
 
   var variants=String(c["差分"]||"").split("|").map(function(s){return resolveImg(s.trim());}).filter(Boolean);
-  var varHTML= variants.length? '<div class="sec"><div class="sec-h">立繪差分</div><div class="variants">'+
-      variants.map(function(u){return '<img src="'+esc(u)+'" alt="差分" data-full="'+esc(u)+'">';}).join('')+'</div></div>' : '';
-
   var avatarSrc=resolveImg(c["頭像"]);
   var avatarInner= avatarSrc ? '<img src="'+esc(avatarSrc)+'" alt="'+esc(c["偽名"]||"")+'">'
                              : '<span class="ph">'+esc(String(c["偽名"]||"?").trim().charAt(0))+'</span>';
 
+  var header='<div class="dh">'+
+    '<div class="dh-avcol">'+
+      '<div class="dh-av">'+avatarInner+'</div>'+
+      (full?'<button class="viewfull" data-full="'+esc(full)+'">檢視全身圖</button>':'')+
+    '</div>'+
+    (variants.length?'<div class="dh-variants"><div class="dv-lb">差分・點擊放大</div><div class="dv-imgs">'+
+      variants.map(function(u){return '<img src="'+esc(u)+'" alt="差分" data-full="'+esc(u)+'">';}).join('')+'</div></div>':'')+
+  '</div>';
+
   var leftCol=
-    statsBig+statsSub+
     '<div class="sec"><div class="sec-h">經歷・機關・真實之姿</div>'+expOrgHTML(c)+'</div>'+
     (c["個性"]?'<div class="sec"><div class="sec-h">個性</div><div class="prose">'+esc(c["個性"])+'</div></div>':'')+
     (c["初期背景設定"]?'<div class="sec"><div class="sec-h">初期背景設定</div><div class="prose mid">'+esc(c["初期背景設定"])+'</div></div>':'')+
     (c["追加設定"]?'<div class="sec"><div class="sec-h">跑團後追加設定</div><div class="prose mid">'+esc(c["追加設定"])+'</div></div>':'')+
-    duty+
+    dutyHTML(c)+
     '<div class="sec"><div class="sec-h">錨點關係</div>'+anchorsHTML(c)+'</div>'+
     (c["台詞"]?'<div class="sec"><div class="sec-h">台詞</div><blockquote class="prose" style="border-left:3px solid var(--accent);padding-left:14px;margin:0;font-style:italic">「'+esc(c["台詞"])+'」</blockquote></div>':'');
 
   var rightCol=
-    '<div class="sec"><div class="sec-h">特技表　SKILL TABLE</div>'+skillTableHTML(c)+'</div>'+
     '<div class="sec"><div class="sec-h">魂之特技</div>'+judgeListHTML(c)+'</div>'+
-    '<div class="sec"><div class="sec-h">藏書・魔法</div>'+spellsHTML(c)+'</div>'+
-    varHTML;
+    '<div class="sec"><div class="sec-h">藏書・魔法</div>'+spellsHTML(c)+'</div>';
 
   var html=''+
   '<div class="sheet">'+
-    '<div class="dh">'+
-      '<div class="dh-av">'+avatarInner+'</div>'+
-      '<div class="dh-main">'+
-        (c["分類"]?'<div class="cat">'+esc(c["分類"])+'</div>':'')+
-        '<h1>'+esc(c["偽名"]||"未命名")+'</h1>'+
-        (c["拼音"]?'<div class="rd">'+esc(c["拼音"])+'</div>':'')+
-        (c["魔法名"]?'<div class="mg">'+esc(c["魔法名"])+'</div>':'')+
-        '<div class="meta">'+meta+'</div>'+
-      '</div>'+
+    header+
+    '<div class="dtop">'+
+      basicInfo+
+      '<div class="dtop-mana">'+manaWidgetHTML(c)+'</div>'+
+      '<div class="dtop-skill"><div class="sec"><div class="sec-h">特技表　SKILL TABLE</div>'+skillTableHTML(c)+'</div></div>'+
     '</div>'+
     '<div class="dbody">'+
       '<div class="dcol dcol-left">'+leftCol+'</div>'+
@@ -1122,8 +1194,8 @@ function renderDetail(c){
   content.innerHTML=html;
   bindAnchorEditor(c);
   bindSkillControls(c);
-  content.querySelectorAll('.variants img').forEach(function(img){
-    img.addEventListener('click',function(){openLB(img.dataset.full);});
+  content.querySelectorAll('.dh-variants img, .viewfull').forEach(function(el){
+    el.addEventListener('click',function(){openLB(el.dataset.full);});
   });
 }
 
@@ -1146,14 +1218,17 @@ function bindSkillControls(c){
    錨點編輯器（含命運/屬性下拉選單）
    ══════════════════════════════════════════════════ */
 function bindAnchorEditor(c){
-  var key=charKey(c);
+  if(document.body.classList.contains('exported'))return;
   var content=document.getElementById('content');
   content.querySelectorAll('.anchor .del').forEach(function(btn){
     btn.addEventListener('click',function(){
       var i=parseInt(btn.dataset.del,10);
-      if(state.anchors[key]){ state.anchors[key].splice(i,1); renderDetail(c); }
+      var arr=parseAnchors(c); if(i>=0&&i<arr.length){ arr.splice(i,1); c["錨點"]=serializeAnchors(arr); renderDetail(c); }
     });
   });
+  /* 義務對象下拉：只能從錨點名選擇 */
+  var dt=document.getElementById('duty_target');
+  if(dt)dt.addEventListener('change',function(){ c["義務對象"]=dt.value; renderDetail(c); });
   var addBtn=document.getElementById('btnAddAnchor');
   var editor=document.getElementById('anchorEdit');
   if(addBtn&&editor){
@@ -1162,8 +1237,9 @@ function bindAnchorEditor(c){
     document.getElementById('ae_save').addEventListener('click',function(){
       var name=document.getElementById('ae_name').value.trim();
       if(!name){document.getElementById('ae_name').focus();return;}
-      var a={name:name,fate:document.getElementById('ae_fate').value,attr:document.getElementById('ae_attr').value,setting:document.getElementById('ae_set').value.trim()};
-      (state.anchors[key]=state.anchors[key]||[]).push(a);
+      var arr=parseAnchors(c);
+      arr.push({name:name,fate:document.getElementById('ae_fate').value,attr:document.getElementById('ae_attr').value,setting:document.getElementById('ae_set').value.trim()});
+      c["錨點"]=serializeAnchors(arr);
       renderDetail(c);
       setStatus('已為 <b>'+esc(name)+'</b> 加入錨點（記得匯出以保存）');
     });
@@ -1179,7 +1255,7 @@ document.getElementById('lb').addEventListener('click',function(){this.classList
 /* ══════════════════════════════════════════════════
    載入資料夾（多 CSV + 圖片）
    ══════════════════════════════════════════════════ */
-var CSV_NAMES=["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv","錨點關係.csv"];
+var CSV_NAMES=["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv"];
 function setStatus(html){var s=document.getElementById('status');if(s)s.innerHTML=html;}
 function bind(id,ev,fn){var e=document.getElementById(id);if(e)e.addEventListener(ev,fn);}
 
@@ -1245,14 +1321,14 @@ function makeZip(entries){
   return new Blob(all,{type:'application/zip'});
 }
 function charHeader(){
-  /* 角色 CSV 欄位＝所有角色鍵的聯集，並確保含「領域」「疵」 */
+  /* 角色 CSV 欄位＝所有角色鍵的聯集，並確保含必要欄位 */
   var seen={},head=[];
   state.chars.forEach(function(o){Object.keys(o).forEach(function(k){if(!seen[k]){seen[k]=1;head.push(k);}});});
-  ["領域","疵"].forEach(function(k){if(!seen[k]){head.push(k);seen[k]=1;}});
+  ["領域","疵","真實之姿效果","真實之姿說明","錨點"].forEach(function(k){if(!seen[k]){head.push(k);seen[k]=1;}});
   return head;
 }
 function currentCSVMap(){
-  /* 依當前狀態重建各 CSV：參照資料庫保留載入時的原文，角色/錨點用編輯後的狀態重建 */
+  /* 依當前狀態重建各 CSV：參照資料庫保留載入時的原文，角色（含錨點/義務）用編輯後的狀態重建 */
   var raw=state.rawCSV||{};
   var m={};
   ["特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv"].forEach(function(n){
@@ -1263,11 +1339,6 @@ function currentCSVMap(){
   }else{
     m["角色.csv"]=(raw["角色.csv"]!=null?raw["角色.csv"]:DEMO["角色.csv"]);
   }
-  var arows=[];
-  Object.keys(state.anchors).forEach(function(k){
-    state.anchors[k].forEach(function(a){arows.push({角色:k,錨點名:a.name,命運:a.fate,屬性:a.attr,設定:a.setting});});
-  });
-  m["錨點關係.csv"]=objectsToCSV(["角色","錨點名","命運","屬性","設定"],arows);
   return m;
 }
 bind('btnTemplate','click',function(){
@@ -1360,7 +1431,7 @@ function boot(){
     /* 匯出版：用內嵌 CSV + 圖庫 */
     if(exportData.__imglib__){ try{ var lib=JSON.parse(exportData.__imglib__); Object.keys(lib).forEach(function(k){imgURLs[k]=lib[k];}); }catch(e){} }
     var files={};
-    ["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv","錨點關係.csv"].forEach(function(n){ if(exportData[n]!=null)files[n]=exportData[n]; });
+    ["角色.csv","特技.csv","階梯.csv","經歷.csv","機關.csv","真實之姿.csv","藏書_魔法.csv","魔素.csv"].forEach(function(n){ if(exportData[n]!=null)files[n]=exportData[n]; });
     buildFromCSV(files);
     if(exportData.__title__){ state.title=exportData.__title__; try{document.title=state.title;}catch(e){} }
   }else{
