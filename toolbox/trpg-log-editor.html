@@ -240,6 +240,15 @@ button{font-family:inherit;cursor:pointer;color:inherit;}
 .plate .body:empty::after{
   content:"（此團錄尚未設定緩衝頁文字。）";color:var(--muted-2);font-style:italic;
 }
+.plate .carryover{
+  margin-top:18px;padding-top:16px;border-top:1px dashed var(--rule-strong);
+  font-family:var(--serif);font-size:15px;line-height:1.9;color:var(--ink-soft);
+  white-space:pre-wrap;word-break:break-word;
+}
+.plate .carryover .co-label{
+  display:inline-block;font-family:var(--sans);font-size:13px;font-weight:700;
+  letter-spacing:.08em;color:var(--accent-deep);margin-right:10px;
+}
 .reveal-btn{
   display:inline-flex;align-items:center;gap:14px;
   background:var(--accent);color:var(--on-accent);border:1px solid var(--accent-deep);
@@ -531,6 +540,7 @@ body.sty-forest .reveal-btn,body.sty-forest .mini-btn,body.sty-forest #viewStyle
           </div>
           <div class="field"><label>指定連結 <span class="hint">完整網址或相對路徑皆可，如 logs/219.html</span></label><input id="f_url" placeholder="https://…　或　219.html、logs/219.html" type="text"></div>
           <div class="field"><label>防劇透緩衝頁文字 <span class="hint">團務概要／防雷警告，可換行</span></label><textarea id="f_spoiler" placeholder="本團涉及重大劇情揭露，未參團者請斟酌閱讀……"></textarea></div>
+          <div class="field"><label>繼續角色 <span class="hint">本次 PC 承接自哪個劇本的角色，選填；填了才會顯示於緩衝頁</span></label><input id="f_carryover" placeholder="例：宮部良太 承接自《遺香繚繞》"></div>
           <div class="btn-row">
             <button type="submit" class="btn btn-primary" id="entrySubmit">新增團錄</button>
             <button type="button" class="btn btn-ghost" id="entryReset" style="display:none">取消編輯</button>
@@ -552,7 +562,7 @@ body.sty-forest .reveal-btn,body.sty-forest .mini-btn,body.sty-forest #viewStyle
       <div class="pane" id="pane-io">
         <div class="callout">
           <b>CSV 欄位順序：</b><br>
-          <code>分類, 連結名稱, 標題, KP, PL, 連結網址, 防劇透文字</code><br>
+          <code>分類, 連結名稱, 標題, KP, PL, 連結網址, 防劇透文字, 繼續角色</code><br>
           第一列為標題列（會被略過）。含逗號或換行的欄位請以雙引號包住。匯入會<b>附加</b>到現有資料。
         </div>
         <div class="field">
@@ -561,7 +571,7 @@ body.sty-forest .reveal-btn,body.sty-forest .mini-btn,body.sty-forest #viewStyle
         </div>
         <div class="field">
           <label>或直接貼上 CSV 內容</label>
-          <textarea id="csvPaste" style="font-family:var(--mono);font-size:13px" placeholder="分類,連結名稱,標題,KP,PL,連結網址,防劇透文字"></textarea>
+          <textarea id="csvPaste" style="font-family:var(--mono);font-size:13px" placeholder="分類,連結名稱,標題,KP,PL,連結網址,防劇透文字,繼續角色"></textarea>
           <div class="btn-row"><button class="btn btn-primary" id="btnImportPaste">匯入貼上的內容</button></div>
         </div>
         <div class="list-block" style="margin-top:24px">
@@ -642,7 +652,7 @@ body.sty-forest .reveal-btn,body.sty-forest .mini-btn,body.sty-forest #viewStyle
       +'<div class="byline">'+meta.join('')+'</div>'
       +'<div class="plate"><div class="plate-tab">概要 · 防雷</div>'
       +'<div class="warn">⚠ 閱讀前請注意</div>'
-      +'<div class="body">'+esc(e.spoiler||'').trim()+'</div></div>'
+      +'<div class="body">'+esc(e.spoiler||'').trim()+'</div>'+((e.carryover||'').trim()?'<div class="carryover"><span class="co-label">繼續角色</span>'+esc(e.carryover).trim()+'</div>':'')+'</div>'
       +'<button class="reveal-btn" id="revealBtn"><span class="seal">封</span>翻開此頁，顯示團錄內容</button></div>';
     fitTitle(document.querySelector(".buffer h2"));$("#revealBtn").onclick=function(){renderContent(e);};
   }
@@ -779,7 +789,7 @@ function renderBuffer(e){
     +'<div class="byline">'+meta.join('')+'</div>'
     +'<div class="plate"><div class="plate-tab">概要 · 防雷</div>'
     +'<div class="warn">⚠ 閱讀前請注意</div>'
-    +'<div class="body">'+esc(e.spoiler||'').trim()+'</div></div>'
+    +'<div class="body">'+esc(e.spoiler||'').trim()+'</div>'+((e.carryover||'').trim()?'<div class="carryover"><span class="co-label">繼續角色</span>'+esc(e.carryover).trim()+'</div>':'')+'</div>'
     +'<button class="reveal-btn" id="revealBtn"><span class="seal">封</span>翻開此頁，顯示團錄內容</button></div>';
   fitTitle(document.querySelector(".buffer h2"));$("#revealBtn").onclick=function(){renderContent(e);};
 }
@@ -900,6 +910,7 @@ function fillForm(e){
   $("#f_pl").value=e?e.pl:"";
   $("#f_url").value=e?e.url:"";
   $("#f_spoiler").value=e?e.spoiler:"";
+  $("#f_carryover").value=e?(e.carryover||""):"";
   $("#entrySubmit").textContent=e?"儲存變更":"新增團錄";
   $("#entryReset").style.display=e?"inline-block":"none";
   $("#entryForm").classList.toggle("editing",!!e);
@@ -919,7 +930,7 @@ function delEntry(id){var e=db.entries.find(function(x){return x.id===id;});if(!
 $("#entryForm").addEventListener("submit",function(ev){
   ev.preventDefault();
   var id=$("#entryId").value;
-  var data={categoryId:$("#f_cat").value,linkName:$("#f_linkName").value.trim(),title:$("#f_title").value.trim(),kp:$("#f_kp").value.trim(),pl:$("#f_pl").value.trim(),url:$("#f_url").value.trim(),spoiler:$("#f_spoiler").value};
+  var data={categoryId:$("#f_cat").value,linkName:$("#f_linkName").value.trim(),title:$("#f_title").value.trim(),kp:$("#f_kp").value.trim(),pl:$("#f_pl").value.trim(),url:$("#f_url").value.trim(),spoiler:$("#f_spoiler").value,carryover:$("#f_carryover").value.trim()};
   if(!data.linkName){toast("請填寫連結名稱");return;}
   if(id){Object.assign(db.entries.find(function(x){return x.id===id;}),data);toast("已儲存變更");}
   else{db.entries.push(Object.assign({id:uid()},data));toast("已新增團錄");}
@@ -970,21 +981,21 @@ function importCSV(text){
   var added=0;
   for(var i=1;i<rows.length;i++){
     var r=rows[i];if(!r||r.every(function(x){return !String(x).trim();}))continue;
-    var catName=r[0]||"",linkName=r[1]||"",title=r[2]||"",kp=r[3]||"",pl=r[4]||"",url=r[5]||"",spoiler=r[6]||"";
+    var catName=r[0]||"",linkName=r[1]||"",title=r[2]||"",kp=r[3]||"",pl=r[4]||"",url=r[5]||"",spoiler=r[6]||"",carryover=r[7]||"";
     if(!String(linkName).trim())continue;
     var cn=String(catName).trim();
     var categoryId="";
     if(cn){var cat=db.categories.find(function(c){return c.name===cn;});if(!cat){cat={id:uid(),name:cn};db.categories.push(cat);}categoryId=cat.id;}
-    db.entries.push({id:uid(),categoryId:categoryId,linkName:String(linkName).trim(),title:String(title).trim(),kp:String(kp).trim(),pl:String(pl).trim(),url:String(url).trim(),spoiler:String(spoiler)});
+    db.entries.push({id:uid(),categoryId:categoryId,linkName:String(linkName).trim(),title:String(title).trim(),kp:String(kp).trim(),pl:String(pl).trim(),url:String(url).trim(),spoiler:String(spoiler),carryover:String(carryover).trim()});
     added++;
   }
   save();renderModal();renderSidebar();toast(added?"已匯入 "+added+" 筆團錄":"未匯入任何資料");
 }
 function exportCSV(){
-  var header=["分類","連結名稱","標題","KP","PL","連結網址","防劇透文字"];
+  var header=["分類","連結名稱","標題","KP","PL","連結網址","防劇透文字","繼續角色"];
   var lines=[header.map(csvCell).join(",")];
-  db.categories.forEach(function(cat){entriesOf(cat.id).forEach(function(e){lines.push([cat.name,e.linkName,e.title,e.kp,e.pl,e.url,e.spoiler].map(csvCell).join(","));});});
-  db.entries.filter(function(e){return !catById(e.categoryId);}).forEach(function(e){lines.push(["",e.linkName,e.title,e.kp,e.pl,e.url,e.spoiler].map(csvCell).join(","));});
+  db.categories.forEach(function(cat){entriesOf(cat.id).forEach(function(e){lines.push([cat.name,e.linkName,e.title,e.kp,e.pl,e.url,e.spoiler,e.carryover||""].map(csvCell).join(","));});});
+  db.entries.filter(function(e){return !catById(e.categoryId);}).forEach(function(e){lines.push(["",e.linkName,e.title,e.kp,e.pl,e.url,e.spoiler,e.carryover||""].map(csvCell).join(","));});
   download((db.meta.title||"團錄")+".csv","\uFEFF"+lines.join("\r\n"),"text/csv");
 }
 function download(name,content,type){var blob=new Blob([content],{type:type+";charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);}
