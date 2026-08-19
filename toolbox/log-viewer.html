@@ -445,6 +445,9 @@ body.editing #editor-wrap{display:block}
   background:var(--panel) center/cover;display:block}
 .pc-portrait.ph{aspect-ratio:3/5;cursor:default;display:flex;align-items:center;justify-content:center;
   font-family:var(--serif);font-size:14px;color:var(--muted);text-align:center;padding:8px}
+.pc-portrait.placeholder{background-size:cover}
+.pc-portrait.placeholder .ph-txt{font-family:var(--mono);font-size:13px;letter-spacing:.14em;
+  color:var(--ink);opacity:.55}
 .pc-detail{flex:1;min-width:0}
 .pc-meta{display:flex;flex-wrap:wrap;gap:4px 16px;margin-bottom:10px;font-size:14px}
 .pc-meta b{color:var(--c,var(--pc));font-weight:700;letter-spacing:.05em}
@@ -1189,11 +1192,13 @@ function chipRow(line, cls){
     `<span class="pc-chip ${cls||''}"><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span></span>`).join('');
   return ch ? `<div class="pc-chips">${ch}</div>` : '';
 }
-function pcPortrait(p){
+function pcPortrait(p, col){
   if(p['立繪']) return `<img class="pc-portrait" src="${esc(p['立繪'])}" alt="${esc(p['PC']||'')}"
     data-full="${esc(p['立繪'])}" data-cap="${esc(p['PC']||'')}"
     onerror="this.classList.add('ph');this.removeAttribute('src');this.textContent='立繪\n(圖片無法載入)';">`;
-  return `<div class="pc-portrait ph">立繪<br>（在 pcs.csv 的「立繪」欄填圖片網址）</div>`;
+  const wash=hexRGBA(col,0.16)||'var(--panel)', ln=hexRGBA(col,0.34)||'var(--pc-line)';
+  return `<div class="pc-portrait ph placeholder" style="background:${wash};border-color:${ln}">
+    <span class="ph-txt">無設定立繪</span></div>`;
 }
 function pcThumb(p){
   if(p['立繪']) return `<img class="thumb" src="${esc(p['立繪'])}" alt=""
@@ -1248,7 +1253,7 @@ function renderPCs(){
           ${sub?`<span class="sub">${esc(sub)}</span>`:''}</span>
         <span class="tri">▶</span></summary>
       <div class="pc-body">
-        ${pcPortrait(p)}
+        ${pcPortrait(p, col)}
         <div class="pc-detail">
           <div class="pc-meta">
             ${p['職業']?`<span><b>職業</b> ${esc(p['職業'])}</span>`:''}
