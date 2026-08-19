@@ -112,6 +112,9 @@ body.exported{--topbar-h:0px}
 
 /* ── 右側主區 ─────────────────────────────────── */
 #main{margin-left:var(--sidebar-w);padding-top:var(--topbar-h);min-height:calc(100vh - var(--topbar-h));min-width:0;position:relative}
+/* 啟動前先隱藏內容，避免腳本執行前的首次繪製閃現（一律以縮圖頁為首個可見畫面） */
+#content{visibility:hidden}
+body.booted #content{visibility:visible}
 .wrap{max-width:1120px;margin:0 auto;padding:30px 34px 70px;position:relative;z-index:1}
 
 /* 縮圖展示頁 */
@@ -1437,9 +1440,12 @@ function boot(){
   }else{
     buildFromCSV({});
   }
-  renderList("");
+  state.cur=null;
   renderGallery("");
+  renderList("");
+  try{ document.body.classList.add('booted'); }catch(e){}
 }
+try{ setTimeout(function(){ try{document.body.classList.add('booted');}catch(e){} },2000); }catch(e){}
 boot();
 })();
 </script>
