@@ -114,6 +114,7 @@ header.mast{padding:52px 0 26px;border-bottom:1px solid var(--line)}
   background:var(--panel);color:var(--muted);border-radius:var(--radius);cursor:pointer}
 .chip[aria-pressed="true"]{color:var(--panel);background:var(--ink);border-color:var(--ink)}
 #expHtml[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.lib-info{font-family:var(--mono);font-size:13px;color:var(--muted)}
 .style-pick{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;
   letter-spacing:.08em;color:var(--muted)}
 .style-pick select{font-family:var(--mono);font-size:13px;padding:4px 8px;border:1px solid var(--line);
@@ -265,7 +266,7 @@ ruby rt{font-size:.68em;letter-spacing:.04em;line-height:1.25;color:#5b626f;font
 .dice.sec .who{color:var(--secret)}
 .dice.sec .expr{color:#4a4159}
 .dice .tag{font-family:var(--mono);font-size:13px;letter-spacing:.2em;color:#fff;background:var(--secret);
-  padding:1px 6px;flex:0 0 auto;align-self:center}
+  padding:1px 6px;flex:0 0 auto;align-self:flex-start}
 .dice.sec .whisper{font-family:var(--mono);font-size:13px;color:var(--secret);opacity:.85;flex:0 0 auto}
 .res.good{color:#0d6b3a}.res.bad{color:#a02020}.res.crit{color:#0b5fa5}.res.fumble{color:#6a0d0d}
 
@@ -525,14 +526,13 @@ body.editing #editor-wrap{display:block}
 .round .pill .n{font-family:var(--mono);font-size:13px;letter-spacing:.2em;color:var(--round);opacity:.7}
 
 /* 隱藏資訊：團務當下玩家看不到的幕後情報 */
-.hidden-info{display:flex;align-items:flex-start;gap:12px;margin:10px 0;padding:9px 14px;font-size:14px;
+.hidden-info{display:flex;align-items:baseline;gap:12px;margin:10px 0;padding:9px 14px;font-size:14px;
   background:var(--hidden);border-left:3px solid var(--hidden-accent);border-radius:var(--radius);
   background-image:repeating-linear-gradient(135deg,rgba(157,143,196,.10) 0 7px,transparent 7px 14px)}
 .hidden-info .mk{font-family:var(--mono);font-size:13px;letter-spacing:.22em;color:var(--hidden);
-  background:var(--hidden-accent);padding:2px 7px;border-radius:2px;flex:0 0 auto;
-  line-height:1.4;margin-top:3px}
+  background:var(--hidden-accent);padding:2px 7px;border-radius:2px;flex:0 0 auto;line-height:2}
 .hidden-info .lb{font-family:var(--mono);letter-spacing:.12em;color:var(--hidden-accent);
-  flex:0 0 auto;line-height:1.75}
+  flex:0 0 auto;line-height:2}
 .hidden-info .tx{flex:1;min-width:0;font-family:var(--mono);line-height:2;
   color:var(--hidden-ink);white-space:pre-wrap;word-break:break-word}
 
@@ -567,6 +567,13 @@ body.editing #editor-wrap{display:block}
   font-family:var(--mono);font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:700}
 .turnorder .ent .nm{font-size:14px;letter-spacing:.04em;color:var(--ink);white-space:nowrap}
 .turnorder .arw{font-family:var(--mono);font-size:13px;color:var(--order);opacity:.55}
+
+/* 旁白 narration：無頭像名字的敘述 */
+.narration{margin:12px auto;max-width:86%;text-align:center;font-family:var(--serif);font-style:italic;
+  color:var(--muted);line-height:2;white-space:pre-wrap;word-break:break-word;
+  display:flex;align-items:center;justify-content:center;gap:14px}
+.narration::before,.narration::after{content:"";flex:0 0 22px;height:1px;background:var(--line);opacity:.7}
+.narration .nx{flex:0 1 auto}
 
 /* 圖片：CG／地圖／道具等 */
 .figure{margin:26px auto;text-align:center;max-width:100%}
@@ -642,7 +649,11 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
       <button class="chip" id="expSpk" aria-pressed="false">匯出 speakers.csv</button>
       <button class="chip" id="expPcs" aria-pressed="false">匯出 pcs.csv</button>
       <button class="chip" id="btnEdit" aria-pressed="false">編輯模式</button>
-      <button class="chip" id="expHtml" aria-pressed="true">匯出成 HTML</button>
+      <button class="chip" id="expHtml" aria-pressed="true">匯出檢視版（連結）</button>
+      <input type="file" id="fLib" webkitdirectory directory multiple accept="image/*" style="display:none">
+      <button class="chip" id="btnLib">選擇圖庫資料夾</button>
+      <button class="chip" id="expHtmlPack" aria-pressed="true">匯出檢視版（打包）</button>
+      <span class="lib-info" id="libInfo"></span>
       <span class="style-pick">風格
         <select id="stylePick" title="選擇檢視版風格">
           <option value="chronicle">紀事</option>
@@ -997,6 +1008,10 @@ function render(){
         <span class="pill"><span class="t">${esc(label)}</span>
         ${(no!==null&&!isNaN(no))?`<span class="n">ROUND ${String(no).padStart(2,'0')}</span>`:''}</span>
         <span class="ln"></span></section>`);
+      continue;
+    }
+    if(type==='narration'){
+      out.push(`<div class="narration"><span class="nx">${renderRuby(r['內容'])}</span></div>`);
       continue;
     }
     if(type==='image'){
@@ -1414,7 +1429,50 @@ function convertLog(htmlText){
 (document.getElementById('expSpk')||{}).onclick=()=>download('speakers.csv',toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
 (document.getElementById('expPcs')||{}).onclick=()=>download('pcs.csv',toCSV(PCS,PC_COLS));
 
-(document.getElementById('expHtml')||{}).onclick=()=>{
+/* ── 圖庫（做法 B）：檔名→dataURI ── */
+let imgLib={}, imgLibBytes=0;
+function baseName(u){ if(!u) return ''; let s=String(u).split('#')[0].split('?')[0].trim();
+  s=s.split(/[\\/]/).pop(); return s; }
+function packRef(u){ const n=baseName(u); return (n && imgLib[n]) ? imgLib[n] : u; }
+function packContent(s){ if(!s) return s;
+  return String(s).replace(/\[\[img:\s*([^\]]+?)\s*\]\]/gi,(m,u)=>`[[img:${packRef(u.trim())}]]`); }
+const IMG_EXT=/\.(png|jpe?g|gif|webp|bmp|svg|avif)$/i;
+// 依打包規則產生改寫後的資料，並統計
+function buildPacked(){
+  let used=0, bytes=0; const missing=new Set();
+  const track=u=>{ const n=baseName(u); if(!n) return; if(imgLib[n]){used++;bytes+=imgLib[n].length;} else if(IMG_EXT.test(n)) missing.add(n); };
+  const L=JSON.parse(JSON.stringify(LOG)), S=JSON.parse(JSON.stringify(SPK)), P=JSON.parse(JSON.stringify(PCS));
+  L.forEach(r=>{
+    if(r['頭像']){ track(r['頭像']); r['頭像']=packRef(r['頭像']); }
+    // message 等的 [[img:]]
+    (String(r['內容']||'').match(/\[\[img:\s*([^\]]+?)\s*\]\]/gi)||[]).forEach(m=>{ const u=m.replace(/^\[\[img:\s*/i,'').replace(/\s*\]\]$/,''); track(u); });
+    r['內容']=packContent(r['內容']);
+    if((r['類型']||'')==='image'){ if(r['內容']){ track(r['內容']); r['內容']=packRef(r['內容']); } }
+  });
+  S.forEach(s=>{ if(s['頭像網址']){ track(s['頭像網址']); s['頭像網址']=packRef(s['頭像網址']); } });
+  P.forEach(p=>{ if(p['立繪']){ track(p['立繪']); p['立繪']=packRef(p['立繪']); } });
+  return {L,S,P,used,bytes,missing:[...missing]};
+}
+
+(document.getElementById('btnLib')||{}).onclick=()=>document.getElementById('fLib').click();
+(document.getElementById('fLib')||{}).onchange=e=>{
+  const files=[...e.target.files].filter(f=>f.type.startsWith('image/')||IMG_EXT.test(f.name));
+  if(!files.length){ document.getElementById('libInfo').textContent='未選到圖片'; return; }
+  document.getElementById('libInfo').textContent='載入中…';
+  imgLib={}; imgLibBytes=0; let done=0, dup=0;
+  files.forEach(f=>{
+    const rd=new FileReader();
+    rd.onload=()=>{ if(imgLib[f.name]) dup++; else { imgLib[f.name]=rd.result; imgLibBytes+=rd.result.length; }
+      if(++done===files.length){
+        const mb=(imgLibBytes/1048576).toFixed(1);
+        document.getElementById('libInfo').textContent=`圖庫：${Object.keys(imgLib).length} 張，約 ${mb} MB`+(dup?`（略過 ${dup} 個重複檔名）`:'');
+      }};
+    rd.onerror=()=>{ if(++done===files.length){ document.getElementById('libInfo').textContent=`圖庫：${Object.keys(imgLib).length} 張`; } };
+    rd.readAsDataURL(f);
+  });
+};
+
+function doExportHTML(packed){
   const logEl=document.getElementById('log'), edEl=document.getElementById('editor'),
         whoEl=document.getElementById('who'), qEl=document.getElementById('q'),
         chips=[...document.querySelectorAll('.chip[data-f]')];
@@ -1439,8 +1497,17 @@ function convertLog(htmlText){
 
   const a=html.indexOf('/*DATA_START*/'), b=html.indexOf('/*DATA_END*/');
   if(a<0||b<0){ alert('匯出失敗：找不到資料區塊，請改用原始檔重新載入 CSV。'); return; }
+  let L=LOG,S=SPK,P=PCS;
+  if(packed){
+    if(!Object.keys(imgLib).length){ alert('尚未載入圖庫。請先按「選擇圖庫資料夾」。'); return; }
+    const pk=buildPacked();
+    const mb=(pk.bytes/1048576).toFixed(1);
+    const msg=`將內嵌 ${pk.used} 張圖，約 ${mb} MB。`+(pk.missing.length?`\n未對應 ${pk.missing.length} 張（保留原連結）：\n`+pk.missing.slice(0,20).join('、')+(pk.missing.length>20?' …':''):'')+`\n\n確定匯出打包版？`;
+    if(!confirm(msg)) return;
+    L=pk.L; S=pk.S; P=pk.P;
+  }
   const j=o=>JSON.stringify(o).replace(/<\//g,'<\\/');
-  const data='/*DATA_START*/let LOG = '+j(LOG)+';\nlet SPK = '+j(SPK)+';\nlet META = '+j(META)+';\nlet PCS = '+j(PCS)+';';
+  const data='/*DATA_START*/let LOG = '+j(L)+';\nlet SPK = '+j(S)+';\nlet META = '+j(META)+';\nlet PCS = '+j(P)+';';
   html = html.slice(0,a) + data + html.slice(b);
   // 匯出版為純閱讀：移除所有編輯用介面
   const M1='<!'+'--EDIT_START-->', M2='<!'+'--EDIT_END-->';
@@ -1456,6 +1523,9 @@ function convertLog(htmlText){
   el.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
   el.download=name; el.click(); URL.revokeObjectURL(el.href);
 };
+
+(document.getElementById('expHtml')||{}).onclick=()=>doExportHTML(false);
+(document.getElementById('expHtmlPack')||{}).onclick=()=>doExportHTML(true);
 
 [['eyebrow','眉標','CALL OF CTHULHU TRPG'],['title','標題','（標題）'],['subtitle','副標題','（副標題，可留空）']]
   .forEach(([id,key,ph])=>{
@@ -1506,7 +1576,7 @@ const dlg=document.getElementById('dlg');
 
 
 /* ══════════════ 編輯模式 ══════════════ */
-const ED_TYPES=['talk','dice','scene','system','hidden','image','message','telepathy','recall',
+const ED_TYPES=['talk','narration','dice','scene','system','hidden','image','message','telepathy','recall',
   'session_start','session_end','reward','note','battle_start','battle_end','round','turnorder','madness',
   'chapter_start','chapter_end','prologue_start','prologue_end','epilogue_start','epilogue_end'];
 const ED_TYPE_ALIAS={'start':'session_start','chapter':'chapter_start','session_end':'session_end','chapter_end':'chapter_end','end':'end'};
