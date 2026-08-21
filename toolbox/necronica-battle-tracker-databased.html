@@ -106,6 +106,14 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--amethyst);
 .dmg-row .dmg-name{color:var(--ink)} .dmg-row .dmg-val{color:var(--warn)}
 .dmg-total{font-size:13px;margin:4px 0 2px;padding:3px 8px;background:var(--panel2);border-radius:5px;
   border:1px solid var(--line-soft);color:var(--ink)} .dmg-total b{color:var(--accent-soft);font-size:14px}
+.dmg-assign{margin:1px 6px 8px 30px;padding:6px 8px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:6px}
+.dmg-assign-h{font-size:13px;color:var(--ink-dim);margin-bottom:4px}
+.dmg-parts{display:flex;flex-wrap:wrap;gap:4px 10px}
+.dmg-part{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--ink);cursor:pointer;white-space:nowrap}
+.dmg-part input{margin:0}
+.dmg-part.on span{color:var(--warn);text-decoration:line-through}
+.dmg-part.old{opacity:.6;cursor:not-allowed}
+.dmg-warn{margin-top:5px;font-size:13px;color:#ff7a85;font-weight:700;background:#3a1f24;border:1px solid #7a343d;border-radius:5px;padding:4px 8px}
 
 .cost-box{background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:8px 10px;margin-top:4px}
 .cost-row{display:grid;grid-template-columns:1fr auto;gap:4px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
@@ -379,7 +387,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--amethyst);
     </div>
 
     <!-- draggable splitter -->
-    <div class="splitter" id="splitter" title="拖曳調整戰場／單位資訊高度"></div>
+    <div class="splitter" id="splitter" data-tip="拖曳調整戰場／單位資訊高度"></div>
 
     <!-- bottom detail -->
     <div class="bottom">
@@ -450,7 +458,7 @@ function lookupPart(token){
     effect: db?db['效果']:'（資料庫無此部件）', level: db?db['部件等級']:(tag||'—'),
     mod: db?parseInt(db['最大行動值補正']||'0',10):0,
     atkType: db?(db['攻擊類型']||''):'', dmg: db?(parseInt(db['傷害']||'0',10)||0):0,
-    used:false, costApplied:false, damaged:false
+    used:false, costApplied:false, damaged:false, dmgKey:null, dmgBy:null
   };
 }
 function lookupSkill(name){
@@ -643,8 +651,8 @@ function maxTickOnField(){
 }
 function refreshField(){
   state.units.forEach(u=>{ u.position=u.initPos;
-    LOCS.forEach(l=>u.parts[l].forEach(p=>{p.damaged=false;p.used=false;}));
-    u.monsterParts.forEach(p=>{p.damaged=false;p.used=false;});
+    LOCS.forEach(l=>u.parts[l].forEach(p=>{p.damaged=false;p.used=false;p.dmgKey=null;p.dmgBy=null;}));
+    u.monsterParts.forEach(p=>{p.damaged=false;p.used=false;p.dmgKey=null;p.dmgBy=null;});
     u.skills.forEach(s=>s.used=false);
   });
   state.units.forEach(u=>{ u.action=effMax(u); u.appliedMax=effMax(u); });
@@ -815,16 +823,43 @@ function renderFlow(){
   if(state.flow.c1){                                          // 完成裁判後，列出大成功/成功單位傷害加總
     const winners=declaredUnits().filter(u=>state.rolls[u.id]==='大成功'||state.rolls[u.id]==='成功');
     if(winners.length){
+      const key=state.round+':'+state.tick;
+      const nameOf=id=>{ const t=state.units.find(x=>x.id===id); return t?t.name:''; };
       let grand=0;
       winners.forEach(u=>{
         const atk=usedItemsByTiming(u,'行動').filter(it=>it.dmg>0);
         const byType={}; atk.forEach(p=>{ byType[p.atkType||'—']=(byType[p.atkType||'—']||0)+p.dmg; });
         const sum=atk.reduce((s,p)=>s+p.dmg,0); grand+=sum;
+        const tgt=u.target? state.units.find(x=>x.id===u.target):null;
         const r=el('div','dmg-row');
         r.appendChild(el('b','dmg-name',u.name+'（'+state.rolls[u.id]+'）'));
         const detail=Object.entries(byType).map(([t,v])=>`${t} ${v}`).join('、');
-        r.appendChild(el('span','dmg-val','　傷害 '+sum+(detail?`（${detail}）`:'')));
+        r.appendChild(el('span','dmg-val',(tgt?`　→${tgt.name}`:'')+'　傷害 '+sum+(detail?`（${detail}）`:'')));
         box.appendChild(r);
+        // 攻擊目標的損傷部件勾選（本刻度・僅計入本攻擊方 u 指定的部件）
+        if(!tgt){ box.appendChild(el('div','flow-empty','　（未指定攻擊目標，無法指定損傷部件）')); return; }
+        const mineCount=allParts(tgt).filter(p=>p.damaged && p.dmgKey===key && p.dmgBy===u.id).length;
+        const assign=el('div','dmg-assign');
+        assign.appendChild(el('div','dmg-assign-h', `${tgt.name} 損傷部件（${u.name} 本刻度已指定 ${mineCount} / 傷害值 ${sum}）`));
+        const grid=el('div','dmg-parts');
+        allParts(tgt).forEach(p=>{
+          const mine       = p.damaged && p.dmgKey===key && p.dmgBy===u.id;         // 本攻擊方本刻度指定 → 可改、計入
+          const otherTick  = p.damaged && p.dmgKey!==key;                            // 他刻度既有損傷
+          const otherOwner = p.damaged && p.dmgKey===key && p.dmgBy!==u.id;          // 本刻度由其他攻擊方／詳情指定
+          const locked = otherTick || otherOwner;                                    // 同步顯示、但不可由本攻擊方更動、不計入本攻擊方
+          let suffix=''; if(otherTick) suffix='（既有）'; else if(otherOwner) suffix = p.dmgBy? `（${nameOf(p.dmgBy)}）` : '（詳情指定）';
+          const lab=el('label','dmg-part'+(p.damaged?' on':'')+(locked?' old':''));
+          const cb=el('input'); cb.type='checkbox'; cb.checked=!!p.damaged; cb.disabled=locked;
+          cb.setAttribute('data-tip', locked ? (otherTick?'其他刻度既有損傷':'本刻度由其他來源指定，僅同步顯示、不計入本攻擊方') : '勾選＝本攻擊方於本刻度指定此部件損傷');
+          cb.onchange=()=>{ if(cb.checked){ p.damaged=true; p.dmgKey=key; p.dmgBy=u.id; } else { p.damaged=false; p.dmgKey=null; p.dmgBy=null; }
+            renderFlow(); renderBottom(); };
+          lab.appendChild(cb); lab.appendChild(el('span',null,p.name+suffix));
+          grid.appendChild(lab);
+        });
+        assign.appendChild(grid);
+        if(mineCount>sum) assign.appendChild(el('div','dmg-warn',
+          `⚠ ${u.name} 本刻度已勾選 ${mineCount} 個損傷部件，超過傷害值 ${sum}，請修正為 ${sum} 個。`));
+        box.appendChild(assign);
       });
       const tot=el('div','dmg-total'); tot.innerHTML=`合計傷害：<b>${grand}</b>`; box.appendChild(tot);
     } else box.appendChild(el('div','flow-empty','（本刻度無「大成功／成功」的單位）'));
@@ -892,10 +927,10 @@ function renderSideList(side){
     const top=el('div','top');
     const hasLoc = side==='ally' || u.enemyType==='intelligent';
     const av=el('div','avatar'); av.setAttribute('style',avatarStyle(u)); av.textContent=avatarText(u); top.appendChild(av);
-    const nm=el('div','nm',u.name); nm.title='點擊於下方檢視詳細'; nm.onclick=()=>selectUnit(u); top.appendChild(nm);
+    const nm=el('div','nm',u.name); nm.setAttribute('data-tip','點擊於下方檢視詳細'); nm.onclick=()=>selectUnit(u); top.appendChild(nm);
     const btns=el('div','rowbtns');
-    const up=el('button','mini','↑'); up.title='上移'; up.onclick=()=>moveUnit(u,-1);
-    const dn=el('button','mini','↓'); dn.title='下移'; dn.onclick=()=>moveUnit(u,1);
+    const up=el('button','mini','↑'); up.setAttribute('data-tip','上移'); up.onclick=()=>moveUnit(u,-1);
+    const dn=el('button','mini','↓'); dn.setAttribute('data-tip','下移'); dn.onclick=()=>moveUnit(u,1);
     btns.appendChild(up); btns.appendChild(dn); top.appendChild(btns);
     card.appendChild(top);
     if(side==='enemy'){
@@ -1024,7 +1059,7 @@ function renderBottom(){
     const a=el('div','avatar ca');a.setAttribute('style',avatarStyle(u));a.textContent=avatarText(u);chip.appendChild(a);
     chip.appendChild(el('span',null,u.name));
     chip.onclick=()=>{ if(state.tab==='ally')state.selAlly=u.id;else state.selEnemy=u.id; state.selectedId=u.id; renderBottom(); renderBattlefield(); renderSideList(u.side); };
-    const x=el('button','chip-x','×'); x.title='移除此單位';
+    const x=el('button','chip-x','×'); x.setAttribute('data-tip','移除此單位');
     x.onclick=(ev)=>{ ev.stopPropagation(); if(confirm(`確定移除單位「${u.name}」？`)) removeUnit(u); };
     chip.appendChild(x);
     chips.appendChild(chip);
@@ -1054,7 +1089,7 @@ function renderSheet(det,u){
   stat.innerHTML=`<div class="k">最大行動值</div><div class="v">${effMax(u)}</div>`;
   head.appendChild(stat);
   const editBtn=el('button',(state.edit?'primary ':'')+'edit-toggle', state.edit?'完成編輯':'開啟編輯');
-  editBtn.title='新增／刪除此單位的技能與部件（存入角色資料）';
+  editBtn.setAttribute('data-tip','新增／刪除此單位的技能與部件（存入角色資料）');
   editBtn.onclick=()=>{ state.edit=!state.edit; renderBottom(); };
   head.appendChild(editBtn);
   det.appendChild(head);
@@ -1171,8 +1206,12 @@ function buildTable(title, items, kind, u, loc){
     const tr=el('tr', (it.damaged?'dmg ':'')+(it.used?'used-on':''));
     if(kind==='part'){
       const td=el('td','c-chk'); const c=el('input');c.type='checkbox';c.checked=it.damaged;
-      c.title='損傷（勾選後戰場對應部件數量−1）';
-      c.onchange=()=>{ it.damaged=c.checked; if(it.damaged)it.used=false;
+      c.setAttribute('data-tip','損傷（勾選後戰場對應部件數量−1）');
+      c.onchange=()=>{ it.damaged=c.checked;
+        // 詳情表格的損傷屬「手動指定」：標記本刻度但無歸屬（dmgBy=null），不計入任何攻擊方的指定數
+        it.dmgKey = c.checked ? (state.round+':'+state.tick) : null;
+        it.dmgBy = null;
+        if(it.damaged)it.used=false;
         render(); }; // 最大行動值即時更新，但現在行動值改於「下一刻度」時才刷新
       td.appendChild(c); tr.appendChild(td);
     } else {
@@ -1182,7 +1221,7 @@ function buildTable(title, items, kind, u, loc){
     const lockAction = it.timing==='行動' && !!state.flow.a3;   // 【行動】宣告結束後鎖定
     const lockJudge  = it.timing==='裁判' && !!state.flow.c1;   // 【裁判】宣告後鎖定
     cu.disabled = !!it.damaged || lockAction || lockJudge;
-    cu.title = (lockAction||lockJudge) ? ('本階段已宣告結束，無法變更【'+it.timing+'】時機的使用') : '使用（計入本刻度 COST）';
+    cu.setAttribute('data-tip', (lockAction||lockJudge) ? ('本階段已宣告結束，無法變更【'+it.timing+'】時機的使用') : '使用（計入本刻度 COST）');
     cu.onchange=()=>{
       if(it.timing==='行動'){                        // 行動只能擇一：選新的即取消其他
         if(cu.checked){
@@ -1470,7 +1509,7 @@ function normalizeUnit(u){
   if(!Array.isArray(u.attachments)) u.attachments=[];
   const fixItem=it=>{ it.used=!!it.used; it.costApplied=!!it.costApplied; };
   u.skills.forEach(fixItem);
-  [...u.monsterParts, ...LOCS.flatMap(l=>u.parts[l])].forEach(p=>{ fixItem(p); p.damaged=!!p.damaged; });
+  [...u.monsterParts, ...LOCS.flatMap(l=>u.parts[l])].forEach(p=>{ fixItem(p); p.damaged=!!p.damaged; if(p.dmgKey===undefined)p.dmgKey=null; if(p.dmgBy===undefined)p.dmgBy=null; });
   if(u.appliedMax==null) u.appliedMax=baseMax(u);
   if(u.target===undefined) u.target=null;
   return u;
