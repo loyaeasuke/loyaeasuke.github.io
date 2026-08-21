@@ -114,6 +114,9 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--amethyst);
 .dmg-part.on span{color:var(--warn);text-decoration:line-through}
 .dmg-part.old{opacity:.6;cursor:not-allowed}
 .dmg-warn{margin-top:5px;font-size:13px;color:#ff7a85;font-weight:700;background:#3a1f24;border:1px solid #7a343d;border-radius:5px;padding:4px 8px}
+.flow-warn2{margin:2px 6px 6px 22px;font-size:13px;color:#ffb27a;background:#3a2a1c;border:1px solid #7a5a34;border-radius:5px;padding:4px 8px}
+.chk.chk-disabled{opacity:.6;cursor:not-allowed}
+.tgt-locked{font-size:13px;color:var(--ink-faint);margin-left:6px;white-space:nowrap}
 
 .cost-box{background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:8px 10px;margin-top:4px}
 .cost-row{display:grid;grid-template-columns:1fr auto;gap:4px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
@@ -493,7 +496,7 @@ function unitFromCharRow(r){
     position: POSITIONS.includes(r['初期配置'])?r['初期配置']:'煉獄',
     initPos: POSITIONS.includes(r['初期配置'])?r['初期配置']:'煉獄',
     skills:[], parts:{頭:[],手:[],軀幹:[],腳:[]}, monsterParts:[],
-    attachments:[], madness:false, target:null, action:0, appliedMax:0,
+    attachments:[], madness:false, target:null, gridHidden:false, action:0, appliedMax:0,
     flatMax: parseInt(r['最大行動值']||'0',10)||0
   };
   if(side==='enemy' && (enemyType==='monster'||enemyType==='group')){
@@ -519,7 +522,7 @@ function blankUnit(side, enemyType){
     name:'新單位', color: side==='ally'?'#6f9bd1':'#b25a63', icon:'',
     tendency:'', mainType:'', subType:'', position:'煉獄', initPos:'煉獄',
     skills:[], parts:{頭:[],手:[],軀幹:[],腳:[]}, monsterParts:[],
-    attachments:[], madness:false, target:null, action:0, appliedMax:0, flatMax:10 };
+    attachments:[], madness:false, target:null, gridHidden:false, action:0, appliedMax:0, flatMax:10 };
 }
 
 /* ---------- action-value maths ---------- */
@@ -587,6 +590,8 @@ function monsterCount(u){ return u.monsterParts.filter(p=>!p.damaged).length; }
 // 單位所有部件皆損傷 → 完全解體
 function allParts(u){ return isFlatEnemy(u) ? u.monsterParts : LOCS.flatMap(l=>u.parts[l]); }
 function isDismantled(u){ const ps=allParts(u); return ps.length>0 && ps.every(p=>p.damaged); }
+// 是否仍在刻度盤上（完全解體且已進入下一刻度者會從格盤移除，但保留於清單／詳情）
+function onBoard(u){ return !u.gridHidden; }
 
 // 本刻度消耗 COST（已勾「使用」之技能/部件的可計算 COST 總和）
 function roundCost(u){
@@ -599,7 +604,7 @@ function roundCost(u){
 /* ================= STATE ================= */
 const rnd = x=>Math.round(x);
 // 目前刻度上「行動值＝刻度」的單位（即本刻度行動的單位）
-function actingUnits(side){ return state.units.filter(u=>rnd(u.action)===state.tick && (!side||u.side===side)); }
+function actingUnits(side){ return state.units.filter(u=>onBoard(u) && rnd(u.action)===state.tick && (!side||u.side===side)); }
 // 某單位已勾「使用」且指定時機的技能＋部件
 function usedItemsByTiming(u, timing){
   const out=[];
@@ -646,11 +651,11 @@ const state = {
 
 /* ================= BATTLE ACTIONS ================= */
 function maxTickOnField(){
-  const vals = state.units.map(u=>Math.round(u.action));
+  const vals = state.units.filter(onBoard).map(u=>Math.round(u.action));
   return vals.length ? Math.max(...vals) : 10;
 }
 function refreshField(){
-  state.units.forEach(u=>{ u.position=u.initPos;
+  state.units.forEach(u=>{ u.position=u.initPos; u.gridHidden=false;
     LOCS.forEach(l=>u.parts[l].forEach(p=>{p.damaged=false;p.used=false;p.dmgKey=null;p.dmgBy=null;}));
     u.monsterParts.forEach(p=>{p.damaged=false;p.used=false;p.dmgKey=null;p.dmgBy=null;});
     u.skills.forEach(s=>s.used=false);
@@ -659,12 +664,15 @@ function refreshField(){
   state.round=1; state.flow={}; state.rolls={}; state.log=[]; state.tick=maxTickOnField();
   render();
 }
+// 完全解體的單位進入下一刻度／下一輪時，從刻度盤移除（保留於清單／詳情）
+function hideDismantledFromGrid(){ state.units.forEach(u=>{ if(isDismantled(u)) u.gridHidden=true; }); }
 // 記錄目前 ROUND／刻度的戰鬥流程最終狀態（行動→擲骰→裁判→傷害→本刻度COST）
 function captureLog(){ state.log.push(buildFlowRecord()); }
 // 進入下一輪的實際邏輯（不含紀錄）：現在行動值 ＋ 最大行動值（COST 已於各刻度扣除）
 function _advanceRound(){
   state.units.forEach(u=>{ u.action = u.action + effMax(u); u.appliedMax = effMax(u); });
   clearUsed();
+  hideDismantledFromGrid();
   state.round++; state.flow={}; state.rolls={}; state.tick=maxTickOnField();
   render();
 }
@@ -683,8 +691,9 @@ function nextTick(){
     u.action -= pendingCost(u);           // 扣除本刻度尚未扣過的使用 COST
     markCostApplied(u);
   });
+  hideDismantledFromGrid();               // 完全解體者移出格盤
   state.flow={}; state.rolls={};          // 重置流程與擲骰（使用勾選保留）
-  const vals = state.units.map(u=>rnd(u.action));
+  const vals = state.units.filter(onBoard).map(u=>rnd(u.action));
   const below = vals.filter(v=> v<state.tick && v>0 );
   const allBelowZero = vals.length>0 && vals.every(v=> v<=0 );
   if(below.length===0 || allBelowZero){
@@ -712,15 +721,18 @@ function renderFlow(){
   const noteLine=(t)=>box.appendChild(el('div','note','● '+t));
   const phaseH=(t)=>{ const h=el('div','phase-h'); h.appendChild(el('span',null,t)); box.appendChild(h); };
   const subNote=(t)=>box.appendChild(el('div','flow-sub','— '+t));
-  const chkRow=(key,text,mk)=>{
+  const chkRow=(key,text,mk,opts)=>{
+    opts=opts||{};
+    if(opts.disabled && state.flow[key]) state.flow[key]=false;   // 條件不符 → 強制取消勾選（阻止進入後續階段）
     const done=!!state.flow[key];
-    const row=el('label','chk'+(done?' done':''));
-    const cb=el('input'); cb.type='checkbox'; cb.checked=done;
-    cb.onchange=()=>{ state.flow[key]=cb.checked; renderFlow(); renderBottom(); };
+    const row=el('label','chk'+(done?' done':'')+(opts.disabled?' chk-disabled':''));
+    const cb=el('input'); cb.type='checkbox'; cb.checked=done; cb.disabled=!!opts.disabled;
+    cb.onchange=()=>{ if(opts.disabled){ cb.checked=false; return; } state.flow[key]=cb.checked; renderFlow(); renderBottom(); };
     row.appendChild(cb);
     const sp=el('span'); if(mk){const m=el('b','mk');m.textContent='【'+mk+'】';sp.appendChild(m);}
     sp.appendChild(document.createTextNode(text));
     row.appendChild(sp); box.appendChild(row);
+    if(opts.disabled && opts.hint) box.appendChild(el('div','flow-warn2', opts.hint));
   };
   // 單位＋已勾選項目（帶效果提示）；無項目時顯示 idleText（可為空＝不顯示 idle）
   const unitItemsLine=(u, timing, idleText)=>{
@@ -741,17 +753,20 @@ function renderFlow(){
   // 行動階段：選擇行動後可挑選目標（敵方挑我方、我方挑敵方），可搜尋下拉
   const buildTargetPicker=(u)=>{
     const foes=state.units.filter(x=>x.side!==u.side);
+    const cur=u.target? state.units.find(x=>x.id===u.target):null;
+    const locked = !!state.flow.c1 && cur && isDismantled(cur);   // req4：傷害階段中目標已完全解體 → 不可更換目標
     const wrap=el('div','search-select tgt');
     const inp=el('input','ss-input'); inp.type='text';
     inp.placeholder=(u.side==='ally'?'選擇敵方目標…':'選擇我方目標…');
-    const cur=u.target? state.units.find(x=>x.id===u.target):null;
     if(cur) inp.value=cur.name;
+    if(locked){ inp.disabled=true; inp.setAttribute('data-tip','目標已完全解體，傷害階段中不可更換目標');
+      wrap.appendChild(inp); const note=el('span','tgt-locked','（已完全解體・鎖定）'); wrap.appendChild(note); return wrap; }
     const list=el('div','ss-list');
     const draw=(f)=>{ list.innerHTML=''; const q=(f||'').trim().toLowerCase();
       const ms=foes.filter(x=>!q||x.name.toLowerCase().includes(q));
       if(!ms.length){ list.appendChild(el('div','ss-empty','（無可選目標）')); return; }
       ms.forEach(x=>{ const o=el('div','ss-opt'); o.appendChild(el('span','ss-nm',x.name));
-        if(x.position) o.appendChild(el('span','ss-meta',x.position));
+        if(x.position) o.appendChild(el('span','ss-meta',x.position+(isDismantled(x)?'・完全解體':'')));
         o.onmousedown=(ev)=>{ ev.preventDefault(); u.target=x.id; renderFlow(); };
         list.appendChild(o); });
     };
@@ -781,7 +796,9 @@ function renderFlow(){
   actingUnits('enemy').forEach(u=> box.appendChild(actionDeclBlock(u)) );
   chkRow('a2','我方宣告動作');
   actingUnits('ally').forEach(u=> box.appendChild(actionDeclBlock(u)) );
-  chkRow('a3','宣告結束','行動');                            // req8：顯示為「【行動】宣告結束」，勾選後鎖定【行動】使用
+  const needTarget = declaredUnits().filter(u=>!u.target);   // 已宣告行動但未指定目標者
+  chkRow('a3','宣告結束','行動', { disabled: needTarget.length>0,
+    hint: needTarget.length ? `⚠ 下列單位已使用行動但尚未指定目標，須先指定目標才能結束宣告：${needTarget.map(u=>u.name).join('、')}` : '' });
 
   // ── 擲骰階段 ──
   phaseH('擲骰階段');
@@ -820,6 +837,7 @@ function renderFlow(){
   phaseH('傷害階段');
   subNote('NC 進行傷害計算（此階段扣除敵我單位 HP／部件）');   // req11 說明文字
   subNote('可進行時機為【傷害】的動作，影響指定動作的傷害結果'); // req5 說明文字
+  let dmgMismatch=false;                                       // req3：是否有攻擊方損傷數≠傷害值（目標完全解體者除外）
   if(state.flow.c1){                                          // 完成裁判後，列出大成功/成功單位傷害加總
     const winners=declaredUnits().filter(u=>state.rolls[u.id]==='大成功'||state.rolls[u.id]==='成功');
     if(winners.length){
@@ -837,10 +855,11 @@ function renderFlow(){
         r.appendChild(el('span','dmg-val',(tgt?`　→${tgt.name}`:'')+'　傷害 '+sum+(detail?`（${detail}）`:'')));
         box.appendChild(r);
         // 攻擊目標的損傷部件勾選（本刻度・僅計入本攻擊方 u 指定的部件）
-        if(!tgt){ box.appendChild(el('div','flow-empty','　（未指定攻擊目標，無法指定損傷部件）')); return; }
+        if(!tgt){ box.appendChild(el('div','flow-empty','　（未指定攻擊目標，無法指定損傷部件）')); dmgMismatch=true; return; }
         const mineCount=allParts(tgt).filter(p=>p.damaged && p.dmgKey===key && p.dmgBy===u.id).length;
+        const dismantled=isDismantled(tgt);
         const assign=el('div','dmg-assign');
-        assign.appendChild(el('div','dmg-assign-h', `${tgt.name} 損傷部件（${u.name} 本刻度已指定 ${mineCount} / 傷害值 ${sum}）`));
+        assign.appendChild(el('div','dmg-assign-h', `${tgt.name} 損傷部件（${u.name} 本刻度已指定 ${mineCount} / 傷害值 ${sum}）${dismantled?'　【目標完全解體】':''}`));
         const grid=el('div','dmg-parts');
         allParts(tgt).forEach(p=>{
           const mine       = p.damaged && p.dmgKey===key && p.dmgBy===u.id;         // 本攻擊方本刻度指定 → 可改、計入
@@ -857,14 +876,19 @@ function renderFlow(){
           grid.appendChild(lab);
         });
         assign.appendChild(grid);
-        if(mineCount>sum) assign.appendChild(el('div','dmg-warn',
-          `⚠ ${u.name} 本刻度已勾選 ${mineCount} 個損傷部件，超過傷害值 ${sum}，請修正為 ${sum} 個。`));
+        if(mineCount>sum){ dmgMismatch=true;
+          assign.appendChild(el('div','dmg-warn',
+            `⚠ ${u.name} 本刻度已勾選 ${mineCount} 個損傷部件，超過傷害值 ${sum}，請修正為 ${sum} 個。`)); }
+        else if(mineCount<sum && !dismantled){ dmgMismatch=true;   // req3：不足且目標未完全解體 → 須補足
+          assign.appendChild(el('div','dmg-warn',
+            `⚠ ${u.name} 本刻度已指定 ${mineCount} 個損傷部件，未達傷害值 ${sum}，請補足為 ${sum} 個（目標完全解體時可例外）。`)); }
         box.appendChild(assign);
       });
       const tot=el('div','dmg-total'); tot.innerHTML=`合計傷害：<b>${grand}</b>`; box.appendChild(tot);
     } else box.appendChild(el('div','flow-empty','（本刻度無「大成功／成功」的單位）'));
   }
-  chkRow('d2','宣告結束','傷害');                              // req5：顯示為「【傷害】宣告結束」
+  chkRow('d2','宣告結束','傷害', { disabled: state.flow.c1 && dmgMismatch,   // req3：不符時不可結束傷害宣告
+    hint: (state.flow.c1 && dmgMismatch) ? '⚠ 尚有攻擊方的損傷部件數量與傷害值不符（目標完全解體者除外），請先修正後才能結束傷害宣告。' : '' });
 
   // ── 本回合 COST 計算 ──
   phaseH('本刻度 COST 計算');
@@ -1029,6 +1053,7 @@ function renderGrid(){
   // place tokens（1:1 正方形棋子）
   const tokStyle = u => `${avatarStyle(u)};width:${TOK}px;height:${TOK}px;font-size:${Math.round(TOK*0.42)}px`;
   state.units.forEach(u=>{
+    if(u.gridHidden) return;                 // 完全解體且已進入下一刻度 → 不於格盤顯示棋子
     let t=Math.round(u.action); if(t>TICK_HI)t=TICK_HI; if(t<TICK_LO)t=TICK_LO;
     const cell=grid.querySelector(`.cell[data-pos="${u.position}"][data-tick="${t}"]`);
     if(!cell) return;
@@ -1512,6 +1537,7 @@ function normalizeUnit(u){
   [...u.monsterParts, ...LOCS.flatMap(l=>u.parts[l])].forEach(p=>{ fixItem(p); p.damaged=!!p.damaged; if(p.dmgKey===undefined)p.dmgKey=null; if(p.dmgBy===undefined)p.dmgBy=null; });
   if(u.appliedMax==null) u.appliedMax=baseMax(u);
   if(u.target===undefined) u.target=null;
+  if(u.gridHidden===undefined) u.gridHidden=false;
   return u;
 }
 function importBattle(file){
@@ -1582,7 +1608,15 @@ function buildFlowRecord(){
   ['ally','enemy'].forEach(side=>{ state.units.filter(u=>u.side===side).forEach(u=>{
     const c=pendingCost(u), cur=rnd(u.action); costs.push({side, name:u.name, cur, cost:c, rem:cur-c});
   });});
-  return {round:state.round, tick:state.tick, acts, rolls, judges, damages, grand, costs, flags:{...state.flow}, ts:Date.now()};
+  // req1：本刻度各單位被損傷的部件（含來源與是否完全解體）
+  const key=state.round+':'+state.tick;
+  const dmgParts=[];
+  state.units.forEach(t=>{
+    const ps=allParts(t).filter(p=>p.damaged && p.dmgKey===key);
+    if(ps.length) dmgParts.push({ target:t.name, dismantled:isDismantled(t),
+      parts: ps.map(p=>({ name:p.name, by: p.dmgBy?nameOf(p.dmgBy):'詳情指定' })) });
+  });
+  return {round:state.round, tick:state.tick, acts, rolls, judges, damages, grand, costs, dmgParts, flags:{...state.flow}, ts:Date.now()};
 }
 function recordToText(r){
   const L=[];
@@ -1600,6 +1634,11 @@ function recordToText(r){
   r.damages.forEach(x=>{ const dt=Object.entries(x.byType).map(([t,v])=>`${t} ${v}`).join('、');
     L.push(`   ${x.name}（${x.roll}）${x.target?`→${x.target}`:''}：傷害 ${x.total}${dt?`（${dt}）`:''}`); });
   if(r.damages.length) L.push(`   合計傷害：${r.grand}`);
+  L.push(' 〔本刻度損傷部件〕'+((r.dmgParts&&r.dmgParts.length)?'':'　（無）'));
+  (r.dmgParts||[]).forEach(d=>{
+    const items=d.parts.map(p=>`${p.name}（${p.by}）`).join('、');
+    L.push(`   ${d.target}${d.dismantled?'【完全解體】':''}：${items}`);
+  });
   L.push(' 〔本刻度 COST 計算〕');
   r.costs.forEach(c=>L.push(`   ${c.name}：${c.cur} − ${c.cost} = ${c.rem}`));
   return L.join('\n');
