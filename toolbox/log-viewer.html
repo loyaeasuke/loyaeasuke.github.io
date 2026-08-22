@@ -268,7 +268,7 @@ ruby rt{font-size:.68em;letter-spacing:.04em;line-height:1.25;color:#5b626f;font
 .dice .tag{font-family:var(--mono);font-size:13px;letter-spacing:.2em;color:#fff;background:var(--secret);
   padding:1px 6px;flex:0 0 auto;align-self:flex-start}
 .dice.sec .whisper{font-family:var(--mono);font-size:13px;color:var(--secret);opacity:.85;flex:0 0 auto}
-.res.good{color:#0d6b3a}.res.bad{color:#a02020}.res.crit{color:#0b5fa5}.res.fumble{color:#6a0d0d}
+.res.good{color:#0d6b3a}.res.bad{color:#a02020}.res.crit{color:#0b5fa5}.res.fumble{color:#6a0d0d}.res.special{color:#0a8f86}
 
 .sessionmark{margin:60px 0 54px;text-align:center}
 .sessionmark .frame{border-top:3px double var(--ink);border-bottom:3px double var(--ink);padding:18px 12px}
@@ -803,8 +803,12 @@ function roundNo(text){
   return m?parseInt(m[1],10):null;
 }
 function resultClass(w){
-  if(/決定性|大成功|critical/i.test(w)) return 'crit';
+  // 大失敗：致命性失敗／致命的失敗／大失敗／fumble
   if(/致命|大失敗|fumble/i.test(w)) return 'fumble';
+  // 大成功：決定性的成功／決定的成功（含 …／特殊、…／スペシャル 複合寫法）／大成功／critical
+  if(/決定[的性]|大成功|critical/i.test(w)) return 'crit';
+  // 特殊：特殊／スペシャル（單獨出現時）
+  if(/特殊|スペシャル|special/i.test(w)) return 'special';
   if(/成功|success/i.test(w)) return 'good';
   if(/失敗|failure/i.test(w)) return 'bad';
   return '';
