@@ -1,0 +1,691 @@
+<title>擲骰判定統計盤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Sora:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --bg: #e9ebf1;
+    --surface: #ffffff;
+    --surface-2: #f4f5fa;
+    --surface-3: #eceef5;
+    --border: #d8dbe6;
+    --border-strong: #c3c7d6;
+    --text: #1b1a22;
+    --text-dim: #575565;
+    --text-faint: #8a8898;
+    --accent: #6a55e0;
+    --accent-soft: #efecfd;
+    --shadow: 0 1px 2px rgba(24,22,40,.05), 0 8px 24px -12px rgba(24,22,40,.18);
+
+    --crit: #a9770a;   /* 大成功 gold */
+    --succ: #1f9463;   /* 成功 green */
+    --spec: #1f83a8;   /* 特殊 teal */
+    --fail: #b5701f;   /* 失敗 amber */
+    --fumb: #cf3f56;   /* 大失敗 crimson */
+    --oppo: #7c5fe6;   /* 對抗 violet */
+    --comb: #3f68c9;   /* 組合 blue */
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #100f16;
+      --surface: #1a1922;
+      --surface-2: #201f2b;
+      --surface-3: #272635;
+      --border: #302e3d;
+      --border-strong: #3d3b4e;
+      --text: #ecebf3;
+      --text-dim: #a8a5b8;
+      --text-faint: #6f6c81;
+      --accent: #9585ff;
+      --accent-soft: #241f3d;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+
+      --crit: #e0ac3a;
+      --succ: #3fca8f;
+      --spec: #45b6da;
+      --fail: #e0993f;
+      --fumb: #ff6b81;
+      --oppo: #a793ff;
+      --comb: #6f97ff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #100f16;
+    --surface: #1a1922;
+    --surface-2: #201f2b;
+    --surface-3: #272635;
+    --border: #302e3d;
+    --border-strong: #3d3b4e;
+    --text: #ecebf3;
+    --text-dim: #a8a5b8;
+    --text-faint: #6f6c81;
+    --accent: #9585ff;
+    --accent-soft: #241f3d;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
+    --crit: #e0ac3a;
+    --succ: #3fca8f;
+    --spec: #45b6da;
+    --fail: #e0993f;
+    --fumb: #ff6b81;
+    --oppo: #a793ff;
+    --comb: #6f97ff;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans TC", "Sora", system-ui, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  /* header */
+  .masthead { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 26px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .sigil {
+    width: 46px; height: 46px; flex: none; border-radius: 12px;
+    background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--comb)));
+    display: grid; place-items: center; color: #fff; box-shadow: var(--shadow);
+    font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 20px;
+  }
+  h1 {
+    font-family: "Sora", "Noto Sans TC", sans-serif; font-weight: 700;
+    font-size: clamp(22px, 3.2vw, 30px); margin: 0; letter-spacing: -.01em; text-wrap: balance;
+  }
+  .tagline { margin: 3px 0 0; color: var(--text-dim); font-size: 13.5px; }
+  .theme-toggle {
+    font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .04em;
+    background: var(--surface); color: var(--text-dim); border: 1px solid var(--border);
+    padding: 8px 14px; border-radius: 9px; cursor: pointer; transition: .15s;
+  }
+  .theme-toggle:hover { color: var(--text); border-color: var(--border-strong); }
+
+  .eyebrow {
+    font-family: "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .14em;
+    font-size: 10.5px; color: var(--text-faint); font-weight: 500;
+  }
+
+  /* card */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    box-shadow: var(--shadow); margin-bottom: 22px;
+  }
+  .card-pad { padding: 22px 24px; }
+
+  /* dropzone */
+  .drop {
+    border: 1.5px dashed var(--border-strong); border-radius: 14px; background: var(--surface-2);
+    padding: 40px 24px; text-align: center; cursor: pointer; transition: .18s;
+  }
+  .drop:hover, .drop.drag { border-color: var(--accent); background: var(--accent-soft); }
+  .drop-title { font-family: "Sora","Noto Sans TC",sans-serif; font-weight: 600; font-size: 17px; margin: 12px 0 4px; }
+  .drop-sub { color: var(--text-dim); font-size: 13px; margin: 0; }
+  .drop-icon { font-size: 30px; opacity: .85; }
+  .filemeta { margin-top: 14px; font-family: "JetBrains Mono", monospace; font-size: 12px; color: var(--text-faint); }
+
+  /* KPI tiles */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 12px; }
+  .kpi {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 13px 14px;
+    position: relative; overflow: hidden;
+  }
+  .kpi::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background: var(--k, var(--accent)); }
+  .kpi .kval { font-family: "JetBrains Mono", monospace; font-weight: 700; font-size: 25px; font-variant-numeric: tabular-nums; line-height: 1.1; color: var(--k, var(--text)); }
+  .kpi .klabel { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .kpi .ksub { font-size: 10.5px; color: var(--text-faint); font-family: "JetBrains Mono", monospace; margin-top: 1px; }
+
+  /* filter section */
+  .filter-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:11px; flex-wrap:wrap; }
+  .filter-head h3 { margin:0; font-size:14px; font-family:"Sora","Noto Sans TC",sans-serif; font-weight:600; display:flex; align-items:center; gap:8px;}
+  .count-pill { font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--text-faint); }
+  .mini-btns { display:flex; gap:6px; }
+  .mini-btn {
+    font-size:11.5px; font-family:"JetBrains Mono",monospace; letter-spacing:.03em;
+    background:transparent; border:1px solid var(--border); color:var(--text-dim);
+    padding:4px 9px; border-radius:7px; cursor:pointer; transition:.15s;
+  }
+  .mini-btn:hover { color:var(--text); border-color:var(--border-strong); }
+
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip {
+    font-size:12.5px; padding:6px 12px; border-radius:999px; cursor:pointer;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim);
+    transition:.14s; user-select:none; display:inline-flex; align-items:center; gap:7px;
+  }
+  .chip:hover { border-color:var(--border-strong); color:var(--text); }
+  .chip.on { background:var(--accent-soft); border-color:var(--accent); color:var(--text); font-weight:500; }
+  .chip .dot { width:7px; height:7px; border-radius:50%; background:var(--border-strong); flex:none; }
+  .chip.on .dot { background:var(--accent); }
+  .chip .cnum { font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--text-faint); }
+  .divider-row { border:none; border-top:1px solid var(--border); margin:20px 0; }
+
+  /* group control */
+  .toolbar { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+  .seg { display:inline-flex; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:3px; gap:2px; }
+  .seg button {
+    font-family:"Noto Sans TC",sans-serif; font-size:12.5px; border:none; background:transparent; color:var(--text-dim);
+    padding:6px 12px; border-radius:7px; cursor:pointer; transition:.14s; white-space:nowrap;
+  }
+  .seg button:hover { color:var(--text); }
+  .seg button.on { background:var(--surface); color:var(--text); font-weight:600; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+
+  /* table */
+  .table-scroll { overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
+  table { border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums; }
+  thead th {
+    position:sticky; top:0; background:var(--surface-3); z-index:2;
+    font-weight:600; font-size:11.5px; color:var(--text-dim); text-align:right;
+    padding:9px 12px; white-space:nowrap; border-bottom:1px solid var(--border-strong);
+  }
+  thead tr.grp th {
+    font-family:"JetBrains Mono",monospace; text-transform:uppercase; letter-spacing:.08em; font-size:10px;
+    color:var(--text-faint); text-align:center; padding:7px 12px 5px; border-bottom:1px solid var(--border);
+  }
+  thead th.lbl { text-align:left; }
+  th.sortable { cursor:pointer; user-select:none; }
+  th.sortable:hover { color:var(--text); }
+  th .arrow { opacity:.4; font-size:9px; }
+  th.sorted .arrow { opacity:1; color:var(--accent); }
+  tbody td {
+    padding:8px 12px; font-size:13px; text-align:right; border-bottom:1px solid var(--border);
+    font-family:"JetBrains Mono",monospace; white-space:nowrap;
+  }
+  tbody td.lbl { text-align:left; font-family:"Noto Sans TC",sans-serif; color:var(--text); font-weight:500; }
+  tbody td.lbl .sub { color:var(--text-faint); font-weight:400; font-size:11.5px; }
+  tbody tr:hover td { background:var(--surface-2); }
+  td.zero { color:var(--text-faint); opacity:.55; }
+  .v-crit{color:var(--crit);} .v-succ{color:var(--succ);} .v-spec{color:var(--spec);}
+  .v-fail{color:var(--fail);} .v-fumb{color:var(--fumb);} .v-oppo{color:var(--oppo);} .v-comb{color:var(--comb);}
+  td.total { font-weight:700; color:var(--text); }
+  td.rate { color:var(--text-dim); }
+  tfoot td {
+    padding:10px 12px; font-family:"JetBrains Mono",monospace; font-size:13px; text-align:right;
+    font-weight:700; border-top:2px solid var(--border-strong); background:var(--surface-3);
+  }
+  tfoot td.lbl { text-align:left; font-family:"Noto Sans TC",sans-serif; }
+  .catsep { border-left:1px solid var(--border); }
+
+  .legend { display:flex; flex-wrap:wrap; gap:14px 18px; margin-top:14px; font-size:12px; color:var(--text-dim); }
+  .legend span { display:inline-flex; align-items:center; gap:6px; }
+  .legend i { width:10px; height:10px; border-radius:3px; display:inline-block; }
+
+  .empty { text-align:center; padding:38px 20px; color:var(--text-faint); font-size:13.5px; }
+  .hidden { display:none !important; }
+  .note {
+    font-size:12px; color:var(--text-dim); background:var(--surface-2); border:1px solid var(--border);
+    border-left:3px solid var(--accent); border-radius:9px; padding:11px 14px; margin-top:16px; line-height:1.6;
+  }
+  .note code { font-family:"JetBrains Mono",monospace; font-size:11.5px; background:var(--surface-3); padding:1px 5px; border-radius:4px; }
+  .toast {
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--text); color:var(--bg); font-size:13px; padding:10px 18px; border-radius:10px;
+    opacity:0; transition:.25s; pointer-events:none; z-index:50; font-weight:500;
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  .foot { text-align:center; color:var(--text-faint); font-size:11.5px; margin-top:30px; font-family:"JetBrains Mono",monospace; }
+  @media (max-width:560px){ .card-pad{padding:18px 16px;} .wrap{padding:22px 14px 60px;} }
+</style>
+
+<div class="wrap">
+  <div class="masthead">
+    <div class="brand">
+      <div class="sigil">d100</div>
+      <div>
+        <div class="eyebrow">CCFolia LOG · 判定集計</div>
+        <h1>擲骰判定統計盤</h1>
+        <p class="tagline">上傳跑團 LOG，依角色與頻道加總每一種判定結果</p>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeBtn">切換主題</button>
+  </div>
+
+  <!-- upload -->
+  <div class="card" id="uploadCard">
+    <div class="card-pad">
+      <div class="drop" id="drop">
+        <input type="file" id="fileInput" accept=".html,.htm,text/html" class="hidden">
+        <div class="drop-icon">🎲</div>
+        <p class="drop-title">拖曳或點擊上傳 CCFolia LOG（.html）</p>
+        <p class="drop-sub">在瀏覽器內解析，檔案不會上傳到任何伺服器</p>
+        <div class="filemeta" id="fileMeta"></div>
+      </div>
+      <div class="note">
+        會判讀的擲骰指令：<code>CCB</code> / <code>SCCB</code> / <code>sCCB</code>（標準判定）、
+        <code>RESB</code>（對抗判定的成敗）、<code>CBRB</code>（組合判定的成敗）。
+        判定結果對照 —— <b>大成功</b>＝決定的成功／決定性的成功（含「決定性的成功/特殊」）、<b>大失敗</b>＝致命的失敗／致命性失敗。
+      </div>
+    </div>
+  </div>
+
+  <!-- results -->
+  <div id="results" class="hidden">
+    <!-- KPI -->
+    <div class="card"><div class="card-pad">
+      <div class="filter-head" style="margin-bottom:14px;">
+        <h3>目前篩選加總</h3>
+        <span class="count-pill" id="scopePill"></span>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </div></div>
+
+    <!-- filters -->
+    <div class="card"><div class="card-pad">
+      <div class="filter-head">
+        <h3>🎯 頻道 <span class="count-pill" id="chCount"></span></h3>
+        <div class="mini-btns">
+          <button class="mini-btn" data-all="ch">全選</button>
+          <button class="mini-btn" data-none="ch">清除</button>
+        </div>
+      </div>
+      <div class="chips" id="chChips"></div>
+
+      <hr class="divider-row">
+
+      <div class="filter-head">
+        <h3>👤 角色 <span class="count-pill" id="chrCount"></span></h3>
+        <div class="mini-btns">
+          <button class="mini-btn" data-all="chr">全選</button>
+          <button class="mini-btn" data-none="chr">清除</button>
+        </div>
+      </div>
+      <div class="chips" id="chrChips"></div>
+    </div></div>
+
+    <!-- table -->
+    <div class="card"><div class="card-pad">
+      <div class="toolbar">
+        <div class="seg" id="groupSeg">
+          <button data-g="char_channel" class="on">角色 × 頻道</button>
+          <button data-g="char">依角色</button>
+          <button data-g="channel">依頻道</button>
+          <button data-g="all">全部加總</button>
+        </div>
+        <div class="mini-btns">
+          <button class="mini-btn" id="copyBtn">複製表格</button>
+          <button class="mini-btn" id="resetBtn">重新上傳</button>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table id="tbl">
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot id="tfoot"></tfoot>
+        </table>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--crit)"></i>大成功</span>
+        <span><i style="background:var(--succ)"></i>成功</span>
+        <span><i style="background:var(--spec)"></i>特殊</span>
+        <span><i style="background:var(--fail)"></i>失敗</span>
+        <span><i style="background:var(--fumb)"></i>大失敗</span>
+        <span><i style="background:var(--oppo)"></i>對抗判定(RESB)</span>
+        <span><i style="background:var(--comb)"></i>組合判定(CBRB)</span>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="foot">擲骰判定統計盤 · 全程於瀏覽器端解析</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- parsing core ---------- */
+  function classifyVerdict(t) {
+    if (/致命|ファンブル|大失敗|fumble/i.test(t)) return 'fumble';
+    if (/決定|クリティカル|大成功|critical/i.test(t)) return 'critical';
+    if (/特殊|スペシャル|ハードサクセス|イクストリーム|special/i.test(t)) return 'special';
+    if (/成功|success/i.test(t)) return 'success';
+    if (/失敗|失败|failure/i.test(t)) return 'failure';
+    return null;
+  }
+  function classifyCommand(m) {
+    m = m.trim();
+    if (/^RESB/i.test(m)) return 'resb';
+    if (/^CBRB/i.test(m)) return 'cbrb';
+    if (/^s?(SCCB|CCB|CC)\b/i.test(m) || /^s?(SCCB|CCB|CC)[<＜(（]/i.test(m)) return 'std';
+    return null;
+  }
+  function parseRoll(channel, name, message) {
+    if (message.indexOf('＞') === -1 && message.indexOf('>') === -1) return null;
+    var fam = classifyCommand(message);
+    if (!fam) return null;
+    var parts = message.split('＞');
+    if (parts.length < 2) parts = message.split('>');
+    var last = parts[parts.length - 1].trim();
+    var verdict = classifyVerdict(last);
+    if (!verdict) return null;
+    return { channel: channel, name: name, family: fam, verdict: verdict };
+  }
+
+  function parseLog(htmlText) {
+    var doc = new DOMParser().parseFromString(htmlText, 'text/html');
+    var ps = doc.querySelectorAll('p');
+    var rolls = [];
+    ps.forEach(function (p) {
+      var spans = p.querySelectorAll('span');
+      if (spans.length < 3) return;
+      var channel = (spans[0].textContent || '').trim().replace(/^\[|\]$/g, '').trim();
+      var name = (spans[1].textContent || '').trim();
+      var message = (spans[spans.length - 1].textContent || '').trim();
+      if (!name) return;
+      var r = parseRoll(channel || '（未命名頻道）', name, message);
+      if (r) rolls.push(r);
+    });
+    return rolls;
+  }
+
+  /* ---------- state ---------- */
+  var ROLLS = [];
+  var selCh = new Set(), selChr = new Set();
+  var groupMode = 'char_channel';
+  var sortKey = 'total', sortDir = -1;
+
+  var CATS = [
+    { key: 'critical', label: '大成功', cls: 'v-crit', grp: 'std' },
+    { key: 'success',  label: '成功',   cls: 'v-succ', grp: 'std' },
+    { key: 'special',  label: '特殊',   cls: 'v-spec', grp: 'std' },
+    { key: 'failure',  label: '失敗',   cls: 'v-fail', grp: 'std' },
+    { key: 'fumble',   label: '大失敗', cls: 'v-fumb', grp: 'std' },
+    { key: 'resb_s',   label: '成功',   cls: 'v-oppo', grp: 'resb' },
+    { key: 'resb_f',   label: '失敗',   cls: 'v-oppo', grp: 'resb' },
+    { key: 'cbrb_s',   label: '成功',   cls: 'v-comb', grp: 'cbrb' },
+    { key: 'cbrb_f',   label: '失敗',   cls: 'v-comb', grp: 'cbrb' }
+  ];
+
+  function blankRow() {
+    var o = { total: 0 };
+    CATS.forEach(function (c) { o[c.key] = 0; });
+    return o;
+  }
+  function addRoll(o, r) {
+    o.total++;
+    if (r.family === 'std') { o[r.verdict]++; }
+    else if (r.family === 'resb') { (r.verdict === 'failure' || r.verdict === 'fumble') ? o.resb_f++ : o.resb_s++; }
+    else if (r.family === 'cbrb') { (r.verdict === 'failure' || r.verdict === 'fumble') ? o.cbrb_f++ : o.cbrb_s++; }
+  }
+
+  /* ---------- DOM refs ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var drop = $('drop'), fileInput = $('fileInput');
+
+  /* ---------- upload wiring ---------- */
+  drop.addEventListener('click', function () { fileInput.click(); });
+  drop.addEventListener('dragover', function (e) { e.preventDefault(); drop.classList.add('drag'); });
+  drop.addEventListener('dragleave', function () { drop.classList.remove('drag'); });
+  drop.addEventListener('drop', function (e) {
+    e.preventDefault(); drop.classList.remove('drag');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function () { if (fileInput.files[0]) handleFile(fileInput.files[0]); });
+
+  function handleFile(file) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var rolls = parseLog(String(reader.result));
+        if (!rolls.length) {
+          $('fileMeta').innerHTML = '⚠️ 在「' + escapeHtml(file.name) + '」中找不到可判讀的擲骰判定。請確認是 CCFolia 匯出的 LOG。';
+          return;
+        }
+        ROLLS = rolls;
+        $('fileMeta').textContent = file.name + ' · ' + rolls.length + ' 筆判定 · ' + (file.size / 1024).toFixed(0) + ' KB';
+        buildFilters();
+        render();
+        $('results').classList.remove('hidden');
+        $('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (err) {
+        $('fileMeta').textContent = '解析失敗：' + err.message;
+      }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  function escapeHtml(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* ---------- filters ---------- */
+  var chanList = [], charList = [], chCounts = {}, chrCounts = {};
+  function uniqueSorted(vals) {
+    return Array.from(new Set(vals)).sort(function (a, b) { return a.localeCompare(b, 'zh-Hant'); });
+  }
+  function buildFilters() {
+    chanList = uniqueSorted(ROLLS.map(function (r) { return r.channel; }));
+    charList = uniqueSorted(ROLLS.map(function (r) { return r.name; }));
+    selCh = new Set(chanList); selChr = new Set(charList);
+
+    chCounts = {}; chrCounts = {};
+    ROLLS.forEach(function (r) { chCounts[r.channel] = (chCounts[r.channel] || 0) + 1; chrCounts[r.name] = (chrCounts[r.name] || 0) + 1; });
+
+    refreshChips();
+    $('chCount').textContent = chanList.length + ' 個';
+    $('chrCount').textContent = charList.length + ' 位';
+  }
+  function refreshChips() {
+    renderChips($('chChips'), chanList, selCh, chCounts);
+    renderChips($('chrChips'), charList, selChr, chrCounts);
+  }
+  function renderChips(container, items, selSet, counts) {
+    container.innerHTML = '';
+    items.forEach(function (name) {
+      var el = document.createElement('div');
+      el.className = 'chip' + (selSet.has(name) ? ' on' : '');
+      el.innerHTML = '<span class="dot"></span>' + escapeHtml(name) + ' <span class="cnum">' + (counts[name] || 0) + '</span>';
+      el.addEventListener('click', function () {
+        if (selSet.has(name)) selSet.delete(name); else selSet.add(name);
+        el.classList.toggle('on');
+        render();
+      });
+      container.appendChild(el);
+    });
+  }
+  document.querySelectorAll('[data-all]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var kind = b.getAttribute('data-all');
+      if (kind === 'ch') chanList.forEach(function (v) { selCh.add(v); });
+      else charList.forEach(function (v) { selChr.add(v); });
+      refreshChips(); render();
+    });
+  });
+  document.querySelectorAll('[data-none]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      (b.getAttribute('data-none') === 'ch' ? selCh : selChr).clear();
+      refreshChips(); render();
+    });
+  });
+
+  /* ---------- group / sort control ---------- */
+  $('groupSeg').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    groupMode = b.getAttribute('data-g');
+    $('groupSeg').querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+    render();
+  });
+
+  /* ---------- render ---------- */
+  function currentRolls() {
+    return ROLLS.filter(function (r) { return selCh.has(r.channel) && selChr.has(r.name); });
+  }
+
+  function render() {
+    var rolls = currentRolls();
+    renderKpis(rolls);
+    renderTable(rolls);
+    $('scopePill').textContent = selChr.size + ' 位角色 · ' + selCh.size + ' 個頻道 · ' + rolls.length + ' 筆判定';
+  }
+
+  function renderKpis(rolls) {
+    var t = blankRow();
+    rolls.forEach(function (r) { addRoll(t, r); });
+    var tiles = [
+      { v: t.total, l: '判定總數', s: 'total rolls', c: 'var(--accent)' },
+      { v: t.critical, l: '大成功', s: 'critical', c: 'var(--crit)' },
+      { v: t.success, l: '成功', s: 'success', c: 'var(--succ)' },
+      { v: t.special, l: '特殊', s: 'special', c: 'var(--spec)' },
+      { v: t.failure, l: '失敗', s: 'failure', c: 'var(--fail)' },
+      { v: t.fumble, l: '大失敗', s: 'fumble', c: 'var(--fumb)' },
+      { v: t.resb_s + t.resb_f, l: '對抗判定', s: t.resb_s + '勝 / ' + t.resb_f + '敗', c: 'var(--oppo)' },
+      { v: t.cbrb_s + t.cbrb_f, l: '組合判定', s: t.cbrb_s + '勝 / ' + t.cbrb_f + '敗', c: 'var(--comb)' }
+    ];
+    $('kpis').innerHTML = tiles.map(function (k) {
+      return '<div class="kpi" style="--k:' + k.c + '"><div class="kval">' + k.v + '</div>' +
+             '<div class="klabel">' + k.l + '</div><div class="ksub">' + k.s + '</div></div>';
+    }).join('');
+  }
+
+  function groupRows(rolls) {
+    var map = new Map();
+    rolls.forEach(function (r) {
+      var key, label, sub;
+      if (groupMode === 'char_channel') { key = r.name + ' ' + r.channel; label = r.name; sub = r.channel; }
+      else if (groupMode === 'char') { key = r.name; label = r.name; sub = ''; }
+      else if (groupMode === 'channel') { key = r.channel; label = r.channel; sub = ''; }
+      else { key = '__all__'; label = '全部加總'; sub = ''; }
+      if (!map.has(key)) map.set(key, { label: label, sub: sub, data: blankRow() });
+      addRoll(map.get(key).data, r);
+    });
+    return Array.from(map.values());
+  }
+
+  function renderTable(rolls) {
+    var rows = groupRows(rolls);
+
+    // sort
+    rows.sort(function (a, b) {
+      var av, bv;
+      if (sortKey === 'label') { av = a.label + a.sub; bv = b.label + b.sub; return av.localeCompare(bv, 'zh-Hant') * sortDir; }
+      if (sortKey === 'rate') { av = rate(a.data); bv = rate(b.data); }
+      else { av = a.data[sortKey]; bv = b.data[sortKey]; }
+      if (av === bv) return a.label.localeCompare(b.label, 'zh-Hant');
+      return (av - bv) * sortDir;
+    });
+
+    // header
+    var twoLabel = groupMode === 'char_channel';
+    var labelSpan = twoLabel ? 2 : 1;
+    var gh = '<tr class="grp"><th class="lbl" colspan="' + labelSpan + '"></th>' +
+      '<th colspan="5">標準判定</th><th colspan="2" class="catsep">對抗 RESB</th>' +
+      '<th colspan="2" class="catsep">組合 CBRB</th><th colspan="2" class="catsep"></th></tr>';
+
+    function th(key, text, extraCls) {
+      var sortedCls = (sortKey === key) ? ' sorted' : '';
+      var arrow = (sortKey === key) ? (sortDir === -1 ? '▼' : '▲') : '↕';
+      return '<th class="sortable' + sortedCls + (extraCls ? ' ' + extraCls : '') + '" data-sort="' + key + '">' +
+             text + ' <span class="arrow">' + arrow + '</span></th>';
+    }
+    var hr = '<tr>';
+    if (twoLabel) { hr += th('label', '角色', 'lbl') + '<th class="lbl">頻道</th>'; }
+    else { hr += th('label', groupMode === 'channel' ? '頻道' : '角色', 'lbl'); }
+    hr += th('critical', '大成功') + th('success', '成功') + th('special', '特殊') + th('failure', '失敗') + th('fumble', '大失敗');
+    hr += th('resb_s', '成功', 'catsep') + th('resb_f', '失敗');
+    hr += th('cbrb_s', '成功', 'catsep') + th('cbrb_f', '失敗');
+    hr += th('total', '判定數', 'catsep') + th('rate', '成功率');
+    hr += '</tr>';
+    $('thead').innerHTML = gh + hr;
+
+    // body
+    if (!rows.length) {
+      var cols = 12 + (twoLabel ? 1 : 0);
+      $('tbody').innerHTML = '<tr><td class="empty" colspan="' + cols + '">目前的頻道／角色篩選沒有任何判定，請調整上方選項。</td></tr>';
+      $('tfoot').innerHTML = '';
+    } else {
+      $('tbody').innerHTML = rows.map(function (row) { return rowHtml(row, twoLabel); }).join('');
+      // footer totals
+      var t = blankRow();
+      rows.forEach(function (row) { CATS.forEach(function (c) { t[c.key] += row.data[c.key]; }); t.total += row.data.total; });
+      $('tfoot').innerHTML = footHtml(t, twoLabel);
+    }
+
+    // attach sort handlers
+    $('thead').querySelectorAll('th.sortable').forEach(function (th) {
+      th.addEventListener('click', function () {
+        var k = th.getAttribute('data-sort');
+        if (sortKey === k) sortDir = -sortDir;
+        else { sortKey = k; sortDir = (k === 'label') ? 1 : -1; }
+        renderTable(currentRolls());
+      });
+    });
+  }
+
+  function rate(d) {
+    var stdTotal = d.critical + d.success + d.special + d.failure + d.fumble;
+    if (!stdTotal) return -1;
+    return (d.critical + d.success + d.special) / stdTotal;
+  }
+  function cell(v, cls) {
+    return '<td class="' + (v === 0 ? 'zero ' : '') + (cls || '') + '">' + v + '</td>';
+  }
+  function rowHtml(row, twoLabel) {
+    var d = row.data;
+    var html = '<tr>';
+    if (twoLabel) html += '<td class="lbl">' + escapeHtml(row.label) + '</td><td class="lbl"><span class="sub">' + escapeHtml(row.sub) + '</span></td>';
+    else html += '<td class="lbl">' + escapeHtml(row.label) + '</td>';
+    html += cell(d.critical, 'v-crit') + cell(d.success, 'v-succ') + cell(d.special, 'v-spec') + cell(d.failure, 'v-fail') + cell(d.fumble, 'v-fumb');
+    html += '<td class="catsep ' + (d.resb_s === 0 ? 'zero ' : '') + 'v-oppo">' + d.resb_s + '</td>' + cell(d.resb_f, 'v-oppo');
+    html += '<td class="catsep ' + (d.cbrb_s === 0 ? 'zero ' : '') + 'v-comb">' + d.cbrb_s + '</td>' + cell(d.cbrb_f, 'v-comb');
+    var r = rate(d);
+    html += '<td class="catsep total">' + d.total + '</td>';
+    html += '<td class="rate">' + (r < 0 ? '—' : (r * 100).toFixed(0) + '%') + '</td>';
+    html += '</tr>';
+    return html;
+  }
+  function footHtml(t, twoLabel) {
+    var html = '<tr>';
+    html += '<td class="lbl" colspan="' + (twoLabel ? 2 : 1) + '">合計</td>';
+    html += '<td class="v-crit">' + t.critical + '</td><td class="v-succ">' + t.success + '</td><td class="v-spec">' + t.special + '</td><td class="v-fail">' + t.failure + '</td><td class="v-fumb">' + t.fumble + '</td>';
+    html += '<td class="catsep v-oppo">' + t.resb_s + '</td><td class="v-oppo">' + t.resb_f + '</td>';
+    html += '<td class="catsep v-comb">' + t.cbrb_s + '</td><td class="v-comb">' + t.cbrb_f + '</td>';
+    var r = rate(t);
+    html += '<td class="catsep">' + t.total + '</td><td>' + (r < 0 ? '—' : (r * 100).toFixed(0) + '%') + '</td>';
+    html += '</tr>';
+    return html;
+  }
+
+  /* ---------- copy ---------- */
+  $('copyBtn').addEventListener('click', function () {
+    var rows = groupRows(currentRolls());
+    var twoLabel = groupMode === 'char_channel';
+    var head = [];
+    if (twoLabel) head.push('角色', '頻道'); else head.push(groupMode === 'channel' ? '頻道' : '角色');
+    head.push('大成功', '成功', '特殊', '失敗', '大失敗', '對抗成功', '對抗失敗', '組合成功', '組合失敗', '判定數', '成功率');
+    var lines = [head.join('\t')];
+    rows.forEach(function (row) {
+      var d = row.data, cols = [];
+      if (twoLabel) cols.push(row.label, row.sub); else cols.push(row.label);
+      cols.push(d.critical, d.success, d.special, d.failure, d.fumble, d.resb_s, d.resb_f, d.cbrb_s, d.cbrb_f, d.total);
+      var r = rate(d); cols.push(r < 0 ? '' : (r * 100).toFixed(0) + '%');
+      lines.push(cols.join('\t'));
+    });
+    var text = lines.join('\n');
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast('已複製表格（可貼到試算表）'); }, function () { toast('複製失敗，瀏覽器不允許'); });
+    } else { toast('此環境不支援複製'); }
+  });
+
+  $('resetBtn').addEventListener('click', function () {
+    ROLLS = []; $('results').classList.add('hidden'); $('fileMeta').textContent = ''; fileInput.value = '';
+    $('uploadCard').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  /* ---------- toast ---------- */
+  var toastEl = $('toast'), toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg; toastEl.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2200);
+  }
+
+  /* ---------- theme ---------- */
+  var root = document.documentElement;
+  $('themeBtn').addEventListener('click', function () {
+    var cur = root.getAttribute('data-theme');
+    var isDark = cur ? cur === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  });
+})();
+</script>
