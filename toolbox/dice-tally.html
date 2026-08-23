@@ -11,7 +11,7 @@
     --accent: #6a55e0; --accent-soft: #efecfd;
     --shadow: 0 1px 2px rgba(24,22,40,.05), 0 8px 24px -12px rgba(24,22,40,.18);
     --crit: #a9770a; --succ: #1f9463; --spec: #1f83a8; --fail: #b5701f; --fumb: #cf3f56;
-    --oppo: #7c5fe6; --comb: #3f68c9; --psy: #b8478a;
+    --oppo: #7c5fe6; --comb: #3f68c9; --psy: #b8478a; --secret: #5c6885;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
@@ -21,7 +21,7 @@
       --accent: #9585ff; --accent-soft: #241f3d;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
       --crit: #e0ac3a; --succ: #3fca8f; --spec: #45b6da; --fail: #e0993f; --fumb: #ff6b81;
-      --oppo: #a793ff; --comb: #6f97ff; --psy: #f072b8;
+      --oppo: #a793ff; --comb: #6f97ff; --psy: #f072b8; --secret: #97a2c8;
     }
   }
   :root[data-theme="dark"] {
@@ -31,7 +31,7 @@
     --accent: #9585ff; --accent-soft: #241f3d;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.6);
     --crit: #e0ac3a; --succ: #3fca8f; --spec: #45b6da; --fail: #e0993f; --fumb: #ff6b81;
-    --oppo: #a793ff; --comb: #6f97ff; --psy: #f072b8;
+    --oppo: #a793ff; --comb: #6f97ff; --psy: #f072b8; --secret: #97a2c8;
   }
 
   * { box-sizing: border-box; }
@@ -114,6 +114,16 @@
   .seg button b { font-family:"JetBrains Mono",monospace; font-weight:700; font-size:13px; margin-left:2px; color:var(--accent); }
   .seg button:not(.on) b { color:var(--text-faint); }
 
+  .colctl { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .colctl-label { font-size:13px; color:var(--text-dim); }
+  .colchip { display:inline-flex; align-items:center; gap:7px; font-size:13px; padding:6px 12px; border-radius:999px;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim); cursor:pointer; transition:.14s; user-select:none; }
+  .colchip:hover { border-color:var(--border-strong); }
+  .colchip .cdot { width:8px; height:8px; border-radius:50%; border:1.5px solid var(--cc); background:transparent; flex:none; }
+  .colchip.on { border-color:var(--cc); color:var(--text); background:color-mix(in srgb, var(--cc) 12%, var(--surface)); font-weight:500; }
+  .colchip.on .cdot { background:var(--cc); }
+  .colchip:not(.on) { opacity:.6; }
+
   .table-scroll { overflow-x:auto; border:1px solid var(--border); border-radius:14px; background:var(--surface); }
   table { border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums; }
   thead th { position:sticky; top:0; background:var(--surface-3); z-index:2; font-weight:600; font-size:13px; color:var(--text-dim);
@@ -131,7 +141,8 @@
   tbody tr:hover td { background:var(--surface-2); }
   td.zero { color:var(--text-faint); opacity:.5; }
   .v-crit{color:var(--crit);} .v-succ{color:var(--succ);} .v-spec{color:var(--spec);}
-  .v-fail{color:var(--fail);} .v-fumb{color:var(--fumb);} .v-oppo{color:var(--oppo);} .v-comb{color:var(--comb);} .v-psy{color:var(--psy);}
+  .v-fail{color:var(--fail);} .v-fumb{color:var(--fumb);} .v-oppo{color:var(--oppo);} .v-comb{color:var(--comb);} .v-psy{color:var(--psy);} .v-secret{color:var(--secret);}
+  .rc-lock{font-size:13px;color:var(--secret);font-weight:700;}
   td.sum { font-weight:700; color:var(--text); background:color-mix(in srgb, var(--succ) 7%, transparent); }
   td.total { font-weight:700; color:var(--text); }
   td.rate { color:var(--text-dim); }
@@ -203,8 +214,8 @@
       <div class="filemeta" id="fileMeta"></div>
     </div>
     <div class="note">
-      判讀指令：<code>CCB</code> / <code>SCCB</code> / <code>sCCB</code>（標準判定）、<code>RESB</code>（對抗判定）、<code>CBRB</code>（組合判定）。
-      <b>心理學</b>（含魚／龜／獅子心理學等）獨立計算、不併入標準判定。
+      判讀指令：<code>CCB</code>（標準判定）、<code>SCCB</code> / <code>sCCB</code>（祕密骰）、<code>RESB</code>（對抗判定）、<code>CBRB</code>（組合判定）。
+      <b>心理學</b>獨立計算、不併入標準判定；<b>祕密骰</b>（S 開頭）亦獨立計算，不併入標準判定的加總與成功率。
       大成功＝決定的成功／決定性的成功；大失敗＝致命的失敗／致命性失敗。
     </div>
   </div></div>
@@ -231,6 +242,16 @@
         <div class="mini-btns"><button class="mini-btn" data-all="chr">全選</button><button class="mini-btn" data-none="chr">清除</button></div>
       </div>
       <div class="chips" id="chrChips"></div>
+    </div></div>
+
+    <!-- KP designation -->
+    <div class="card"><div class="card-pad">
+      <div class="filter-head">
+        <h3>🎩 指定 KP 擲骰 <span class="count-pill" id="kpCount"></span></h3>
+        <div class="mini-btns"><button class="mini-btn" id="kpClear">全部取消</button></div>
+      </div>
+      <div class="chips" id="kpChips"></div>
+      <p class="detail-hint">勾選的角色，其所有擲骰判定都會併入「KP」一起計算（適合把 NPC／敵人等由 KP 代擲的角色歸給 KP）。取消勾選即還原為原角色。</p>
     </div></div>
 
     <!-- order -->
@@ -260,6 +281,13 @@
           <button class="mini-btn" id="resetBtn">重新上傳</button>
         </div>
       </div>
+      <div class="colctl" id="colToggles">
+        <span class="colctl-label">顯示欄位群組：</span>
+        <button class="colchip on" data-grp="psy" style="--cc:var(--psy)"><span class="cdot"></span>心理學</button>
+        <button class="colchip on" data-grp="sec" style="--cc:var(--secret)"><span class="cdot"></span>祕密骰</button>
+        <button class="colchip on" data-grp="resb" style="--cc:var(--oppo)"><span class="cdot"></span>對抗 RESB</button>
+        <button class="colchip on" data-grp="cbrb" style="--cc:var(--comb)"><span class="cdot"></span>組合 CBRB</button>
+      </div>
       <div class="table-scroll">
         <table id="tbl"><thead id="thead"></thead><tbody id="tbody"></tbody><tfoot id="tfoot"></tfoot></table>
       </div>
@@ -270,6 +298,7 @@
         <span><i style="background:var(--crit)"></i>大成功</span>
         <span><i style="background:var(--fumb)"></i>大失敗</span>
         <span><i style="background:var(--psy)"></i>心理學（獨立）</span>
+        <span><i style="background:var(--secret)"></i>祕密骰（獨立）</span>
         <span><i style="background:var(--oppo)"></i>對抗 RESB</span>
         <span><i style="background:var(--comb)"></i>組合 CBRB</span>
       </div>
@@ -352,8 +381,9 @@
     if (!verdict) return null;
 
     var rec = { idx: idx, channel: channel, name: name, family: fam, verdict: verdict,
-                skill: null, target: null, die: null, base: null, psy: false, isInitial: false };
+                skill: null, target: null, die: null, base: null, psy: false, secret: false, isInitial: false };
     if (fam === 'std') {
+      rec.secret = /^s/i.test(message.trim()); // SCCB / sCCB … S 開頭＝祕密骰
       var m = message.match(STD_RE);
       if (m) { rec.skill = m[1].trim(); rec.target = +m[2]; rec.die = +m[3]; }
       else { var m2 = message.match(STD_RE_NL); if (m2) { rec.skill = ''; rec.target = +m2[1]; rec.die = +m2[2]; } }
@@ -384,9 +414,12 @@
   }
 
   /* ---------- state ---------- */
-  var ROLLS = [];
+  var ROLLS = [];      // 原始解析結果
+  var EFF = [];        // 套用 KP 指定後（角色名重新對應）
   var selCh = new Set(), selChr = new Set();
   var chanList = [], charList = [], chCounts = {}, chrCounts = {};
+  var origChars = [], origCounts = {};
+  var kpChars = new Set();      // 被指定為 KP 的原始角色名
   var charOrder = [];
   var groupMode = 'char_channel';
   var sortKey = 'order', sortDir = -1;
@@ -398,12 +431,13 @@
   function blankRow() {
     return { s_succ:0,s_spec:0,s_fail:0,s_crit:0,s_fumb:0,
              p_succ:0,p_spec:0,p_fail:0,p_crit:0,p_fumb:0,
+             sec_succ:0,sec_spec:0,sec_fail:0,sec_crit:0,sec_fumb:0,
              resb_s:0,resb_f:0, cbrb_s:0,cbrb_f:0, total:0 };
   }
   function addRoll(o, r) {
     o.total++;
     if (r.family === 'std') {
-      var pre = r.psy ? 'p_' : 's_';
+      var pre = r.secret ? 'sec_' : r.psy ? 'p_' : 's_';   // 祕密骰 > 心理學 > 標準
       var suf = r.verdict === 'critical' ? 'crit' : r.verdict === 'special' ? 'spec'
               : r.verdict === 'fumble' ? 'fumb' : r.verdict === 'failure' ? 'fail' : 'succ';
       o[pre + suf]++;
@@ -443,18 +477,50 @@
 
   /* ---------- filters ---------- */
   function uniqueSorted(vals) { return Array.from(new Set(vals)).sort(function (a, b) { return a.localeCompare(b, 'zh-Hant'); }); }
+  function effName(name) { return kpChars.has(name) ? 'KP' : name; }
+  function applyKp() {
+    EFF = ROLLS.map(function (r) {
+      if (!kpChars.has(r.name)) return r;
+      var c = {}; for (var k in r) c[k] = r[k]; c.name = 'KP'; return c;
+    });
+  }
   function buildFilters() {
-    chanList = uniqueSorted(ROLLS.map(function (r) { return r.channel; }));
-    charList = uniqueSorted(ROLLS.map(function (r) { return r.name; }));
-    selCh = new Set(chanList); selChr = new Set(charList);
-    chCounts = {}; chrCounts = {};
-    ROLLS.forEach(function (r) { chCounts[r.channel] = (chCounts[r.channel] || 0) + 1; chrCounts[r.name] = (chrCounts[r.name] || 0) + 1; });
-    // default char order: by total desc
-    charOrder = charList.slice().sort(function (a, b) { return (chrCounts[b] - chrCounts[a]) || a.localeCompare(b, 'zh-Hant'); });
-    refreshChips(); renderOrderList();
+    origChars = uniqueSorted(ROLLS.map(function (r) { return r.name; }));
+    origCounts = {}; ROLLS.forEach(function (r) { origCounts[r.name] = (origCounts[r.name] || 0) + 1; });
+    applyKp();
+    chanList = uniqueSorted(EFF.map(function (r) { return r.channel; }));
+    selCh = new Set(chanList);
+    chCounts = {}; EFF.forEach(function (r) { chCounts[r.channel] = (chCounts[r.channel] || 0) + 1; });
+    renderChips($('chChips'), chanList, selCh, chCounts);
     $('chCount').textContent = chanList.length + ' 個';
+    buildChars();
+    buildKpPanel();
+  }
+  function buildChars() {   // 依 EFF（已套用 KP 指定）重建角色相關狀態
+    charList = uniqueSorted(EFF.map(function (r) { return r.name; }));
+    selChr = new Set(charList);
+    chrCounts = {}; EFF.forEach(function (r) { chrCounts[r.name] = (chrCounts[r.name] || 0) + 1; });
+    charOrder = charList.slice().sort(function (a, b) { return (chrCounts[b] - chrCounts[a]) || a.localeCompare(b, 'zh-Hant'); });
+    renderChips($('chrChips'), charList, selChr, chrCounts);
+    renderOrderList();
     $('chrCount').textContent = charList.length + ' 位';
   }
+  function buildKpPanel() {
+    var container = $('kpChips'); container.innerHTML = '';
+    origChars.forEach(function (name) {
+      var el = document.createElement('div');
+      el.className = 'chip' + (kpChars.has(name) ? ' on' : '');
+      el.innerHTML = '<span class="dot"></span>' + escapeHtml(name) + ' <span class="cnum">' + (origCounts[name] || 0) + '</span>';
+      el.addEventListener('click', function () {
+        kpChars.has(name) ? kpChars.delete(name) : kpChars.add(name);
+        el.classList.toggle('on');
+        applyKp(); buildChars(); updateKpCount(); render();
+      });
+      container.appendChild(el);
+    });
+    updateKpCount();
+  }
+  function updateKpCount() { $('kpCount').textContent = kpChars.size ? (kpChars.size + ' 位併入 KP') : '未指定'; }
   function refreshChips() {
     renderChips($('chChips'), chanList, selCh, chCounts);
     renderChips($('chrChips'), charList, selChr, chrCounts);
@@ -478,6 +544,10 @@
   });
   document.querySelectorAll('[data-none]').forEach(function (b) {
     b.addEventListener('click', function () { (b.getAttribute('data-none') === 'ch' ? selCh : selChr).clear(); refreshChips(); render(); });
+  });
+  $('kpClear').addEventListener('click', function () {
+    if (!kpChars.size) return;
+    kpChars.clear(); applyKp(); buildChars(); buildKpPanel(); render();
   });
 
   /* ---------- character order (drag) ---------- */
@@ -520,7 +590,17 @@
     render();
   });
 
-  function currentRolls() { return ROLLS.filter(function (r) { return selCh.has(r.channel) && selChr.has(r.name); }); }
+  $('colToggles').addEventListener('click', function (e) {
+    var b = e.target.closest('.colchip'); if (!b) return;
+    var id = b.getAttribute('data-grp');
+    visGroups[id] = !visGroups[id];
+    b.classList.toggle('on', visGroups[id]);
+    var keys = {}; visibleDataCols().forEach(function (c) { keys[c.k] = 1; });
+    if (sortKey !== 'order' && !keys[sortKey]) sortKey = 'order';   // 隱藏了正在排序的欄 → 還原
+    renderTable(currentRolls());
+  });
+
+  function currentRolls() { return EFF.filter(function (r) { return selCh.has(r.channel) && selChr.has(r.name); }); }
 
   function render() {
     var rolls = currentRolls();
@@ -539,6 +619,7 @@
       { v: t.s_crit, l: '大成功', s: '點我看明細 →', c: 'var(--crit)', d: 'crit' },
       { v: t.s_fumb, l: '大失敗', s: '點我看明細 →', c: 'var(--fumb)', d: 'fumble' },
       { v: t.p_succ + t.p_spec + t.p_fail + t.p_crit + t.p_fumb, l: '心理學', s: '獨立計算', c: 'var(--psy)' },
+      { v: t.sec_succ + t.sec_spec + t.sec_fail + t.sec_crit + t.sec_fumb, l: '祕密骰', s: '獨立計算', c: 'var(--secret)' },
       { v: t.resb_s + t.resb_f, l: '對抗判定', s: t.resb_s + '勝 / ' + t.resb_f + '敗', c: 'var(--oppo)' },
       { v: t.cbrb_s + t.cbrb_f, l: '組合判定', s: t.cbrb_s + '勝 / ' + t.cbrb_f + '敗', c: 'var(--comb)' }
     ];
@@ -571,6 +652,13 @@
     { k:'p_crit', t:'大成功', cls:'v-psy' },
     { k:'p_fumb', t:'大失敗', cls:'v-psy' }
   ];
+  var SEC_COLS = [
+    { k:'sec_succ', t:'成功', cls:'v-secret', sep:true },
+    { k:'sec_spec', t:'特殊', cls:'v-secret' },
+    { k:'sec_fail', t:'失敗', cls:'v-secret' },
+    { k:'sec_crit', t:'大成功', cls:'v-secret' },
+    { k:'sec_fumb', t:'大失敗', cls:'v-secret' }
+  ];
   var RESB_COLS = [ { k:'resb_s', t:'成功', cls:'v-oppo', sep:true }, { k:'resb_f', t:'失敗', cls:'v-oppo' } ];
   var CBRB_COLS = [ { k:'cbrb_s', t:'成功', cls:'v-comb', sep:true }, { k:'cbrb_f', t:'失敗', cls:'v-comb' } ];
   var TAIL_COLS = [
@@ -579,7 +667,26 @@
     { k:'critrate', t:'大成功率', cls:'v-crit' },
     { k:'fumbrate', t:'大失敗率', cls:'v-fumb' }
   ];
-  var DATA_COLS = STD_COLS.concat(PSY_COLS, RESB_COLS, CBRB_COLS, TAIL_COLS);
+
+  // 可獨立隱藏的欄位群組
+  var visGroups = { psy: true, sec: true, resb: true, cbrb: true };
+  var GROUPS = [
+    { id:'std',  title:'標準判定（不含心理學／祕密骰）', cols: STD_COLS, always: true },
+    { id:'psy',  title:'心理學（獨立）',  cols: PSY_COLS },
+    { id:'sec',  title:'祕密骰（獨立）',  cols: SEC_COLS },
+    { id:'resb', title:'對抗 RESB',      cols: RESB_COLS },
+    { id:'cbrb', title:'組合 CBRB',      cols: CBRB_COLS },
+    { id:'tail', title:'',               cols: TAIL_COLS, always: true }
+  ];
+  function visibleGroups() { return GROUPS.filter(function (g) { return g.always || visGroups[g.id]; }); }
+  function visibleDataCols() { var c = []; visibleGroups().forEach(function (g) { c = c.concat(g.cols); }); return c; }
+  var COPY_NAMES = {
+    s_succ:'成功', s_spec:'特殊', s_sp:'成功+特殊', s_fail:'失敗', s_crit:'大成功', s_fumb:'大失敗',
+    p_succ:'心理學-成功', p_spec:'心理學-特殊', p_fail:'心理學-失敗', p_crit:'心理學-大成功', p_fumb:'心理學-大失敗',
+    sec_succ:'祕密骰-成功', sec_spec:'祕密骰-特殊', sec_fail:'祕密骰-失敗', sec_crit:'祕密骰-大成功', sec_fumb:'祕密骰-大失敗',
+    resb_s:'對抗-成功', resb_f:'對抗-失敗', cbrb_s:'組合-成功', cbrb_f:'組合-失敗',
+    total:'判定數', rate:'成功率', critrate:'大成功率', fumbrate:'大失敗率'
+  };
 
   function getVal(d, k) {
     if (k === 's_sp') return d.s_succ + d.s_spec;
@@ -624,14 +731,14 @@
 
     var twoLabel = groupMode === 'char_channel';
     var labelSpan = twoLabel ? 2 : 1;
+    var cols = visibleDataCols();
 
-    // group header
-    var gh = '<tr class="grp"><th class="lbl" colspan="' + labelSpan + '"></th>' +
-      '<th colspan="6">標準判定（不含心理學）</th>' +
-      '<th colspan="5" class="catsep">心理學（獨立）</th>' +
-      '<th colspan="2" class="catsep">對抗 RESB</th>' +
-      '<th colspan="2" class="catsep">組合 CBRB</th>' +
-      '<th colspan="4" class="catsep"></th></tr>';
+    // group header (dynamic — respects hidden groups)
+    var gh = '<tr class="grp"><th class="lbl" colspan="' + labelSpan + '"></th>';
+    visibleGroups().forEach(function (g, i) {
+      gh += '<th colspan="' + g.cols.length + '"' + (i > 0 ? ' class="catsep"' : '') + '>' + g.title + '</th>';
+    });
+    gh += '</tr>';
 
     function th(key, text, opts) {
       opts = opts || {};
@@ -643,12 +750,12 @@
     var hr = '<tr>';
     if (twoLabel) hr += th('order', '角色', { lbl: true }) + '<th class="lbl">頻道</th>';
     else hr += th('order', groupMode === 'channel' ? '頻道' : '角色', { lbl: true });
-    DATA_COLS.forEach(function (c) { hr += th(c.k, c.t, { sep: c.sep }); });
+    cols.forEach(function (c) { hr += th(c.k, c.t, { sep: c.sep }); });
     hr += '</tr>';
     $('thead').innerHTML = gh + hr;
 
     if (!rows.length) {
-      $('tbody').innerHTML = '<tr><td class="empty" colspan="' + (labelSpan + DATA_COLS.length) + '">目前篩選沒有任何判定，請調整上方選項。</td></tr>';
+      $('tbody').innerHTML = '<tr><td class="empty" colspan="' + (labelSpan + cols.length) + '">目前篩選沒有任何判定，請調整上方選項。</td></tr>';
       $('tfoot').innerHTML = '';
     } else {
       $('tbody').innerHTML = rows.map(function (row) { return rowHtml(row, twoLabel); }).join('');
@@ -678,13 +785,12 @@
     var d = row.data, html = '<tr>';
     if (twoLabel) html += '<td class="lbl">' + escapeHtml(row.label) + '</td><td class="lbl"><span class="sub">' + escapeHtml(row.sub) + '</span></td>';
     else html += '<td class="lbl">' + escapeHtml(row.label) + '</td>';
-    DATA_COLS.forEach(function (c) { html += cell(d, c); });
+    visibleDataCols().forEach(function (c) { html += cell(d, c); });
     return html + '</tr>';
   }
   function footHtml(t, labelSpan) {
     var html = '<tr><td class="lbl" colspan="' + labelSpan + '">合計</td>';
-    DATA_COLS.forEach(function (c) {
-      var isRate = (c.k === 'rate' || c.k === 'critrate' || c.k === 'fumbrate');
+    visibleDataCols().forEach(function (c) {
       html += '<td class="' + (c.sep ? 'catsep ' : '') + (c.cls || '') + '">' + fmt(t, c) + '</td>';
     });
     return html + '</tr>';
@@ -702,9 +808,10 @@
     renderDetail(currentRolls());
   });
 
+  function isStdOnly(r) { return r.family === 'std' && !r.secret && !r.psy; } // 標準判定（排除心理學／祕密骰）
   function detailPick(rolls) {
     return rolls.filter(function (r) {
-      if (r.family !== 'std') return false;
+      if (!isStdOnly(r)) return false;
       if (detailMode === 'crit') return r.verdict === 'critical';
       if (detailMode === 'fumble') return r.verdict === 'fumble';
       return r.isInitial && SUCC[r.verdict]; // init
@@ -715,7 +822,7 @@
     // tab counts
     var nCrit = 0, nFumb = 0, nInit = 0;
     rolls.forEach(function (r) {
-      if (r.family !== 'std') return;
+      if (!isStdOnly(r)) return;
       if (r.verdict === 'critical') nCrit++;
       if (r.verdict === 'fumble') nFumb++;
       if (r.isInitial && SUCC[r.verdict]) nInit++;
@@ -723,10 +830,10 @@
     $('tabCrit').textContent = nCrit; $('tabFumb').textContent = nFumb; $('tabInit').textContent = nInit;
 
     $('detailHint').textContent = detailMode === 'crit'
-      ? '各角色判定為「大成功」的項目，同一角色集中一列、由左（最早）至右（最新）。'
+      ? '各角色「標準判定」為大成功的項目，同一角色集中一列、由左（最早）至右（最新）。心理學／祕密骰的大成功計入其各自欄位，不在此列。'
       : detailMode === 'fumble'
-      ? '各角色判定為「大失敗」的項目，同一角色集中一列、由左（最早）至右（最新）。'
-      : '各角色以技能初期值判定並成功（大成功／成功／特殊）的項目；目標值須等於該技能初期值，角色專屬技能與能力值判定（SAN／靈感／幸運等）不列入。';
+      ? '各角色「標準判定」為大失敗的項目，同一角色集中一列、由左（最早）至右（最新）。心理學／祕密骰的大失敗計入其各自欄位，不在此列。'
+      : '各角色以技能初期值進行「標準判定」並成功（大成功／成功／特殊）的項目；目標值須等於該技能初期值。心理學、祕密骰、角色專屬技能與能力值判定（SAN／靈感／幸運等）不列入。';
 
     var picked = detailPick(rolls);
     // group by character
@@ -771,17 +878,19 @@
       var av = getVal(a.data, sortKey), bv = getVal(b.data, sortKey); if (av === bv) return a.label.localeCompare(b.label, 'zh-Hant'); return (av - bv) * sortDir;
     });
     var twoLabel = groupMode === 'char_channel';
+    var vcols = visibleDataCols();   // 複製表格也依目前顯示的欄位群組
     var head = [];
     if (twoLabel) head.push('角色', '頻道'); else head.push(groupMode === 'channel' ? '頻道' : '角色');
-    ['成功','特殊','成功+特殊','失敗','大成功','大失敗','心理學-成功','心理學-特殊','心理學-失敗','心理學-大成功','心理學-大失敗','對抗-成功','對抗-失敗','組合-成功','組合-失敗','判定數','成功率','大成功率','大失敗率'].forEach(function (h) { head.push(h); });
+    vcols.forEach(function (c) { head.push(COPY_NAMES[c.k] || c.t); });
     var lines = [head.join('\t')];
     rows.forEach(function (row) {
-      var d = row.data, cols = [];
-      if (twoLabel) cols.push(row.label, row.sub); else cols.push(row.label);
-      cols.push(d.s_succ, d.s_spec, d.s_succ + d.s_spec, d.s_fail, d.s_crit, d.s_fumb,
-                d.p_succ, d.p_spec, d.p_fail, d.p_crit, d.p_fumb,
-                d.resb_s, d.resb_f, d.cbrb_s, d.cbrb_f, d.total, pct(succRate(d)), pct(critRate(d)), pct(fumbRate(d)));
-      lines.push(cols.join('\t'));
+      var d = row.data, cells = [];
+      if (twoLabel) cells.push(row.label, row.sub); else cells.push(row.label);
+      vcols.forEach(function (c) {
+        var isRate = (c.k === 'rate' || c.k === 'critrate' || c.k === 'fumbrate');
+        cells.push(isRate ? pct(getVal(d, c.k)) : getVal(d, c.k));
+      });
+      lines.push(cells.join('\t'));
     });
     var text = lines.join('\n');
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { toast('已複製表格（可貼到試算表）'); }, function () { toast('複製失敗'); });
@@ -789,7 +898,7 @@
   });
 
   $('resetBtn').addEventListener('click', function () {
-    ROLLS = []; $('results').classList.add('hidden'); $('fileMeta').textContent = ''; fileInput.value = '';
+    ROLLS = []; EFF = []; kpChars.clear(); $('results').classList.add('hidden'); $('fileMeta').textContent = ''; fileInput.value = '';
     $('uploadCard').scrollIntoView({ behavior: 'smooth' });
   });
 
