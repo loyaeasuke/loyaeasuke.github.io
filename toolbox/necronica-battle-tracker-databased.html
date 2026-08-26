@@ -61,6 +61,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--amethyst);
 .brand .t2{font-size:13px;color:var(--ink-dim)}
 .brand .t1 b{color:var(--accent);font-weight:800}
 .topbar .tools{display:flex;gap:8px;flex-wrap:wrap}
+.topbar .guide-btn{margin-left:6px;color:var(--accent);font-weight:700;white-space:nowrap}
 
 /* --- left flow panel --- */
 .left{grid-area:left;background:var(--panel);border-right:1px solid var(--line);
@@ -150,6 +151,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--amethyst);
 .flow-warn2{margin:2px 6px 6px 22px;font-size:13px;color:#ffb27a;background:#3a2a1c;border:1px solid #7a5a34;border-radius:5px;padding:4px 8px}
 .chk.chk-disabled{opacity:.6;cursor:not-allowed}
 .tgt-locked{font-size:13px;color:var(--ink-faint);margin-left:6px;white-space:nowrap}
+.tgt-row .tgt-self{font-size:13px;color:var(--ink-faint);padding-top:5px;white-space:nowrap}
 
 .cost-box{background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:8px 10px;margin-top:4px}
 .cost-row{display:grid;grid-template-columns:1fr auto;gap:4px;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line-soft)}
@@ -384,6 +386,7 @@ input:focus,select:focus,button:focus-visible{outline:2px solid var(--amethyst);
       <input type="file" id="dbFolder" webkitdirectory="" directory="" multiple="" hidden="">
       <input type="file" id="battleInput" accept=".json,application/json" hidden="">
     </div>
+      <button class="guide-btn" onclick="window.open('necronica-battle-tracker-databased-user-guide.html','_blank')" title="開新分頁檢視使用說明">📖 使用說明</button>
   </header>
 
   <!-- ===== LEFT: FLOW ===== -->
@@ -706,6 +709,10 @@ function allActionItems(u){
 function declaredUnits(){ return actingUnits().filter(u=>usedItemsByTiming(u,'行動').length>0); }
 // ---- 戰鬥判定（擲骰階段） ----
 function primaryAction(u){ return usedItemsByTiming(u,'行動')[0] || null; }   // 單選後即為該項
+// 射程為「自身」的項目：選為行動時不需指定目標
+function isSelfRange(it){ return !!it && String(it.range||'').trim()==='自身'; }
+// 該單位本刻度宣告的【行動】是否全為自身射程（單選制，故等同其行動射程＝自身）→ 無需目標
+function actionSelfOnly(u){ const its=usedItemsByTiming(u,'行動'); return its.length>0 && its.every(isSelfRange); }
 function judgeType(act){
   if(!act) return 'attack';
   if(act.mentalDmg>0) return 'mental';               // 精神攻擊
@@ -792,7 +799,7 @@ function judgeResultEl(u, act, type, val){
 function clearUsed(){
   state.units.forEach(u=>{ u.skills.forEach(s=>{s.used=false;s.costApplied=false;});
     LOCS.forEach(l=>u.parts[l].forEach(p=>{p.used=false;p.costApplied=false;}));
-    u.monsterParts.forEach(p=>{p.used=false;p.costApplied=false;}); u.target=null; });
+    u.monsterParts.forEach(p=>{p.used=false;p.costApplied=false;}); u.target=null; u.spineDiscount=false; });
   clearJudgeTargets();
 }
 // 清除所有裁判項目的指定對象（擲骰結果每刻度重置，裁判指定亦隨之重置）
@@ -802,11 +809,15 @@ function clearJudgeTargets(){
     all.forEach(it=>{ it.judgeTarget=null; it.judgeMode=''; });
   });
 }
+// 部件「脊椎」判定（名稱含「脊椎」即適用其例外規則）
+function isSpine(p){ return !!p && typeof p.name==='string' && p.name.indexOf('脊椎')>=0; }
 // 本刻度尚未扣過的「使用」COST（使用勾選可跨刻度保留，故以 costApplied 避免重複扣除）
 function pendingCost(u){
   let c=0;
   u.skills.forEach(s=>{ if(s.used&&!s.costApplied) c+=costNum(s.cost); });
   allParts(u).forEach(p=>{ if(p.used&&!p.costApplied) c+=costNum(p.cost); });
+  // 脊椎例外：同一輪內、上一刻度使用了「脊椎」→ 本刻度 1 個戰鬥動作 COST−1（最低 0）
+  if(u.spineDiscount && c>0) c=Math.max(0, c-1);
   return c;
 }
 function markCostApplied(u){
@@ -838,6 +849,7 @@ function refreshField(){
     LOCS.forEach(l=>u.parts[l].forEach(p=>{p.damaged=false;p.used=false;p.dmgKey=null;p.dmgBy=null;p.cutKill=false;}));
     u.monsterParts.forEach(p=>{p.damaged=false;p.used=false;p.dmgKey=null;p.dmgBy=null;p.cutKill=false;});
     u.skills.forEach(s=>s.used=false);
+    u.spineDiscount=false;
   });
   state.units.forEach(u=>{ u.action=effMax(u); u.appliedMax=effMax(u); });
   state.round=1; state.flow={}; state.rolls={}; state.cutRolls={}; state.misfire={}; clearJudgeTargets(); state.log=[]; state.tick=maxTickOnField();
@@ -863,12 +875,16 @@ function nextRound(){                       // 按鈕：先記錄目前刻度，
 // 依 req1：僅重置流程勾選與擲骰結果，「使用」勾選保留（若因此級聯進入下一輪，才一併清空）。
 function nextTick(){
   captureLog();                             // 先記錄目前 ROUND／刻度的流程
+  const spineArm={};                        // 本刻度使用了「脊椎」（本次才付費）→ 同一輪的下個刻度給 −1 折扣
   state.units.forEach(u=>{
     const m=effMax(u); const pend=(u.appliedMax||0)-m;
     if(pend>0) u.action -= pend;          // 損失部件等造成的最大值下降 → 現在行動值同步下降
     u.appliedMax = m;
-    u.action -= pendingCost(u);           // 扣除本刻度尚未扣過的使用 COST
+    // 偵測需在 markCostApplied 之前：脊椎「本刻度才付費」才算「本刻度使用」
+    spineArm[u.id] = allParts(u).some(p=> isSpine(p) && p.used && !p.costApplied);
+    u.action -= pendingCost(u);           // 扣除本刻度尚未扣過的使用 COST（pendingCost 已套用本刻度脊椎折扣）
     markCostApplied(u);
+    u.spineDiscount=false;                 // 消耗本刻度的脊椎折扣
   });
   hideDismantledFromGrid();               // 完全解體者移出格盤
   state.flow={}; state.rolls={}; state.cutRolls={}; state.misfire={}; clearJudgeTargets();   // 重置流程與擲骰（使用勾選保留）
@@ -876,10 +892,12 @@ function nextTick(){
   const below = vals.filter(v=> v<state.tick && v>0 );
   const allBelowZero = vals.length>0 && vals.every(v=> v<=0 );
   if(below.length===0 || allBelowZero){
-    // 無下一個可行動刻度、或全部單位行動值皆在 0 以下 → 自動進入下一輪（不重複記錄）
+    // 無下一個可行動刻度、或全部單位行動值皆在 0 以下 → 自動進入下一輪（脊椎折扣不跨輪，同一輪內限定，故不套用）
     _advanceRound();
     return;
   }
+  // 同一輪內、確有下個刻度 → 為使用了脊椎的單位套上下個刻度的 −1 折扣
+  state.units.forEach(u=>{ if(spineArm[u.id]) u.spineDiscount=true; });
   state.tick = Math.max(...below);
   render();
 }
@@ -958,10 +976,15 @@ function renderFlow(){
   const actionDeclBlock=(u)=>{
     const wrap=el('div','flow-decl');
     wrap.appendChild(unitItemsLine(u,'行動','待機'));
-    if(usedItemsByTiming(u,'行動').length){          // 已選擇行動 → 顯示目標選擇
+    if(usedItemsByTiming(u,'行動').length){          // 已選擇行動
       const row=el('div','tgt-row');
-      row.appendChild(el('span','tgt-label','目標：'));
-      row.appendChild(buildTargetPicker(u));
+      if(actionSelfOnly(u)){                          // 射程自身 → 免選目標
+        row.appendChild(el('span','tgt-label','目標：'));
+        row.appendChild(el('span','tgt-self','（射程自身・無需指定目標）'));
+      } else {                                        // 其餘 → 顯示目標選擇
+        row.appendChild(el('span','tgt-label','目標：'));
+        row.appendChild(buildTargetPicker(u));
+      }
       wrap.appendChild(row);
     }
     return wrap;
@@ -979,7 +1002,7 @@ function renderFlow(){
   const alActing=actingUnits('ally');
   if(alActing.length) alActing.forEach(u=> box.appendChild(actionDeclBlock(u)) );
   else box.appendChild(el('div','flow-empty','　（本刻度無我方單位行動）'));
-  const needTarget = declaredUnits().filter(u=>!u.target);   // 已宣告行動但未指定目標者
+  const needTarget = declaredUnits().filter(u=>!u.target && !actionSelfOnly(u));   // 已宣告行動但未指定目標者（射程自身者免目標）
   chkRow('a3','宣告結束','行動', { disabled: needTarget.length>0,
     hint: needTarget.length ? `⚠ 下列單位已使用行動但尚未指定目標，須先指定目標才能結束宣告：${needTarget.map(u=>u.name).join('、')}` : '' });
 
@@ -1225,7 +1248,7 @@ function renderFlow(){
     arr.forEach(u=>{
       const c=pendingCost(u); const cur=rnd(u.action); const rem=cur-c;
       const r=el('div','cost-row');
-      r.appendChild(el('div','nm',u.name));
+      r.appendChild(el('div','nm',u.name + (u.spineDiscount?'　※脊椎−1':'')));
       const calc=el('div','calc');
       calc.innerHTML=`<b>${cur}</b> − <span class="c">${c}</span> = <span class="r">${rem}</span>`;
       r.appendChild(calc); cb.appendChild(r);
@@ -1582,8 +1605,10 @@ function buildTable(title, items, kind, u, loc){
     const tdu=el('td','c-chk'); const cu=el('input');cu.type='checkbox';cu.checked=it.used;
     const lockAction = it.timing==='行動' && !!state.flow.a3;   // 【行動】宣告結束後鎖定
     const lockJudge  = it.timing==='裁判' && !!state.flow.c1;   // 【裁判】宣告後鎖定
-    cu.disabled = !!it.damaged || lockAction || lockJudge;
-    cu.setAttribute('data-tip', (lockAction||lockJudge) ? ('本階段已宣告結束，無法變更【'+it.timing+'】時機的使用') : '使用（計入本刻度 COST）');
+    const cannotAct  = rnd(u.action) <= 0;                      // req1：行動值≤0＝不可行動的領域
+    cu.disabled = !!it.damaged || lockAction || lockJudge || cannotAct;
+    cu.setAttribute('data-tip', cannotAct ? '此單位在不可行動的領域（行動值≤0），無法勾選使用'
+                     : (lockAction||lockJudge) ? ('本階段已宣告結束，無法變更【'+it.timing+'】時機的使用') : '使用（計入本刻度 COST）');
     cu.onchange=()=>{
       if(it.timing==='行動'){                        // 行動只能擇一：選新的即取消其他
         if(cu.checked){

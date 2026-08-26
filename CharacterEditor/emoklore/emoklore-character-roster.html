@@ -520,6 +520,7 @@ img{display:block}
       匯出純檢視網頁
     </button>
     <div class="tb-status" id="status">內建 2 名示範角色</div>
+    <button class="tb-btn" id="btnGuide" title="開新分頁檢視使用說明" onclick="window.open('emoklore-character-roster-manual.html','_blank')">📖 使用說明</button>
   </div>
   <div class="body">
   <aside class="side" id="side">
@@ -1340,7 +1341,7 @@ bind('btnExport','click',()=>{
   dataScript.textContent=JSON.stringify(data);
   dataScript.setAttribute('data-mode','viewer');
   // 移除工具列的編輯按鈕、隱藏 input
-  ['btnFolder','btnCsv','btnTpl','btnExport','btnNew','btnEditCur','btnDlChar','archiveName'].forEach(id=>{const el=doc.querySelector('#'+id);if(el)el.remove();});
+  ['btnFolder','btnCsv','btnTpl','btnExport','btnNew','btnEditCur','btnDlChar','archiveName','btnGuide'].forEach(id=>{const el=doc.querySelector('#'+id);if(el)el.remove();});
   const chk=doc.querySelector('.tb-chk'); if(chk) chk.remove();
   const foot=doc.querySelector('#status'); if(foot) foot.textContent='純檢視版';
   const sfoot=doc.querySelector('#sideFoot'); // keep

@@ -603,6 +603,10 @@ function App() {
             第一年＝西元
             <input type="number" value={epoch} onChange={(e) => setEpoch(+e.target.value || 1)} className="ed-field" style={{ width: 70 }} />
           </label>
+          {!READONLY && (
+            <button className="tl-btn" style={{ marginLeft: "auto" }} title="開新分頁檢視使用說明"
+              onClick={() => window.open("char-timeline-editor-guide.html", "_blank")}>📖 使用說明</button>
+          )}
         </div>
       </div>
 

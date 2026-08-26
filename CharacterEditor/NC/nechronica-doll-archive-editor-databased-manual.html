@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NECHRONICA 人偶名冊編輯器（打包版）— 使用說明</title>
+<style>:root{--accent:#6b5f80}
+
+:root{--accent:#7a5560;--ink:#1f2530;--muted:#5c6672;--paper:#ffffff;--soft:#f5f6f8;--line:#e2e5ea;--code:#eef1f5;--th:#eef2f6;--maxw:860px}
+@media (prefers-color-scheme:dark){:root{--ink:#e6e9ee;--muted:#9aa4b0;--paper:#12151a;--soft:#1a1e25;--line:#2a2f39;--code:#1c2028;--th:#1e2430}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--soft);color:var(--ink);font:15px/1.75 -apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.topbar{position:sticky;top:0;z-index:10;background:var(--accent);color:#fff;padding:10px 18px;font-size:14px;font-weight:600;letter-spacing:.02em;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.topbar .k{opacity:.85;font-weight:500}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:26px 20px 80px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:30px 34px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+h1,h2,h3,h4{line-height:1.35;font-weight:700;scroll-margin-top:60px}
+h1{font-size:26px;margin:.2em 0 .6em;padding-bottom:.35em;border-bottom:3px solid var(--accent)}
+h2{font-size:20px;margin:1.9em 0 .5em;padding-left:10px;border-left:4px solid var(--accent)}
+h3{font-size:16.5px;margin:1.4em 0 .4em;color:var(--accent)}
+h4{font-size:15px;margin:1.1em 0 .3em}
+p{margin:.55em 0}
+a{color:var(--accent);text-underline-offset:2px}
+ul,ol{margin:.5em 0;padding-left:1.5em}
+li{margin:.28em 0}
+li>ul,li>ol{margin:.2em 0}
+code{background:var(--code);border-radius:4px;padding:.1em .4em;font-family:"SFMono-Regular",Consolas,"JetBrains Mono",monospace;font-size:.9em}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto}
+pre code{background:none;padding:0}
+blockquote{margin:.8em 0;padding:.4em 1em;border-left:4px solid var(--accent);background:var(--soft);color:var(--muted);border-radius:0 6px 6px 0}
+hr{border:none;border-top:1px solid var(--line);margin:1.8em 0}
+table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--th);font-weight:700;white-space:nowrap}
+tr:nth-child(even) td{background:var(--soft)}
+strong{color:var(--ink)}
+.foot{max-width:var(--maxw);margin:0 auto;padding:0 20px;color:var(--muted);font-size:12.5px;text-align:center}
+@media print{body{background:#fff}.topbar{position:static;box-shadow:none}.card{border:none;box-shadow:none;padding:0}}
+</style></head>
+<body>
+<div class="topbar">📖 使用說明　<span class="k">NECHRONICA 人偶名冊編輯器（打包版）— 使用說明</span></div>
+<div class="wrap"><div class="card">
+<h1 id="神貓卓永い後日談のネクロニカ人偶名冊編輯器打包版含資料庫-使用說明">神貓卓永い後日談のネクロニカ人偶名冊編輯器（打包版・含資料庫）— 使用說明</h1>
+<h2 id="檔案結構">檔案結構</h2>
+<pre><code>NC角色資料庫/
+├─ nechronica-doll-archive-editor-databased.html ← 打包版編輯器（資料庫已內嵌，開檔即用、名冊為空）
+├─ nechronica-doll-archive-viewer-sample.html   ← 純檢視範例（含露易絲／涅可示範，展示檢視版樣子）
+├─ 說明.md
+└─ 資料庫/
+   ├─ 角色.csv               ← 人偶主資料（一列一名）
+   ├─ 部件.csv               ← 部件目錄（含 スキル）
+   ├─ 技能.csv               ← 傾向／類型專屬技能（與部件獨立）
+   ├─ 暗示.csv
+   ├─ 傾向.csv
+   ├─ 類型.csv               ← 主要／輔助類型共用
+   ├─ 記憶碎片.csv
+   ├─ 死後經歷.csv
+   ├─ 依戀內容.csv
+   ├─ 寵愛點消耗.csv
+   └─ images/                ← 立繪、頭像
+</code></pre>
+<h2 id="使用流程">使用流程</h2>
+<ol>
+<li>用 Excel／Google 試算表／記事本編輯 <code>資料庫/</code> 裡的 CSV（<strong>務必存成 UTF-8</strong>）。</li>
+<li>瀏覽器打開 <code>nechronica-doll-archive-editor-databased.html</code>（資料庫已內嵌，開檔即可用）。</li>
+<li>資料庫已內嵌，開檔即可用。要載入角色時按 <strong>載入角色 CSV</strong>（只選單一 <code>角色.csv</code>）；要顯示角色立繪／頭像時按 <strong>載入圖片資料夾</strong>（只讀圖片、不動資料庫）。</li>
+<li>預設是縮圖展示頁，點任一人偶進詳情頁；左側清單、搜尋、回展示頁與前作相同。</li>
+<li>按 <strong>匯出純檢視網頁</strong>，得到一份沒有任何按鈕的成品 HTML。勾 <strong>匯出時內嵌圖片</strong> 可把圖片轉 base64 包進單一檔案（需先載入資料夾才拿得到原圖）；不勾則用相對路徑，要跟 <code>images/</code> 一起搬。</li>
+</ol>
+<h2 id="功能說明">功能說明</h2>
+<p><strong>版面（檢視／編輯一致）</strong>：檢視頁左欄＝人偶設計圖＋死後經歷＋記憶碎片＋依戀＋劇本經歷；右欄＝基本資料＋強化值·最大行動值＋外貌與個性＋Karma＋各部件（技能/頭/手/軀幹/腳）。編輯器採相同左右配置，所見即所編。</p>
+<p><strong>行動值</strong>：行動值 A＝基礎行動值，固定 6、不可改；行動值 B＝部件加成，自動計算、不可直接改。B ＝角色實際擁有、且未損傷部件的「最大行動值補正」總和（部件.csv 新增欄位，見下）。編輯器與檢視頁都會即時反映。</p>
+<p><strong>部件「使用／損傷」</strong>：檢視頁每個部件列有兩個核取方塊。「使用」只是臨時勾選、不保存；「損傷」勾了該列變紅、代表部件已壞，且會即時把 B 扣掉該部件的補正。損傷狀態會存進記憶體（部件名稱後加 <code>*</code>），匯出角色 CSV 時一起帶出；編輯器裡每個部件標籤也有「損」開關。</p>
+<p><strong>攻擊判定值</strong>：編輯模式改為唯讀顯示（不可改），沿用原本的頭/手/軀幹/腳判定值。</p>
+<p><strong>人偶設計圖</strong>：改為維持原圖比例、置中，不放大到滿版；1:1 的圖就以 1:1 呈現，只有超出欄寬時才等比縮小。</p>
+<p><strong>名冊名稱</strong>：工具列「名冊名稱」欄可改網頁名稱（預設「您的人偶名冊」），會同步側欄標題、瀏覽器分頁名稱、縮圖頁大標，並寫進匯出的純檢視網頁。</p>
+<p><strong>匯出時機</strong>：改成可連續編輯多名角色後、於工具列按「匯出角色 CSV」一次匯出全部；此鈕在「＋新增角色」右方。編輯器裡只保留「取消／套用並預覽」。</p>
+<h2 id="最大行動值補正部件csv-新欄位">最大行動值補正（部件.csv 新欄位）</h2>
+<p><code>部件.csv</code> 新增一欄 <strong>最大行動值補正</strong>（純數字，預設 0）。行動值 B 就是把角色擁有、未損傷部件的這欄加總。</p>
+<blockquote>
+<p>為什麼用「手動欄位」而不是「自動解析效果文字」？因為有些效果字面上含「最大行動值+N」卻是<strong>條件觸發</strong>、不該被動計入——例如「限制裝置」的效果是損傷時「可以當場宣告最大行動值+2」。若自動解析文字會把它誤加，露易絲的部件加成就會從正確的 +4（腦袋+2、眼球+1、獸耳+1）變成 +6。手動欄位語意明確、不會誤判，所以採手動欄位。填表時只要在被動提供最大行動值的部件填數字即可。</p>
+</blockquote>
+<h2 id="角色編輯器在網頁裡編角色匯出成角色-csv">角色編輯器（在網頁裡編角色，匯出成角色 CSV）</h2>
+<p>除了直接編輯 CSV，也可以在工具裡用表單編角色，各參照庫欄位都有<strong>可搜尋的下拉選單</strong>：</p>
+<ul>
+<li>工具列 <strong>＋ 新增角色</strong>：開空白編輯器。</li>
+<li>詳情頁右上 <strong>✎ 編輯這名人偶</strong>：帶入現有資料編修。</li>
+<li>編輯器底下三顆鈕：<ul>
+<li><strong>套用並預覽</strong>：把這名角色套進目前名冊並跳到詳情頁（只在記憶體，未存檔）。</li>
+<li><strong>匯出角色 CSV（另存）</strong>：下載一份含全部角色的 <code>角色.csv</code>（UTF-8 帶 BOM）。<strong>不會回寫</strong>你載入的原始檔，請自行另存到 <code>資料庫/</code> 覆蓋舊檔。</li>
+<li><strong>取消</strong>：放棄本次編輯。</li>
+</ul>
+</li>
+</ul>
+<p>各下拉選單對應（都可打字搜尋）：</p>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>操作方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>部件（技能/頭/手/軀幹/腳）</td>
+<td>搜尋<strong>名稱</strong>點選加入；同區可重複加入（如兩個內臟），chip 可用 ◂ ▸ 排序、✕ 移除；下拉清單完整顯示部件效果（可換行）。<strong>基本部件</strong>固定、只能標損傷、不可增減或自訂；<strong>強化部件／技能</strong>可按 ✎ 自訂名稱與說明（留空＝資料庫預設），且不可重複選同一項目（四肢共用去重）。各部件區下方會顯示「尚可加入各等級強化部件數量」，額滿（0 個）以警示色標示</td>
+</tr>
+<tr>
+<td>暗示</td>
+<td><strong>編號</strong>（純數字輸入，自動抓取；打 7 會正規化成 07）＋<strong>名稱</strong>（可搜尋下拉）；改其一，另一自動帶入</td>
+</tr>
+<tr>
+<td>傾向</td>
+<td>名稱（可搜尋下拉）</td>
+</tr>
+<tr>
+<td>主要類型／輔助類型</td>
+<td>名稱（可搜尋下拉，兩者共用類型庫）</td>
+</tr>
+<tr>
+<td>記憶碎片</td>
+<td>每列＝<strong>編號</strong>（純數字自動抓取）＋<strong>標題</strong>（可搜尋下拉）；可按 ✎ 自訂名稱與內容（留空＝資料庫預設）；可加多列</td>
+</tr>
+<tr>
+<td>依戀</td>
+<td>每列＝對象＋<strong>內容</strong>（可搜尋下拉）＋狂氣點</td>
+</tr>
+<tr>
+<td>寵愛點消耗</td>
+<td>每列＝<strong>項目</strong>（可搜尋下拉，選了自動帶入消耗值）＋消耗</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>下拉選單／清單皆依 <code>資料庫/</code> 對應 CSV 的<strong>原始列順序</strong>呈現（不自動排序）；資料庫已內嵌，選單即有完整項目。</p>
+</blockquote>
+<h2 id="編碼規則所有-csv-共用">編碼規則（所有 CSV 共用）</h2>
+<ul>
+<li><code>|</code>　分隔「多筆項目」（如記憶碎片、部件清單、技能、Karma）。</li>
+<li><code>^</code>　分隔「一筆項目內的子欄位」（如依戀＝對象^內容^狂氣點）。</li>
+<li>部件／技能／記憶碎片單筆可再接下列標記：<code>^寶物</code>（自訂寶物部件）、<code>^n:文字</code>（自訂名稱／標題）、<code>^d:文字</code>（自訂說明／內容）、<code>*</code>（部件損傷；置於單筆最後）。自訂文字內的特殊符號會自動轉義。</li>
+<li><code>\n</code>　文章內換行（外貌與個性、記憶內容等）。</li>
+<li>內容含半形逗號或雙引號時，整格用半形雙引號包住。</li>
+</ul>
+<h2 id="各資料庫欄位">各資料庫欄位</h2>
+<h3 id="角色csv一列一名人偶">角色.csv（一列一名人偶）</h3>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>分類</code></td>
+<td>側欄與展示頁的分組（如戰役名）</td>
+</tr>
+<tr>
+<td><code>人偶名稱</code>／<code>拼音</code></td>
+<td><code>人偶名稱</code> 為主顯示大名；<code>拼音</code> 顯示在大名<strong>上方</strong>的小字（留空時仍保留該行高度，版面不位移）</td>
+</tr>
+<tr>
+<td><code>玩家名稱</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>代表色</code></td>
+<td>對應角色卡的「文字圈用色碼」，如 <code>#93799F</code>；驅動判定值徽章、非基本部件底色、標題色標</td>
+</tr>
+<tr>
+<td><code>頭像</code>／<code>全身圖</code></td>
+<td>圖片路徑（相對於 <code>images/</code>）；全身圖多張用 <code>|</code> 分隔，檢視時可左右切換、點擊放大</td>
+</tr>
+<tr>
+<td><code>享年</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>暗示</code></td>
+<td>填<strong>編號</strong>（如 <code>07</code>），工具去 <code>暗示.csv</code> 展開成「07-渴望」</td>
+</tr>
+<tr>
+<td><code>傾向</code>／<code>主要類型</code>／<code>輔助類型</code></td>
+<td>填<strong>名稱</strong>，工具去對應 CSV 補上原文</td>
+</tr>
+<tr>
+<td><code>武裝加值</code>／<code>變異加值</code>／<code>改造加值</code></td>
+<td>強化值的<strong>手動加值</strong>。強化值總和＝類型補正 ＋（強化選擇 +1）＋ 加值；<code>角色.csv</code> 不再有原始「武裝／變異／改造」欄</td>
+</tr>
+<tr>
+<td><code>強化選擇</code></td>
+<td><code>武裝</code>／<code>變異</code>／<code>改造</code> 三選一（或留空）；被選者的強化基礎自動 +1</td>
+</tr>
+<tr>
+<td><code>初期配置</code></td>
+<td>煉獄／花園／樂園</td>
+</tr>
+<tr>
+<td><code>Karma</code></td>
+<td>目標，多筆用 <code>|</code>；新增角色時預設第一項為「取得記憶碎片」</td>
+</tr>
+<tr>
+<td><code>外貌與個性</code></td>
+<td>文字，<code>\n</code> 換行</td>
+</tr>
+<tr>
+<td><code>死後經歷標題/編號/內容</code></td>
+<td>有填才顯示；填編號自動抓資料庫，或自訂名稱＋內容</td>
+</tr>
+<tr>
+<td><code>記憶碎片</code></td>
+<td>每筆為 <code>編號</code>，可另接 <code>^n:自訂標題</code>、<code>^d:自訂內容</code>（留空＝資料庫預設）；多筆用 <code>|</code></td>
+</tr>
+<tr>
+<td><code>依戀</code></td>
+<td>每筆 <code>對象^內容^狂氣點</code>，多筆用 <code>|</code>；發狂內容由 <code>依戀內容.csv</code> 帶入</td>
+</tr>
+<tr>
+<td><code>頭判定/手判定/軀幹判定/腳判定</code></td>
+<td>各部位攻擊判定值徽章（編輯模式唯讀）</td>
+</tr>
+<tr>
+<td><code>技能</code></td>
+<td>每筆為技能名（對應 <code>技能.csv</code>），可另接 <code>^n:自訂名稱</code>、<code>^d:自訂說明</code>（留空＝資料庫預設）；不可重複選同一技能</td>
+</tr>
+<tr>
+<td><code>頭部件/手部件/軀幹部件/腳部件</code></td>
+<td>部件清單，每筆 <code>名稱</code>，可接 <code>^寶物</code>（自訂寶物）、<code>^n:自訂名稱</code>、<code>^d:自訂說明</code>、<code>*</code>（損傷）。<strong>留空時自動帶入該部位所有基本部件</strong>；新增角色預設：頭＝腦袋·眼球·齒顎、手＝拳頭·手腕·肩膀、軀幹＝脊椎·內臟·內臟、腳＝腳骨·腳骨·足。基本部件數量固定、不可增減，也不可自訂名稱／說明；同一強化部件不可跨部位重複選取</td>
+</tr>
+<tr>
+<td><code>劇本經歷</code></td>
+<td>每筆 <code>劇本名稱^故事經歷^獲得寵愛點</code></td>
+</tr>
+<tr>
+<td><code>寵愛點消耗</code></td>
+<td>每筆 <code>名稱^消耗</code>；說明由 <code>寵愛點消耗.csv</code> 帶入。總獲得＝各「劇本經歷」獲得寵愛點加總；剩餘＝總獲得 −Σ消耗，套用時自動計算</td>
+</tr>
+</tbody></table>
+<h3 id="部件csv">部件.csv</h3>
+<p><code>部位,名稱,時機,COST,射程,效果,部件等級,最大行動值補正,說明</code></p>
+<ul>
+<li><code>部位</code> 可為 <code>頭/手/軀幹/腳/任意</code>（技能改由 <code>技能.csv</code> 管理）。</li>
+<li><strong><code>任意</code> 部位</strong>：標為 <code>任意</code> 的部件在 <code>頭</code>、<code>手</code>、<code>軀幹</code>、<code>腳</code> 四個部位的下拉清單皆可選用。</li>
+<li><strong>基本部件</strong>＝ <code>部件等級</code> 欄填 <code>基本部件</code>（與角色卡一致）；工具據此判定白底。非基本部件顯示為代表色淡底。</li>
+<li>同名部件（如兩個 <code>內臟</code>、兩個 <code>腳骨</code>）在目錄裡只需一筆；角色的部件清單重複列出即可顯示兩列。</li>
+</ul>
+<h4 id="強化部件的取得數量依強化值自動過濾驗證">強化部件的取得數量（依「強化值」自動過濾／驗證）</h4>
+<p>非基本部件、非寶物的強化部件（<code>部件等級</code> 為 <code>等級１～３武裝／變異／改造部件</code>），可取得的數量依該類別的<strong>強化值查表</strong>決定，<code>頭／手／軀幹／腳</code> 四個部位<strong>共用</strong>同一份額度：</p>
+<table>
+<thead>
+<tr>
+<th>強化值</th>
+<th>等級1</th>
+<th>等級2</th>
+<th>等級3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>1</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>–</td>
+</tr>
+<tr>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>5</td>
+<td>2</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>6</td>
+<td>2</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>7</td>
+<td>3</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>8</td>
+<td>3</td>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>9</td>
+<td>3</td>
+<td>3</td>
+<td>3</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>捨高就低</strong>：一個高等空位可放較低等的部件（例如等級3的空位可改放一個等級2或等級1的部件；等級2的空位可改放等級1）。反之不行。</li>
+<li><strong>自動過濾</strong>：編輯器的部件下拉會即時隱藏「已無空位」的強化部件（含四肢共用計算），無法選取。</li>
+<li><strong>超額警示</strong>：若載入的角色或手動調整後超出額度，超額的部件會標紅並顯示「強化值不足，無法加入」；此時「套用並預覽」停用（滑鼠移上顯示需修改的欄位），改到符合規則後才能套用。</li>
+<li>武裝／變異／改造三類規則完全相同，各自獨立計算。</li>
+</ul>
+<h3 id="其他參照庫">其他參照庫</h3>
+<ul>
+<li><code>暗示.csv</code>：<code>編號,名稱,說明</code></li>
+<li><code>傾向.csv</code> / <code>類型.csv</code>：<code>名稱,原文,說明</code></li>
+<li><code>記憶碎片.csv</code>：<code>編號,標題,記憶內容</code></li>
+<li><code>依戀內容.csv</code>：<code>名稱,發狂內容</code></li>
+<li><code>寵愛點消耗.csv</code>：<code>名稱,消耗,說明</code></li>
+</ul>
+
+</div></div>
+<div class="foot">本頁為工具的使用說明，可直接列印或另存。</div>
+</body></html>

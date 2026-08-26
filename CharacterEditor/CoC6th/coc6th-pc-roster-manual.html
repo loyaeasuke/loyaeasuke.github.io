@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>神貓卓 CoC 6th PC 一覽編輯器 — 使用說明</title>
+<style>:root{--accent:#2f6f9f}
+
+:root{--accent:#7a5560;--ink:#1f2530;--muted:#5c6672;--paper:#ffffff;--soft:#f5f6f8;--line:#e2e5ea;--code:#eef1f5;--th:#eef2f6;--maxw:860px}
+@media (prefers-color-scheme:dark){:root{--ink:#e6e9ee;--muted:#9aa4b0;--paper:#12151a;--soft:#1a1e25;--line:#2a2f39;--code:#1c2028;--th:#1e2430}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--soft);color:var(--ink);font:15px/1.75 -apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.topbar{position:sticky;top:0;z-index:10;background:var(--accent);color:#fff;padding:10px 18px;font-size:14px;font-weight:600;letter-spacing:.02em;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.topbar .k{opacity:.85;font-weight:500}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:26px 20px 80px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:30px 34px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+h1,h2,h3,h4{line-height:1.35;font-weight:700;scroll-margin-top:60px}
+h1{font-size:26px;margin:.2em 0 .6em;padding-bottom:.35em;border-bottom:3px solid var(--accent)}
+h2{font-size:20px;margin:1.9em 0 .5em;padding-left:10px;border-left:4px solid var(--accent)}
+h3{font-size:16.5px;margin:1.4em 0 .4em;color:var(--accent)}
+h4{font-size:15px;margin:1.1em 0 .3em}
+p{margin:.55em 0}
+a{color:var(--accent);text-underline-offset:2px}
+ul,ol{margin:.5em 0;padding-left:1.5em}
+li{margin:.28em 0}
+li>ul,li>ol{margin:.2em 0}
+code{background:var(--code);border-radius:4px;padding:.1em .4em;font-family:"SFMono-Regular",Consolas,"JetBrains Mono",monospace;font-size:.9em}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto}
+pre code{background:none;padding:0}
+blockquote{margin:.8em 0;padding:.4em 1em;border-left:4px solid var(--accent);background:var(--soft);color:var(--muted);border-radius:0 6px 6px 0}
+hr{border:none;border-top:1px solid var(--line);margin:1.8em 0}
+table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--th);font-weight:700;white-space:nowrap}
+tr:nth-child(even) td{background:var(--soft)}
+strong{color:var(--ink)}
+.foot{max-width:var(--maxw);margin:0 auto;padding:0 20px;color:var(--muted);font-size:12.5px;text-align:center}
+@media print{body{background:#fff}.topbar{position:static;box-shadow:none}.card{border:none;box-shadow:none;padding:0}}
+</style></head>
+<body>
+<div class="topbar">📖 使用說明　<span class="k">神貓卓 CoC 6th PC 一覽編輯器 — 使用說明</span></div>
+<div class="wrap"><div class="card">
+<h1 id="神貓卓coc-6th-pc一覽編輯器--使用說明">神貓卓CoC 6th PC一覽編輯器 — 使用說明</h1>
+<h2 id="檔案">檔案</h2>
+<table>
+<thead>
+<tr>
+<th>檔案</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>coc6th-pc-roster.html</code></td>
+<td>編輯／預覽用。匯入PC資料包、預覽、匯出資料包／純檢視網頁</td>
+</tr>
+<tr>
+<td><code>PC範本.csv</code></td>
+<td>CSV 範本，直接改成自己的資料</td>
+</tr>
+<tr>
+<td><code>coc6th-pc-roster-demo.html</code></td>
+<td>匯出成品的樣子（圖片是佔位圖，可直接刪掉）</td>
+</tr>
+</tbody></table>
+<h2 id="流程">流程</h2>
+<ol>
+<li>用 Excel／Google 試算表／記事本編輯 <code>PC範本.csv</code></li>
+<li>把 CSV 和 <code>coc6th-pc-roster.html</code>、<code>images/</code> 資料夾放在同一層</li>
+<li>用瀏覽器打開 <code>coc6th-pc-roster.html</code> → <strong>匯入PC資料包</strong>（可選 <code>.csv</code> 或工具匯出的 <code>.zip</code> 資料包）→ 預覽（也可以直接按「＋ 新增PC」在網頁上加人，見下方章節）</li>
+<li>（本機圖片沒顯示時）按 <strong>載入圖片資料夾</strong>，選 <code>images/</code></li>
+<li>按 <strong>匯出純檢視網頁</strong> → 得到一份沒有任何按鈕的成品 HTML</li>
+</ol>
+<pre><code>我的PC資料庫/
+├─ coc6th-pc-roster.html
+├─ PC範本.csv
+└─ images/
+   ├─ axel_icon.png
+   ├─ axel_full.png
+   └─ axel_a.png …
+</code></pre>
+<h2 id="畫面">畫面</h2>
+<p>打開時的預設畫面是<strong>縮圖展示頁</strong>：依 <code>分類</code> 分組，每位 PC 一張頭像加名字、拼音、職業，名字用各自的代表色；有填 <code>HO</code> 的角色，下方會多一區顯示經歷的第一個劇本名與 HO。點任何一張（圖或字都可以）就進入該角色的詳細頁，效果跟點左側清單一樣。要回到展示頁，按左側搜尋欄下方的「回到縮圖展示頁」。</p>
+<p>搜尋框會同時篩選左側清單和縮圖展示頁，可以用名字、拼音、職業、HO、劇本名搜。</p>
+<h2 id="csv-欄位">CSV 欄位</h2>
+<p>欄位順序可以任意調換，只認標題名稱。</p>
+<table>
+<thead>
+<tr>
+<th>欄位</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>分類</code></td>
+<td>側欄的分組標題，例如 <code>通常PC</code>、<code>指定HO劇本PC</code>。相同分類會自動歸在一起，順序照 CSV 由上而下</td>
+</tr>
+<tr>
+<td><code>名字</code></td>
+<td>必填。空白的列會被略過。字型以日文明體優先，日文漢字不會缺字或變成中文字形</td>
+</tr>
+<tr>
+<td><code>拼音</code></td>
+<td>顯示在名字下方、職業上方。假名、羅馬拼音都可以。留空時仍保留一行空白，職業不會往上跑</td>
+</tr>
+<tr>
+<td><code>HO</code></td>
+<td>名字上方的小字，例如 <code>HO3 鬼</code>。沒有就留空</td>
+</tr>
+<tr>
+<td><code>職業</code></td>
+<td>名字下方的小字</td>
+</tr>
+<tr>
+<td><code>代表色</code></td>
+<td><code>#c0392b</code> 或 <code>c0392b</code> 都可以。控制 HO 文字、表格標題、台詞邊線、雷達圖、側欄色條</td>
+</tr>
+<tr>
+<td><code>頭像</code></td>
+<td>圖片路徑或網址</td>
+</tr>
+<tr>
+<td><code>全身圖</code></td>
+<td>顯示為右側刷淡的背景圖，也可點「檢視全身圖」放大。留空時該按鈕的位置一樣保留，版面不會位移</td>
+</tr>
+<tr>
+<td><code>差分</code></td>
+<td>多張用 <code>|</code> 分隔，點擊縮圖可放大原圖</td>
+</tr>
+<tr>
+<td><code>STR</code>…<code>EDU</code></td>
+<td>八項能力值，同時餵給表格和雷達圖</td>
+</tr>
+<tr>
+<td><code>SAN</code></td>
+<td>理智值，自己填。留空時才會退回用 POW×5 計算</td>
+</tr>
+<tr>
+<td><code>台詞</code></td>
+<td>純文字。要換行就打 <code>|</code>（或 <code>\n</code>），例如 <code>「第一句。」|「第二句。」</code></td>
+</tr>
+<tr>
+<td><code>概要</code></td>
+<td>角色設定、背景經歷。要換行就打 <code>\n</code></td>
+</tr>
+<tr>
+<td><code>關係</code></td>
+<td>是否有親密互動對象（うちよそ）。只要<strong>不留空</strong>（填「有」、「1」、「○」都行）就會在縮圖總覽的頭像左上角疊一個「うちよそ」標籤，標籤底色用該角色的代表色</td>
+</tr>
+<tr>
+<td><code>經歷</code></td>
+<td>通過的團務名稱，多筆用 <code>|</code> 分隔。有填 <code>HO</code> 的角色，第一筆會顯示在左側清單的 HO 那一行（<code>劇本名 · HO3 鬼</code>）。劇本名太長會截斷，HO 一定看得到</td>
+</tr>
+</tbody></table>
+<h3 id="幾個注意事項">幾個注意事項</h3>
+<ul>
+<li><strong>編碼請存成 UTF-8</strong>（Excel 選「CSV UTF-8」）。萬一存成 Big5，工具會自動嘗試轉換，但不保證每個字都對</li>
+<li>內容含逗號或換行時要用半形雙引號包住，例如 <code>&quot;第一句，第二句&quot;</code></li>
+<li>淺色的代表色（例如淡黃）在白底上會看不清楚，文字部分會自動調暗，色塊仍用原色</li>
+<li>表格下方的 HP／MP／幸運／DB／靈感／知識照 CoC 6th 規則自動算，不用填；只有 <code>SAN</code> 是獨立欄位，以 CSV 填的數字為準；<code>STR</code> 與 <code>SIZ</code> 都空著時 DB 會顯示 <code>0</code>，不會套出 <code>-1D6</code></li>
+<li>沒填 <code>HO</code> 的角色，名字上方仍會保留一行空白，讓所有角色的名字都對齊在同一高度</li>
+</ul>
+<h2 id="圖片建議尺寸與比例">圖片建議尺寸與比例</h2>
+<p>以下是「這樣做最好看」的建議值，不是硬性限制——工具都會自動縮放。</p>
+<table>
+<thead>
+<tr>
+<th>圖片</th>
+<th>比例</th>
+<th>建議尺寸</th>
+<th>裁切方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>頭像</td>
+<td>1:1 正方形</td>
+<td>400×400 px 以上（500×500 更保險）</td>
+<td>正方形置中裁切，臉放中間、四邊留餘裕</td>
+</tr>
+<tr>
+<td>全身圖</td>
+<td>直幅約 1:2</td>
+<td>600×1200 或 700×1400 px</td>
+<td>不裁切，靠右上完整顯示</td>
+</tr>
+<tr>
+<td>差分</td>
+<td>直幅 3:4</td>
+<td>300×400 px 以上</td>
+<td>縮圖從頂端裁切，臉與上半身放上方</td>
+</tr>
+</tbody></table>
+<p>細節說明：</p>
+<ul>
+<li><strong>頭像</strong> 在詳細頁的方框和縮圖總覽都是正方形置中裁切（<code>object-fit:cover</code>），非正方形會裁掉超出的部分。縮圖總覽用到 2 倍解析度，來源低於約 300px 放大會糊。</li>
+<li><strong>全身圖</strong> 有兩個用途：右側刷淡的背景底圖靠右上、完整不裁切地顯示；點「檢視全身圖」放大時看原圖。因為會半透明疊在角色卡右側，<strong>建議去背（透明 PNG）或白底</strong>，有雜背景會很明顯。太矮太寬鋪成背景會顯得空，高度給足、檔案別超過 2–3 MB 為佳。</li>
+<li><strong>差分</strong> 縮圖框是 76×100 顯示、從頂端對齊裁切（<code>object-position:top</code>），所以<strong>臉和上半身放在圖的上方</strong>比較不會被切到。點擊放大時顯示原圖、完整不裁。多張尺寸不必完全一致，比例接近排起來較整齊。</li>
+</ul>
+<p>共通建議：</p>
+<ul>
+<li><strong>格式</strong>：要去背的立繪優先 PNG；純展示的頭像用 JPG 也行，檔案更小。內嵌匯出時工具會把縮圖轉成 WebP，但放大用的仍是你給的原圖。</li>
+<li><strong>命名</strong>：用英數，別用空白或特殊符號（例如 <code>axel_icon.png</code>、<code>axel_full.png</code>、<code>axel_a.png</code>），並和 CSV 裡填的路徑一致。</li>
+</ul>
+<h2 id="縮圖畫質">縮圖畫質</h2>
+<p>頭像和差分縮圖不是直接把原圖硬縮，而是在瀏覽器裡逐級減半重新取樣後才顯示，所以大張立繪縮到小方塊也不會出現鋸齒顆粒。放大檢視時用的仍然是原圖。</p>
+<p>只有一種情況會退回瀏覽器預設的縮放：直接雙擊打開 <code>file://</code> 的網頁、而圖片又是用相對路徑載入時，瀏覽器的安全限制會擋住重新取樣。改用「載入圖片資料夾」預覽、匯出時內嵌圖片，或把成品放到網站上，都不受影響。</p>
+<h2 id="圖片的兩種放法">圖片的兩種放法</h2>
+<p><strong>A. 相對路徑（建議）</strong> — CSV 填 <code>images/axel_icon.png</code>，圖片資料夾跟成品 HTML 一起搬。匯出時把「匯出時內嵌圖片」取消勾選，檔案很小。</p>
+<p><strong>B. 內嵌</strong>（勾選「匯出時內嵌圖片」）— 圖片會轉成 base64 塞進 HTML，單一檔案就能到處丟，但檔案會變大（大約是原圖總和的 1.33 倍）。要內嵌就一定要先按「載入圖片資料夾」，工具才拿得到原始檔。</p>
+<h2 id="在網頁上新增編輯-pc">在網頁上新增／編輯 PC</h2>
+<p>不想動 CSV 也可以直接在編輯器裡加人。按工具列的「＋ 新增PC」，或縮圖總覽最下方那張虛線的「新增PC」卡片，會跳出表單，欄位跟 CSV 規格完全一致：</p>
+<ul>
+<li><strong>基本</strong>：名字（必填）、拼音、分類（會帶出已存在的分類供挑選）、職業、HO、代表色（色票與色碼雙向同步）、以及「有親密互動對象（うちよそ）」的勾選。</li>
+<li><strong>圖片</strong>：頭像、全身圖、差分。每個都能「選擇檔案」直接把圖內嵌進資料，或改用「填路徑」欄輸入 <code>images/xxx.png</code>（跟 CSV 一樣）。差分可加多張、逐張刪除。</li>
+<li><strong>能力值</strong>：STR～EDU 八圍，SAN 留空就用 POW×5。</li>
+<li><strong>文字</strong>：台詞（換行用 Enter 或 <code>|</code>）、概要、經歷（一行一筆）。</li>
+</ul>
+<p>按「新增」後，角色會依分類插入到清單對應的位置，並立刻跳到他的檔案頁。</p>
+<p><strong>編輯已存在的 PC</strong>：打開任一角色的檔案頁，右上角有「編輯PC」按鈕，按下會用同一張表單（標題顯示「編輯PC」）帶入現有資料，改完按「儲存變更」即可原地更新。若在編輯時改了分類，角色會自動移到新分類的群組裡。<strong>新增的資料只存在當下這個分頁</strong>，關掉就沒了——想保存，按工具列的「匯出PC資料包」，會把目前所有角色（含新增與原本匯入的）打包成一份 ZIP，下次用「匯入PC資料包」讀回來即可。要直接產出成品頁就按「匯出純檢視網頁」。</p>
+<p>用「選擇檔案」內嵌的圖片，在「匯出PC資料包」時<strong>不會</strong>塞成一長串 base64 卡在 CSV 裡——見下方「PC 資料包」章節。</p>
+<h2 id="pc-資料包匯入匯出">PC 資料包（匯入／匯出）</h2>
+<p>工具列的「匯出PC資料包」會把目前所有角色打包成一份 <strong>ZIP</strong>：</p>
+<pre><code>您的CoC 6th PC一覽.zip
+├─ 您的CoC 6th PC一覽.csv   ← 跟手寫的一樣，可直接編輯
+└─ 圖庫.json                ← 只在有內嵌圖時才有
+</code></pre>
+<ul>
+<li><strong>CSV</strong> 裡，用「填路徑」的圖片維持 <code>images/xxx.png</code> 路徑；用「選擇檔案」內嵌的圖片則只放一個<strong>代號</strong>（例如 <code>@pc01_icon</code>），不會有一長串 base64 塞爆儲存格。所以這份 CSV 跟手寫的一樣好讀、好改。</li>
+<li><strong>圖庫.json</strong> 是「代號 → 圖片 base64」的對照表，機器讀的，人不用碰。沒有任何內嵌圖時就不會產生這個檔，ZIP 裡只有一個 CSV。</li>
+</ul>
+<p>「匯入PC資料包」同時吃兩種東西：</p>
+<ul>
+<li>直接選 <strong><code>.zip</code> 資料包</strong> → 工具自動拆出裡面的 CSV 與圖庫，代號會還原成圖片，一步到位。就算你把 ZIP 解開、改了 CSV、再用系統壓縮軟體重新壓成 ZIP（deflate 壓縮）也讀得動。</li>
+<li>直接選 <strong><code>.csv</code></strong> → 跟以前一樣，當作純 CSV 讀（沒有圖庫）。</li>
+</ul>
+<p><strong>手動編輯的彈性</strong>：解開資料包後可以只把 CSV 拿出來單獨改。CSV 裡看到 <code>@pc01_icon</code> 是代號、<code>images/x.png</code> 是路徑，兩種可以混用；若你把某個代號直接改成路徑，工具會當成路徑處理。改完把 CSV（和 <code>圖庫.json</code>，若有）一起壓回 ZIP，或單獨丟 CSV 進來都行。</p>
+<blockquote>
+<p>小提醒：資料包的 ZIP 用無壓縮封裝（PNG／JPEG 本來就壓過了），大小約等於所有內嵌圖的總和。若想讓資料包更小，改用「填路徑」搭配獨立的 <code>images/</code> 資料夾，圖就不會進 base64 圖庫。</p>
+</blockquote>
+<h2 id="匯出的成品">匯出的成品</h2>
+<p>匯出的 HTML 左側清單底部會標註「使用神貓卓CoC 6th PC一覽編輯器匯出檢視」，除此之外沒有工具列、沒有匯入匯出按鈕，功能只剩瀏覽：側欄清單、搜尋、角色詳情、圖片放大。資料直接寫死在檔案裡，不需要 CSV 也不需要伺服器，雙擊就能開，也可以直接丟上 GitHub Pages。</p>
+
+</div></div>
+<div class="foot">本頁為工具的使用說明，可直接列印或另存。</div>
+</body></html>
