@@ -70,6 +70,16 @@ a{color:var(--accent-deep);}
 .wrap{flex:1;min-height:0;overflow:auto;padding:20px 22px 60px;}
 .view{display:none;}
 .view.active{display:block;}
+/* 清單／卡片庫：功能列（＋清單標題列）固定在上方，只有內容區捲動 */
+#view-table.active,#view-gallery.active{display:flex;flex-direction:column;height:100%;min-height:0;}
+#view-table>.filters,#view-gallery>.filters{flex:0 0 auto;}
+#view-table>.inline-hint{flex:0 0 auto;}
+/* 清單：標題列另成一塊固定在上（不進捲動區），捲軸只出現在下方內容區 */
+#view-table>.tbl-headwrap{flex:0 0 auto;overflow-x:hidden;overflow-y:scroll;border:1px solid var(--rule-strong);border-bottom:none;border-radius:12px 12px 0 0;background:var(--paper-deep);}
+#view-table>.tbl-headwrap::-webkit-scrollbar{background:transparent;}
+#view-table>.tbl-headwrap::-webkit-scrollbar-thumb{background:transparent;border-color:transparent;}
+#view-table>.tbl-wrap{flex:1 1 auto;min-height:0;overflow-x:auto;overflow-y:scroll;border-top:none;border-radius:0 0 12px 12px;}
+#view-gallery>.gal{flex:1 1 auto;min-height:0;overflow-y:auto;align-items:start;align-content:start;padding-bottom:6px;}
 .headline{display:flex;align-items:center;gap:14px;margin:2px 0 18px;flex-wrap:wrap;}
 .headline h2{font-family:var(--serif);font-size:22px;margin:0;letter-spacing:.03em;}
 .headline .sub{font-size:13px;color:var(--muted);}
@@ -135,7 +145,7 @@ table.data{border-collapse:collapse;table-layout:fixed;width:100%;font-size:13px
 table.data td,table.data th{overflow:hidden;}
 table.data td.mem,table.data td.note{white-space:normal;word-break:break-word;}
 table.data td.editing{overflow:visible;}
-table.data th{background:var(--paper-deep);text-align:left;padding:10px 12px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.04em;border-bottom:1px solid var(--rule-strong);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;}
+table.data th{background:var(--paper-deep);text-align:left;padding:10px 12px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.04em;border-bottom:1px solid var(--rule-strong);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;z-index:3;}
 table.data th:hover{color:var(--accent);}
 table.data th .ar{font-family:var(--mono);font-size:13px;color:var(--accent);margin-left:3px;}
 table.data td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;}
@@ -178,7 +188,11 @@ td.opcell{white-space:nowrap;}
 .exc-add input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 
 /* ===== GALLERY ===== */
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+.gal{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;}
+@media(max-width:1400px){.gal{grid-template-columns:repeat(5,minmax(0,1fr));}}
+@media(max-width:1160px){.gal{grid-template-columns:repeat(4,minmax(0,1fr));}}
+@media(max-width:900px){.gal{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:640px){.gal{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .gcard{background:var(--paper-lift);border:1px solid var(--rule-strong);border-left:4px solid var(--sc,var(--accent));border-radius:11px;padding:13px 14px;cursor:pointer;transition:.12s;display:flex;flex-direction:column;gap:9px;min-height:118px;position:relative;}
 .gcard:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-2px);}
 .gcard .gnum{font-family:var(--mono);font-size:13px;color:var(--muted);padding-right:60px;}
@@ -346,10 +360,15 @@ body.readonly .edit-only{display:none!important;}
       <div class="sub" id="tblCount"></div>
     </div>
     <div class="inline-hint edit-only">💡 直接點任一欄位即可就地編輯（Enter 或點別處儲存、Esc 取消）；或按每列最右的 ✎ 開啟完整編輯視窗。</div>
-    <div class="tbl-wrap">
+    <div class="tbl-headwrap" id="tblHeadWrap">
+      <table class="data" id="dataTblHead">
+        <colgroup id="tblColsH"></colgroup>
+        <thead><tr id="tblHead"></tr></thead>
+      </table>
+    </div>
+    <div class="tbl-wrap" id="tblBodyWrap">
       <table class="data" id="dataTbl">
         <colgroup id="tblCols"></colgroup>
-        <thead><tr id="tblHead"></tr></thead>
         <tbody id="tblBody"></tbody>
       </table>
     </div>
@@ -385,13 +404,13 @@ body.readonly .edit-only{display:none!important;}
       <form id="editForm">
         <input type="hidden" id="e_id">
         <div class="grid3">
-          <div class="field"><label>編號 <span class="hint">如 300、P40、K</span></label><input id="e_num" placeholder="例：300"></div>
-          <div class="field" style="grid-column:span 2"><label>團名 *</label><input id="e_name" placeholder="例：獻上四季 - 三團" required></div>
+          <div class="field"><label>編號</label><input id="e_num"></div>
+          <div class="field" style="grid-column:span 2"><label>團名 *</label><input id="e_name" required></div>
         </div>
         <div class="grid3">
           <div class="field"><label>系統</label><input id="e_sys" list="sysList" placeholder="例：CoC克蘇魯的呼喚6th"></div>
           <div class="field"><label>狀態</label><select id="e_status"><option>預定</option><option>已完成</option></select></div>
-          <div class="field"><label>本次團務數 <span class="hint">自動計算（同團依日期排序）</span></label><input id="e_count" readonly placeholder="自動"></div>
+          <div class="field"><label title="同團（相同編號＋團名）依日期由早到晚自動編號 1、2、3…；空白卡片不計">本次團務數 <span class="hint">自動計算</span></label><input id="e_count" readonly placeholder="自動"></div>
         </div>
         <div class="grid2">
           <div class="field"><label>開始日期</label><input id="e_sdate" type="date"></div>
@@ -401,9 +420,9 @@ body.readonly .edit-only{display:none!important;}
           <div class="field"><label>結束日期 <span class="hint">留空＝當日；跨夜可填隔天</span></label><input id="e_edate" type="date"></div>
           <div class="field"><label>結束時間 <span class="hint">如 0110 → 上午1:10</span></label><input id="e_etime" placeholder="例：0110"></div>
         </div>
-        <div class="field"><label>成員 <span class="hint">以頓號「、」分隔</span></label><textarea id="e_mem" placeholder="KP(理人)、草蘿 紫陽(洛雅)、伊茂 原束(程華)"></textarea></div>
+        <div class="field"><label>成員 <span class="hint">以頓號「、」分隔</span></label><textarea id="e_mem" placeholder="KP(小明)、星野 遙(小華)、蒼井 樹(阿宏)"></textarea></div>
         <div class="grid2">
-          <div class="field"><label>使用角卡</label><input id="e_pc" placeholder="例：草蘿 紫陽"></div>
+          <div class="field"><label>使用角卡</label><input id="e_pc" placeholder="例：星野 遙"></div>
           <div class="field"><label>備註</label><input id="e_note" placeholder="選填"></div>
         </div>
         <div class="btn-row">
@@ -458,8 +477,8 @@ body.readonly .edit-only{display:none!important;}
     <div class="modal-body">
       <form id="setForm">
         <div class="callout">標題與年度會依<b>月曆目前所在年份自動</b>更新（切到 2027 就變「2027跑團管理」）；統計的目標團數＝<b>該年度總團數自動計算</b>，皆不需手動設定。</div>
-        <div class="field"><label>製作者</label><input id="s_author" placeholder="例：KinoP / 洛雅"></div>
-        <div class="field"><label>副標 <span class="hint">顯示於統計頁</span></label><input id="s_note" placeholder="使用神貓卓跑團管理手冊編輯器"></div>
+        <div class="field"><label>製作者</label><input id="s_author" placeholder="例：你的名字或暱稱"></div>
+        <div class="field"><label>副標 <span class="hint">顯示於統計頁；固定內容、不可更改</span></label><input id="s_note" readonly title="固定副標，不可更改" style="color:var(--muted);cursor:not-allowed"></div>
         <div class="field"><label>系統代表色 <span class="hint">點色塊手動指定；按「自動」恢復自動配色</span></label><div id="sysColorList" class="syscolor-list"></div></div>
         <div class="field"><label>統計例外職稱 <span class="hint">成員中「這些字(人名)」視為主持者，不計入玩家/角色參加次數</span></label>
           <div id="excList" class="exc-list"></div>
@@ -493,6 +512,7 @@ function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clea
 var COLS=["編號","團名","系統","開始日期","開始時間","結束日期","結束時間","狀態","成員","使用角卡","本次團務數","備註"];
 var CFG_COLS=["製作者","副標"];
 var TITLE_SUFFIX="跑團管理";
+var SUBTITLE="使用神貓卓跑團管理手冊編輯器製作";   // 固定副標，不可手動更改
 
 /* ---- readonly (exported share view) ---- */
 var BAKED=window.__BAKED__||null;
@@ -506,37 +526,8 @@ var store={
   set:function(o){var s=JSON.stringify(o);try{localStorage.setItem(KEY,s);}catch(e){mem[KEY]=s;}}
 };
 
-/* ---- demo seed (參考圖節錄，可清空／覆蓋) ---- */
-function demoRows(){
-  var d=[
-    // 編號,團名,系統,開始日期,開始時間,結束日期,結束時間,狀態,成員,使用角卡,本次團務數,備註
-    ["P40","獻上四季","CoC克蘇魯的呼喚6th","2026-11-04","22:00","2026-11-05","00:30","預定","KP(理人)、新城 妨(雅治)、草蘿 紫陽(洛雅)、伊茂 原束(程華)、彗音 賴(ㄇ木)","草蘿 紫陽","1",""],
-    ["250","燦然世解","CoC克蘇魯的呼喚6th","2026-10-03","22:00","2026-10-04","01:00","預定","KP(洛雅)、SKP(Rien)、幻月(理人)、玄谷(六服)、符谷(ㄇ木)、不動(程華)","","12",""],
-    ["232","遺香繚繞 - 三團","CoC克蘇魯的呼喚6th","2026-09-28","22:00","2026-09-29","01:00","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","34",""],
-    ["275","無法於這片天幕中共存。","CoC克蘇魯的呼喚6th","2026-09-25","21:30","","23:40","預定","KP(洛雅)、日暮 明暉(理人)、神業一字(毛球)","","6",""],
-    ["232","遺香繚繞 - 二團","CoC克蘇魯的呼喚6th","2026-09-21","22:00","2026-09-22","00:40","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","33",""],
-    ["K","Panic Date Plan with You!!","CoC克蘇魯的呼喚6th","2026-09-15","21:30","","23:30","預定","KP(程華)、洛雅(長月 時葉)","長月 時葉","4",""],
-    ["232","遺香繚繞 - 二團","CoC克蘇魯的呼喚6th","2026-09-14","22:00","2026-09-15","00:30","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","32",""],
-    ["250","燦然世解","CoC克蘇魯的呼喚6th","2026-09-12","22:00","2026-09-13","00:30","預定","KP(洛雅)、SKP(Rien)、幻月(理人)、玄谷(六服)、符谷(ㄇ木)、不動(程華)","","11",""],
-    ["275","無法於這片天幕中共存。","CoC克蘇魯的呼喚6th","2026-09-11","21:30","","23:40","預定","KP(洛雅)、日暮 明暉(理人)、神業一字(毛球)","","5",""],
-    ["K","Panic Date Plan with You!!","CoC克蘇魯的呼喚6th","2026-09-08","21:30","","23:30","預定","KP(程華)、洛雅(長月 時葉)","長月 時葉","3",""],
-    ["232","遺香繚繞 - 二團","CoC克蘇魯的呼喚6th","2026-09-07","22:00","2026-09-08","00:30","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","31",""],
-    ["278","在泡沫之夢中起舞 - 五團","CoC克蘇魯的呼喚6th","2026-09-06","22:00","2026-09-07","00:20","預定","KP(洛雅)、神代 遙花(六服)","靜間 朔夜","3",""],
-    ["286","罪的替身 - 九團","CoC克蘇魯的呼喚6th","2026-08-30","16:40","","18:00","已完成","KP(洛雅)、(六服)","","35",""],
-    ["285","美式鬆餅…飛起來了！？","CoC克蘇魯的呼喚6th","2026-08-30","16:25","","16:40","已完成","KP(洛雅)、(六服)","","13",""],
-    ["283","來砸羅馬生乳包！！ - 三團","CoC克蘇魯的呼喚6th","2026-08-30","15:50","","16:20","已完成","KP(洛雅)、(六服)","","1",""],
-    ["13","Oh My Paper!","InSANe","2026-08-30","15:00","","15:50","已完成","GM(洛雅)、(理人)、(六服)","","1",""],
-    ["250","燦然世解","CoC克蘇魯的呼喚6th","2026-08-29","22:00","2026-08-30","01:00","已完成","KP(洛雅)、SKP(Rien)、幻月(理人)、玄谷(六服)、符谷(ㄇ木)、不動(程華)","","10",""],
-    ["275","無法於這片天幕中共存。","CoC克蘇魯的呼喚6th","2026-08-28","21:25","2026-08-29","00:05","已完成","KP(洛雅)、日暮 明暉(理人)、神業一字(毛球)","","3",""],
-    ["281","探索者，骨折。 - 四團","CoC克蘇魯的呼喚6th","2026-08-27","22:00","","23:30","已完成","KP(洛雅)、御園 秋實(ㄇ木)","","1",""],
-    ["273","AND/HAND - 五團","CoC克蘇魯的呼喚6th","2026-08-04","21:40","","23:00","已完成","KP(洛雅)、(六服)","","1",""],
-    ["273","AND/HAND - 五團","CoC克蘇魯的呼喚6th","2026-08-04","22:40","2026-08-05","01:10","已完成","KP(洛雅)、(理人)","","2",""],
-    ["243","複製人的葬列 - 二團","CoC克蘇魯的呼喚6th","2026-08-05","22:00","2026-08-05","23:59","已完成","KP(洛雅)、(六服)","","1",""],
-    ["六辰花04","少年與畫作","喵眼獸獸KEDAMONO OPERA","","","","","已完成","","","",""]
-  ];
-  return d.map(function(r){var o={id:uid()};COLS.forEach(function(c,i){o[c]=r[i]||"";});return o;});
-}
-function seed(){return{cfg:{製作者:"KinoP / 洛雅",副標:"使用神貓卓跑團管理手冊編輯器"},rows:demoRows()};}
+/* ---- 首次開啟的預設狀態：不放任何範例團務，開檔即為空白（使用者自行新增或匯入 CSV） ---- */
+function seed(){return{cfg:{製作者:"",副標:SUBTITLE},rows:[]};}
 
 /* ---- state ---- */
 var state;
@@ -558,13 +549,13 @@ if(READONLY){
     delete r.日期;delete r.時間;
     if(!r.id)r.id=uid();
   });
-  // config: only 製作者/副標 now; migrate old default subtitle, default the new one
-  var OLD_SUB="可隨意分享修改｜不定期更新";
-  if(state.cfg.副標==null||state.cfg.副標===""||state.cfg.副標===OLD_SUB)state.cfg.副標="使用神貓卓跑團管理手冊編輯器";
+  // config: only 製作者/副標 now；副標為固定值、不可手動更改，載入時一律覆寫為 SUBTITLE
+  state.cfg.副標=SUBTITLE;
   CFG_COLS.forEach(function(c){if(state.cfg[c]==null)state.cfg[c]="";});
   delete state.cfg.標題;delete state.cfg.年度;delete state.cfg.目標團數;
   save();
 }
+state.cfg.副標=SUBTITLE;   // 副標固定，唯讀匯出／載入皆一律使用 SUBTITLE
 function save(){recomputeSeq();if(!READONLY)store.set(state);}
 
 /* ---- CSV ---- */
@@ -887,9 +878,11 @@ function renderTable(){
   var cols=TBLCOLS.map(function(c){return '<col style="width:'+c[4]+'px">';}).join("");
   if(!READONLY)cols+='<col style="width:92px">';
   var cg=$("#tblCols");if(cg)cg.innerHTML=cols;
+  var cgh=$("#tblColsH");if(cgh)cgh.innerHTML=cols;                 // 標題表用相同欄寬
   var totalW=TBLCOLS.reduce(function(a,c){return a+c[4];},0)+(READONLY?0:92);
   $("#dataTbl").style.width="100%";
   $("#dataTbl").style.minWidth=totalW+"px";
+  var dth=$("#dataTblHead");if(dth){dth.style.width="100%";dth.style.minWidth=totalW+"px";}
   var head="";
   TBLCOLS.forEach(function(c){
     var name=c[0];var ar=tblSort.col===name?'<span class="ar">'+(tblSort.dir>0?"▲":"▼")+'</span>':"";
@@ -1190,7 +1183,7 @@ function renderStats(){
   var sysKeys=Object.keys(partBySys);
   if(sysKeys.length){
     h+='<div class="panel" style="grid-column:1/-1"><h3>參加次數統計 <span class="sub" style="font-weight:400;margin-left:6px">依系統、同團（編號+團名）只計一次；已排除 '+esc((state.excRoles||[]).join("／")||"（無）")+' 等主持職稱（可於「設定」調整）</span></h3>'
-      +'<div class="sub" style="margin:-4px 0 12px;font-size:12px">已併入「角卡使用」：<span class="tag" style="color:var(--owner);background:color-mix(in srgb,var(--owner) 16%,var(--paper))">製作者</span>＝製作者'+(owner?'（'+esc(owner)+'）':'')+'的名稱、<span class="tag" style="color:var(--pcrole);background:color-mix(in srgb,var(--pcrole) 16%,var(--paper))">角卡</span>＝使用的角色卡</div>'
+      +'<div class="sub" style="margin:-4px 0 12px;font-size:12px">已併入「角卡使用」：<span class="tag" style="color:var(--owner);background:color-mix(in srgb,var(--owner) 16%,var(--paper))">製作者</span>＝製作者'+(owner?'（'+esc(owner)+'）':'')+'的名稱、<b style="color:var(--pcrole)">青色</b>的角色＝製作者使用的角色卡</div>'
       +'<div class="part-grid">';
     sysKeys.forEach(function(sys){
       var ps=partBySys[sys];
@@ -1204,7 +1197,7 @@ function renderStats(){
       players.forEach(function(x){var isOwner=(owner&&x[0]===owner);h+='<div class="kv"><div class="kl'+(isOwner?' is-owner':'')+'" title="'+esc(x[0])+'">'+(isOwner?'<span class="tag">製作者</span>':'')+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/pMax*100)+'%'+(isOwner?';background:var(--owner)':'')+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
       h+='</div><div><h4>角色參加次數</h4>';
       if(!chars.length)h+='<div class="sub">—</div>';
-      chars.forEach(function(x){var isCard=!!cardSet[x[0]];h+='<div class="kv"><div class="kl'+(isCard?' is-card':'')+'" title="'+esc(x[0])+'">'+(isCard?'<span class="tag">角卡</span>':'')+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/cMax*100)+'%;background:'+(isCard?'var(--pcrole)':sysColor(sys))+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
+      chars.forEach(function(x){var isCard=!!cardSet[x[0]];h+='<div class="kv"><div class="kl'+(isCard?' is-card':'')+'" title="'+esc(x[0])+'">'+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/cMax*100)+'%;background:'+(isCard?'var(--pcrole)':sysColor(sys))+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
       h+='</div></div></div>';
     });
     h+='</div></div>';
@@ -1300,13 +1293,13 @@ function addExc(){
   state.excRoles.push(v);save();$("#excInput").value="";renderExcList();
 }
 function openSettings(){
-  $("#s_author").value=state.cfg.製作者||"";$("#s_note").value=state.cfg.副標||"";
+  $("#s_author").value=state.cfg.製作者||"";$("#s_note").value=SUBTITLE;
   renderSysColorList();renderExcList();
   showOv("#ovSet");
 }
 function submitSettings(e){
   e.preventDefault();
-  state.cfg.製作者=$("#s_author").value.trim();state.cfg.副標=$("#s_note").value.trim();
+  state.cfg.製作者=$("#s_author").value.trim();state.cfg.副標=SUBTITLE;   // 副標固定
   save();hideOv("#ovSet");render();toast("設定已儲存");
 }
 
@@ -1400,7 +1393,9 @@ function wire(){
   $("#calGrid").addEventListener("mousemove",function(e){if(calTip.style.display==="block"&&e.target.closest(".cal-ev"))placeTip(e);});
   $("#calGrid").addEventListener("mouseout",function(e){var ev=e.target.closest(".cal-ev");if(ev&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest(".cal-ev")))calTip.style.display="none";});
   $("#calGrid").addEventListener("mouseleave",function(){calTip.style.display="none";});
-  // table
+  // table：內容區橫向捲動時，同步標題列橫向位置（標題列本身不出現捲軸）
+  var _bw=$("#tblBodyWrap"),_hw=$("#tblHeadWrap");
+  if(_bw&&_hw)_bw.addEventListener("scroll",function(){_hw.scrollLeft=_bw.scrollLeft;});
   ["#fSearch","#fSystem","#fStatus","#fYear"].forEach(function(s){$(s).addEventListener("input",renderTable);$(s).addEventListener("change",renderTable);});
   $("#tblHead").addEventListener("click",function(e){var th=e.target.closest("th");if(!th)return;var col=th.dataset.col;if(!col)return;if(editingCell)commitCell();if(tblSort.col===col)tblSort.dir*=-1;else{tblSort.col=col;tblSort.dir=(col==="開始日期"||col==="結束日期"||col==="開始時間"||col==="結束時間"||col==="編號"||col==="本次團務數")?-1:1;}renderTable();});
   $("#tblBody").addEventListener("click",function(e){if(READONLY)return;var cp=e.target.closest(".row-copy");if(cp){copyRow(+cp.dataset.copy);return;}var eb=e.target.closest(".row-edit");if(eb){openEdit(+eb.dataset.edit);return;}var td=e.target.closest("td.editable");if(td)beginCellEdit(td);});
