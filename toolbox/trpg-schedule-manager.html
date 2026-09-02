@@ -70,16 +70,16 @@ a{color:var(--accent-deep);}
 .wrap{flex:1;min-height:0;overflow:auto;padding:20px 22px 60px;}
 .view{display:none;}
 .view.active{display:block;}
-/* 清單／卡片庫：功能列（＋清單標題列）固定在上方，只有內容區捲動 */
-#view-table.active,#view-gallery.active{display:flex;flex-direction:column;height:100%;min-height:0;}
-#view-table>.filters,#view-gallery>.filters{flex:0 0 auto;}
+/* 清單：功能列＋標題列固定在上方，只有內容區捲動（flex 直欄，內容區內捲） */
+#view-table.active{display:flex;flex-direction:column;height:100%;min-height:0;}
+#view-table>.filters{flex:0 0 auto;}
 #view-table>.inline-hint{flex:0 0 auto;}
-/* 清單：標題列另成一塊固定在上（不進捲動區），捲軸只出現在下方內容區 */
 #view-table>.tbl-headwrap{flex:0 0 auto;overflow-x:hidden;overflow-y:scroll;border:1px solid var(--rule-strong);border-bottom:none;border-radius:12px 12px 0 0;background:var(--paper-deep);}
 #view-table>.tbl-headwrap::-webkit-scrollbar{background:transparent;}
 #view-table>.tbl-headwrap::-webkit-scrollbar-thumb{background:transparent;border-color:transparent;}
 #view-table>.tbl-wrap{flex:1 1 auto;min-height:0;overflow-x:auto;overflow-y:scroll;border-top:none;border-radius:0 0 12px 12px;}
-#view-gallery>.gal{flex:1 1 auto;min-height:0;overflow-y:auto;align-items:start;align-content:start;padding-bottom:6px;}
+/* 卡片庫：維持正常文件流（在 .wrap 內捲動，卡片高度依內容不重疊），功能列以 sticky 固定 */
+#view-gallery>.filters{position:sticky;top:-20px;z-index:15;background:var(--paper);margin:-20px -22px 14px;padding:20px 22px 12px;}
 .headline{display:flex;align-items:center;gap:14px;margin:2px 0 18px;flex-wrap:wrap;}
 .headline h2{font-family:var(--serif);font-size:22px;margin:0;letter-spacing:.03em;}
 .headline .sub{font-size:13px;color:var(--muted);}
@@ -188,11 +188,13 @@ td.opcell{white-space:nowrap;}
 .exc-add input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
 
 /* ===== GALLERY ===== */
-.gal{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;}
-@media(max-width:1400px){.gal{grid-template-columns:repeat(5,minmax(0,1fr));}}
-@media(max-width:1160px){.gal{grid-template-columns:repeat(4,minmax(0,1fr));}}
-@media(max-width:900px){.gal{grid-template-columns:repeat(3,minmax(0,1fr));}}
-@media(max-width:640px){.gal{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.gal{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:14px;align-items:stretch;}
+@media(max-width:1650px){.gal{grid-template-columns:repeat(7,minmax(0,1fr));}}
+@media(max-width:1450px){.gal{grid-template-columns:repeat(6,minmax(0,1fr));}}
+@media(max-width:1250px){.gal{grid-template-columns:repeat(5,minmax(0,1fr));}}
+@media(max-width:1050px){.gal{grid-template-columns:repeat(4,minmax(0,1fr));}}
+@media(max-width:840px){.gal{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:620px){.gal{grid-template-columns:repeat(2,minmax(0,1fr));}}
 .gcard{background:var(--paper-lift);border:1px solid var(--rule-strong);border-left:4px solid var(--sc,var(--accent));border-radius:11px;padding:13px 14px;cursor:pointer;transition:.12s;display:flex;flex-direction:column;gap:9px;min-height:118px;position:relative;}
 .gcard:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-2px);}
 .gcard .gnum{font-family:var(--mono);font-size:13px;color:var(--muted);padding-right:60px;}
