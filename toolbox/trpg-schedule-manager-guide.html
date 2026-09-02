@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>跑團行程管理 — 使用說明</title>
+<style>
+:root{--accent:#4a6b8a;--ink:#1f2530;--muted:#5c6672;--paper:#ffffff;--soft:#f5f6f8;--line:#e2e5ea;--code:#eef1f5;--th:#eef2f6;--maxw:860px}
+@media (prefers-color-scheme:dark){:root{--ink:#e6e9ee;--muted:#9aa4b0;--paper:#12151a;--soft:#1a1e25;--line:#2a2f39;--code:#1c2028;--th:#1e2430}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--soft);color:var(--ink);font:15px/1.75 -apple-system,"Segoe UI","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+.topbar{position:sticky;top:0;z-index:10;background:var(--accent);color:#fff;padding:10px 18px;font-size:14px;font-weight:600;letter-spacing:.02em;box-shadow:0 1px 6px rgba(0,0,0,.15)}
+.topbar .k{opacity:.85;font-weight:500}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:26px 20px 80px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:30px 34px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+h1,h2,h3,h4{line-height:1.35;font-weight:700;scroll-margin-top:60px}
+h1{font-size:26px;margin:.2em 0 .6em;padding-bottom:.35em;border-bottom:3px solid var(--accent)}
+h2{font-size:20px;margin:1.9em 0 .5em;padding-left:10px;border-left:4px solid var(--accent)}
+h3{font-size:16.5px;margin:1.4em 0 .4em;color:var(--accent)}
+h4{font-size:15px;margin:1.1em 0 .3em}
+p{margin:.55em 0}
+a{color:var(--accent);text-underline-offset:2px}
+ul,ol{margin:.5em 0;padding-left:1.5em}
+li{margin:.28em 0}
+li>ul,li>ol{margin:.2em 0}
+code{background:var(--code);border-radius:4px;padding:.1em .4em;font-family:"SFMono-Regular",Consolas,"JetBrains Mono",monospace;font-size:.9em}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto}
+pre code{background:none;padding:0}
+blockquote{margin:.8em 0;padding:.4em 1em;border-left:4px solid var(--accent);background:var(--soft);color:var(--muted);border-radius:0 6px 6px 0}
+hr{border:none;border-top:1px solid var(--line);margin:1.8em 0}
+table{border-collapse:collapse;width:100%;margin:.8em 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--th);font-weight:700;white-space:nowrap}
+tr:nth-child(even) td{background:var(--soft)}
+strong{color:var(--ink)}
+.foot{max-width:var(--maxw);margin:0 auto;padding:0 20px;color:var(--muted);font-size:12.5px;text-align:center}
+@media print{body{background:#fff}.topbar{position:static;box-shadow:none}.card{border:none;box-shadow:none;padding:0}}
+</style></head>
+<body>
+<div class="topbar">📖 使用說明　<span class="k">跑團行程管理 — 使用說明</span></div>
+<div class="wrap"><div class="card">
+<h1 id="跑團行程管理--使用說明">跑團行程管理 — 使用說明</h1>
+<p>一個單檔、可離線使用的 TRPG 團務行程工具。以四種檢視管理你的跑團紀錄與排程，資料可完整匯出、匯入為可編輯的 CSV。開檔即用，所有資料存在你自己的瀏覽器裡，不會上傳到任何地方。</p>
+<hr>
+<h2 id="快速開始">快速開始</h2>
+<ol>
+<li>用瀏覽器（Chrome / Edge / Firefox 皆可）直接打開 <code>trpg-schedule-manager.html</code>。</li>
+<li>首次開啟會載入一組<strong>示範資料</strong>，方便你先看看各檢視長怎樣。</li>
+<li>想從零開始：點右上「匯入匯出 → 全部清空」，或直接把示範資料一筆筆改成你的團。</li>
+<li>右上四個分頁鈕可隨時切換：<strong>月曆、清單、卡片庫、統計</strong>。</li>
+</ol>
+<blockquote>
+<p>你的資料會自動存在這台電腦的這個瀏覽器中（localStorage）。換電腦、換瀏覽器或清除瀏覽資料就會不見，因此<strong>重要資料請用「匯出團務.csv」另外備份</strong>。</p>
+</blockquote>
+<hr>
+<h2 id="標題與年度會自動變化">標題與年度會自動變化</h2>
+<ul>
+<li>頁面標題固定為「<strong>該年度 + 跑團管理</strong>」（例：<code>2026跑團管理</code>），<strong>年度會跟著月曆目前所在的年份自動改變</strong>——把月曆往前翻到 2027 年，標題就變成「2027跑團管理」。</li>
+<li>統計頁也有 <code>‹ 年 ›</code> 可切換年份，切換時標題同步更新。</li>
+<li>因此<strong>不需要、也沒有</strong>手動輸入標題或年度的欄位。</li>
+</ul>
+<hr>
+<h2 id="四種檢視">四種檢視</h2>
+<h3 id="月曆">月曆</h3>
+<p>依日期把每一場團排在月曆格子上，對應參考圖下方的「跑團日子」月曆。</p>
+<ul>
+<li>上方 <code>‹</code> <code>›</code> 切換月份，「今天」跳回當月。切到不同年份時，標題會自動更新。</li>
+<li>每格的團務卡片依序顯示 <strong>編號 → 團名 → 時間</strong>（編號、團名靠左，時間靠右，三者對齊同一高度），左側色條與外框代表<strong>系統</strong>（同系統同色，顏色可於「設定」自訂）。</li>
+<li><strong>游標指上即時顯示完整資訊</strong>：把滑鼠移到任一團務上，會<strong>立刻</strong>（無延遲）跳出小提示窗，顯示「編號. 團名 · 系統 · 完整日期範圍 · 時間」——月曆格子放不下的完整日期與系統，都能在這裡一眼看到。</li>
+<li><strong>跨日團會橫跨格子</strong>：當一場團跨到隔天（例：晚上 10:00 跑到凌晨 12:20），會以一整條橫幅<strong>從開始日的格子一路延伸到結束日的格子</strong>，並標示「<strong>下午10:00 → 上午12:20</strong>」（只顯示時間；完整日期請看上述滑鼠提示）。當日就結束的團只顯示開始時間。若一條橫幅跨過週末換行，會在上、下兩週各畫一段，續接的那段以 ↪ 標示。</li>
+<li>已完成的團會淡化、取消的團會加刪除線。</li>
+<li>點任一場團即可<strong>編輯</strong>。</li>
+<li>沒有填開始日期的團不會出現在月曆（但仍會在清單、卡片庫、統計中）。</li>
+</ul>
+<h3 id="清單">清單</h3>
+<p>可排序、可篩選、<strong>可就地編輯</strong>的資料表，對應參考圖右側的「跑團日子」表格。</p>
+<ul>
+<li>欄位：編號、團名、系統、<strong>開始日期、開始時間、結束日期、結束時間</strong>、狀態、成員、使用角卡、本次團務數、備註。</li>
+<li><strong>就地編輯</strong>：直接點任一欄位就能在表格內修改（點「狀態」會<strong>直接展開下拉選單</strong>、日期是日期選擇器、時間欄一樣 <code>2200</code>→下午10:00）；按 Enter 或點別處儲存、Esc 取消。欄寬固定，編輯時不會跳動。<strong>「本次團務數」欄為自動計算、不可手動編輯。</strong></li>
+<li><strong>完整編輯視窗</strong>：若想一次改多個欄位，按每列最右操作欄的 <strong>✎</strong> 開啟編輯視窗（與「＋新增團務」相同的表單）。</li>
+<li><strong>複製團務</strong>：按操作欄的 <strong>⧉</strong> 會把該列複製一份、插在它的正下方，方便快速建立同團的下一團次（複製後再改日期即可）。</li>
+<li><strong>點欄位標題</strong>可依該欄排序，再點一次反向。</li>
+<li>上方可用關鍵字搜尋，並依系統、狀態（預定／已完成）、年份篩選。搜尋框有輸入內容時，<strong>右側會出現一個「✕」按鈕，點一下即可清空搜尋字</strong>（清單與卡片庫的搜尋框都有）。</li>
+</ul>
+<h3 id="卡片庫">卡片庫</h3>
+<p>以<strong>團</strong>（一個劇本團）為單位的畫廊，對應參考圖左側的「2026 的團」。</p>
+<ul>
+<li><strong>一團一張卡</strong>：<strong>相同「編號＋團名」的所有場次會合併成一張卡</strong>。你在清單建立團務、填好編號與團名，卡片庫就會自動出現對應的卡片（不需另外建立）。</li>
+<li>卡片的資訊由上到下：<strong>編號 → 共 N 團次 → 團名 → 日期範圍</strong>（第 1 團次的開始日 → 最後一次團次的結束日）→ 系統、使用角卡。</li>
+<li><strong>卡片的狀態與清單的狀態不同</strong>：卡片狀態是整團的進度，由該團所有場次自動推導，只用來顯示——<strong>預定</strong>（場次全都還沒跑）、<strong>進行中</strong>（該團<strong>同時有已完成、也有還沒跑的場次</strong>，代表這個團正在進行中）、<strong>已結團</strong>（所有場次都已完成）。</li>
+<li>預設依編號由新到舊排列，可改依日期。另可勾選 <strong>「先依系統分組」</strong>：勾了會先把同系統的團排在一起，再依你選的編號／日期順序當第二層排序（系統與原排序同時套用）。</li>
+<li>上方可用關鍵字搜尋，並依系統、狀態、<strong>年份</strong>篩選（年份下拉與清單相同，只顯示該年有場次的團）。</li>
+<li>日期範圍固定顯示在同一行，不會因太長而換行（過長會以「…」收尾）。</li>
+<li>點卡片會跳到「清單」並自動篩出該團的所有場次。</li>
+<li><strong>空白卡片</strong>：按卡片庫右上的 <strong>「＋ 空白卡片」</strong> 可新增一張虛線的空白占位卡（無標題、無編號、無日期）。空白卡片<strong>只出現在卡片庫</strong>、不會出現在清單與月曆，而且<strong>每張都獨立、不會互相合併</strong>。點空白卡片可開啟編輯視窗把它填成正式的團（填了團名/日期後就會出現在清單與月曆）。</li>
+</ul>
+<h3 id="統計">統計</h3>
+<p>對應參考圖的「全年總計」，統計範圍是<strong>月曆目前所在的年度</strong>。</p>
+<ul>
+<li><strong>所有數量都以「團」為單位</strong>：相同編號＋團名的多個場次算成<strong>一團</strong>，不會因為同一個團跑很多場次就重複計數（不再是計算清單的列數）。</li>
+<li><strong>完成度環圈</strong>：該年度「已結團」團數 ÷「該年度總團數」。</li>
+<li><strong>目標團數＝該年度總團數（去重後），系統自動計算</strong>，不需手動設定。</li>
+<li>總覽數字：總團數、已結團、進行中、預定、系統數；另有系統分布、月份分布（■ 已結團／未結）。以上皆依團計算。</li>
+<li><strong>參加次數統計（依系統）</strong>：把成員中的玩家與角色分開計次——成員格式為「角色名稱(玩家名稱)」，工具會<strong>排除主持職稱</strong>（預設 KP／GM／DL，可在「設定」增減，例如加入 SKP），其餘每位玩家、每個角色計次。<strong>以「團」為單位——相同編號＋團名的同一個團只計一次</strong>（同團跑很多場次不會重複累加）。每個系統一張卡（玩家、角色排行上下並列），<strong>最多 4 個系統橫向並排</strong>，視窗較窄時會自動減少每列欄數。</li>
+<li><strong>「角卡使用」已併入參加次數統計</strong>（不再是獨立區塊）：「使用角卡」欄代表<strong>製作者</strong>用某張角色卡跑團，因此工具把它當成一筆參加紀錄併進來——<ul>
+<li><strong>製作者的名稱</strong>當作「玩家」計入<strong>玩家參加次數</strong>：若製作者名稱與成員中的玩家同名，次數會<strong>合併</strong>（使用幾次角色就累加幾次）。這個玩家會以特別顏色標示並加上 <span style="color:#9333c4"><strong>製作者</strong></span> 標籤。</li>
+<li><strong>每張使用角卡</strong>當作「角色」計入<strong>角色參加次數</strong>：若角卡名稱與成員中的角色同名，次數會<strong>合併</strong>。這些角色會以另一種顏色標示並加上 <span style="color:#1f8a7a"><strong>角卡</strong></span> 標籤。</li>
+<li>兩種標色不同，方便一眼分辨哪個是<strong>製作者的名字</strong>、哪個是<strong>角色卡名稱</strong>。製作者名稱請在右上「設定」中設定。</li>
+</ul>
+</li>
+<li>用 <code>‹ 年 ›</code> 可切換要看的年度。</li>
+</ul>
+<hr>
+<h2 id="新增與編輯團務">新增與編輯團務</h2>
+<ul>
+<li>右上**「＋ 新增團務」**開啟表單；或在任一檢視點既有的團來編輯。</li>
+<li>欄位說明：<ul>
+<li><strong>編號</strong>：該團的識別碼，可為數字或含字母（如 <code>300</code>、<code>P40</code>、<code>K</code>）。卡片庫依此排序。</li>
+<li><strong>團名</strong>：一般團務請填；若全部留空則會存成卡片庫的「空白卡片」占位。</li>
+<li><strong>系統</strong>：如 <code>CoC克蘇魯的呼喚6th</code>、<code>InSANe</code>。輸入時會自動提示你用過的系統。</li>
+<li><strong>狀態</strong>：預定／已完成（此為<strong>單場次</strong>狀態，只有這兩種；卡片庫另有整團的「預定／進行中／已結團」狀態，由場次自動推導，兩者不同）。統計完成度只計「已完成」。</li>
+<li><strong>本次團務數</strong>：<strong>自動計算、不需填寫</strong>。同一個團（相同編號＋團名）依日期由早到晚自動編成 1、2、3…（空白卡片不列入）。</li>
+<li><strong>開始日期 / 開始時間</strong>、<strong>結束日期 / 結束時間</strong>：一場團的起訖時間。</li>
+<li><strong>使用角卡</strong>、<strong>備註</strong>：選填。</li>
+</ul>
+</li>
+</ul>
+<h3 id="時間輸入會自動格式化">時間輸入會自動格式化</h3>
+<ul>
+<li>時間欄直接打數字就好：輸入 <code>2200</code> 離開欄位後會自動變成 <strong>下午10:00</strong>；<code>925</code> → 上午9:25；<code>110</code> → 上午1:10。</li>
+<li>也接受你直接輸入 <code>22:00</code>、<code>下午10:00</code>。</li>
+</ul>
+<h3 id="跨夜怎麼填">跨夜怎麼填</h3>
+<ul>
+<li><strong>結束日期留空 = 當日</strong>。若結束時間比開始時間早（例：開始 22:40、結束 01:10），系統會自動判定為<strong>跨到隔天凌晨</strong>。</li>
+<li>想明確一點，也可以直接把<strong>結束日期</strong>填成隔天。</li>
+</ul>
+<hr>
+<h2 id="系統代表色">系統代表色</h2>
+<p>每個系統在月曆、清單、卡片、統計裡都有一個代表色。</p>
+<ul>
+<li>預設是<strong>依系統名稱自動配色</strong>（同一個系統永遠同一色）。</li>
+<li>想自己指定：到右上**「設定 → 系統代表色」**，點該系統的色塊選色即可，會立刻套用到各檢視。</li>
+<li>按該列的 <strong>「自動」</strong> 可清除手動指定、恢復自動配色。</li>
+<li>手動指定的顏色存在你的瀏覽器裡，匯出「純檢視分享版」時也會一併帶入。</li>
+</ul>
+<hr>
+<h2 id="統計例外職稱">統計例外職稱</h2>
+<p>「參加次數統計」會把成員中的<strong>主持者</strong>排除，不計入玩家/角色參加次數。</p>
+<ul>
+<li>預設排除 <strong>KP／GM／DL</strong>（即成員寫成 <code>KP(人名)</code>、<code>GM(人名)</code>、<code>DL(人名)</code> 時視為主持者）。</li>
+<li>要新增例外（例如多了副主持 <code>SKP</code>）：到**「設定 → 統計例外職稱」**輸入 <code>SKP</code> 按新增即可；或編輯 <strong><code>例外.csv</code></strong>（欄位只有 <code>職稱</code>，一列一個）後匯回。</li>
+<li>例外清單存在你的瀏覽器裡，也可從「匯入匯出」下載 <code>例外.csv</code> 備份／編輯。</li>
+</ul>
+<hr>
+<h2 id="csv-匯出與匯入">CSV 匯出與匯入</h2>
+<p>這是本工具的資料核心：<strong>所有團務資料都能匯出成 CSV、在 Excel／試算表編輯後再匯回。</strong></p>
+<h3 id="團務csv-欄位順序">團務.csv 欄位順序</h3>
+<pre><code>編號, 團名, 系統, 開始日期, 開始時間, 結束日期, 結束時間, 狀態, 成員, 使用角卡, 本次團務數, 備註
+</code></pre>
+<ul>
+<li>第一列為標題列。</li>
+<li>檔案編碼為 <strong>UTF-8（含 BOM）</strong>，用 Excel 直接開不會亂碼。</li>
+<li><strong>成員請用頓號 <code>、</code> 分隔</strong>，不要用逗號。</li>
+<li>日期建議 <code>2026-09-28</code>，也接受 <code>2026/9/28</code>、<code>2026年9月28日</code>。</li>
+<li>時間可填 <code>2200</code>、<code>22:00</code> 或 <code>下午10:00</code>，工具都讀得懂。</li>
+<li><strong>結束日期留空＝當日</strong>；跨夜請把結束日期填成隔天，或讓工具依「結束時間早於開始時間」自動判定。</li>
+</ul>
+<h3 id="操作位置右上匯入匯出">操作位置（右上「匯入匯出」）</h3>
+<ul>
+<li><strong>載入資料夾</strong>：選一個資料夾，工具會自動抓裡面的 <code>團務.csv</code> 與 <code>例外.csv</code>。</li>
+<li><strong>匯入單一 CSV</strong>：選擇或拖曳 <code>團務.csv</code> 或 <code>例外.csv</code>（依檔名／欄位自動判斷）。</li>
+<li><strong>匯出</strong>：下載 <code>團務.csv</code>、<code>例外.csv</code>，或下載<strong>空白範本</strong>。</li>
+<li><strong>注意：匯入團務會覆蓋</strong>目前所有團務資料（並非附加），匯入前若有未備份的資料請先匯出。</li>
+</ul>
+<h3 id="設定csv僅供備份無法匯入">設定.csv（僅供備份，無法匯入）</h3>
+<ul>
+<li>設定內容只有<strong>製作者、副標</strong>兩項，可從「匯入匯出」下載 <code>設定.csv</code> 做備份，但<strong>不支援匯入</strong>——若拖入 <code>設定.csv</code>，工具會忽略它。</li>
+<li>製作者、副標請直接在右上「設定」中修改；副標預設為「使用神貓卓跑團管理手冊編輯器」。</li>
+</ul>
+<hr>
+<h2 id="純檢視分享版-html">純檢視分享版 HTML</h2>
+<p>「匯入匯出 → 純檢視分享版 HTML」會另存一個<strong>內嵌目前資料</strong>的 HTML 檔：移除所有編輯功能，只能瀏覽與切換檢視，適合直接傳給團友看（用瀏覽器打開即可，不需任何檔案或連線）。想更新內容時，回到本工具編輯後重新匯出即可。</p>
+<hr>
+<h2 id="常見問題">常見問題</h2>
+<p><strong>Q：資料會不會不見？</strong>
+資料存在你這台電腦的這個瀏覽器。清除瀏覽紀錄、換裝置都會消失，所以請定期用「匯出團務.csv」備份。</p>
+<p><strong>Q：目標團數怎麼設？</strong>
+不用設。它會自動等於「當年度的總團數」，你新增／刪除團時會自動更新。</p>
+<p><strong>Q：可以多人協作嗎？</strong>
+本工具是單機檔案。若要協作，建議把 <code>團務.csv</code> 放共用雲端資料夾，各自用本工具「載入資料夾」讀取、編輯後再匯出覆蓋。</p>
+<p><strong>Q：深色模式？</strong>
+右上月亮／太陽鈕可切換深／淺色，偏好會被記住。</p>
+<hr>
+<p><em>本工具為單一自包含 HTML，可自由複製、分享、修改。</em></p>
+
+</div></div>
+<div class="foot">本頁為工具的使用說明，可直接列印或另存。</div>
+</body></html>

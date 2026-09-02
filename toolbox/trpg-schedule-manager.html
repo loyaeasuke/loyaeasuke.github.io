@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>跑團行程管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+<style id="appcss">
+:root{
+  --paper:#f4f1ea;--paper-deep:#ebe6db;--paper-lift:#fbf9f4;
+  --ink:#23211c;--ink-soft:#4c483f;--muted:#8b8474;--muted-2:#aba492;
+  --rule:#ded7c8;--rule-strong:#cbc2ac;
+  --accent:#4a6b8a;--accent-deep:#375270;--accent-soft:#e2e9f0;--on-accent:#f7fafc;
+  --done:#4f8a5b;--done-soft:#e2f0e4;
+  --plan:#4a6b8a;--plan-soft:#e2e9f0;
+  --live:#c08a2d;--live-soft:#f6ecd6;
+  --owner:#9333c4;--pcrole:#1f8a7a;
+  --cancel:#9a5050;--cancel-soft:#f0e0e0;
+  --danger:#a23a30;
+  --serif:"Noto Serif TC",Georgia,"Songti TC",serif;
+  --sans:"Noto Sans TC",-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 18px 50px rgba(33,31,26,.16);
+}
+body.dark{
+  --paper:#161922;--paper-deep:#11141b;--paper-lift:#1e222d;
+  --ink:#e6e9ef;--ink-soft:#b9bfca;--muted:#7d8593;--muted-2:#565e6c;
+  --rule:#262b36;--rule-strong:#38404e;
+  --accent:#6f9fc9;--accent-deep:#8fb6d9;--accent-soft:#1d2530;--on-accent:#0f141b;
+  --done:#6bb47a;--done-soft:#17241a;
+  --plan:#6f9fc9;--plan-soft:#16202b;
+  --live:#d7ab5b;--live-soft:#241d10;
+  --owner:#c48ae8;--pcrole:#5fcdb8;
+  --cancel:#c67d7d;--cancel-soft:#241414;
+  --shadow:0 18px 50px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;height:100%;}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh;font-size:14px;}
+button,input,select,textarea{font-family:inherit;color:inherit;}
+button{cursor:pointer;}
+a{color:var(--accent-deep);}
+::selection{background:var(--accent-soft);}
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-thumb{background:var(--rule-strong);border-radius:10px;border:2px solid var(--paper-deep);}
+
+/* ===== TOOLBAR ===== */
+.toolbar{min-height:60px;display:flex;align-items:center;gap:14px;padding:9px 20px;background:var(--paper-deep);border-bottom:1px solid var(--rule-strong);position:sticky;top:0;z-index:30;flex-wrap:wrap;}
+.tb-brand{font-family:var(--serif);font-weight:700;font-size:18px;letter-spacing:.04em;display:flex;align-items:baseline;gap:8px;white-space:nowrap;}
+.tb-brand .dot{color:var(--accent);font-size:14px;}
+.tb-brand .yr{font-family:var(--mono);font-size:13px;color:var(--muted);}
+.tb-div{width:1px;height:26px;background:var(--rule-strong);}
+.views{display:flex;gap:6px;background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:10px;padding:4px;}
+.vbtn{border:none;background:none;border-radius:7px;padding:8px 14px;font-size:14px;font-weight:500;color:var(--ink-soft);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:.12s;}
+.vbtn svg{width:16px;height:16px;opacity:.8;}
+.vbtn:hover{color:var(--accent);}
+.vbtn.active{background:var(--accent);color:var(--on-accent);box-shadow:0 2px 8px rgba(55,82,112,.28);}
+.vbtn.active svg{opacity:1;}
+.tb-actions{margin-left:auto;display:flex;gap:9px;align-items:center;flex-wrap:wrap;}
+.tbtn{display:inline-flex;align-items:center;gap:7px;background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:9px;padding:8px 13px;font-size:13.5px;font-weight:500;color:var(--ink);white-space:nowrap;transition:.14s;}
+.tbtn svg{width:15px;height:15px;opacity:.8;}
+.tbtn:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-deep);}
+.tbtn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent-deep);}
+.tbtn.primary:hover{background:var(--accent-deep);color:var(--on-accent);}
+.tbtn.icon{padding:8px 10px;}
+
+/* ===== MAIN ===== */
+.wrap{flex:1;min-height:0;overflow:auto;padding:20px 22px 60px;}
+.view{display:none;}
+.view.active{display:block;}
+.headline{display:flex;align-items:center;gap:14px;margin:2px 0 18px;flex-wrap:wrap;}
+.headline h2{font-family:var(--serif);font-size:22px;margin:0;letter-spacing:.03em;}
+.headline .sub{font-size:13px;color:var(--muted);}
+.spacer{flex:1;}
+
+/* status pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.9;}
+.pill.done{color:var(--done);background:var(--done-soft);}
+.pill.plan{color:var(--plan);background:var(--plan-soft);}
+.pill.live{color:var(--live);background:var(--live-soft);}
+.pill.cancel{color:var(--cancel);background:var(--cancel-soft);}
+.syschip{display:inline-block;font-size:13px;font-weight:500;padding:2px 9px;border-radius:6px;white-space:nowrap;background:var(--accent-soft);color:var(--accent-deep);}
+
+/* ===== CALENDAR ===== */
+.cal-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.cal-nav{display:inline-flex;align-items:center;gap:4px;}
+.cal-nav button{width:34px;height:34px;border:1px solid var(--rule-strong);background:var(--paper-lift);border-radius:8px;font-size:15px;display:grid;place-items:center;transition:.12s;}
+.cal-nav button:hover{border-color:var(--accent);color:var(--accent);}
+.cal-title{font-family:var(--serif);font-weight:700;font-size:19px;min-width:150px;}
+.cal-title .m{color:var(--accent-deep);}
+/* month grid — lane-based so events can span multiple day cells */
+.cal-grid{border:1px solid var(--rule-strong);border-radius:12px;overflow:hidden;background:var(--paper-lift);}
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-wd{background:var(--paper-deep);text-align:center;font-size:13px;font-weight:700;color:var(--muted);padding:9px 0;letter-spacing:.08em;border-bottom:1px solid var(--rule-strong);}
+.cal-wd.we{color:var(--cancel);}
+.cal-week{display:grid;grid-template-columns:repeat(7,1fr);position:relative;}
+.cal-col{grid-row:1/-1;background:var(--paper-lift);border-right:1px solid var(--rule);border-top:1px solid var(--rule);z-index:0;}
+.cal-week:first-child .cal-col{border-top:none;}
+.cal-col.out{background:var(--paper-deep);}
+.cal-col.today{box-shadow:inset 0 0 0 2px var(--accent);}
+.cal-dn{grid-row:1;justify-self:end;font-family:var(--mono);font-size:13px;color:var(--ink-soft);font-weight:500;padding:5px 8px 3px;z-index:1;pointer-events:none;}
+.cal-dn.out{color:var(--muted-2);}
+.cal-dn.today .dn{background:var(--accent);color:var(--on-accent);border-radius:50%;min-width:20px;height:20px;line-height:20px;display:inline-block;text-align:center;font-size:13px;}
+.cal-ev{z-index:2;margin:3px 4px;min-width:0;height:20px;font-size:13px;line-height:1;padding:0 7px;border-radius:5px;cursor:pointer;background:color-mix(in srgb,var(--sc,var(--accent)) 12%,var(--paper));border:1px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));border-left:4px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:4px;box-shadow:0 1px 2px rgba(0,0,0,.07);transition:background .1s;font-weight:500;}
+.cal-ev:hover{background:color-mix(in srgb,var(--sc,var(--accent)) 22%,var(--paper));}
+.cal-ev .nm{color:var(--ink);}
+.cal-ev .num{font-family:var(--mono);color:var(--ink-soft);font-size:13px;flex:0 0 auto;font-weight:600;line-height:20px;}
+.cal-ev.st-done{opacity:.75;}
+.cal-ev.st-cancel{text-decoration:line-through;opacity:.6;}
+.cal-ev.contL{border-left:none;border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0;padding-left:5px;}
+.cal-ev.contR{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0;}
+.cal-ev .t{font-family:var(--mono);color:var(--ink-soft);font-size:11px;flex:0 0 auto;line-height:20px;}
+.cal-ev .t.tr{margin-left:auto;padding-left:6px;}
+.cal-ev .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;line-height:20px;}
+/* 月曆滑鼠即時提示 */
+.cal-tip{position:fixed;z-index:9999;display:none;background:var(--ink);color:var(--paper);padding:6px 9px;border-radius:6px;font-size:12px;line-height:1.35;pointer-events:none;max-width:300px;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:normal;}
+
+/* ===== TABLE ===== */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
+.filters input,.filters select{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:8px;padding:8px 11px;font-size:13.5px;color:var(--ink);}
+.filters input:focus,.filters select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.filters .search{min-width:210px;}
+.search-wrap{position:relative;display:inline-flex;align-items:center;}
+.search-wrap .search{padding-right:30px;}
+.search-wrap .clr-x{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:18px;height:18px;border:none;border-radius:50%;background:var(--rule-strong);color:var(--paper);font-size:12px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;}
+.search-wrap .clr-x:hover{background:var(--accent);}
+.search-wrap.has-val .clr-x{display:inline-flex;}
+.filters .gchk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);cursor:pointer;white-space:nowrap;background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:8px;padding:7px 11px;}
+.filters .gchk input{cursor:pointer;}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule-strong);border-radius:12px;background:var(--paper-lift);}
+table.data{border-collapse:collapse;table-layout:fixed;width:100%;font-size:13px;}
+table.data td,table.data th{overflow:hidden;}
+table.data td.mem,table.data td.note{white-space:normal;word-break:break-word;}
+table.data td.editing{overflow:visible;}
+table.data th{background:var(--paper-deep);text-align:left;padding:10px 12px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.04em;border-bottom:1px solid var(--rule-strong);white-space:nowrap;cursor:pointer;user-select:none;position:sticky;top:0;}
+table.data th:hover{color:var(--accent);}
+table.data th .ar{font-family:var(--mono);font-size:13px;color:var(--accent);margin-left:3px;}
+table.data td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top;}
+table.data tr{cursor:pointer;transition:background .1s;}
+table.data tbody tr:hover{background:var(--accent-soft);}
+table.data .num{font-family:var(--mono);color:var(--muted);white-space:nowrap;}
+table.data .nm{font-weight:500;color:var(--ink);}
+table.data .mem{color:var(--ink-soft);max-width:260px;font-size:13px;}
+table.data .note{color:var(--muted);font-size:13px;max-width:180px;}
+table.data td.ctr{text-align:center;}
+table.data td.editable{cursor:text;}
+table.data td.editable:hover{background:var(--accent-soft);}
+table.data td.editing{padding:3px 5px;}
+table.data td.opcell{text-align:center;cursor:default;}
+table.data td.opcell:hover{background:transparent;}
+.cell-input{width:100%;box-sizing:border-box;border:1px solid var(--accent);border-radius:5px;padding:5px 6px;font-size:13px;font-family:inherit;color:var(--ink);background:var(--paper);}
+.cell-input:focus{outline:none;box-shadow:0 0 0 2px var(--accent-soft);}
+select.cell-input{padding:4px 4px;}
+.row-edit,.row-copy{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:6px;width:30px;height:28px;color:var(--muted);display:inline-grid;place-items:center;font-size:14px;transition:.12s;margin:0 2px;}
+.row-edit:hover,.row-copy:hover{border-color:var(--accent);color:var(--accent);}
+td.opcell{white-space:nowrap;}
+.inline-hint{font-size:13px;color:var(--muted);margin:0 0 10px;}
+.empty-note{padding:40px;text-align:center;color:var(--muted);font-style:italic;}
+/* system-colour manager (settings) */
+.syscolor-list{display:flex;flex-direction:column;gap:8px;max-height:230px;overflow:auto;padding-top:2px;}
+.sc-row{display:flex;align-items:center;gap:10px;}
+.sc-row input[type=color]{width:40px;height:30px;padding:0;border:1px solid var(--rule-strong);border-radius:7px;background:none;cursor:pointer;flex:0 0 auto;}
+.sc-name{flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sc-tag{font-size:13px;color:var(--muted);flex:0 0 auto;}
+.sc-auto{font-size:13px;padding:5px 11px;border:1px solid var(--rule-strong);border-radius:7px;background:var(--paper-lift);color:var(--muted);flex:0 0 auto;}
+.sc-auto:hover{border-color:var(--accent);color:var(--accent);}
+.sc-empty{color:var(--muted);font-size:13px;font-style:italic;}
+/* exception-role manager */
+.exc-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.exc-chip{display:inline-flex;align-items:center;gap:7px;background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:20px;padding:5px 8px 5px 12px;font-size:13px;}
+.exc-chip button{background:none;border:none;color:var(--muted);font-size:15px;line-height:1;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;}
+.exc-chip button:hover{background:var(--cancel-soft);color:var(--cancel);}
+.exc-add{display:flex;gap:8px;}
+.exc-add input{flex:1;padding:9px 12px;border:1px solid var(--rule-strong);border-radius:9px;font-size:13.5px;color:var(--ink);background:var(--paper-lift);}
+.exc-add input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+
+/* ===== GALLERY ===== */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;}
+.gcard{background:var(--paper-lift);border:1px solid var(--rule-strong);border-left:4px solid var(--sc,var(--accent));border-radius:11px;padding:13px 14px;cursor:pointer;transition:.12s;display:flex;flex-direction:column;gap:9px;min-height:118px;position:relative;}
+.gcard:hover{border-color:var(--accent);box-shadow:var(--shadow);transform:translateY(-2px);}
+.gcard .gnum{font-family:var(--mono);font-size:13px;color:var(--muted);padding-right:60px;}
+.gcard .gcount{font-family:var(--mono);font-size:13px;color:var(--muted-2);margin-top:-4px;}
+.gcard .gname{font-family:var(--serif);font-weight:700;font-size:15px;line-height:1.4;color:var(--ink);}
+.gcard.blank{border-style:dashed;border-left-color:var(--rule-strong);}
+.gcard.blank .gname{color:var(--muted-2);}
+.gcard .gmeta{margin-top:auto;display:flex;flex-direction:column;gap:6px;}
+.gcard .gdate{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:visible;}
+.gcard .grow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.gcard .gpill{position:absolute;top:11px;right:11px;}
+
+/* ===== STATS ===== */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;align-items:start;}
+.panel{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:14px;padding:18px 20px;}
+.panel h3{font-family:var(--serif);font-size:15px;margin:0 0 14px;letter-spacing:.04em;color:var(--ink-soft);display:flex;align-items:center;gap:8px;}
+.panel.progress{grid-column:1/-1;display:flex;align-items:center;gap:26px;flex-wrap:wrap;}
+.ring{position:relative;width:132px;height:132px;flex:0 0 auto;}
+.ring svg{transform:rotate(-90deg);}
+.ring .rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring .pct{font-family:var(--serif);font-weight:700;font-size:30px;color:var(--accent-deep);line-height:1;}
+.ring .pl{font-size:13px;color:var(--muted);margin-top:3px;}
+.prog-info{flex:1;min-width:200px;}
+.stat-yearnav{display:flex;align-items:center;gap:10px;}
+.stat-yearnav button{width:30px;height:30px;border:1px solid var(--rule-strong);background:var(--paper);border-radius:8px;font-size:15px;display:grid;place-items:center;transition:.12s;}
+.stat-yearnav button:hover{border-color:var(--accent);color:var(--accent);}
+.stat-yearnav .sy{font-family:var(--serif);font-weight:700;font-size:24px;}
+.prog-big{font-family:var(--serif);font-size:26px;font-weight:700;}
+.prog-big .of{color:var(--muted);font-size:18px;}
+.prog-sub{color:var(--muted);font-size:13px;margin-top:4px;}
+.prog-goal{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-soft);}
+.prog-goal input{width:76px;background:var(--paper);border:1px solid var(--rule-strong);border-radius:7px;padding:6px 9px;font-family:var(--mono);font-size:13px;color:var(--ink);}
+.prog-goal input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.kv{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:13px;}
+.kv .kl{min-width:96px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.panel.syswide{grid-column:span 2;}
+.panel.syswide .kl{min-width:210px;}
+@media(max-width:640px){.panel.syswide{grid-column:1/-1;}}
+.kv .bar{flex:1;height:9px;background:var(--paper-deep);border-radius:6px;overflow:hidden;}
+.kv .bar i{display:block;height:100%;background:var(--accent);border-radius:6px;}
+.kv .kn{font-family:var(--mono);font-size:13px;color:var(--muted);min-width:26px;text-align:right;}
+.tag{display:inline-block;font-size:10px;line-height:1;padding:2px 4px;border-radius:4px;margin-right:5px;font-weight:700;vertical-align:middle;}
+.kv .kl.is-owner{color:var(--owner);font-weight:600;}
+.kv .kl.is-owner .tag{color:var(--owner);background:color-mix(in srgb,var(--owner) 16%,var(--paper));}
+.kv .kl.is-card{color:var(--pcrole);font-weight:600;}
+.kv .kl.is-card .tag{color:var(--pcrole);background:color-mix(in srgb,var(--pcrole) 16%,var(--paper));}
+.months{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:8px;}
+.months .mo{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;}
+.months .mo .mbar{width:100%;max-width:26px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;transition:.2s;}
+.months .mo .mbar.pl{background:var(--plan);opacity:.5;}
+.months .mo .ml{font-family:var(--mono);font-size:13px;color:var(--muted);}
+.months .mo .mn{font-family:var(--mono);font-size:13px;color:var(--ink-soft);}
+.big-nums{display:flex;gap:22px;flex-wrap:wrap;}
+.big-nums .bn{display:flex;flex-direction:column;}
+.big-nums .bn b{font-family:var(--serif);font-size:26px;font-weight:700;}
+.big-nums .bn span{font-size:13px;color:var(--muted);}
+/* 參加次數統計：最多 4 個系統直向並列，寬度不足自動遞減（auto-fit 自動偵測，max-width 限制最多 4 欄） */
+.part-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;max-width:1040px;}
+.part-sys{border:1px solid var(--rule);border-radius:10px;padding:12px 14px;background:var(--paper);min-width:0;}
+.part-title{margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.part-cols{display:flex;flex-direction:column;gap:14px;}
+.part-cols h4{margin:0 0 8px;font-size:13px;color:var(--ink-soft);font-weight:700;}
+
+/* ===== MODAL ===== */
+.overlay{position:fixed;inset:0;background:rgba(20,18,14,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:60;padding:22px;}
+.overlay.show{display:flex;}
+.modal{background:var(--paper);border:1px solid var(--rule-strong);border-radius:15px;width:min(680px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);}
+.modal.wide{width:min(820px,100%);}
+.modal-head{display:flex;align-items:center;padding:17px 22px;border-bottom:1px solid var(--rule-strong);background:var(--paper-deep);}
+.modal-head h3{font-family:var(--serif);font-size:19px;margin:0;letter-spacing:.04em;}
+.modal-head .x{margin-left:auto;background:none;border:none;font-size:26px;color:var(--muted);width:36px;height:36px;border-radius:8px;line-height:1;}
+.modal-head .x:hover{background:var(--paper-lift);color:var(--ink);}
+.modal-body{padding:20px 22px;overflow-y:auto;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.field .hint{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px;}
+.field input,.field select,.field textarea{width:100%;padding:10px 12px;border:1px solid var(--rule-strong);border-radius:9px;font-size:14px;color:var(--ink);background:var(--paper-lift);}
+.field input[readonly]{background:var(--paper-deep);color:var(--muted);cursor:not-allowed;}
+.field textarea{min-height:64px;resize:vertical;line-height:1.7;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.btn{border:1px solid transparent;border-radius:9px;padding:10px 18px;font-size:14px;font-weight:600;transition:.12s;}
+.btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent-deep);}
+.btn-primary:hover{background:var(--accent-deep);}
+.btn-ghost{background:var(--paper-lift);color:var(--ink);border-color:var(--rule-strong);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-danger{background:var(--paper-lift);color:var(--danger);border-color:#d8b3ad;}
+.btn-danger:hover{background:var(--danger);color:#fff;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;align-items:center;}
+.callout{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:11px;padding:14px 16px;font-size:13px;line-height:1.8;color:var(--ink-soft);margin-bottom:16px;}
+.callout code{font-family:var(--mono);background:var(--accent-soft);padding:2px 6px;border-radius:5px;font-size:13px;color:var(--accent-deep);}
+.callout b{color:var(--ink);}
+.io-block{border:1px solid var(--rule-strong);border-radius:12px;overflow:hidden;margin-bottom:16px;background:var(--paper-lift);}
+.io-block .ib-head{background:var(--paper-deep);padding:10px 15px;font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.08em;}
+.io-row{display:flex;align-items:center;gap:12px;padding:12px 15px;border-top:1px solid var(--rule);}
+.io-row:first-of-type{border-top:none;}
+.io-row .grow{flex:1;min-width:0;}
+.io-row .r-title{font-weight:500;font-size:14px;}
+.io-row .r-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+.drop{border:2px dashed var(--rule-strong);border-radius:11px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;background:var(--paper-lift);transition:.12s;font-size:13.5px;}
+.drop:hover,.drop.drag{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-deep);}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:12px 22px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:90;box-shadow:var(--shadow);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* readonly (exported share view) */
+body.readonly .edit-only{display:none!important;}
+
+@media(max-width:820px){
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .cal-cell{min-height:80px;}
+  .tb-brand .yr{display:none;}
+  .vbtn span{display:none;}
+  .vbtn{padding:8px 11px;}
+  .wrap{padding:16px 14px 50px;}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<!-- ===== TOOLBAR ===== -->
+<div class="toolbar">
+  <div class="tb-brand"><span class="dot">◆</span><span id="brandTitle">跑團行程管理</span></div>
+  <div class="tb-div"></div>
+  <div class="views" id="viewTabs">
+    <button class="vbtn active" data-view="cal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg><span>月曆</span></button>
+    <button class="vbtn" data-view="table"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M4 10h16M4 15h16M10 5v14"/></svg><span>清單</span></button>
+    <button class="vbtn" data-view="gallery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg><span>卡片庫</span></button>
+    <button class="vbtn" data-view="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>統計</span></button>
+  </div>
+  <div class="tb-actions">
+    <button class="tbtn primary edit-only" id="btnNew"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>新增團務</button>
+    <button class="tbtn edit-only" id="btnIO"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 15V4M8 4 5 7M8 4l3 3"/><path d="M16 9v11M16 20l3-3M16 20l-3-3"/></svg>匯入匯出</button>
+    <button class="tbtn edit-only" id="btnSettings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1 2 2 0 1 1-4 0 1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15a2 2 0 1 1 0-4 1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 12 4.6a2 2 0 1 1 4 0 1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.6 1.6 0 0 0 19.4 9a2 2 0 1 1 0 4z"/></svg>設定</button>
+    <button class="tbtn icon" id="btnTheme" title="切換深／淺色">🌙</button>
+    <button class="tbtn edit-only" id="btnGuide" title="開新分頁檢視使用說明" onclick="window.open('trpg-schedule-manager-guide.html','_blank')">📖 使用說明</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- CALENDAR -->
+  <section class="view active" id="view-cal">
+    <div class="cal-bar">
+      <div class="cal-nav">
+        <button id="calPrev" title="上個月">‹</button>
+        <button id="calToday" style="width:auto;padding:0 12px;font-size:13px;">今天</button>
+        <button id="calNext" title="下個月">›</button>
+      </div>
+      <div class="cal-title" id="calTitle"></div>
+      <div class="spacer"></div>
+      <div class="sub" id="calCount"></div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="view" id="view-table">
+    <div class="filters">
+      <span class="search-wrap"><input class="search" id="fSearch" placeholder="🔍 搜尋團名、成員、角卡、備註…"><button type="button" class="clr-x" id="fSearchClr" title="清除">✕</button></span>
+      <select id="fSystem"><option value="">全部系統</option></select>
+      <select id="fStatus"><option value="">全部狀態</option><option>已完成</option><option>預定</option></select>
+      <select id="fYear"><option value="">全部年份</option></select>
+      <div class="spacer"></div>
+      <div class="sub" id="tblCount"></div>
+    </div>
+    <div class="inline-hint edit-only">💡 直接點任一欄位即可就地編輯（Enter 或點別處儲存、Esc 取消）；或按每列最右的 ✎ 開啟完整編輯視窗。</div>
+    <div class="tbl-wrap">
+      <table class="data" id="dataTbl">
+        <colgroup id="tblCols"></colgroup>
+        <thead><tr id="tblHead"></tr></thead>
+        <tbody id="tblBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="view" id="view-gallery">
+    <div class="filters">
+      <span class="search-wrap"><input class="search" id="gSearch" placeholder="🔍 搜尋團名、系統…"><button type="button" class="clr-x" id="gSearchClr" title="清除">✕</button></span>
+      <select id="gSystem"><option value="">全部系統</option></select>
+      <select id="gStatus"><option value="">全部狀態</option><option>預定</option><option>進行中</option><option>已結團</option></select>
+      <select id="gYear"><option value="">全部年份</option></select>
+      <select id="gSort"><option value="num">依編號（新→舊）</option><option value="numa">依編號（舊→新）</option><option value="date">依日期（新→舊）</option><option value="datea">依日期（舊→新）</option></select>
+      <label class="gchk" title="勾選後先依系統分群，再依上面選的順序排"><input type="checkbox" id="gGroupSys"> 先依系統分組</label>
+      <button class="tbtn edit-only" id="btnBlankCard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>空白卡片</button>
+      <div class="spacer"></div>
+      <div class="sub" id="galCount"></div>
+    </div>
+    <div class="gal" id="galGrid"></div>
+  </section>
+
+  <!-- STATS -->
+  <section class="view" id="view-stats">
+    <div class="stat-grid" id="statGrid"></div>
+  </section>
+</div>
+
+<!-- ===== EDIT MODAL ===== -->
+<div class="overlay" id="ovEdit">
+  <div class="modal">
+    <div class="modal-head"><h3 id="editTitle">新增團務</h3><button class="x" data-close>×</button></div>
+    <div class="modal-body">
+      <form id="editForm">
+        <input type="hidden" id="e_id">
+        <div class="grid3">
+          <div class="field"><label>編號 <span class="hint">如 300、P40、K</span></label><input id="e_num" placeholder="例：300"></div>
+          <div class="field" style="grid-column:span 2"><label>團名 *</label><input id="e_name" placeholder="例：獻上四季 - 三團" required></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label>系統</label><input id="e_sys" list="sysList" placeholder="例：CoC克蘇魯的呼喚6th"></div>
+          <div class="field"><label>狀態</label><select id="e_status"><option>預定</option><option>已完成</option></select></div>
+          <div class="field"><label>本次團務數 <span class="hint">自動計算（同團依日期排序）</span></label><input id="e_count" readonly placeholder="自動"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>開始日期</label><input id="e_sdate" type="date"></div>
+          <div class="field"><label>開始時間 <span class="hint">輸入 2200 自動轉 下午10:00</span></label><input id="e_stime" placeholder="例：2200"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>結束日期 <span class="hint">留空＝當日；跨夜可填隔天</span></label><input id="e_edate" type="date"></div>
+          <div class="field"><label>結束時間 <span class="hint">如 0110 → 上午1:10</span></label><input id="e_etime" placeholder="例：0110"></div>
+        </div>
+        <div class="field"><label>成員 <span class="hint">以頓號「、」分隔</span></label><textarea id="e_mem" placeholder="KP(理人)、草蘿 紫陽(洛雅)、伊茂 原束(程華)"></textarea></div>
+        <div class="grid2">
+          <div class="field"><label>使用角卡</label><input id="e_pc" placeholder="例：草蘿 紫陽"></div>
+          <div class="field"><label>備註</label><input id="e_note" placeholder="選填"></div>
+        </div>
+        <div class="btn-row">
+          <button type="button" id="btnSave" class="btn btn-primary">儲存</button>
+          <button type="button" class="btn btn-ghost" data-close>取消</button>
+          <div class="spacer"></div>
+          <button type="button" class="btn btn-danger" id="btnDel" style="display:none">刪除此團務</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===== IO MODAL ===== -->
+<div class="overlay" id="ovIO">
+  <div class="modal wide">
+    <div class="modal-head"><h3>匯入 · 匯出</h3><button class="x" data-close>×</button></div>
+    <div class="modal-body">
+      <div class="callout">
+        <b>團務.csv 欄位順序：</b><br>
+        <code>編號, 團名, 系統, 開始日期, 開始時間, 結束日期, 結束時間, 狀態, 成員, 使用角卡, 本次團務數, 備註</code><br>
+        第一列為標題列。成員以頓號 <code>、</code> 分隔（不要用逗號）。日期建議 <code>2026-09-28</code>，也接受 <code>2026/9/28</code>、<code>2026年9月28日</code>；時間可填 <code>2200</code>、<code>22:00</code> 或 <code>下午10:00</code>。<b>結束日期留空＝當日</b>，跨夜請填隔天。檔案為 UTF-8（含 BOM），可用 Excel／試算表直接編輯。<b>匯入會覆蓋</b>現有團務資料。<b>例外.csv</b>（欄：<code>職稱</code>）可匯入／匯出，用來設定不計入統計的主持職稱（KP/GM/DL…）。<b>設定.csv 僅供備份、無法匯入。</b>
+      </div>
+      <div class="field">
+        <label>載入資料夾 <span class="hint">自動讀取資料夾內的 團務.csv 與 例外.csv</span></label>
+        <div class="drop" id="dropFolder">📁 點此選擇資料夾<input type="file" id="folderInput" webkitdirectory directory hidden></div>
+      </div>
+      <div class="field">
+        <label>或匯入單一 CSV 檔</label>
+        <div class="drop" id="dropCsv">選擇或拖曳 <b>團務.csv</b> 或 <b>例外.csv</b>（設定.csv 不會被匯入）<input type="file" id="csvInput" accept=".csv,text/csv" multiple hidden></div>
+      </div>
+      <div class="io-block">
+        <div class="ib-head">匯出</div>
+        <div class="io-row"><div class="grow"><div class="r-title">團務.csv</div><div class="r-sub">全部團務紀錄，可用試算表編輯後再匯回</div></div><button class="btn btn-ghost" id="expTeams">下載</button></div>
+        <div class="io-row"><div class="grow"><div class="r-title">設定.csv <span style="font-size:13px;color:var(--muted)">（僅供備份，無法匯入）</span></div><div class="r-sub">製作者、副標</div></div><button class="btn btn-ghost" id="expCfg">下載</button></div>
+        <div class="io-row"><div class="grow"><div class="r-title">例外.csv</div><div class="r-sub">統計例外職稱（KP/GM/DL…），可編輯後匯回</div></div><button class="btn btn-ghost" id="expExc">下載</button></div>
+        <div class="io-row"><div class="grow"><div class="r-title">團務.csv 空白範本</div><div class="r-sub">只有標題列，方便從零建立</div></div><button class="btn btn-ghost" id="expTpl">下載範本</button></div>
+        <div class="io-row"><div class="grow"><div class="r-title">純檢視分享版 HTML</div><div class="r-sub">內嵌目前資料、移除編輯功能，可直接分享</div></div><button class="btn btn-ghost" id="expView">匯出檢視版</button></div>
+      </div>
+      <div class="io-block">
+        <div class="ib-head">危險操作</div>
+        <div class="io-row"><div class="grow"><div class="r-title">清空所有團務</div><div class="r-sub">刪除全部團務資料，無法復原</div></div><button class="btn btn-danger" id="btnWipe">全部清空</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SETTINGS MODAL ===== -->
+<div class="overlay" id="ovSet">
+  <div class="modal">
+    <div class="modal-head"><h3>頁面設定</h3><button class="x" data-close>×</button></div>
+    <div class="modal-body">
+      <form id="setForm">
+        <div class="callout">標題與年度會依<b>月曆目前所在年份自動</b>更新（切到 2027 就變「2027跑團管理」）；統計的目標團數＝<b>該年度總團數自動計算</b>，皆不需手動設定。</div>
+        <div class="field"><label>製作者</label><input id="s_author" placeholder="例：KinoP / 洛雅"></div>
+        <div class="field"><label>副標 <span class="hint">顯示於統計頁</span></label><input id="s_note" placeholder="使用神貓卓跑團管理手冊編輯器"></div>
+        <div class="field"><label>系統代表色 <span class="hint">點色塊手動指定；按「自動」恢復自動配色</span></label><div id="sysColorList" class="syscolor-list"></div></div>
+        <div class="field"><label>統計例外職稱 <span class="hint">成員中「這些字(人名)」視為主持者，不計入玩家/角色參加次數</span></label>
+          <div id="excList" class="exc-list"></div>
+          <div class="exc-add"><input id="excInput" placeholder="新增例外職稱，如 SKP"><button type="button" id="excAdd" class="btn btn-ghost">新增</button></div>
+        </div>
+        <div class="btn-row"><button type="submit" class="btn btn-primary">儲存設定</button><button type="button" class="btn btn-ghost" data-close>取消</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<datalist id="sysList"></datalist>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+(function(){
+/* ============================================================
+   跑團行程管理 — 單檔工具
+   資料：localStorage（無法寫入時退回記憶體）
+   CSV：UTF-8 + BOM；成員以頓號「、」分隔
+============================================================ */
+var $=function(s,r){return (r||document).querySelector(s);};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
+function syncClr(sel){var inp=$(sel);if(inp&&inp.parentNode&&inp.parentNode.classList.contains("search-wrap"))inp.parentNode.classList.toggle("has-val",inp.value.length>0);}
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});};
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);};
+function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show");},2200);}
+
+/* ---- columns ---- */
+var COLS=["編號","團名","系統","開始日期","開始時間","結束日期","結束時間","狀態","成員","使用角卡","本次團務數","備註"];
+var CFG_COLS=["製作者","副標"];
+var TITLE_SUFFIX="跑團管理";
+
+/* ---- readonly (exported share view) ---- */
+var BAKED=window.__BAKED__||null;
+var READONLY=!!BAKED;
+
+/* ---- storage ---- */
+var KEY="trpg_schedule_db_v1";
+var mem={};
+var store={
+  get:function(){try{var v=localStorage.getItem(KEY);return v?JSON.parse(v):null;}catch(e){return mem[KEY]?JSON.parse(mem[KEY]):null;}},
+  set:function(o){var s=JSON.stringify(o);try{localStorage.setItem(KEY,s);}catch(e){mem[KEY]=s;}}
+};
+
+/* ---- demo seed (參考圖節錄，可清空／覆蓋) ---- */
+function demoRows(){
+  var d=[
+    // 編號,團名,系統,開始日期,開始時間,結束日期,結束時間,狀態,成員,使用角卡,本次團務數,備註
+    ["P40","獻上四季","CoC克蘇魯的呼喚6th","2026-11-04","22:00","2026-11-05","00:30","預定","KP(理人)、新城 妨(雅治)、草蘿 紫陽(洛雅)、伊茂 原束(程華)、彗音 賴(ㄇ木)","草蘿 紫陽","1",""],
+    ["250","燦然世解","CoC克蘇魯的呼喚6th","2026-10-03","22:00","2026-10-04","01:00","預定","KP(洛雅)、SKP(Rien)、幻月(理人)、玄谷(六服)、符谷(ㄇ木)、不動(程華)","","12",""],
+    ["232","遺香繚繞 - 三團","CoC克蘇魯的呼喚6th","2026-09-28","22:00","2026-09-29","01:00","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","34",""],
+    ["275","無法於這片天幕中共存。","CoC克蘇魯的呼喚6th","2026-09-25","21:30","","23:40","預定","KP(洛雅)、日暮 明暉(理人)、神業一字(毛球)","","6",""],
+    ["232","遺香繚繞 - 二團","CoC克蘇魯的呼喚6th","2026-09-21","22:00","2026-09-22","00:40","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","33",""],
+    ["K","Panic Date Plan with You!!","CoC克蘇魯的呼喚6th","2026-09-15","21:30","","23:30","預定","KP(程華)、洛雅(長月 時葉)","長月 時葉","4",""],
+    ["232","遺香繚繞 - 二團","CoC克蘇魯的呼喚6th","2026-09-14","22:00","2026-09-15","00:30","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","32",""],
+    ["250","燦然世解","CoC克蘇魯的呼喚6th","2026-09-12","22:00","2026-09-13","00:30","預定","KP(洛雅)、SKP(Rien)、幻月(理人)、玄谷(六服)、符谷(ㄇ木)、不動(程華)","","11",""],
+    ["275","無法於這片天幕中共存。","CoC克蘇魯的呼喚6th","2026-09-11","21:30","","23:40","預定","KP(洛雅)、日暮 明暉(理人)、神業一字(毛球)","","5",""],
+    ["K","Panic Date Plan with You!!","CoC克蘇魯的呼喚6th","2026-09-08","21:30","","23:30","預定","KP(程華)、洛雅(長月 時葉)","長月 時葉","3",""],
+    ["232","遺香繚繞 - 二團","CoC克蘇魯的呼喚6th","2026-09-07","22:00","2026-09-08","00:30","預定","KP(洛雅)、明束矢(理人)、不死原 弦(六服)、三生一夢(IVAN)、大地 終羽(Rien)","","31",""],
+    ["278","在泡沫之夢中起舞 - 五團","CoC克蘇魯的呼喚6th","2026-09-06","22:00","2026-09-07","00:20","預定","KP(洛雅)、神代 遙花(六服)","靜間 朔夜","3",""],
+    ["286","罪的替身 - 九團","CoC克蘇魯的呼喚6th","2026-08-30","16:40","","18:00","已完成","KP(洛雅)、(六服)","","35",""],
+    ["285","美式鬆餅…飛起來了！？","CoC克蘇魯的呼喚6th","2026-08-30","16:25","","16:40","已完成","KP(洛雅)、(六服)","","13",""],
+    ["283","來砸羅馬生乳包！！ - 三團","CoC克蘇魯的呼喚6th","2026-08-30","15:50","","16:20","已完成","KP(洛雅)、(六服)","","1",""],
+    ["13","Oh My Paper!","InSANe","2026-08-30","15:00","","15:50","已完成","GM(洛雅)、(理人)、(六服)","","1",""],
+    ["250","燦然世解","CoC克蘇魯的呼喚6th","2026-08-29","22:00","2026-08-30","01:00","已完成","KP(洛雅)、SKP(Rien)、幻月(理人)、玄谷(六服)、符谷(ㄇ木)、不動(程華)","","10",""],
+    ["275","無法於這片天幕中共存。","CoC克蘇魯的呼喚6th","2026-08-28","21:25","2026-08-29","00:05","已完成","KP(洛雅)、日暮 明暉(理人)、神業一字(毛球)","","3",""],
+    ["281","探索者，骨折。 - 四團","CoC克蘇魯的呼喚6th","2026-08-27","22:00","","23:30","已完成","KP(洛雅)、御園 秋實(ㄇ木)","","1",""],
+    ["273","AND/HAND - 五團","CoC克蘇魯的呼喚6th","2026-08-04","21:40","","23:00","已完成","KP(洛雅)、(六服)","","1",""],
+    ["273","AND/HAND - 五團","CoC克蘇魯的呼喚6th","2026-08-04","22:40","2026-08-05","01:10","已完成","KP(洛雅)、(理人)","","2",""],
+    ["243","複製人的葬列 - 二團","CoC克蘇魯的呼喚6th","2026-08-05","22:00","2026-08-05","23:59","已完成","KP(洛雅)、(六服)","","1",""],
+    ["六辰花04","少年與畫作","喵眼獸獸KEDAMONO OPERA","","","","","已完成","","","",""]
+  ];
+  return d.map(function(r){var o={id:uid()};COLS.forEach(function(c,i){o[c]=r[i]||"";});return o;});
+}
+function seed(){return{cfg:{製作者:"KinoP / 洛雅",副標:"使用神貓卓跑團管理手冊編輯器"},rows:demoRows()};}
+
+/* ---- state ---- */
+var state;
+if(READONLY){
+  var rows=parseCSV(BAKED.teams).map(function(r){var o={id:uid()};COLS.forEach(function(c){o[c]=r[c]||"";});return o;});
+  var cfg={};CFG_COLS.forEach(function(c){cfg[c]="";});
+  if(BAKED.cfg){var cr=parseCSV(BAKED.cfg);if(cr[0])CFG_COLS.forEach(function(c){cfg[c]=cr[0][c]||"";});}
+  state={cfg:cfg,rows:rows,sysColors:(BAKED.sysColors&&typeof BAKED.sysColors==="object")?BAKED.sysColors:{},excRoles:Array.isArray(BAKED.excRoles)?BAKED.excRoles:["KP","GM","DL"]};
+}else{
+  state=store.get();
+  if(!state||!state.rows){state=seed();store.set(state);}
+  if(!state.cfg)state.cfg={};
+  if(!state.sysColors||typeof state.sysColors!=="object")state.sysColors={};
+  if(!Array.isArray(state.excRoles))state.excRoles=["KP","GM","DL"];
+  // migrate rows from old schema (日期/時間) → new (開始日期/開始時間/結束…)
+  state.rows.forEach(function(r){
+    if(r.開始日期==null&&r.日期!=null){r.開始日期=r.日期;r.開始時間=r.時間||"";}
+    COLS.forEach(function(c){if(r[c]==null)r[c]="";});
+    delete r.日期;delete r.時間;
+    if(!r.id)r.id=uid();
+  });
+  // config: only 製作者/副標 now; migrate old default subtitle, default the new one
+  var OLD_SUB="可隨意分享修改｜不定期更新";
+  if(state.cfg.副標==null||state.cfg.副標===""||state.cfg.副標===OLD_SUB)state.cfg.副標="使用神貓卓跑團管理手冊編輯器";
+  CFG_COLS.forEach(function(c){if(state.cfg[c]==null)state.cfg[c]="";});
+  delete state.cfg.標題;delete state.cfg.年度;delete state.cfg.目標團數;
+  save();
+}
+function save(){recomputeSeq();if(!READONLY)store.set(state);}
+
+/* ---- CSV ---- */
+function csvEsc(v){v=String(v==null?"":v);if(/[",\n\r]/.test(v))return '"'+v.replace(/"/g,'""')+'"';return v;}
+function toCSV(cols,list){
+  var out=cols.map(csvEsc).join(",")+"\r\n";
+  list.forEach(function(o){out+=cols.map(function(c){return csvEsc(o[c]);}).join(",")+"\r\n";});
+  return out;
+}
+function parseCSV(text){
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  var rows=[],cur=[],val="",inq=false;
+  for(var i=0;i<text.length;i++){
+    var ch=text[i];
+    if(inq){
+      if(ch==='"'){ if(text[i+1]==='"'){val+='"';i++;} else inq=false; }
+      else val+=ch;
+    }else{
+      if(ch==='"')inq=true;
+      else if(ch===","){cur.push(val);val="";}
+      else if(ch==="\n"){cur.push(val);rows.push(cur);cur=[];val="";}
+      else if(ch==="\r"){/*skip*/}
+      else val+=ch;
+    }
+  }
+  if(val.length||cur.length){cur.push(val);rows.push(cur);}
+  if(!rows.length)return [];
+  var head=rows[0].map(function(h){return h.trim();});
+  var out=[];
+  for(var r=1;r<rows.length;r++){
+    if(rows[r].length===1&&rows[r][0]==="")continue;
+    var o={};head.forEach(function(h,c){o[h]=(rows[r][c]!=null?rows[r][c]:"");});
+    out.push(o);
+  }
+  return out;
+}
+var BOM="﻿";
+function download(name,text){
+  var blob=new Blob([BOM+text],{type:"text/csv;charset=utf-8"});
+  var url=URL.createObjectURL(blob);var a=document.createElement("a");
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+}
+function downloadHTML(name,text){
+  var blob=new Blob([text],{type:"text/html;charset=utf-8"});
+  var url=URL.createObjectURL(blob);var a=document.createElement("a");
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
+}
+
+/* ---- date/time utils ---- */
+function parseDate(s){
+  s=String(s||"").trim();if(!s)return null;
+  var m=s.match(/^(\d{4})[-\/年.](\d{1,2})[-\/月.](\d{1,2})/);
+  if(m)return {y:+m[1],mo:+m[2],d:+m[3]};
+  m=s.match(/^(\d{1,2})[-\/](\d{1,2})$/);
+  if(m)return {y:new Date().getFullYear(),mo:+m[1],d:+m[2]};
+  return null;
+}
+// parse many forms → minutes of day; accepts 2200 / 22:00 / 下午10:00 / 9點 …
+function parseTime(s){
+  s=String(s||"").trim();if(!s)return -1;
+  var pm=/下午|pm/i.test(s),am=/上午|am/i.test(s);
+  var h,mi;
+  var m=s.match(/(\d{1,2})[:：](\d{1,2})/);
+  if(m){h=+m[1];mi=+m[2];}
+  else{
+    var h1=s.match(/(\d{1,2})\s*(點|時)/);
+    if(h1){h=+h1[1];mi=0;}
+    else{
+      var dg=s.replace(/[^\d]/g,"");
+      if(/^\d{3,4}$/.test(dg)){mi=+dg.slice(-2);h=+dg.slice(0,-2);}
+      else if(/^\d{1,2}$/.test(dg)){h=+dg;mi=0;}
+      else return -1;
+    }
+  }
+  if(pm&&h<12)h+=12;if(am&&h===12)h=0;
+  if(h>23||mi>59)return -1;
+  return h*60+mi;
+}
+// minutes → 上午/下午 h:mm （12:xx 用於中午與午夜）
+function fmtAmPm(mins){
+  if(mins==null||mins<0)return "";
+  var h=Math.floor(mins/60),m=mins%60,p=h<12?"上午":"下午",h12=h%12;if(h12===0)h12=12;
+  return p+h12+":"+("0"+m).slice(-2);
+}
+// reformat an input string to 上午/下午 (leaves unparseable text as-is)
+function normTimeInput(v){var t=parseTime(v);return t<0?String(v||"").trim():fmtAmPm(t);}
+function dkey(d){return d?d.y*10000+d.mo*100+d.d:0;}
+function dateKey(o){return dkey(parseDate(o.開始日期));}
+function endDateKey(o){var ed=parseDate(o.結束日期)||parseDate(o.開始日期);return dkey(ed);}
+function sortKey(o){var t=parseTime(o.開始時間);return dateKey(o)*10000+(t<0?0:t);}
+function numKey(o){var m=String(o.編號||"").match(/\d+/);return m?+m[0]:-1;}
+// resolve start/end minutes + whether it spans past midnight into another day
+function evTimes(o){
+  var s=parseTime(o.開始時間),e=parseTime(o.結束時間);
+  var sk=dateKey(o),ek=endDateKey(o);
+  var crossDay=false;
+  if(ek>sk)crossDay=true;
+  else if(ek===sk&&!String(o.結束日期||"").trim()&&s>=0&&e>=0&&e<s)crossDay=true; // implicit next-morning
+  return {s:s,e:e,crossDay:crossDay};
+}
+// calendar/table time label: same-day → start only; cross-day → 起 → 迄
+function timeLabel(o){
+  var t=evTimes(o);
+  if(t.s<0)return t.e<0?"":fmtAmPm(t.e);
+  return (t.crossDay&&t.e>=0)?(fmtAmPm(t.s)+" → "+fmtAmPm(t.e)):fmtAmPm(t.s);
+}
+// 月曆時間標籤：一律只顯示時間（跨日為「起時 → 迄時」，不帶日期）
+function calTimeLabel(span){return timeLabel(span.r);}
+
+/* ---- status ---- */
+var STAT={"已完成":"done","預定":"plan","進行中":"live","取消":"cancel"};
+function statClass(s){return STAT[s]||"plan";}
+
+/* ---- system color ---- */
+var PAL=["#4a6b8a","#8a5a7a","#4f8a5b","#c08a2d","#7a6bbf","#5a9a9a","#b06b4a","#6a7a4a","#9a5050"];
+var sysColorMap={};
+function autoColor(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return PAL[h%PAL.length];}
+function sysColor(s){
+  s=s||"（未填）";
+  if(state.sysColors&&state.sysColors[s])return state.sysColors[s];   // 手動指定優先
+  if(sysColorMap[s])return sysColorMap[s];
+  var c=autoColor(s);sysColorMap[s]=c;return c;                        // 否則自動生成
+}
+function hasManualColor(s){return !!(state.sysColors&&state.sysColors[s]);}
+
+/* ---- members / participation ---- */
+// 「角色名稱(玩家名稱)」→ {char,player}；沒有括號時整段當玩家名
+function parseMember(m){
+  m=String(m||"").trim();if(!m)return null;
+  var mm=m.match(/^([\s\S]*?)[（(]\s*([\s\S]*?)\s*[）)]\s*$/);
+  if(mm)return {char:mm[1].trim(),player:mm[2].trim()};
+  return {char:"",player:m};
+}
+function excSet(){var s={};(state.excRoles||[]).forEach(function(x){var k=String(x).trim().toUpperCase();if(k)s[k]=1;});return s;}
+function splitMembers(str){return String(str||"").split(/[、,，]/).map(function(x){return x.trim();}).filter(Boolean);}
+
+/* ---- campaign grouping (卡片庫：同編號+同團名 = 一張卡) ---- */
+function groupKey(r){return (r.編號||"")+"␟"+(r.團名||"");}
+function numOf(r){var m=String(r.本次團務數||"").match(/\d+/);return m?+m[0]:null;}
+// 無標題+無編號 → 卡片庫的獨立「空白卡片」（不與其它空白合併）
+function isBlankCard(r){return !String(r.編號||"").trim()&&!String(r.團名||"").trim();}
+// 無標題+無日期 → 不出現在清單與月曆
+function hiddenFromList(r){return !String(r.團名||"").trim()&&!String(r.開始日期||"").trim();}
+// 本次團務數自動計算：同編號+同團名，依日期(時間)由早到晚 = 1,2,3…；空白卡片不計
+function recomputeSeq(){
+  var g={};
+  state.rows.forEach(function(r){
+    if(isBlankCard(r)){r.本次團務數="";return;}
+    var k=groupKey(r);(g[k]=g[k]||[]).push(r);
+  });
+  Object.keys(g).forEach(function(k){
+    g[k].sort(function(a,b){
+      var ka=dateKey(a)?sortKey(a):Infinity, kb=dateKey(b)?sortKey(b):Infinity;
+      return ka-kb;
+    }).forEach(function(r,i){r.本次團務數=String(i+1);});
+  });
+}
+// 卡片狀態（由該組所有場次推導、唯讀）：
+//   任一場次進行中 → 進行中；
+//   同時存在「預定」與「已完成」場次 → 進行中（部分已跑完、部分還沒跑）；
+//   全部只有預定 → 預定；全部只有已完成 → 已結團；無有效狀態（空白卡片）→ 預定。
+function cardStat(rows){
+  var hasPlan=rows.some(function(r){return r.狀態==="預定";});
+  var hasDone=rows.some(function(r){return r.狀態==="已完成";});
+  if(rows.some(function(r){return r.狀態==="進行中";}))return "進行中";
+  if(hasPlan&&hasDone)return "進行中";
+  if(hasPlan)return "預定";
+  if(hasDone)return "已結團";
+  return "預定";
+}
+var CARDSTAT={"進行中":"live","預定":"plan","已結團":"done"};
+
+/* ============ VIEWS ============ */
+var activeView="cal";
+var calCursor=(function(){
+  var n=new Date(),ty=n.getFullYear(),tm=n.getMonth()+1;
+  var hasThis=state.rows.some(function(r){var d=parseDate(r.開始日期);return d&&d.y===ty&&d.mo===tm;});
+  if(hasThis)return {y:ty,mo:tm};
+  var best=null;
+  state.rows.forEach(function(r){var d=parseDate(r.開始日期);if(d){var k=d.y*100+d.mo;if(best==null||k>best.k)best={k:k,y:d.y,mo:d.mo};}});
+  return best?{y:best.y,mo:best.mo}:{y:ty,mo:tm};
+})();
+function curYear(){return calCursor.y;}
+// title & year follow the calendar's current year
+function setYear(y){calCursor.y=y;refreshBrand();render();}
+
+function distinctSystems(){var set={};state.rows.forEach(function(r){if(r.系統)set[r.系統]=1;});return Object.keys(set);}
+function distinctYears(){var set={};state.rows.forEach(function(r){var d=parseDate(r.開始日期);if(d)set[d.y]=1;});return Object.keys(set).sort().reverse();}
+
+function setView(v){
+  activeView=v;
+  $$(".vbtn").forEach(function(b){b.classList.toggle("active",b.dataset.view===v);});
+  $$(".view").forEach(function(s){s.classList.toggle("active",s.id==="view-"+v);});
+  render();
+}
+function render(){
+  if(activeView==="cal")renderCal();
+  else if(activeView==="table")renderTable();
+  else if(activeView==="gallery")renderGallery();
+  else if(activeView==="stats")renderStats();
+}
+
+/* ----- CALENDAR (lane-based, multi-day spanning) ----- */
+function ymd(js){return js.getFullYear()*10000+(js.getMonth()+1)*100+js.getDate();}
+function addDaysObj(d,n){var js=new Date(d.y,d.mo-1,d.d+n);return {y:js.getFullYear(),mo:js.getMonth()+1,d:js.getDate()};}
+// resolve a row's visual span (start/end date objects) for the calendar
+function eventSpan(r){
+  var sd=parseDate(r.開始日期);if(!sd)return null;
+  var ed=parseDate(r.結束日期);
+  if(!ed){var t=evTimes(r);ed=t.crossDay?addDaysObj(sd,1):sd;}
+  if(dkey(ed)<dkey(sd))ed=sd;
+  return {r:r,sd:sd,ed:ed,sKey:dkey(sd),eKey:dkey(ed)};
+}
+function renderCal(){
+  var y=calCursor.y,mo=calCursor.mo;
+  $("#calTitle").innerHTML='<span>'+y+' 年 </span><span class="m">'+mo+' 月</span>';
+  var evs=[];var monthCount=0;
+  state.rows.forEach(function(r){var e=eventSpan(r);if(e){evs.push(e);if(e.sd.y===y&&e.sd.mo===mo)monthCount++;}});
+  $("#calCount").textContent="本月 "+monthCount+" 場";
+  var first=new Date(y,mo-1,1),startDow=first.getDay();
+  var daysIn=new Date(y,mo,0).getDate();
+  var gridStart=new Date(y,mo-1,1-startDow);
+  var weeks=Math.ceil((startDow+daysIn)/7);
+  var todayKey=ymd(new Date());
+  var wd=["日","一","二","三","四","五","六"];
+  var head='<div class="cal-head">'+wd.map(function(w,i){return '<div class="cal-wd'+(i===0||i===6?" we":"")+'">週'+w+'</div>';}).join("")+'</div>';
+  var body="";
+  for(var w=0;w<weeks;w++){
+    var days=[];
+    for(var c=0;c<7;c++){var dt=new Date(gridStart);dt.setDate(gridStart.getDate()+w*7+c);days.push(dt);}
+    var wStart=ymd(days[0]),wEnd=ymd(days[6]);
+    var colOf={};days.forEach(function(dt,i){colOf[ymd(dt)]=i+1;});
+    var wevs=evs.filter(function(e){return e.eKey>=wStart&&e.sKey<=wEnd;}).map(function(e){
+      var segS=Math.max(e.sKey,wStart),segE=Math.min(e.eKey,wEnd);
+      return {e:e,sc:colOf[segS],ec:colOf[segE],contL:e.sKey<wStart,contR:e.eKey>wEnd,startsHere:e.sKey>=wStart&&e.sKey<=wEnd};
+    });
+    wevs.sort(function(a,b){return a.sc-b.sc||(b.ec-b.sc)-(a.ec-a.sc)||(parseTime(a.e.r.開始時間)-parseTime(b.e.r.開始時間));});
+    var lanes=[];
+    wevs.forEach(function(s){
+      var lane=0;
+      for(;;){
+        var occ=lanes[lane]||[];
+        var clash=occ.some(function(o){return !(s.ec<o.sc||s.sc>o.ec);});
+        if(!clash){(lanes[lane]=lanes[lane]||[]).push({sc:s.sc,ec:s.ec});s.lane=lane;break;}
+        lane++;
+      }
+    });
+    var laneCount=Math.max(lanes.length,3);
+    var cells="";
+    // background columns
+    days.forEach(function(dt,i){
+      var k=ymd(dt),inM=(dt.getFullYear()===y&&dt.getMonth()+1===mo);
+      cells+='<div class="cal-col'+(inM?"":" out")+(k===todayKey?" today":"")+'" style="grid-column:'+(i+1)+'"></div>';
+    });
+    // date numbers
+    days.forEach(function(dt,i){
+      var k=ymd(dt),inM=(dt.getFullYear()===y&&dt.getMonth()+1===mo);
+      cells+='<div class="cal-dn'+(inM?"":" out")+(k===todayKey?" today":"")+'" style="grid-column:'+(i+1)+';grid-row:1"><span class="dn">'+dt.getDate()+'</span></div>';
+    });
+    // event bars
+    wevs.forEach(function(s){
+      var r=s.e.r,idx=state.rows.indexOf(r);
+      var tm=s.startsHere?calTimeLabel(s.e):"";        // 一律只顯示時間
+      var cls="cal-ev st-"+statClass(r.狀態)+(s.contL?" contL":"")+(s.contR?" contR":"");
+      // 提示內容：編號. 團名 · 系統 · 日期範圍 · 時間（游標指上即時顯示，見 #calTip）
+      var dr=fmtD(s.e.sd)+(dkey(s.e.ed)!==dkey(s.e.sd)?" → "+fmtD(s.e.ed):"");
+      var tl=timeLabel(r);
+      var tip=(r.編號?r.編號+". ":"")+(r.團名||"（無題）")+(r.系統?" · "+r.系統:"")+" · "+dr+(tl?" "+tl:"");
+      cells+='<div class="'+cls+'" data-idx="'+idx+'" style="--sc:'+sysColor(r.系統)+';grid-column:'+s.sc+'/'+(s.ec+1)+';grid-row:'+(s.lane+2)+'" data-tip="'+esc(tip)+'">'
+        +(s.contL?'<span class="t">↪</span>':'')
+        +((!s.contL&&r.編號)?'<span class="num">'+esc(r.編號)+'</span>':'')
+        +'<span class="nm">'+esc(r.團名||"（無題）")+'</span>'
+        +(tm?'<span class="t tr">'+esc(tm)+'</span>':'')+'</div>';
+    });
+    body+='<div class="cal-week" style="grid-template-rows:26px repeat('+laneCount+',26px)">'+cells+'</div>';
+  }
+  $("#calGrid").innerHTML=head+'<div class="cal-body">'+body+'</div>';
+}
+
+/* ----- TABLE ----- */
+var tblSort={col:"開始日期",dir:-1};
+// [欄名, td類別, 欄位, 編輯型別, 欄寬px]
+var TBLCOLS=[
+  ["編號","num","編號","text",72],
+  ["團名","nm","團名","text",180],
+  ["系統","","系統","sys",150],
+  ["開始日期","num","開始日期","date",122],
+  ["開始時間","num","開始時間","time",116],
+  ["結束日期","num","結束日期","date",122],
+  ["結束時間","num","結束時間","time",116],
+  ["狀態","ctr","狀態","status",84],
+  ["成員","mem","成員","text",230],
+  ["使用角卡","","使用角卡","text",120],
+  ["本次團務數","ctr num","本次團務數","readonly",100],
+  ["備註","note","備註","text",160]
+];
+function endSortKey(o){var t=parseTime(o.結束時間);return endDateKey(o)*10000+(t<0?0:t);}
+function fmtDateCell(v){var d=parseDate(v);return d?d.y+"/"+("0"+d.mo).slice(-2)+"/"+("0"+d.d).slice(-2):'<span style="color:var(--muted-2)">—</span>';}
+function fmtTimeCell(v){var t=parseTime(v);return t>=0?esc(fmtAmPm(t)):'<span style="color:var(--muted-2)">—</span>';}
+// static HTML for one cell
+function cellStatic(colName,r){
+  switch(colName){
+    case "編號":return esc(r.編號);
+    case "團名":return esc(r.團名);
+    case "系統":return r.系統?'<span class="syschip" style="background:'+hexA(sysColor(r.系統),.16)+';color:'+sysColor(r.系統)+'">'+esc(r.系統)+'</span>':'<span style="color:var(--muted-2)">—</span>';
+    case "開始日期":case "結束日期":return fmtDateCell(r[colName]);
+    case "開始時間":case "結束時間":return fmtTimeCell(r[colName]);
+    case "狀態":return '<span class="pill '+statClass(r.狀態)+'">'+esc(r.狀態||"預定")+'</span>';
+    case "成員":return esc(r.成員)||'<span style="color:var(--muted-2)">—</span>';
+    case "使用角卡":return esc(r.使用角卡)||'<span style="color:var(--muted-2)">—</span>';
+    case "本次團務數":return esc(r.本次團務數);
+    case "備註":return esc(r.備註);
+  }
+  return "";
+}
+function renderTable(){
+  // fixed column widths (colgroup) → 就地編輯時欄寬不會跳動；table 用 100% 寬＋min-width，寬螢幕自動分配不留空
+  var cols=TBLCOLS.map(function(c){return '<col style="width:'+c[4]+'px">';}).join("");
+  if(!READONLY)cols+='<col style="width:92px">';
+  var cg=$("#tblCols");if(cg)cg.innerHTML=cols;
+  var totalW=TBLCOLS.reduce(function(a,c){return a+c[4];},0)+(READONLY?0:92);
+  $("#dataTbl").style.width="100%";
+  $("#dataTbl").style.minWidth=totalW+"px";
+  var head="";
+  TBLCOLS.forEach(function(c){
+    var name=c[0];var ar=tblSort.col===name?'<span class="ar">'+(tblSort.dir>0?"▲":"▼")+'</span>':"";
+    head+='<th data-col="'+name+'">'+name+ar+'</th>';
+  });
+  if(!READONLY)head+='<th class="opcol">操作</th>';
+  $("#tblHead").innerHTML=head;
+  var q=$("#fSearch").value.trim().toLowerCase();
+  var fs=$("#fSystem").value,fst=$("#fStatus").value,fy=$("#fYear").value;
+  var list=state.rows.filter(function(r){
+    if(hiddenFromList(r))return false;               // 無標題+無日期的空白卡片不進清單
+    if(fs&&r.系統!==fs)return false;
+    if(fst&&r.狀態!==fst)return false;
+    if(fy){var d=parseDate(r.開始日期);if(!d||String(d.y)!==fy)return false;}
+    if(q){
+      var blob=(r.團名+" "+r.成員+" "+r.使用角卡+" "+r.備註+" "+r.系統+" "+r.編號).toLowerCase();
+      if(blob.indexOf(q)<0)return false;
+    }
+    return true;
+  });
+  var col=tblSort.col,dir=tblSort.dir;
+  list.sort(function(a,b){
+    var va,vb;
+    if(col==="開始日期"){va=dateKey(a);vb=dateKey(b);}
+    else if(col==="結束日期"){va=endDateKey(a);vb=endDateKey(b);}
+    else if(col==="開始時間"){va=sortKey(a);vb=sortKey(b);}
+    else if(col==="結束時間"){va=endSortKey(a);vb=endSortKey(b);}
+    else if(col==="編號"){va=numKey(a);vb=numKey(b);}
+    else if(col==="本次團務數"){va=+String(a.本次團務數).replace(/\D/g,"")||0;vb=+String(b.本次團務數).replace(/\D/g,"")||0;}
+    else{va=String(a[col]||"");vb=String(b[col]||"");return dir*va.localeCompare(vb,"zh-Hant");}
+    return dir*(va-vb);
+  });
+  $("#tblCount").textContent="共 "+list.length+" 場";
+  var span=TBLCOLS.length+(READONLY?0:1);
+  if(!list.length){$("#tblBody").innerHTML='<tr><td colspan="'+span+'"><div class="empty-note">沒有符合條件的團務。</div></td></tr>';return;}
+  var body="";
+  list.forEach(function(r){
+    var idx=state.rows.indexOf(r);
+    body+='<tr data-idx="'+idx+'">';
+    TBLCOLS.forEach(function(c){
+      var colName=c[0],cls=c[1],etype=c[3];
+      var editable=!READONLY&&etype!=="readonly";
+      var attr=editable?(' class="'+(cls?cls+' ':'')+'editable" data-idx="'+idx+'" data-field="'+colName+'" data-etype="'+etype+'"'):(cls?' class="'+cls+'"':'');
+      body+='<td'+attr+'>'+cellStatic(colName,r)+'</td>';
+    });
+    if(!READONLY)body+='<td class="opcell"><button class="row-edit" data-edit="'+idx+'" title="開啟完整編輯視窗">✎</button><button class="row-copy" data-copy="'+idx+'" title="複製此團務">⧉</button></td>';
+    body+='</tr>';
+  });
+  $("#tblBody").innerHTML=body;
+}
+function hexA(hex,a){var m=hex.replace("#","");var r=parseInt(m.slice(0,2),16),g=parseInt(m.slice(2,4),16),b=parseInt(m.slice(4,6),16);return "rgba("+r+","+g+","+b+","+a+")";}
+
+/* ----- inline cell editing ----- */
+var editingCell=null;
+function beginCellEdit(td){
+  if(READONLY||td.classList.contains("editing"))return;
+  if(editingCell)commitCell();
+  var idx=+td.dataset.idx,col=td.dataset.field,etype=td.dataset.etype;
+  var r=state.rows[idx];if(!r)return;
+  var input;
+  if(etype==="status"){
+    input=document.createElement("select");input.className="cell-input";
+    ["預定","已完成"].forEach(function(o){var op=document.createElement("option");op.value=o;op.textContent=o;if((r.狀態||"預定")===o)op.selected=true;input.appendChild(op);});
+  }else if(etype==="date"){
+    input=document.createElement("input");input.type="date";input.className="cell-input";input.value=dateInputVal(r[col]);
+  }else if(etype==="sys"){
+    input=document.createElement("input");input.className="cell-input";input.setAttribute("list","sysList");input.value=r[col]||"";
+  }else{
+    input=document.createElement("input");input.className="cell-input";input.value=r[col]||"";
+    if(etype==="time")input.placeholder="例：2200";
+  }
+  td.classList.add("editing");td.innerHTML="";td.appendChild(input);
+  input.focus();if(input.select){try{input.select();}catch(e){}}
+  // 狀態：點一下就直接展開下拉，不需二次點擊
+  if(etype==="status"&&input.showPicker){try{input.showPicker();}catch(e){}}
+  editingCell={td:td,input:input,etype:etype,idx:idx,col:col};
+  input.addEventListener("keydown",function(e){
+    if(e.key==="Enter"){e.preventDefault();commitCell();}
+    else if(e.key==="Escape"){e.preventDefault();cancelCell();}
+  });
+  input.addEventListener("blur",function(){setTimeout(function(){if(editingCell&&editingCell.input===input)commitCell();},60);});
+}
+function commitCell(){
+  if(!editingCell)return;
+  var ec=editingCell;editingCell=null;
+  var r=state.rows[ec.idx];
+  if(!r){renderTable();return;}
+  var v=ec.input.value;
+  v=(ec.etype==="time")?normTimeInput(v):String(v).trim();
+  r[ec.col]=v;save();
+  if(ec.col==="系統")refreshOptions();
+  ec.td.classList.remove("editing");
+  ec.td.innerHTML=cellStatic(ec.col,r);
+}
+function cancelCell(){
+  if(!editingCell)return;
+  var ec=editingCell;editingCell=null;
+  var r=state.rows[ec.idx];
+  ec.td.classList.remove("editing");
+  ec.td.innerHTML=r?cellStatic(ec.col,r):"";
+}
+
+/* ----- GALLERY（同編號+同團名 = 一張卡；卡片狀態由場次推導） ----- */
+function fmtD(d){return d?d.y+"/"+("0"+d.mo).slice(-2)+"/"+("0"+d.d).slice(-2):"";}
+function buildGroups(){
+  var g={},order=[];
+  state.rows.forEach(function(r,i){
+    // 空白卡片（無標題+無編號）→ 各自獨立不合併（用列 id 當 key）
+    var k=isBlankCard(r)?("__blank__"+(r.id||i)):groupKey(r);
+    if(!g[k]){g[k]={編號:r.編號,團名:r.團名,rows:[],blank:isBlankCard(r),idx:i};order.push(k);}
+    g[k].rows.push(r);
+  });
+  return order.map(function(k){
+    var grp=g[k];
+    var sorted=grp.rows.slice().sort(function(a,b){
+      var na=numOf(a),nb=numOf(b);
+      if(na!=null&&nb!=null)return na-nb;
+      if(na!=null)return -1;if(nb!=null)return 1;
+      return sortKey(a)-sortKey(b);
+    });
+    var first=sorted[0],last=sorted[sorted.length-1];
+    var startD=parseDate(first.開始日期);
+    var endD=parseDate(last.結束日期)||parseDate(last.開始日期);
+    var sc={};grp.rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
+    var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"";
+    var pcs={};grp.rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
+    return {編號:grp.編號,團名:grp.團名,系統:sys,rows:grp.rows,count:grp.rows.length,
+      blank:grp.blank,idx:state.rows.indexOf(first),
+      status:cardStat(grp.rows),startD:startD,endD:endD,
+      pcs:Object.keys(pcs),numKeyV:numKey(first),dateKeyV:startD?dkey(startD):0,endKeyV:endD?dkey(endD):0};
+  });
+}
+function renderGallery(){
+  var q=$("#gSearch").value.trim().toLowerCase();
+  var fs=$("#gSystem").value,fst=$("#gStatus").value,sort=$("#gSort").value;
+  var fy=$("#gYear")?$("#gYear").value:"";
+  var groupSys=$("#gGroupSys")&&$("#gGroupSys").checked;
+  var groups=buildGroups().filter(function(g){
+    if(fs&&g.系統!==fs)return false;
+    if(fst&&g.status!==fst)return false;
+    if(fy){var hit=g.rows.some(function(r){var d=parseDate(r.開始日期);return d&&String(d.y)===fy;});if(!hit)return false;}
+    if(q){var blob=(g.團名+" "+g.系統+" "+g.編號).toLowerCase();if(blob.indexOf(q)<0)return false;}
+    return true;
+  });
+  function bySort(a,b){
+    if(sort==="num")return b.numKeyV-a.numKeyV||b.endKeyV-a.endKeyV;
+    if(sort==="numa")return a.numKeyV-b.numKeyV||a.endKeyV-b.endKeyV;
+    if(sort==="date")return b.endKeyV-a.endKeyV;
+    if(sort==="datea")return a.dateKeyV-b.dateKeyV;
+    return 0;
+  }
+  groups.sort(function(a,b){
+    if(groupSys){                                   // 先依系統分組（空系統排最後），再套用原排序
+      var sa=String(a.系統||"").trim()||"￿", sb=String(b.系統||"").trim()||"￿";
+      var s=sa.localeCompare(sb,"zh-Hant");
+      if(s)return s;
+    }
+    return bySort(a,b);
+  });
+  $("#galCount").textContent="共 "+groups.length+" 團";
+  if(!groups.length){$("#galGrid").innerHTML='<div class="empty-note" style="grid-column:1/-1">沒有符合條件的團。</div>';return;}
+  var h="";
+  groups.forEach(function(g){
+    if(g.blank){
+      // 空白卡片：獨立、可點擊填寫（開編輯視窗）
+      h+='<div class="gcard blank" data-idx="'+g.idx+'" title="點擊填寫此空白卡片">'
+        +'<span class="pill '+(CARDSTAT[g.status]||"plan")+' gpill">'+esc(g.status)+'</span>'
+        +'<div class="gnum">（空白卡片）</div>'
+        +'<div class="gname">（無題）</div>'
+        +'<div class="gmeta"><div class="gdate" style="color:var(--muted-2)">點擊填寫團名、編號…</div></div>'
+        +'</div>';
+      return;
+    }
+    var span;
+    if(g.startD&&g.endD){span=fmtD(g.startD)+(dkey(g.endD)!==dkey(g.startD)?" → "+fmtD(g.endD):"");}
+    else if(g.startD){span=fmtD(g.startD);}
+    else{span="（未定日期）";}
+    h+='<div class="gcard" data-team="'+esc(g.團名)+'" style="--sc:'+sysColor(g.系統)+'">'
+      +'<span class="pill '+(CARDSTAT[g.status]||"plan")+' gpill">'+esc(g.status)+'</span>'
+      +'<div class="gnum">'+(g.編號?esc(g.編號):'（未編號）')+'</div>'
+      +'<div class="gcount">共 '+g.count+' 團次</div>'
+      +'<div class="gname">'+esc(g.團名||"（無題）")+'</div>'
+      +'<div class="gmeta"><div class="gdate">📅 '+esc(span)+'</div>'
+      +'<div class="grow">'+(g.系統?'<span class="syschip" style="background:'+hexA(sysColor(g.系統),.16)+';color:'+sysColor(g.系統)+'">'+esc(g.系統)+'</span>':'')
+      +(g.pcs.length?'<span class="sub" style="font-size:13px;color:var(--muted)">🎭 '+esc(g.pcs.join("、"))+'</span>':'')+'</div></div>'
+      +'</div>';
+  });
+  $("#galGrid").innerHTML=h;
+}
+
+/* ----- STATS ----- */
+function renderStats(){
+  var y=curYear();
+  var yearRows=state.rows.filter(function(r){var d=parseDate(r.開始日期);return d&&d.y===y;});
+  // === 以「團」為單位：相同編號+團名視為一團（排除空白卡），不算清單列數 ===
+  var tmap={};
+  yearRows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(tmap[k]=tmap[k]||[]).push(r);});
+  var teams=Object.keys(tmap).map(function(k){
+    var rows=tmap[k];
+    var sc={};rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
+    var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"（未填）";
+    var sorted=rows.slice().sort(function(a,b){return (dateKey(a)?sortKey(a):Infinity)-(dateKey(b)?sortKey(b):Infinity);});
+    var fd=parseDate(sorted[0].開始日期);
+    var pcs={};rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
+    return {st:cardStat(rows),sys:sys,mo:fd?fd.mo:0,pcs:Object.keys(pcs)};
+  });
+  var goal=teams.length;                                         // 總團數（去重）
+  var done=teams.filter(function(t){return t.st==="已結團";}).length;
+  var live=teams.filter(function(t){return t.st==="進行中";}).length;
+  var plan=teams.filter(function(t){return t.st==="預定";}).length;
+  var noDate=teams.filter(function(t){return !t.mo;}).length;
+  var pct=goal>0?Math.min(100,Math.round(done/goal*100)):0;
+  var R=58,C=2*Math.PI*R,off=C*(1-pct/100);
+  // systems（依團計）
+  var sysCount={};teams.forEach(function(t){sysCount[t.sys]=(sysCount[t.sys]||0)+1;});
+  var sysArr=Object.keys(sysCount).map(function(k){return [k,sysCount[k]];}).sort(function(a,b){return b[1]-a[1];});
+  var sysMax=sysArr.reduce(function(m,x){return Math.max(m,x[1]);},1);
+  // months（依團計，以首場開始月份；已結團 vs 未結）
+  var mDone=[],mPlan=[];for(var i=0;i<12;i++){mDone[i]=0;mPlan[i]=0;}
+  teams.forEach(function(t){if(t.mo){if(t.st==="已結團")mDone[t.mo-1]++;else mPlan[t.mo-1]++;}});
+  var mMax=1;for(var j=0;j<12;j++)mMax=Math.max(mMax,mDone[j]+mPlan[j]);
+
+  var h="";
+  // progress panel
+  h+='<div class="panel progress">'
+    +'<div class="ring"><svg width="132" height="132" viewBox="0 0 132 132">'
+      +'<circle cx="66" cy="66" r="'+R+'" fill="none" stroke="var(--paper-deep)" stroke-width="12"/>'
+      +'<circle cx="66" cy="66" r="'+R+'" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'"/>'
+      +'</svg><div class="rc"><div class="pct">'+pct+'%</div><div class="pl">完成度</div></div></div>'
+    +'<div class="prog-info">'
+      +'<div class="stat-yearnav"><button id="styPrev" title="前一年">‹</button><span class="sy">'+y+' 跑團管理</span><button id="styNext" title="後一年">›</button></div>'
+      +'<div class="prog-sub">'+(state.cfg.副標?esc(state.cfg.副標)+'　·　':'')+'製作：'+esc(state.cfg.製作者||"—")+'</div>'
+      +'<div class="prog-big" style="margin-top:12px;font-size:22px">已結團 '+done+' <span class="of">/ '+y+' 年共 '+goal+' 團</span></div>'
+      +'<div class="prog-sub" style="margin-top:6px">目標團數＝該年度總團數（相同編號＋團名視為一團，自動計算）；進行中 '+live+' 團、預定 '+plan+' 團'+(noDate?'　·　另有 '+noDate+' 團未填日期':'')+'</div>'
+    +'</div></div>';
+  // big numbers
+  h+='<div class="panel"><h3>'+y+' 年總覽</h3><div class="big-nums">'
+    +'<div class="bn"><b>'+goal+'</b><span>總團數</span></div>'
+    +'<div class="bn"><b style="color:var(--done)">'+done+'</b><span>已結團</span></div>'
+    +'<div class="bn"><b style="color:var(--live)">'+live+'</b><span>進行中</span></div>'
+    +'<div class="bn"><b style="color:var(--plan)">'+plan+'</b><span>預定</span></div>'
+    +'<div class="bn"><b>'+sysArr.length+'</b><span>系統數</span></div>'
+    +'</div></div>';
+  // systems
+  h+='<div class="panel syswide"><h3>系統分布</h3>';
+  if(!sysArr.length)h+='<div class="sub">尚無資料</div>';
+  sysArr.forEach(function(x){
+    h+='<div class="kv"><div class="kl" title="'+esc(x[0])+'">'+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/sysMax*100)+'%;background:'+sysColor(x[0])+'"></i></div><div class="kn">'+x[1]+'</div></div>';
+  });
+  h+='</div>';
+  // months
+  h+='<div class="panel" style="grid-column:1/-1"><h3>'+y+' 年月份分布 <span class="sub" style="font-weight:400;margin-left:6px">■ 已結團　<span style="opacity:.5">■</span> 未結</span></h3><div class="months">';
+  var mn=["1","2","3","4","5","6","7","8","9","10","11","12"];
+  for(var k=0;k<12;k++){
+    var tot=mDone[k]+mPlan[k];
+    var dh=mDone[k]/mMax*100,ph=mPlan[k]/mMax*100;
+    h+='<div class="mo"><div class="mn">'+(tot||"")+'</div>'
+      +'<div style="width:100%;max-width:26px;display:flex;flex-direction:column;justify-content:flex-end;height:100%">'
+      +(ph>0?'<div class="mbar pl" style="height:'+ph+'%"></div>':'')
+      +(dh>0?'<div class="mbar" style="height:'+dh+'%'+(ph>0?';border-radius:0':'')+'"></div>':'')
+      +'</div>'
+      +'<div class="ml">'+mn[k]+'</div></div>';
+  }
+  h+='</div></div>';
+  // 參加次數統計（依系統；排除 KP/GM/DL… 主持職稱；角卡使用併入本統計）
+  // 以「編號+團名」為一個團，整團只計一次（同一玩家/角色在同團多場次只算 1）；空白卡片不計
+  var exc={};(state.excRoles||[]).forEach(function(x){var kk=String(x).trim().toUpperCase();if(kk)exc[kk]=1;});
+  var owner=(state.cfg.製作者||"").trim();                  // 角卡使用的「玩家」＝製作者
+  var cardSet={};                                            // 所有「使用角卡」名稱（用於標色「角卡」角色）
+  yearRows.forEach(function(r){if(isBlankCard(r))return;var c=String(r.使用角卡||"").trim();if(c)cardSet[c]=1;});
+  var teamG={};
+  yearRows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(teamG[k]=teamG[k]||[]).push(r);});
+  var partBySys={};
+  Object.keys(teamG).forEach(function(k){
+    var rows=teamG[k];
+    var sc={};rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
+    var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"（未填）";
+    var players={},chars={};
+    rows.forEach(function(r){
+      splitMembers(r.成員).forEach(function(tok){
+        var pm=parseMember(tok);if(!pm)return;
+        if(pm.char&&exc[pm.char.toUpperCase()])return;       // 主持職稱不計
+        if(pm.player)players[pm.player]=1;
+        if(pm.char)chars[pm.char]=1;
+      });
+    });
+    // 併入「角卡使用」：製作者當玩家、每張使用角卡當角色（同團去重、與成員同名者自動合併）
+    var usedCards={};rows.forEach(function(r){var c=String(r.使用角卡||"").trim();if(c)usedCards[c]=1;});
+    var cardNames=Object.keys(usedCards);
+    if(cardNames.length){
+      if(owner)players[owner]=1;
+      cardNames.forEach(function(c){chars[c]=1;});
+    }
+    var ps=partBySys[sys]||(partBySys[sys]={players:{},chars:{}});
+    Object.keys(players).forEach(function(p){ps.players[p]=(ps.players[p]||0)+1;});
+    Object.keys(chars).forEach(function(c){ps.chars[c]=(ps.chars[c]||0)+1;});
+  });
+  var sysKeys=Object.keys(partBySys);
+  if(sysKeys.length){
+    h+='<div class="panel" style="grid-column:1/-1"><h3>參加次數統計 <span class="sub" style="font-weight:400;margin-left:6px">依系統、同團（編號+團名）只計一次；已排除 '+esc((state.excRoles||[]).join("／")||"（無）")+' 等主持職稱（可於「設定」調整）</span></h3>'
+      +'<div class="sub" style="margin:-4px 0 12px;font-size:12px">已併入「角卡使用」：<span class="tag" style="color:var(--owner);background:color-mix(in srgb,var(--owner) 16%,var(--paper))">製作者</span>＝製作者'+(owner?'（'+esc(owner)+'）':'')+'的名稱、<span class="tag" style="color:var(--pcrole);background:color-mix(in srgb,var(--pcrole) 16%,var(--paper))">角卡</span>＝使用的角色卡</div>'
+      +'<div class="part-grid">';
+    sysKeys.forEach(function(sys){
+      var ps=partBySys[sys];
+      var players=Object.keys(ps.players).map(function(k){return [k,ps.players[k]];}).sort(function(a,b){return b[1]-a[1]||a[0].localeCompare(b[0],"zh-Hant");});
+      var chars=Object.keys(ps.chars).map(function(k){return [k,ps.chars[k]];}).sort(function(a,b){return b[1]-a[1]||a[0].localeCompare(b[0],"zh-Hant");});
+      var pMax=players.reduce(function(m,x){return Math.max(m,x[1]);},1);
+      var cMax=chars.reduce(function(m,x){return Math.max(m,x[1]);},1);
+      h+='<div class="part-sys"><div class="part-title"><span class="syschip" style="background:'+hexA(sysColor(sys),.16)+';color:'+sysColor(sys)+'">'+esc(sys)+'</span> <span class="sub" style="font-size:13px">玩家 '+players.length+' 人／角色 '+chars.length+' 個</span></div><div class="part-cols">';
+      h+='<div><h4>玩家參加次數</h4>';
+      if(!players.length)h+='<div class="sub">—</div>';
+      players.forEach(function(x){var isOwner=(owner&&x[0]===owner);h+='<div class="kv"><div class="kl'+(isOwner?' is-owner':'')+'" title="'+esc(x[0])+'">'+(isOwner?'<span class="tag">製作者</span>':'')+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/pMax*100)+'%'+(isOwner?';background:var(--owner)':'')+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
+      h+='</div><div><h4>角色參加次數</h4>';
+      if(!chars.length)h+='<div class="sub">—</div>';
+      chars.forEach(function(x){var isCard=!!cardSet[x[0]];h+='<div class="kv"><div class="kl'+(isCard?' is-card':'')+'" title="'+esc(x[0])+'">'+(isCard?'<span class="tag">角卡</span>':'')+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/cMax*100)+'%;background:'+(isCard?'var(--pcrole)':sysColor(sys))+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
+      h+='</div></div></div>';
+    });
+    h+='</div></div>';
+  }
+  $("#statGrid").innerHTML=h;
+  var p=$("#styPrev"),n=$("#styNext");
+  if(p)p.onclick=function(){setYear(curYear()-1);};
+  if(n)n.onclick=function(){setYear(curYear()+1);};
+}
+
+/* ---- refresh filter option lists ---- */
+function refreshOptions(){
+  var systems=distinctSystems(),years=distinctYears();
+  [["#fSystem",systems],["#gSystem",systems]].forEach(function(p){
+    var sel=$(p[0]);var v=sel.value;
+    sel.innerHTML='<option value="">全部系統</option>'+p[1].map(function(s){return '<option'+(s===v?" selected":"")+'>'+esc(s)+'</option>';}).join("");
+  });
+  [["#fYear"],["#gYear"]].forEach(function(p){
+    var sel=$(p[0]);if(!sel)return;var yv=sel.value;
+    sel.innerHTML='<option value="">全部年份</option>'+years.map(function(y){return '<option'+(String(y)===yv?" selected":"")+'>'+y+'</option>';}).join("");
+  });
+  $("#sysList").innerHTML=systems.map(function(s){return '<option value="'+esc(s)+'">';}).join("");
+}
+function refreshBrand(){
+  var t=curYear()+TITLE_SUFFIX;
+  $("#brandTitle").textContent=t;
+  document.title=t;
+}
+
+/* ============ EDIT MODAL ============ */
+function dateInputVal(s){var d=parseDate(s);return d?(d.y+"-"+("0"+d.mo).slice(-2)+"-"+("0"+d.d).slice(-2)):"";}
+function openEdit(idx){
+  var r=idx>=0?state.rows[idx]:{狀態:"預定"};
+  $("#editTitle").textContent=idx>=0?"編輯團務":"新增團務";
+  $("#e_id").value=idx>=0?idx:"";
+  $("#e_num").value=r.編號||"";$("#e_name").value=r.團名||"";$("#e_sys").value=r.系統||"";
+  $("#e_status").value=r.狀態||"預定";$("#e_count").value=r.本次團務數||"";
+  $("#e_sdate").value=dateInputVal(r.開始日期);$("#e_stime").value=normTimeInput(r.開始時間||"");
+  $("#e_edate").value=dateInputVal(r.結束日期);$("#e_etime").value=normTimeInput(r.結束時間||"");
+  $("#e_mem").value=r.成員||"";$("#e_pc").value=r.使用角卡||"";$("#e_note").value=r.備註||"";
+  $("#btnDel").style.display=idx>=0?"":"none";
+  showOv("#ovEdit");
+}
+function submitEdit(e){
+  if(e&&e.preventDefault)e.preventDefault();
+  var idxRaw=$("#e_id").value;var idx=idxRaw===""?-1:+idxRaw;
+  var o=idx>=0?state.rows[idx]:{id:uid()};
+  o.編號=$("#e_num").value.trim();o.團名=$("#e_name").value.trim();o.系統=$("#e_sys").value.trim();
+  o.狀態=$("#e_status").value;if(o.本次團務數==null)o.本次團務數="";  // 本次團務數改為自動計算（save()→recomputeSeq）
+  o.開始日期=$("#e_sdate").value.trim();o.開始時間=normTimeInput($("#e_stime").value);
+  o.結束日期=$("#e_edate").value.trim();o.結束時間=normTimeInput($("#e_etime").value);
+  o.成員=$("#e_mem").value.trim();o.使用角卡=$("#e_pc").value.trim();o.備註=$("#e_note").value.trim();
+  // 允許無標題：全空＝卡片庫的空白卡片（不會出現在清單/月曆）
+  if(idx<0)state.rows.push(o);
+  save();refreshOptions();hideOv("#ovEdit");render();
+  toast(idx<0?"已新增團務":"已更新");
+}
+function copyRow(idx){
+  var src=state.rows[idx];if(!src)return;
+  var o={id:uid()};COLS.forEach(function(c){o[c]=src[c];});
+  state.rows.splice(idx+1,0,o);
+  save();refreshOptions();renderTable();toast("已複製此團務（就在原列下方）");
+}
+function delRow(){
+  var idx=+$("#e_id").value;if(isNaN(idx))return;
+  if(!confirm("確定刪除「"+(state.rows[idx].團名||"此團務")+"」？"))return;
+  state.rows.splice(idx,1);save();refreshOptions();hideOv("#ovEdit");render();toast("已刪除");
+}
+
+/* ============ SETTINGS ============ */
+function renderSysColorList(){
+  var wrap=$("#sysColorList");if(!wrap)return;
+  var systems=distinctSystems();
+  if(!systems.length){wrap.innerHTML='<div class="sc-empty">目前沒有任何系統；於團務填入「系統」後就會出現在這裡。</div>';return;}
+  wrap.innerHTML=systems.map(function(s){
+    var manual=hasManualColor(s),col=sysColor(s);
+    return '<div class="sc-row"><input type="color" data-sys="'+esc(s)+'" value="'+esc(col)+'">'
+      +'<span class="sc-name" title="'+esc(s)+'">'+esc(s)+'</span>'
+      +'<span class="sc-tag">'+(manual?"手動":"自動")+'</span>'
+      +'<button type="button" class="sc-auto" data-sys="'+esc(s)+'"'+(manual?"":' disabled style="opacity:.4;cursor:default"')+'>自動</button></div>';
+  }).join("");
+}
+function renderExcList(){
+  var wrap=$("#excList");if(!wrap)return;
+  var arr=state.excRoles||[];
+  if(!arr.length){wrap.innerHTML='<span class="sc-empty">目前沒有例外職稱（所有「XX(人名)」都會計入統計）。</span>';return;}
+  wrap.innerHTML=arr.map(function(x,i){return '<span class="exc-chip">'+esc(x)+'<button type="button" data-exc="'+i+'" title="移除">×</button></span>';}).join("");
+}
+function addExc(){
+  var v=$("#excInput").value.trim();if(!v)return;
+  state.excRoles=state.excRoles||[];
+  if(state.excRoles.some(function(x){return x.toUpperCase()===v.toUpperCase();})){toast("已存在此例外");$("#excInput").value="";return;}
+  state.excRoles.push(v);save();$("#excInput").value="";renderExcList();
+}
+function openSettings(){
+  $("#s_author").value=state.cfg.製作者||"";$("#s_note").value=state.cfg.副標||"";
+  renderSysColorList();renderExcList();
+  showOv("#ovSet");
+}
+function submitSettings(e){
+  e.preventDefault();
+  state.cfg.製作者=$("#s_author").value.trim();state.cfg.副標=$("#s_note").value.trim();
+  save();hideOv("#ovSet");render();toast("設定已儲存");
+}
+
+/* ============ IO ============ */
+function importTeamsCSV(text){
+  var recs=parseCSV(text);
+  if(!recs.length){toast("CSV 沒有資料列");return;}
+  var rows=recs.map(function(rec){var o={id:uid()};COLS.forEach(function(c){o[c]=rec[c]!=null?String(rec[c]).trim():"";});return o;});
+  state.rows=rows;save();refreshOptions();render();toast("已匯入 "+rows.length+" 筆團務");
+}
+function looksLikeCfg(name,head){
+  return /設定|config/i.test(name)||(head.indexOf("團名")<0&&head.indexOf("職稱")<0&&(head.indexOf("製作者")>=0||head.indexOf("副標")>=0||head.indexOf("目標團數")>=0||head.indexOf("標題")>=0));
+}
+function looksLikeExc(name,head){return /例外|exception/i.test(name)||(head.indexOf("職稱")>=0&&head.indexOf("團名")<0);}
+function importExcCSV(text){
+  var recs=parseCSV(text),arr=[];
+  recs.forEach(function(rec){var v=rec["職稱"]!=null?rec["職稱"]:rec[Object.keys(rec)[0]];v=String(v||"").trim();if(v&&arr.indexOf(v)<0)arr.push(v);});
+  state.excRoles=arr;save();toast("已匯入 "+arr.length+" 個例外職稱");renderExcList();if(activeView==="stats")renderStats();
+}
+function detectAndImport(name,text){
+  var recs=parseCSV(text);var head=recs.length?Object.keys(recs[0]):[];
+  if(looksLikeExc(name,head)){importExcCSV(text);return;}
+  if(looksLikeCfg(name,head)){toast("設定.csv 無法匯入（僅供備份）");return;}
+  importTeamsCSV(text);
+}
+function expTeams(){download("團務.csv",toCSV(COLS,state.rows));}
+function expCfg(){download("設定.csv",toCSV(CFG_COLS,[state.cfg]));}
+function expExc(){download("例外.csv",toCSV(["職稱"],(state.excRoles||[]).map(function(x){return {職稱:x};})));}
+function expTpl(){download("團務.csv",toCSV(COLS,[]));}
+
+function exportViewHTML(){
+  var teamsCSV=toCSV(COLS,state.rows);
+  var cfgCSV=toCSV(CFG_COLS,[state.cfg]);
+  // snapshot in a clean UI state: close overlays, merge readonly into body class
+  $$(".overlay").forEach(function(o){o.classList.remove("show");});
+  document.body.classList.add("readonly");
+  var html=document.documentElement.outerHTML;
+  document.body.classList.remove("readonly"); // restore working editor
+  var payload={teams:teamsCSV,cfg:cfgCSV,sysColors:state.sysColors||{},excRoles:state.excRoles||[]};
+  var json=JSON.stringify(payload).replace(/<\//g,"<\\/");
+  var bake='<script id="baked-data">window.__BAKED__='+json+';<\/script>';
+  html=html.replace(/<body([^>]*)>/,function(m,g){return "<body"+g+">\n"+bake;});
+  html="<!DOCTYPE html>\n"+html;
+  var fn=curYear()+TITLE_SUFFIX+"-檢視版.html";
+  downloadHTML(fn,html);
+  toast("已匯出純檢視版 HTML（已內嵌目前資料）");
+}
+
+/* ============ folder / file input ============ */
+function readFile(f){return new Promise(function(res){var rd=new FileReader();rd.onload=function(){res(rd.result);};rd.readAsText(f,"utf-8");});}
+function handleFiles(files){
+  files=Array.prototype.slice.call(files);
+  var csvs=files.filter(function(f){return /\.csv$/i.test(f.name);});
+  if(!csvs.length){toast("找不到 CSV 檔");return;}
+  var teamsF=csvs.filter(function(f){return /團務|teams?/i.test(f.name);});
+  var excF=csvs.filter(function(f){return /例外|exception/i.test(f.name);});
+  var jobs=[];
+  if(teamsF.length)jobs.push(readFile(teamsF[0]).then(function(t){importTeamsCSV(t);}));
+  if(excF.length)jobs.push(readFile(excF[0]).then(function(t){importExcCSV(t);}));
+  if(!teamsF.length&&!excF.length){
+    var others=csvs.filter(function(f){return !/設定|config/i.test(f.name);});
+    if(others.length)jobs.push(readFile(others[0]).then(function(t){detectAndImport(others[0].name,t);}));
+    else toast("設定.csv 無法匯入（僅供備份）");
+  }
+  Promise.all(jobs);
+}
+
+/* ============ overlay helpers ============ */
+function showOv(sel){$(sel).classList.add("show");}
+function hideOv(sel){$(sel).classList.remove("show");}
+
+/* ============ WIRING ============ */
+function wire(){
+  $("#viewTabs").addEventListener("click",function(e){var b=e.target.closest(".vbtn");if(b)setView(b.dataset.view);});
+  // calendar
+  $("#calPrev").onclick=function(){calCursor.mo--;if(calCursor.mo<1){calCursor.mo=12;calCursor.y--;}refreshBrand();renderCal();};
+  $("#calNext").onclick=function(){calCursor.mo++;if(calCursor.mo>12){calCursor.mo=1;calCursor.y++;}refreshBrand();renderCal();};
+  $("#calToday").onclick=function(){var n=new Date();calCursor.y=n.getFullYear();calCursor.mo=n.getMonth()+1;refreshBrand();renderCal();};
+  $("#calGrid").addEventListener("click",function(e){var ev=e.target.closest(".cal-ev");if(ev&&!READONLY)openEdit(+ev.dataset.idx);});
+  // 月曆團務：游標指上即時顯示自訂提示小窗（無原生 title 延遲）
+  var calTip=document.createElement("div");calTip.className="cal-tip";document.body.appendChild(calTip);
+  function placeTip(e){
+    var pad=12,vw=window.innerWidth,vh=window.innerHeight;
+    var w=calTip.offsetWidth,h=calTip.offsetHeight;
+    var x=e.clientX+pad,y=e.clientY+pad;
+    if(x+w>vw-6)x=e.clientX-w-pad; if(x<6)x=6;
+    if(y+h>vh-6)y=e.clientY-h-pad; if(y<6)y=6;
+    calTip.style.left=x+"px";calTip.style.top=y+"px";
+  }
+  $("#calGrid").addEventListener("mouseover",function(e){var ev=e.target.closest(".cal-ev");if(!ev)return;var tip=ev.getAttribute("data-tip")||"";if(!tip)return;calTip.textContent=tip;calTip.style.display="block";placeTip(e);});
+  $("#calGrid").addEventListener("mousemove",function(e){if(calTip.style.display==="block"&&e.target.closest(".cal-ev"))placeTip(e);});
+  $("#calGrid").addEventListener("mouseout",function(e){var ev=e.target.closest(".cal-ev");if(ev&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest(".cal-ev")))calTip.style.display="none";});
+  $("#calGrid").addEventListener("mouseleave",function(){calTip.style.display="none";});
+  // table
+  ["#fSearch","#fSystem","#fStatus","#fYear"].forEach(function(s){$(s).addEventListener("input",renderTable);$(s).addEventListener("change",renderTable);});
+  $("#tblHead").addEventListener("click",function(e){var th=e.target.closest("th");if(!th)return;var col=th.dataset.col;if(!col)return;if(editingCell)commitCell();if(tblSort.col===col)tblSort.dir*=-1;else{tblSort.col=col;tblSort.dir=(col==="開始日期"||col==="結束日期"||col==="開始時間"||col==="結束時間"||col==="編號"||col==="本次團務數")?-1:1;}renderTable();});
+  $("#tblBody").addEventListener("click",function(e){if(READONLY)return;var cp=e.target.closest(".row-copy");if(cp){copyRow(+cp.dataset.copy);return;}var eb=e.target.closest(".row-edit");if(eb){openEdit(+eb.dataset.edit);return;}var td=e.target.closest("td.editable");if(td)beginCellEdit(td);});
+  // gallery
+  ["#gSearch","#gSystem","#gStatus","#gYear","#gSort","#gGroupSys"].forEach(function(s){$(s).addEventListener("input",renderGallery);$(s).addEventListener("change",renderGallery);});
+  $("#galGrid").addEventListener("click",function(e){var c=e.target.closest(".gcard");if(!c)return;if(c.classList.contains("blank")){if(!READONLY)openEdit(+c.dataset.idx);return;}$("#fSearch").value=c.dataset.team||"";$("#fSystem").value="";$("#fStatus").value="";$("#fYear").value="";syncClr("#fSearch");setView("table");});
+  // 搜尋欄清除按鈕（有內容時顯示右方叉叉）
+  [["#fSearch","#fSearchClr",renderTable],["#gSearch","#gSearchClr",renderGallery]].forEach(function(p){
+    var inp=$(p[0]),btn=$(p[1]),rf=p[2];
+    inp.addEventListener("input",function(){syncClr(p[0]);});syncClr(p[0]);
+    btn.addEventListener("click",function(){inp.value="";syncClr(p[0]);inp.focus();rf();});
+  });
+  // theme
+  $("#btnTheme").onclick=function(){document.body.classList.toggle("dark");var d=document.body.classList.contains("dark");$("#btnTheme").textContent=d?"☀️":"🌙";try{localStorage.setItem("trpg_sched_theme",d?"dark":"light");}catch(e){}};
+  if(READONLY)return;
+  // edit
+  $("#btnNew").onclick=function(){openEdit(-1);};
+  $("#btnBlankCard").onclick=function(){var o={id:uid()};COLS.forEach(function(c){o[c]="";});o.狀態="預定";state.rows.push(o);save();renderGallery();toast("已新增空白卡片（點卡片可填寫）");};
+  // 按 Enter 不自動儲存／關閉；只有按「儲存」才存
+  $("#editForm").addEventListener("submit",function(e){e.preventDefault();});
+  $("#btnSave").onclick=submitEdit;
+  ["#e_stime","#e_etime"].forEach(function(s){var el=$(s);el.addEventListener("blur",function(){if(el.value.trim())el.value=normTimeInput(el.value);});});
+  // 結束日期留空時，一旦填了結束時間，預設帶入開始日期方便編輯（跨夜可自行改隔天）
+  $("#btnDel").onclick=delRow;
+  // settings
+  $("#btnSettings").onclick=openSettings;
+  $("#setForm").addEventListener("submit",submitSettings);
+  // 系統代表色：手動指定 / 恢復自動
+  $("#sysColorList").addEventListener("change",function(e){
+    var inp=e.target.closest('input[type=color]');if(!inp)return;
+    state.sysColors[inp.dataset.sys]=inp.value;save();renderSysColorList();render();
+  });
+  $("#sysColorList").addEventListener("click",function(e){
+    var b=e.target.closest(".sc-auto");if(!b||b.disabled)return;
+    delete state.sysColors[b.dataset.sys];save();renderSysColorList();render();
+  });
+  // 統計例外職稱
+  $("#excAdd").onclick=addExc;
+  $("#excInput").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();addExc();}});
+  $("#excList").addEventListener("click",function(e){
+    var b=e.target.closest("button[data-exc]");if(!b)return;
+    state.excRoles.splice(+b.dataset.exc,1);save();renderExcList();
+  });
+  // io
+  $("#btnIO").onclick=function(){showOv("#ovIO");};
+  $("#expTeams").onclick=expTeams;$("#expCfg").onclick=expCfg;$("#expExc").onclick=expExc;$("#expTpl").onclick=expTpl;$("#expView").onclick=exportViewHTML;
+  $("#btnWipe").onclick=function(){if(confirm("確定清空所有團務資料？此動作無法復原。")){state.rows=[];save();refreshOptions();render();hideOv("#ovIO");toast("已清空");}};
+  // folder / csv inputs
+  var fi=$("#folderInput"),ci=$("#csvInput");
+  $("#dropFolder").onclick=function(){fi.click();};
+  $("#dropCsv").onclick=function(){ci.click();};
+  fi.onchange=function(){if(fi.files.length){handleFiles(fi.files);hideOv("#ovIO");}fi.value="";};
+  ci.onchange=function(){if(ci.files.length){handleFiles(ci.files);hideOv("#ovIO");}ci.value="";};
+  ["dropFolder","dropCsv"].forEach(function(id){
+    var el=document.getElementById(id);
+    el.addEventListener("dragover",function(e){e.preventDefault();el.classList.add("drag");});
+    el.addEventListener("dragleave",function(){el.classList.remove("drag");});
+    el.addEventListener("drop",function(e){e.preventDefault();el.classList.remove("drag");if(e.dataTransfer.files.length){handleFiles(e.dataTransfer.files);hideOv("#ovIO");}});
+  });
+  // overlay close
+  $$("[data-close]").forEach(function(b){b.onclick=function(){b.closest(".overlay").classList.remove("show");};});
+  // 編輯視窗(#ovEdit)不因點擊視窗外或 Esc 而關閉，必須按「儲存」或「取消」
+  $$(".overlay").forEach(function(o){if(o.id==="ovEdit")return;o.addEventListener("click",function(e){if(e.target===o)o.classList.remove("show");});});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")$$(".overlay.show").forEach(function(o){if(o.id!=="ovEdit")o.classList.remove("show");});});
+}
+
+/* ============ INIT ============ */
+function init(){
+  if(READONLY)document.body.classList.add("readonly");
+  recomputeSeq(); // 本次團務數自動計算（含 readonly/首次載入）
+  try{if(localStorage.getItem("trpg_sched_theme")==="dark"){document.body.classList.add("dark");$("#btnTheme").textContent="☀️";}}catch(e){}
+  refreshBrand();refreshOptions();wire();setView("cal");
+}
+init();
+})();
+</script>
+</body>
+</html>
