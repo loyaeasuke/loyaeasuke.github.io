@@ -442,6 +442,20 @@
         rec.base = baseSkill(rec.skill);
         if (rec.base && rec.target === INIT[rec.base]) rec.isInitial = true;
       }
+    } else if (fam === 'cbrb') {
+      // 組合判定：整體結果可能是 成功／部分性成功／失敗；並解析 [子結果1,子結果2…] 內含的成功/失敗數
+      var finalTxt = parts[parts.length - 1].trim();
+      rec.cbrbPartial = /部分/.test(finalTxt);      // 「部分性成功」等
+      var mBr = message.match(/[\[［]([^\]］]*)[\]］]/);   // 取第一組 [ … ]
+      var inS = 0, inF = 0;
+      if (mBr) {
+        mBr[1].split(/[,，、\/／]/).forEach(function (s) {
+          var v = classifyVerdict(s.trim());
+          if (v === 'failure' || v === 'fumble') inF++;
+          else if (v) inS++;                         // 成功／特殊／大成功皆計為內含成功
+        });
+      }
+      rec.cbrbInS = inS; rec.cbrbInF = inF;
     }
     return rec;
   }
@@ -497,7 +511,7 @@
     return { s_succ:0,s_spec:0,s_fail:0,s_crit:0,s_fumb:0,
              p_succ:0,p_spec:0,p_fail:0,p_crit:0,p_fumb:0,
              sec_succ:0,sec_spec:0,sec_fail:0,sec_crit:0,sec_fumb:0,
-             resb_s:0,resb_f:0, cbrb_s:0,cbrb_f:0, total:0 };
+             resb_s:0,resb_f:0, cbrb_s:0,cbrb_p:0,cbrb_f:0, cbrb_is:0,cbrb_if:0, total:0 };
   }
   function addRoll(o, r) {
     o.total++;
@@ -507,11 +521,16 @@
               : r.verdict === 'fumble' ? 'fumb' : r.verdict === 'failure' ? 'fail' : 'succ';
       o[pre + suf]++;
     } else if (r.family === 'resb') { (r.verdict === 'failure' || r.verdict === 'fumble') ? o.resb_f++ : o.resb_s++; }
-    else if (r.family === 'cbrb') { (r.verdict === 'failure' || r.verdict === 'fumble') ? o.cbrb_f++ : o.cbrb_s++; }
+    else if (r.family === 'cbrb') {
+      if (r.cbrbPartial) o.cbrb_p++;                                            // 部分性成功
+      else if (r.verdict === 'failure' || r.verdict === 'fumble') o.cbrb_f++;   // 全失敗
+      else o.cbrb_s++;                                                          // 全成功
+      o.cbrb_is += (r.cbrbInS || 0); o.cbrb_if += (r.cbrbInF || 0);             // 內含成功/失敗（子結果加總，不計入判定總數）
+    }
   }
   // 三個率的分母＝判定總數（全部群組）；分子把各群組的成功／大成功／大失敗一併納入，
   // 對抗、組合的「成功」也計為成功（它們沒有大成功／大失敗，只影響分母）。
-  function successCount(d) { return d.s_succ + d.s_spec + d.s_crit + d.p_succ + d.p_spec + d.p_crit + d.sec_succ + d.sec_spec + d.sec_crit + d.resb_s + d.cbrb_s; }
+  function successCount(d) { return d.s_succ + d.s_spec + d.s_crit + d.p_succ + d.p_spec + d.p_crit + d.sec_succ + d.sec_spec + d.sec_crit + d.resb_s + d.cbrb_s + d.cbrb_p; }
   function critCount(d) { return d.s_crit + d.p_crit + d.sec_crit; }
   function fumbCount(d) { return d.s_fumb + d.p_fumb + d.sec_fumb; }
   function succRate(d) { var t = d.total; return t ? successCount(d) / t : -1; }
@@ -691,7 +710,7 @@
       { v: t.p_succ + t.p_spec + t.p_fail + t.p_crit + t.p_fumb, l: '心理學', s: '獨立計算', c: 'var(--psy)' },
       { v: t.sec_succ + t.sec_spec + t.sec_fail + t.sec_crit + t.sec_fumb, l: '祕密骰', s: '獨立計算', c: 'var(--secret)' },
       { v: t.resb_s + t.resb_f, l: '對抗判定', s: t.resb_s + '勝 / ' + t.resb_f + '敗', c: 'var(--oppo)' },
-      { v: t.cbrb_s + t.cbrb_f, l: '組合判定', s: t.cbrb_s + '勝 / ' + t.cbrb_f + '敗', c: 'var(--comb)' }
+      { v: t.cbrb_s + t.cbrb_p + t.cbrb_f, l: '組合判定', s: t.cbrb_s + '成 / ' + t.cbrb_p + '部分 / ' + t.cbrb_f + '敗', c: 'var(--comb)' }
     ];
     $('kpis').innerHTML = tiles.map(function (k) {
       return '<div class="kpi' + (k.d ? ' jump' : '') + '"' + (k.d ? ' data-jump="' + k.d + '"' : '') +
@@ -730,7 +749,7 @@
     { k:'sec_fumb', t:'大失敗', cls:'v-secret' }
   ];
   var RESB_COLS = [ { k:'resb_s', t:'成功', cls:'v-oppo', sep:true }, { k:'resb_f', t:'失敗', cls:'v-oppo' } ];
-  var CBRB_COLS = [ { k:'cbrb_s', t:'成功', cls:'v-comb', sep:true }, { k:'cbrb_f', t:'失敗', cls:'v-comb' } ];
+  var CBRB_COLS = [ { k:'cbrb_s', t:'成功', cls:'v-comb', sep:true }, { k:'cbrb_p', t:'部分性成功', cls:'v-comb' }, { k:'cbrb_f', t:'失敗', cls:'v-comb' }, { k:'cbrb_is', t:'內含成功', cls:'v-comb' }, { k:'cbrb_if', t:'內含失敗', cls:'v-comb' } ];
   var TAIL_COLS = [
     { k:'total', t:'判定數', cls:'total', sep:true },
     { k:'rate', t:'成功率', cls:'rate' },
@@ -754,7 +773,7 @@
     s_succ:'成功', s_spec:'特殊', s_sp:'成功+特殊', s_fail:'失敗', s_crit:'大成功', s_fumb:'大失敗',
     p_succ:'心理學-成功', p_spec:'心理學-特殊', p_fail:'心理學-失敗', p_crit:'心理學-大成功', p_fumb:'心理學-大失敗',
     sec_succ:'祕密骰-成功', sec_spec:'祕密骰-特殊', sec_fail:'祕密骰-失敗', sec_crit:'祕密骰-大成功', sec_fumb:'祕密骰-大失敗',
-    resb_s:'對抗-成功', resb_f:'對抗-失敗', cbrb_s:'組合-成功', cbrb_f:'組合-失敗',
+    resb_s:'對抗-成功', resb_f:'對抗-失敗', cbrb_s:'組合-成功', cbrb_p:'組合-部分性成功', cbrb_f:'組合-失敗', cbrb_is:'組合-內含成功', cbrb_if:'組合-內含失敗',
     total:'判定數', rate:'成功率', critrate:'大成功率', fumbrate:'大失敗率'
   };
 
@@ -907,7 +926,7 @@
       : detailMode === 'fumble'
       ? '各角色標準判定＋祕密骰為大失敗的項目，同一角色集中一列、由左（最早）至右（最新）。祕密骰以 🔒 標示；心理學的大失敗另見「心理學判定」分頁。'
       : detailMode === 'psy'
-      ? '各角色所有判定文字含「心理學」的項目（涵蓋魚／龜／獅子／豬…等各種心理學，含祕密骰形式），同一角色集中一列、由左（最早）至右（最新），並標示各自的判定結果。'
+      ? '各角色所有判定文字含「心理學」的項目（涵蓋各PC、NPC各種心理學，含祕密骰形式），同一角色集中一列、由左（最早）至右（最新），並標示各自的判定結果。'
       : '各角色以技能初期值進行「標準判定」並成功（大成功／成功／特殊）的項目；目標值須等於該技能初期值。心理學、祕密骰、角色專屬技能與能力值判定（SAN／靈感／幸運等）不列入。';
 
     var picked = detailPick(rolls);
@@ -948,7 +967,7 @@
   var CORR_FIELDS = ['s_succ','s_spec','s_fail','s_crit','s_fumb',
                      'p_succ','p_spec','p_fail','p_crit','p_fumb',
                      'sec_succ','sec_spec','sec_fail','sec_crit','sec_fumb',
-                     'resb_s','resb_f','cbrb_s','cbrb_f'];
+                     'resb_s','resb_f','cbrb_s','cbrb_p','cbrb_f'];
   var CORR_FIELD_SET = {}; CORR_FIELDS.forEach(function (f) { CORR_FIELD_SET[f] = 1; });
   var OUTCOME_CLS = { s_succ:'v-succ', s_spec:'v-spec', s_fail:'v-fail', s_crit:'v-crit', s_fumb:'v-fumb' };
   var GROUP_CLS = { std:'', psy:'v-psy', sec:'v-secret', resb:'v-oppo', cbrb:'v-comb' };
@@ -958,7 +977,7 @@
     psy:  [{k:'p_succ',t:'成功'},{k:'p_spec',t:'特殊'},{k:'p_fail',t:'失敗'},{k:'p_crit',t:'大成功'},{k:'p_fumb',t:'大失敗'}],
     sec:  [{k:'sec_succ',t:'成功'},{k:'sec_spec',t:'特殊'},{k:'sec_fail',t:'失敗'},{k:'sec_crit',t:'大成功'},{k:'sec_fumb',t:'大失敗'}],
     resb: [{k:'resb_s',t:'成功'},{k:'resb_f',t:'失敗'}],
-    cbrb: [{k:'cbrb_s',t:'成功'},{k:'cbrb_f',t:'失敗'}]
+    cbrb: [{k:'cbrb_s',t:'成功'},{k:'cbrb_p',t:'部分性成功'},{k:'cbrb_f',t:'失敗'}]
   };
   function inputColCls(gid, k) { return gid === 'std' ? OUTCOME_CLS[k] : GROUP_CLS[gid]; }
 
@@ -983,6 +1002,7 @@
     var d = blankRow();
     CORR_FIELDS.forEach(function (f) { d[f] = (base[f] || 0) + (cr[f] || 0); });
     d.total = CORR_FIELDS.reduce(function (s, f) { return s + d[f]; }, 0);
+    d.cbrb_is = base.cbrb_is || 0; d.cbrb_if = base.cbrb_if || 0;   // 內含子結果：僅供顯示，不計入判定數
     return d;
   }
   function corrInputGroups() {   // 依補正區自己的欄位群組開關（標準永遠顯示）
