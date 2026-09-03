@@ -126,7 +126,7 @@ a{color:var(--accent-deep);}
 .cal-ev .t.tr{margin-left:auto;padding-left:6px;}
 .cal-ev .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;line-height:20px;}
 /* 月曆滑鼠即時提示 */
-.cal-tip{position:fixed;z-index:9999;display:none;background:var(--ink);color:var(--paper);padding:6px 9px;border-radius:6px;font-size:12px;line-height:1.35;pointer-events:none;max-width:300px;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:normal;}
+.cal-tip{position:fixed;z-index:9999;display:none;background:var(--ink);color:var(--paper);padding:6px 9px;border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;max-width:320px;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:pre-line;}
 
 /* ===== TABLE ===== */
 .filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center;}
@@ -203,7 +203,10 @@ td.opcell{white-space:nowrap;}
 .gcard.blank{border-style:dashed;border-left-color:var(--rule-strong);}
 .gcard.blank .gname{color:var(--muted-2);}
 .gcard .gmeta{margin-top:auto;display:flex;flex-direction:column;gap:6px;}
-.gcard .gdate{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:visible;}
+/* 日期／系統／使用角卡 各自固定高度的一列（即使該列無內容也保留空間），讓各卡對齊同一高度 */
+.gcard .gdate{font-family:var(--mono);font-size:12px;color:var(--ink-soft);white-space:nowrap;overflow:visible;min-height:16px;line-height:16px;}
+.gcard .gsys{min-height:22px;display:flex;align-items:center;}
+.gcard .gpc{min-height:18px;line-height:18px;font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .gcard .grow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .gcard .gpill{position:absolute;top:11px;right:11px;}
 
@@ -243,6 +246,7 @@ td.opcell{white-space:nowrap;}
 .kv .kl.is-card .tag{color:var(--pcrole);background:color-mix(in srgb,var(--pcrole) 16%,var(--paper));}
 .months{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:8px;}
 .months .mo{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;}
+.months .mo.has-uf{cursor:help;}
 .months .mo .mbar{width:100%;max-width:26px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;transition:.2s;}
 .months .mo .mbar.pl{background:var(--plan);opacity:.5;}
 .months .mo .ml{font-family:var(--mono);font-size:13px;color:var(--muted);}
@@ -251,8 +255,9 @@ td.opcell{white-space:nowrap;}
 .big-nums .bn{display:flex;flex-direction:column;}
 .big-nums .bn b{font-family:var(--serif);font-size:26px;font-weight:700;}
 .big-nums .bn span{font-size:13px;color:var(--muted);}
-/* 參加次數統計：最多 4 個系統直向並列，寬度不足自動遞減（auto-fit 自動偵測，max-width 限制最多 4 欄） */
-.part-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;max-width:1040px;}
+/* 參加次數統計：每個系統卡片「固定寬度」不隨視窗縮放；一行最多 6 欄（第 4 欄起自動往右接續），最多約 5~6 欄，超出換行 */
+.part-grid{display:grid;grid-template-columns:repeat(auto-fill,264px);gap:16px;justify-content:start;max-width:1664px;}
+@media(max-width:340px){.part-grid{grid-template-columns:1fr;}}
 .part-sys{border:1px solid var(--rule);border-radius:10px;padding:12px 14px;background:var(--paper);min-width:0;}
 .part-title{margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .part-cols{display:flex;flex-direction:column;gap:14px;}
@@ -411,7 +416,7 @@ body.readonly .edit-only{display:none!important;}
         </div>
         <div class="grid3">
           <div class="field"><label>系統</label><input id="e_sys" list="sysList" placeholder="例：CoC克蘇魯的呼喚6th"></div>
-          <div class="field"><label>狀態</label><select id="e_status"><option>預定</option><option>已完成</option></select></div>
+          <div class="field"><label title="有填「結束日期」＝已完成；未填＝預定">狀態 <span class="hint">依結束日期自動判定</span></label><input id="e_status" readonly title="有填「結束日期」＝已完成；未填＝預定" style="color:var(--muted);cursor:not-allowed"></div>
           <div class="field"><label title="同團（相同編號＋團名）依日期由早到晚自動編號 1、2、3…；空白卡片不計">本次團務數 <span class="hint">自動計算</span></label><input id="e_count" readonly placeholder="自動"></div>
         </div>
         <div class="grid2">
@@ -445,8 +450,8 @@ body.readonly .edit-only{display:none!important;}
     <div class="modal-body">
       <div class="callout">
         <b>團務.csv 欄位順序：</b><br>
-        <code>編號, 團名, 系統, 開始日期, 開始時間, 結束日期, 結束時間, 狀態, 成員, 使用角卡, 本次團務數, 備註</code><br>
-        第一列為標題列。成員以頓號 <code>、</code> 分隔（不要用逗號）。日期建議 <code>2026-09-28</code>，也接受 <code>2026/9/28</code>、<code>2026年9月28日</code>；時間可填 <code>2200</code>、<code>22:00</code> 或 <code>下午10:00</code>。<b>結束日期留空＝當日</b>，跨夜請填隔天。檔案為 UTF-8（含 BOM），可用 Excel／試算表直接編輯。<b>匯入會覆蓋</b>現有團務資料。<b>例外.csv</b>（欄：<code>職稱</code>）可匯入／匯出，用來設定不計入統計的主持職稱（KP/GM/DL…）。<b>設定.csv 僅供備份、無法匯入。</b>
+        <code>編號, 團名, 系統, 開始日期, 開始時間, 結束日期, 結束時間, 成員, 使用角卡, 備註</code><br>
+        第一列為標題列。<b>「狀態」與「本次團務數」為工具自動判定，不需填寫</b>（空白範本已省略這兩欄；即使匯入的檔案有這兩欄也會被自動重算）。成員以頓號 <code>、</code> 分隔（不要用逗號）。日期建議 <code>2026-09-28</code>，也接受 <code>2026/9/28</code>、<code>2026年9月28日</code>；時間可填 <code>2200</code>、<code>22:00</code> 或 <code>下午10:00</code>。<b>結束日期留空＝預定、有填＝已完成</b>（跨夜也請填隔天）。檔案為 UTF-8（含 BOM），可用 Excel／試算表直接編輯。<b>匯入會覆蓋</b>現有團務資料。<b>例外.csv</b>（欄：<code>職稱</code>）可匯入／匯出，用來設定不計入統計的主持職稱（KP/GM/DL…）。<b>設定.csv 僅供備份、無法匯入。</b>
       </div>
       <div class="field">
         <label>載入資料夾 <span class="hint">自動讀取資料夾內的 團務.csv 與 例外.csv</span></label>
@@ -461,7 +466,7 @@ body.readonly .edit-only{display:none!important;}
         <div class="io-row"><div class="grow"><div class="r-title">團務.csv</div><div class="r-sub">全部團務紀錄，可用試算表編輯後再匯回</div></div><button class="btn btn-ghost" id="expTeams">下載</button></div>
         <div class="io-row"><div class="grow"><div class="r-title">設定.csv <span style="font-size:13px;color:var(--muted)">（僅供備份，無法匯入）</span></div><div class="r-sub">製作者、副標</div></div><button class="btn btn-ghost" id="expCfg">下載</button></div>
         <div class="io-row"><div class="grow"><div class="r-title">例外.csv</div><div class="r-sub">統計例外職稱（KP/GM/DL…），可編輯後匯回</div></div><button class="btn btn-ghost" id="expExc">下載</button></div>
-        <div class="io-row"><div class="grow"><div class="r-title">團務.csv 空白範本</div><div class="r-sub">只有標題列，方便從零建立</div></div><button class="btn btn-ghost" id="expTpl">下載範本</button></div>
+        <div class="io-row"><div class="grow"><div class="r-title">團務.csv 空白範本</div><div class="r-sub">只有標題列（已省略自動判定的「狀態」「本次團務數」），方便從零建立</div></div><button class="btn btn-ghost" id="expTpl">下載範本</button></div>
         <div class="io-row"><div class="grow"><div class="r-title">純檢視分享版 HTML</div><div class="r-sub">內嵌目前資料、移除編輯功能，可直接分享</div></div><button class="btn btn-ghost" id="expView">匯出檢視版</button></div>
       </div>
       <div class="io-block">
@@ -512,6 +517,8 @@ function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clea
 
 /* ---- columns ---- */
 var COLS=["編號","團名","系統","開始日期","開始時間","結束日期","結束時間","狀態","成員","使用角卡","本次團務數","備註"];
+// 空白範本欄位：排除「狀態」「本次團務數」——兩者由工具自動判定，不需手動填
+var TPL_COLS=COLS.filter(function(c){return c!=="狀態"&&c!=="本次團務數";});
 var CFG_COLS=["製作者","副標"];
 var TITLE_SUFFIX="跑團管理";
 var SUBTITLE="使用神貓卓跑團管理手冊編輯器製作";   // 固定副標，不可手動更改
@@ -704,7 +711,10 @@ function isBlankCard(r){return !String(r.編號||"").trim()&&!String(r.團名||"
 // 無標題+無日期 → 不出現在清單與月曆
 function hiddenFromList(r){return !String(r.團名||"").trim()&&!String(r.開始日期||"").trim();}
 // 本次團務數自動計算：同編號+同團名，依日期(時間)由早到晚 = 1,2,3…；空白卡片不計
+// 狀態自動判定：有填「結束日期」＝已完成；未填＝預定
+function autoStatus(r){return String(r.結束日期||"").trim()?"已完成":"預定";}
 function recomputeSeq(){
+  state.rows.forEach(function(r){r.狀態=autoStatus(r);});     // 狀態依結束日期自動判定
   var g={};
   state.rows.forEach(function(r){
     if(isBlankCard(r)){r.本次團務數="";return;}
@@ -850,7 +860,7 @@ var TBLCOLS=[
   ["開始時間","num","開始時間","time",116],
   ["結束日期","num","結束日期","date",122],
   ["結束時間","num","結束時間","time",116],
-  ["狀態","ctr","狀態","status",84],
+  ["狀態","ctr","狀態","readonly",84],
   ["成員","mem","成員","text",230],
   ["使用角卡","","使用角卡","text",120],
   ["本次團務數","ctr num","本次團務數","readonly",100],
@@ -976,6 +986,7 @@ function commitCell(){
   v=(ec.etype==="time")?normTimeInput(v):String(v).trim();
   r[ec.col]=v;save();
   if(ec.col==="系統")refreshOptions();
+  if(ec.col==="結束日期"){renderTable();return;}   // 狀態依結束日期自動判定，需整列重繪讓狀態欄更新
   ec.td.classList.remove("editing");
   ec.td.innerHTML=cellStatic(ec.col,r);
 }
@@ -1011,7 +1022,10 @@ function buildGroups(){
     var sc={};grp.rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
     var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"";
     var pcs={};grp.rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
-    return {編號:grp.編號,團名:grp.團名,系統:sys,rows:grp.rows,count:grp.rows.length,
+    // 同一團的清單日期全部未定時，團次計為 0（尚未有實際排定的團次）
+    var anyDate=grp.rows.some(function(r){return !!parseDate(r.開始日期);});
+    var count=anyDate?grp.rows.length:0;
+    return {編號:grp.編號,團名:grp.團名,系統:sys,rows:grp.rows,count:count,
       blank:grp.blank,idx:state.rows.indexOf(first),
       status:cardStat(grp.rows),startD:startD,endD:endD,
       pcs:Object.keys(pcs),numKeyV:numKey(first),dateKeyV:startD?dkey(startD):0,endKeyV:endD?dkey(endD):0};
@@ -1068,8 +1082,9 @@ function renderGallery(){
       +'<div class="gcount">共 '+g.count+' 團次</div>'
       +'<div class="gname">'+esc(g.團名||"（無題）")+'</div>'
       +'<div class="gmeta"><div class="gdate">📅 '+esc(span)+'</div>'
-      +'<div class="grow">'+(g.系統?'<span class="syschip" style="background:'+hexA(sysColor(g.系統),.16)+';color:'+sysColor(g.系統)+'">'+esc(g.系統)+'</span>':'')
-      +(g.pcs.length?'<span class="sub" style="font-size:13px;color:var(--muted)">🎭 '+esc(g.pcs.join("、"))+'</span>':'')+'</div></div>'
+      +'<div class="gsys">'+(g.系統?'<span class="syschip" style="background:'+hexA(sysColor(g.系統),.16)+';color:'+sysColor(g.系統)+'">'+esc(g.系統)+'</span>':'')+'</div>'
+      +'<div class="gpc" title="'+esc(g.pcs.join("、"))+'">'+(g.pcs.length?'🎭 '+esc(g.pcs.join("、")):'')+'</div>'
+      +'</div>'
       +'</div>';
   });
   $("#galGrid").innerHTML=h;
@@ -1079,6 +1094,11 @@ function renderGallery(){
 function renderStats(){
   var y=curYear();
   var yearRows=state.rows.filter(function(r){var d=parseDate(r.開始日期);return d&&d.y===y;});
+  // 跨年度團務：整團狀態一律以「全部年度的所有場次」判定（cardStat），並套用到它出現的每個年度。
+  // 例：2025 開始、2026 才結團的團，整團＝已結團，則 2025 與 2026 都顯示「已結團」；
+  //     若整團仍未跑完（有預定場次），overallSt 會是「進行中/預定」，各年度自然不算結團。
+  var allTmap={};
+  state.rows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(allTmap[k]=allTmap[k]||[]).push(r);});
   // === 以「團」為單位：相同編號+團名視為一團（排除空白卡），不算清單列數 ===
   var tmap={};
   yearRows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(tmap[k]=tmap[k]||[]).push(r);});
@@ -1089,7 +1109,10 @@ function renderStats(){
     var sorted=rows.slice().sort(function(a,b){return (dateKey(a)?sortKey(a):Infinity)-(dateKey(b)?sortKey(b):Infinity);});
     var fd=parseDate(sorted[0].開始日期);
     var pcs={};rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
-    return {st:cardStat(rows),sys:sys,mo:fd?fd.mo:0,pcs:Object.keys(pcs)};
+    // 整團狀態依「所有年度的場次」推導，並套用到本年度（跨年已結團在較早年度也顯示已結團）
+    var allRows=allTmap[k]||rows;
+    var st=cardStat(allRows);
+    return {st:st,sys:sys,mo:fd?fd.mo:0,pcs:Object.keys(pcs),no:rows[0].編號||"",nm:rows[0].團名||""};
   });
   var goal=teams.length;                                         // 總團數（去重）
   var done=teams.filter(function(t){return t.st==="已結團";}).length;
@@ -1106,6 +1129,9 @@ function renderStats(){
   var mDone=[],mPlan=[];for(var i=0;i<12;i++){mDone[i]=0;mPlan[i]=0;}
   teams.forEach(function(t){if(t.mo){if(t.st==="已結團")mDone[t.mo-1]++;else mPlan[t.mo-1]++;}});
   var mMax=1;for(var j=0;j<12;j++)mMax=Math.max(mMax,mDone[j]+mPlan[j]);
+  // 每月「尚未結團」的團（編號＋團名），供游標提示用
+  var mUnf=[];for(var i=0;i<12;i++)mUnf[i]=[];
+  teams.forEach(function(t){if(t.mo&&t.st!=="已結團")mUnf[t.mo-1].push((t.no?t.no+". ":"")+(t.nm||"（無題）"));});
 
   var h="";
   // progress panel
@@ -1141,7 +1167,9 @@ function renderStats(){
   for(var k=0;k<12;k++){
     var tot=mDone[k]+mPlan[k];
     var dh=mDone[k]/mMax*100,ph=mPlan[k]/mMax*100;
-    h+='<div class="mo"><div class="mn">'+(tot||"")+'</div>'
+    var uf=mUnf[k];
+    var ufTip=uf.length?(mn[k]+' 月尚未結團（'+uf.length+'）：&#10;'+uf.map(esc).join('&#10;')):'';
+    h+='<div class="mo'+(uf.length?' has-uf':'')+'"'+(ufTip?' data-tip="'+ufTip+'"':'')+'><div class="mn">'+(tot||"")+'</div>'
       +'<div style="width:100%;max-width:26px;display:flex;flex-direction:column;justify-content:flex-end;height:100%">'
       +(ph>0?'<div class="mbar pl" style="height:'+ph+'%"></div>':'')
       +(dh>0?'<div class="mbar" style="height:'+dh+'%'+(ph>0?';border-radius:0':'')+'"></div>':'')
@@ -1236,7 +1264,7 @@ function openEdit(idx){
   $("#editTitle").textContent=idx>=0?"編輯團務":"新增團務";
   $("#e_id").value=idx>=0?idx:"";
   $("#e_num").value=r.編號||"";$("#e_name").value=r.團名||"";$("#e_sys").value=r.系統||"";
-  $("#e_status").value=r.狀態||"預定";$("#e_count").value=r.本次團務數||"";
+  $("#e_status").value=autoStatus(r);$("#e_count").value=r.本次團務數||"";
   $("#e_sdate").value=dateInputVal(r.開始日期);$("#e_stime").value=normTimeInput(r.開始時間||"");
   $("#e_edate").value=dateInputVal(r.結束日期);$("#e_etime").value=normTimeInput(r.結束時間||"");
   $("#e_mem").value=r.成員||"";$("#e_pc").value=r.使用角卡||"";$("#e_note").value=r.備註||"";
@@ -1248,9 +1276,10 @@ function submitEdit(e){
   var idxRaw=$("#e_id").value;var idx=idxRaw===""?-1:+idxRaw;
   var o=idx>=0?state.rows[idx]:{id:uid()};
   o.編號=$("#e_num").value.trim();o.團名=$("#e_name").value.trim();o.系統=$("#e_sys").value.trim();
-  o.狀態=$("#e_status").value;if(o.本次團務數==null)o.本次團務數="";  // 本次團務數改為自動計算（save()→recomputeSeq）
+  if(o.本次團務數==null)o.本次團務數="";  // 本次團務數改為自動計算（save()→recomputeSeq）
   o.開始日期=$("#e_sdate").value.trim();o.開始時間=normTimeInput($("#e_stime").value);
   o.結束日期=$("#e_edate").value.trim();o.結束時間=normTimeInput($("#e_etime").value);
+  o.狀態=autoStatus(o);   // 狀態依結束日期自動判定（save()→recomputeSeq 亦會再套用一次）
   o.成員=$("#e_mem").value.trim();o.使用角卡=$("#e_pc").value.trim();o.備註=$("#e_note").value.trim();
   // 允許無標題：全空＝卡片庫的空白卡片（不會出現在清單/月曆）
   if(idx<0)state.rows.push(o);
@@ -1330,7 +1359,7 @@ function detectAndImport(name,text){
 function expTeams(){download("團務.csv",toCSV(COLS,state.rows));}
 function expCfg(){download("設定.csv",toCSV(CFG_COLS,[state.cfg]));}
 function expExc(){download("例外.csv",toCSV(["職稱"],(state.excRoles||[]).map(function(x){return {職稱:x};})));}
-function expTpl(){download("團務.csv",toCSV(COLS,[]));}
+function expTpl(){download("團務.csv",toCSV(TPL_COLS,[]));}
 
 function exportViewHTML(){
   var teamsCSV=toCSV(COLS,state.rows);
@@ -1395,6 +1424,11 @@ function wire(){
   $("#calGrid").addEventListener("mousemove",function(e){if(calTip.style.display==="block"&&e.target.closest(".cal-ev"))placeTip(e);});
   $("#calGrid").addEventListener("mouseout",function(e){var ev=e.target.closest(".cal-ev");if(ev&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest(".cal-ev")))calTip.style.display="none";});
   $("#calGrid").addEventListener("mouseleave",function(){calTip.style.display="none";});
+  // 統計月份分布：游標指上顯示該月尚未結團的編號＋團名（共用 calTip）
+  $("#statGrid").addEventListener("mouseover",function(e){var mo=e.target.closest(".mo[data-tip]");if(!mo)return;var tip=mo.getAttribute("data-tip")||"";if(!tip)return;calTip.textContent=tip;calTip.style.display="block";placeTip(e);});
+  $("#statGrid").addEventListener("mousemove",function(e){if(calTip.style.display==="block"&&e.target.closest(".mo[data-tip]"))placeTip(e);});
+  $("#statGrid").addEventListener("mouseout",function(e){var mo=e.target.closest(".mo[data-tip]");if(mo&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest(".mo[data-tip]")))calTip.style.display="none";});
+  $("#statGrid").addEventListener("mouseleave",function(){calTip.style.display="none";});
   // table：內容區橫向捲動時，同步標題列橫向位置（標題列本身不出現捲軸）
   var _bw=$("#tblBodyWrap"),_hw=$("#tblHeadWrap");
   if(_bw&&_hw)_bw.addEventListener("scroll",function(){_hw.scrollLeft=_bw.scrollLeft;});
@@ -1420,6 +1454,9 @@ function wire(){
   $("#editForm").addEventListener("submit",function(e){e.preventDefault();});
   $("#btnSave").onclick=submitEdit;
   ["#e_stime","#e_etime"].forEach(function(s){var el=$(s);el.addEventListener("blur",function(){if(el.value.trim())el.value=normTimeInput(el.value);});});
+  // 結束日期變動時，即時更新狀態顯示（有填＝已完成、未填＝預定）
+  $("#e_edate").addEventListener("input",function(){$("#e_status").value=$("#e_edate").value.trim()?"已完成":"預定";});
+  $("#e_edate").addEventListener("change",function(){$("#e_status").value=$("#e_edate").value.trim()?"已完成":"預定";});
   // 結束日期留空時，一旦填了結束時間，預設帶入開始日期方便編輯（跨夜可自行改隔天）
   $("#btnDel").onclick=delRow;
   // settings
