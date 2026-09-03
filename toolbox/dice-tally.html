@@ -175,6 +175,7 @@
   .rollchip .rc-die { color:var(--cc); font-weight:700; }
   .rollchip .rc-map { font-size:13px; color:var(--text-faint); }
   .rollchip .rc-ch { font-size:13px; color:var(--text-faint); }
+  .rollchip.secret { border-style:dashed; background:color-mix(in srgb, var(--secret) 12%, var(--surface)); }
   .detail-hint { font-size:13px; color:var(--text-faint); margin:14px 2px 0; line-height:1.6; }
   .ref { margin-top:16px; border-top:1px solid var(--border); padding-top:12px; }
   .ref summary { cursor:pointer; font-size:13px; color:var(--text-dim); font-weight:500; }
@@ -361,6 +362,7 @@
         <button data-d="crit" class="on">大成功項目 <b id="tabCrit"></b></button>
         <button data-d="fumble">大失敗項目 <b id="tabFumb"></b></button>
         <button data-d="init">初期值判定成功 <b id="tabInit"></b></button>
+        <button data-d="psy">心理學判定 <b id="tabPsy"></b></button>
       </div>
       <div id="detailBody" class="detail-list"></div>
       <p class="detail-hint" id="detailHint"></p>
@@ -450,10 +452,24 @@
     var rolls = [], idx = 0;
     ps.forEach(function (p) {
       var spans = p.querySelectorAll('span');
-      if (spans.length < 3) return;
-      var channel = (spans[0].textContent || '').trim().replace(/^\[|\]$/g, '').trim();
-      var name = (spans[1].textContent || '').trim();
-      var message = (spans[spans.length - 1].textContent || '').trim();
+      if (spans.length < 2) return;
+      var texts = [];
+      for (var i = 0; i < spans.length; i++) texts.push((spans[i].textContent || '').trim());
+      // 依「內容」定位訊息本體，而非固定的 span 位置：
+      // 有些角色（尤其含頭像／立繪的 NPC，如「神秘人物」）訊息前多一個圖示 span，
+      // 或判定結果被拆成獨立的著色 span，導致原本固定 spans[0/1/last] 抓錯而整筆漏掉。
+      // 作法：從最後往前找出第一個含判定箭頭（＞ 或 >）的 span，從它起併到最後＝完整訊息；
+      //       名稱＝訊息前一個非空 span；頻道＝更前面第一個非空 span。
+      var msgStart = -1;
+      for (var j = texts.length - 1; j >= 0; j--) { if (texts[j].indexOf('＞') !== -1 || texts[j].indexOf('>') !== -1) { msgStart = j; break; } }
+      if (msgStart < 1) msgStart = texts.length - 1;           // 找不到箭頭時退回舊規則（最後一個 span）
+      var message = texts.slice(msgStart).join('').trim();
+      var nameIdx = msgStart - 1;
+      while (nameIdx > 0 && texts[nameIdx] === '') nameIdx--;   // 跳過名稱前的空／圖示 span
+      var name = texts[nameIdx] || '';
+      var channel = '';
+      for (var c = 0; c < nameIdx; c++) { if (texts[c] !== '') { channel = texts[c]; break; } }
+      channel = channel.replace(/^\[|\]$/g, '').trim();
       if (!name) return;
       var r = parseRoll(idx, channel || '（未命名頻道）', name, message);
       if (r) { rolls.push(r); idx++; }
@@ -862,31 +878,36 @@
     renderDetail(currentRolls());
   });
 
-  function isStdOnly(r) { return r.family === 'std' && !r.secret && !r.psy; } // 標準判定（排除心理學／祕密骰）
+  function isStdOnly(r) { return r.family === 'std' && !r.secret && !r.psy; } // 純標準判定（排除心理學／祕密骰）
+  // 大成功／大失敗分頁：CCB 家族、非心理學（心理學另有分頁），**含祕密骰 SCCB**（會標示 🔒 祕密骰）
+  function isCritFumbScope(r) { return r.family === 'std' && !r.psy; }
   function detailPick(rolls) {
     return rolls.filter(function (r) {
-      if (!isStdOnly(r)) return false;
-      if (detailMode === 'crit') return r.verdict === 'critical';
-      if (detailMode === 'fumble') return r.verdict === 'fumble';
-      return r.isInitial && SUCC[r.verdict]; // init
+      if (detailMode === 'psy') return !!r.psy;   // 心理學：判定文字含「心理學」者（不限結果）
+      if (detailMode === 'crit') return isCritFumbScope(r) && r.verdict === 'critical';   // 含祕密骰
+      if (detailMode === 'fumble') return isCritFumbScope(r) && r.verdict === 'fumble';   // 含祕密骰
+      return isStdOnly(r) && r.isInitial && SUCC[r.verdict]; // init：僅純標準判定
     });
   }
 
   function renderDetail(rolls) {
     // tab counts
-    var nCrit = 0, nFumb = 0, nInit = 0;
+    var nCrit = 0, nFumb = 0, nInit = 0, nPsy = 0;
     rolls.forEach(function (r) {
-      if (!isStdOnly(r)) return;
-      if (r.verdict === 'critical') nCrit++;
-      if (r.verdict === 'fumble') nFumb++;
-      if (r.isInitial && SUCC[r.verdict]) nInit++;
+      if (r.psy) { nPsy++; return; }              // 心理學獨立分頁，不重複計入大成功／大失敗
+      if (r.family !== 'std') return;             // 對抗／組合不在此三分頁
+      if (r.verdict === 'critical') nCrit++;      // 含祕密骰 SCCB
+      if (r.verdict === 'fumble') nFumb++;        // 含祕密骰 SCCB
+      if (!r.secret && r.isInitial && SUCC[r.verdict]) nInit++;  // init 僅純標準判定
     });
-    $('tabCrit').textContent = nCrit; $('tabFumb').textContent = nFumb; $('tabInit').textContent = nInit;
+    $('tabCrit').textContent = nCrit; $('tabFumb').textContent = nFumb; $('tabInit').textContent = nInit; $('tabPsy').textContent = nPsy;
 
     $('detailHint').textContent = detailMode === 'crit'
-      ? '各角色「標準判定」為大成功的項目，同一角色集中一列、由左（最早）至右（最新）。心理學／祕密骰的大成功計入其各自欄位，不在此列。'
+      ? '各角色標準判定＋祕密骰為大成功的項目，同一角色集中一列、由左（最早）至右（最新）。祕密骰以 🔒 標示；心理學的大成功另見「心理學判定」分頁。'
       : detailMode === 'fumble'
-      ? '各角色「標準判定」為大失敗的項目，同一角色集中一列、由左（最早）至右（最新）。心理學／祕密骰的大失敗計入其各自欄位，不在此列。'
+      ? '各角色標準判定＋祕密骰為大失敗的項目，同一角色集中一列、由左（最早）至右（最新）。祕密骰以 🔒 標示；心理學的大失敗另見「心理學判定」分頁。'
+      : detailMode === 'psy'
+      ? '各角色所有判定文字含「心理學」的項目（涵蓋魚／龜／獅子／豬…等各種心理學，含祕密骰形式），同一角色集中一列、由左（最早）至右（最新），並標示各自的判定結果。'
       : '各角色以技能初期值進行「標準判定」並成功（大成功／成功／特殊）的項目；目標值須等於該技能初期值。心理學、祕密骰、角色專屬技能與能力值判定（SAN／靈感／幸運等）不列入。';
 
     var picked = detailPick(rolls);
@@ -903,9 +924,10 @@
         var cvar = VVAR[r.verdict];
         var skill = r.skill ? escapeHtml(r.skill) : '（未標註）';
         var map = (detailMode === 'init' && r.base) ? '<span class="rc-map">→' + escapeHtml(r.base) + '（初' + INIT[r.base] + '）</span>' : '';
-        var vtag = (detailMode === 'init') ? '<span class="rc-meta" style="color:' + cvar + '">' + VLBL[r.verdict] + '</span>' : '';
-        return '<div class="rollchip" style="--cc:' + cvar + '">' +
-                 '<span class="rc-skill">' + skill + '</span>' + map +
+        var vtag = (detailMode === 'init' || detailMode === 'psy') ? '<span class="rc-meta" style="color:' + cvar + '">' + VLBL[r.verdict] + '</span>' : '';
+        var sTag = r.secret ? '<span class="rc-lock">🔒 祕密骰</span>' : '';   // 標示祕密骰 SCCB
+        return '<div class="rollchip' + (r.secret ? ' secret' : '') + '" style="--cc:' + cvar + '">' +
+                 '<span class="rc-skill">' + skill + '</span>' + sTag + map +
                  '<span class="rc-meta">目標 ' + (r.target == null ? '—' : r.target) + '｜出目 <span class="rc-die">' + (r.die == null ? '—' : r.die) + '</span></span>' +
                  vtag +
                  '<span class="rc-ch">' + escapeHtml(r.channel) + '</span>' +
