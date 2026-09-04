@@ -117,14 +117,14 @@ a{color:var(--accent-deep);}
 .cal-ev{z-index:2;margin:3px 4px;min-width:0;height:20px;font-size:13px;line-height:1;padding:0 7px;border-radius:5px;cursor:pointer;background:color-mix(in srgb,var(--sc,var(--accent)) 12%,var(--paper));border:1px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));border-left:4px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:4px;box-shadow:0 1px 2px rgba(0,0,0,.07);transition:background .1s;font-weight:500;}
 .cal-ev:hover{background:color-mix(in srgb,var(--sc,var(--accent)) 22%,var(--paper));}
 .cal-ev .nm{color:var(--ink);}
-.cal-ev .num{font-family:var(--mono);color:var(--ink-soft);font-size:13px;flex:0 0 auto;font-weight:600;line-height:20px;}
+.cal-ev .num{color:var(--ink-soft);font-size:13px;flex:0 0 auto;font-weight:700;line-height:1;display:inline-flex;align-items:center;}
 .cal-ev.st-done{opacity:.75;}
 .cal-ev.st-cancel{text-decoration:line-through;opacity:.6;}
 .cal-ev.contL{border-left:none;border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0;padding-left:5px;}
 .cal-ev.contR{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0;}
-.cal-ev .t{font-family:var(--mono);color:var(--ink-soft);font-size:11px;flex:0 0 auto;line-height:20px;}
+.cal-ev .t{font-family:var(--mono);color:var(--ink-soft);font-size:11px;flex:0 0 auto;line-height:1;display:inline-flex;align-items:center;}
 .cal-ev .t.tr{margin-left:auto;padding-left:6px;}
-.cal-ev .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;line-height:20px;}
+.cal-ev .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;line-height:1;}
 /* 月曆滑鼠即時提示 */
 .cal-tip{position:fixed;z-index:9999;display:none;background:var(--ink);color:var(--paper);padding:6px 9px;border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;max-width:320px;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:pre-line;}
 
@@ -247,6 +247,11 @@ td.opcell{white-space:nowrap;}
 .months{display:flex;align-items:flex-end;gap:5px;height:120px;padding-top:8px;}
 .months .mo{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end;}
 .months .mo.has-uf{cursor:help;}
+#statGrid [data-tip]{cursor:help;}
+.big-nums .bn.has-tip b{text-decoration:underline dotted;text-underline-offset:3px;}
+.carry-note h3{color:var(--live);}
+.carry-note .chips{display:flex;flex-wrap:wrap;gap:8px;}
+.carry-chip{cursor:help;background:var(--live-soft);color:var(--live);border:1px solid color-mix(in srgb,var(--live) 40%,transparent);border-radius:999px;padding:3px 12px;font-weight:600;font-size:13px;}
 .months .mo .mbar{width:100%;max-width:26px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;transition:.2s;}
 .months .mo .mbar.pl{background:var(--plan);opacity:.5;}
 .months .mo .ml{font-family:var(--mono);font-size:13px;color:var(--muted);}
@@ -1019,6 +1024,8 @@ function buildGroups(){
     var first=sorted[0],last=sorted[sorted.length-1];
     var startD=parseDate(first.開始日期);
     var endD=parseDate(last.結束日期)||parseDate(last.開始日期);
+    // 團的「開始年度」＝所有場次中最早的開始日期年份（與統計頁一致；跨年團一律歸開始年度）
+    var startY=null;grp.rows.forEach(function(r){var d=parseDate(r.開始日期);if(d&&(startY===null||d.y<startY))startY=d.y;});
     var sc={};grp.rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
     var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"";
     var pcs={};grp.rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
@@ -1027,7 +1034,7 @@ function buildGroups(){
     var count=anyDate?grp.rows.length:0;
     return {編號:grp.編號,團名:grp.團名,系統:sys,rows:grp.rows,count:count,
       blank:grp.blank,idx:state.rows.indexOf(first),
-      status:cardStat(grp.rows),startD:startD,endD:endD,
+      status:cardStat(grp.rows),startD:startD,endD:endD,startY:startY,
       pcs:Object.keys(pcs),numKeyV:numKey(first),dateKeyV:startD?dkey(startD):0,endKeyV:endD?dkey(endD):0};
   });
 }
@@ -1039,7 +1046,7 @@ function renderGallery(){
   var groups=buildGroups().filter(function(g){
     if(fs&&g.系統!==fs)return false;
     if(fst&&g.status!==fst)return false;
-    if(fy){var hit=g.rows.some(function(r){var d=parseDate(r.開始日期);return d&&String(d.y)===fy;});if(!hit)return false;}
+    if(fy){if(String(g.startY)!==fy)return false;}   // 依團的「開始年度」篩選（跨年團只出現在開始那年，與統計一致）
     if(q){var blob=(g.團名+" "+g.系統+" "+g.編號).toLowerCase();if(blob.indexOf(q)<0)return false;}
     return true;
   });
@@ -1093,25 +1100,23 @@ function renderGallery(){
 /* ----- STATS ----- */
 function renderStats(){
   var y=curYear();
-  var yearRows=state.rows.filter(function(r){var d=parseDate(r.開始日期);return d&&d.y===y;});
-  // 跨年度團務：整團狀態一律以「全部年度的所有場次」判定（cardStat），並套用到它出現的每個年度。
-  // 例：2025 開始、2026 才結團的團，整團＝已結團，則 2025 與 2026 都顯示「已結團」；
-  //     若整團仍未跑完（有預定場次），overallSt 會是「進行中/預定」，各年度自然不算結團。
+  // 團務一律歸屬到「最早場次的年度」＝開始年度。
+  // 跨年團（例：2025 開始、2026 才結束）只計在 2025，完全不出現在 2026 的統計：
+  // 不算進 2026 的進行中／未結團，也不出現在 2026 的月份分布（含年初）。就算跨到隔年，依然是開始那年的團。
   var allTmap={};
   state.rows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(allTmap[k]=allTmap[k]||[]).push(r);});
-  // === 以「團」為單位：相同編號+團名視為一團（排除空白卡），不算清單列數 ===
+  function teamStartYear(rows){var mn=null;rows.forEach(function(r){var d=parseDate(r.開始日期);if(d&&(mn===null||d.y<mn))mn=d.y;});return mn;}
+  // === 以「團」為單位：相同編號+團名視為一團（排除空白卡）；本年度＝開始年度為 y 的團，統計用整團所有場次 ===
   var tmap={};
-  yearRows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(tmap[k]=tmap[k]||[]).push(r);});
+  Object.keys(allTmap).forEach(function(k){if(teamStartYear(allTmap[k])===y)tmap[k]=allTmap[k];});
   var teams=Object.keys(tmap).map(function(k){
-    var rows=tmap[k];
+    var rows=tmap[k];   // 整團所有場次（含跨到隔年的部分）
     var sc={};rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
     var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"（未填）";
     var sorted=rows.slice().sort(function(a,b){return (dateKey(a)?sortKey(a):Infinity)-(dateKey(b)?sortKey(b):Infinity);});
-    var fd=parseDate(sorted[0].開始日期);
+    var fd=parseDate(sorted[0].開始日期);   // 首場＝開始年度當年
     var pcs={};rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
-    // 整團狀態依「所有年度的場次」推導，並套用到本年度（跨年已結團在較早年度也顯示已結團）
-    var allRows=allTmap[k]||rows;
-    var st=cardStat(allRows);
+    var st=cardStat(rows);                    // 整團狀態（依所有場次）
     return {st:st,sys:sys,mo:fd?fd.mo:0,pcs:Object.keys(pcs),no:rows[0].編號||"",nm:rows[0].團名||""};
   });
   var goal=teams.length;                                         // 總團數（去重）
@@ -1119,6 +1124,18 @@ function renderStats(){
   var live=teams.filter(function(t){return t.st==="進行中";}).length;
   var plan=teams.filter(function(t){return t.st==="預定";}).length;
   var noDate=teams.filter(function(t){return !t.mo;}).length;
+  // 團名標籤與提示（供游標小視窗）
+  function teamLabel(t){return (t.no?t.no+". ":"")+(t.nm||"（無題）");}
+  function tipOf(label,arr){return arr.length?(label+'（'+arr.length+'）：&#10;'+arr.map(esc).join('&#10;')):'';}
+  var liveList=teams.filter(function(t){return t.st==="進行中";}).map(teamLabel);   // 本年度進行中（尚未結團）
+  var planList=teams.filter(function(t){return t.st==="預定";}).map(teamLabel);      // 本年度預定（尚未開始）
+  var liveTip=liveList.length?liveList.map(esc).join('&#10;'):'';   // 只顯示編號＋團名
+  var planTip=planList.length?planList.map(esc).join('&#10;'):'';   // 只顯示編號＋團名
+  // 跨年度尚未結團：開始年度早於本年、整團仍未結團（不會出現在本年統計，另行提醒），依開始年度分組
+  var carry={};
+  Object.keys(allTmap).forEach(function(k){var rows=allTmap[k];var sy=teamStartYear(rows);
+    if(sy!==null&&sy<y&&cardStat(rows)!=="已結團"){var no=rows[0].編號||"",nm=rows[0].團名||"（無題）";(carry[sy]=carry[sy]||[]).push((no?no+". ":"")+nm);}});
+  var carryYears=Object.keys(carry).map(Number).sort(function(a,b){return b-a;});
   var pct=goal>0?Math.min(100,Math.round(done/goal*100)):0;
   var R=58,C=2*Math.PI*R,off=C*(1-pct/100);
   // systems（依團計）
@@ -1150,10 +1167,16 @@ function renderStats(){
   h+='<div class="panel"><h3>'+y+' 年總覽</h3><div class="big-nums">'
     +'<div class="bn"><b>'+goal+'</b><span>總團數</span></div>'
     +'<div class="bn"><b style="color:var(--done)">'+done+'</b><span>已結團</span></div>'
-    +'<div class="bn"><b style="color:var(--live)">'+live+'</b><span>進行中</span></div>'
-    +'<div class="bn"><b style="color:var(--plan)">'+plan+'</b><span>預定</span></div>'
+    +'<div class="bn'+(liveTip?' has-tip':'')+'"'+(liveTip?' data-tip="'+liveTip+'"':'')+'><b style="color:var(--live)">'+live+'</b><span>進行中</span></div>'
+    +'<div class="bn'+(planTip?' has-tip':'')+'"'+(planTip?' data-tip="'+planTip+'"':'')+'><b style="color:var(--plan)">'+plan+'</b><span>預定</span></div>'
     +'<div class="bn"><b>'+sysArr.length+'</b><span>系統數</span></div>'
     +'</div></div>';
+  // 跨年度尚未結團提醒（開始於較早年度、仍未完結）→ 置於「當年總覽」右方
+  if(carryYears.length){
+    h+='<div class="panel carry-note"><h3>⚠ 跨年度尚未結團</h3><div class="chips">'
+      +carryYears.map(function(yy){return '<span class="carry-chip" data-tip="'+(yy+' 年尚未結團團務（'+carry[yy].length+'）：&#10;'+carry[yy].map(esc).join('&#10;'))+'">'+yy+' 年 '+carry[yy].length+' 團</span>';}).join('')
+      +'</div></div>';
+  }
   // systems
   h+='<div class="panel syswide"><h3>系統分布</h3>';
   if(!sysArr.length)h+='<div class="sub">尚無資料</div>';
@@ -1182,9 +1205,8 @@ function renderStats(){
   var exc={};(state.excRoles||[]).forEach(function(x){var kk=String(x).trim().toUpperCase();if(kk)exc[kk]=1;});
   var owner=(state.cfg.製作者||"").trim();                  // 角卡使用的「玩家」＝製作者
   var cardSet={};                                            // 所有「使用角卡」名稱（用於標色「角卡」角色）
-  yearRows.forEach(function(r){if(isBlankCard(r))return;var c=String(r.使用角卡||"").trim();if(c)cardSet[c]=1;});
-  var teamG={};
-  yearRows.forEach(function(r){if(isBlankCard(r))return;var k=groupKey(r);(teamG[k]=teamG[k]||[]).push(r);});
+  Object.keys(tmap).forEach(function(k){tmap[k].forEach(function(r){if(isBlankCard(r))return;var c=String(r.使用角卡||"").trim();if(c)cardSet[c]=1;});});
+  var teamG=tmap;   // 參加統計同樣以「開始年度＝y」的整團為準（跨年團歸開始年度）
   var partBySys={};
   Object.keys(teamG).forEach(function(k){
     var rows=teamG[k];
@@ -1425,9 +1447,9 @@ function wire(){
   $("#calGrid").addEventListener("mouseout",function(e){var ev=e.target.closest(".cal-ev");if(ev&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest(".cal-ev")))calTip.style.display="none";});
   $("#calGrid").addEventListener("mouseleave",function(){calTip.style.display="none";});
   // 統計月份分布：游標指上顯示該月尚未結團的編號＋團名（共用 calTip）
-  $("#statGrid").addEventListener("mouseover",function(e){var mo=e.target.closest(".mo[data-tip]");if(!mo)return;var tip=mo.getAttribute("data-tip")||"";if(!tip)return;calTip.textContent=tip;calTip.style.display="block";placeTip(e);});
-  $("#statGrid").addEventListener("mousemove",function(e){if(calTip.style.display==="block"&&e.target.closest(".mo[data-tip]"))placeTip(e);});
-  $("#statGrid").addEventListener("mouseout",function(e){var mo=e.target.closest(".mo[data-tip]");if(mo&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest(".mo[data-tip]")))calTip.style.display="none";});
+  $("#statGrid").addEventListener("mouseover",function(e){var mo=e.target.closest("[data-tip]");if(!mo||!$("#statGrid").contains(mo))return;var tip=mo.getAttribute("data-tip")||"";if(!tip)return;calTip.textContent=tip;calTip.style.display="block";placeTip(e);});
+  $("#statGrid").addEventListener("mousemove",function(e){if(calTip.style.display==="block"&&e.target.closest("[data-tip]"))placeTip(e);});
+  $("#statGrid").addEventListener("mouseout",function(e){var mo=e.target.closest("[data-tip]");if(mo&&(!e.relatedTarget||!e.relatedTarget.closest||!e.relatedTarget.closest("[data-tip]")))calTip.style.display="none";});
   $("#statGrid").addEventListener("mouseleave",function(){calTip.style.display="none";});
   // table：內容區橫向捲動時，同步標題列橫向位置（標題列本身不出現捲軸）
   var _bw=$("#tblBodyWrap"),_hw=$("#tblHeadWrap");
