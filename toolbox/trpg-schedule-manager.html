@@ -1174,7 +1174,7 @@ function renderStats(){
   // 跨年度尚未結團提醒（開始於較早年度、仍未完結）→ 置於「當年總覽」右方
   if(carryYears.length){
     h+='<div class="panel carry-note"><h3>⚠ 跨年度尚未結團</h3><div class="chips">'
-      +carryYears.map(function(yy){return '<span class="carry-chip" data-tip="'+(yy+' 年尚未結團團務（'+carry[yy].length+'）：&#10;'+carry[yy].map(esc).join('&#10;'))+'">'+yy+' 年 '+carry[yy].length+' 團</span>';}).join('')
+      +carryYears.map(function(yy){return '<span class="carry-chip" data-tip="'+carry[yy].map(esc).join('&#10;')+'">'+yy+' 年 '+carry[yy].length+' 團</span>';}).join('')
       +'</div></div>';
   }
   // systems
