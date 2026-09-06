@@ -114,17 +114,17 @@ a{color:var(--accent-deep);}
 .cal-dn{grid-row:1;justify-self:end;font-family:var(--mono);font-size:13px;color:var(--ink-soft);font-weight:500;padding:5px 8px 3px;z-index:1;pointer-events:none;}
 .cal-dn.out{color:var(--muted-2);}
 .cal-dn.today .dn{background:var(--accent);color:var(--on-accent);border-radius:50%;min-width:20px;height:20px;line-height:20px;display:inline-block;text-align:center;font-size:13px;}
-.cal-ev{z-index:2;margin:3px 4px;min-width:0;height:20px;font-size:13px;line-height:1;padding:0 7px;border-radius:5px;cursor:pointer;background:color-mix(in srgb,var(--sc,var(--accent)) 12%,var(--paper));border:1px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));border-left:4px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:4px;box-shadow:0 1px 2px rgba(0,0,0,.07);transition:background .1s;font-weight:500;}
+.cal-ev{z-index:2;margin:1px 3px;min-width:0;height:20px;font-size:13px;line-height:1.35;padding:0 7px;border-radius:5px;cursor:pointer;background:color-mix(in srgb,var(--sc,var(--accent)) 12%,var(--paper));border:1px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));border-left:4px solid color-mix(in srgb,var(--sc,var(--accent)) 52%,var(--paper));white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:4px;box-shadow:0 1px 2px rgba(0,0,0,.07);transition:background .1s;font-weight:500;}
 .cal-ev:hover{background:color-mix(in srgb,var(--sc,var(--accent)) 22%,var(--paper));}
 .cal-ev .nm{color:var(--ink);}
-.cal-ev .num{color:var(--ink-soft);font-size:13px;flex:0 0 auto;font-weight:700;line-height:1;display:inline-flex;align-items:center;}
+.cal-ev .num{color:var(--ink-soft);font-size:13px;flex:0 0 auto;font-weight:700;}
 .cal-ev.st-done{opacity:.75;}
 .cal-ev.st-cancel{text-decoration:line-through;opacity:.6;}
 .cal-ev.contL{border-left:none;border-top-left-radius:0;border-bottom-left-radius:0;margin-left:0;padding-left:5px;}
 .cal-ev.contR{border-top-right-radius:0;border-bottom-right-radius:0;margin-right:0;}
-.cal-ev .t{font-family:var(--mono);color:var(--ink-soft);font-size:11px;flex:0 0 auto;line-height:1;display:inline-flex;align-items:center;}
+.cal-ev .t{font-family:var(--mono);color:var(--ink-soft);font-size:11px;flex:0 0 auto;}
 .cal-ev .t.tr{margin-left:auto;padding-left:6px;}
-.cal-ev .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;line-height:1;}
+.cal-ev .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;}
 /* 月曆滑鼠即時提示 */
 .cal-tip{position:fixed;z-index:9999;display:none;background:var(--ink);color:var(--paper);padding:6px 9px;border-radius:6px;font-size:12px;line-height:1.4;pointer-events:none;max-width:320px;box-shadow:0 4px 14px rgba(0,0,0,.28);white-space:pre-line;}
 
@@ -253,6 +253,7 @@ td.opcell{white-space:nowrap;}
 .carry-note .chips{display:flex;flex-wrap:wrap;gap:8px;}
 .carry-chip{cursor:help;background:var(--live-soft);color:var(--live);border:1px solid color-mix(in srgb,var(--live) 40%,transparent);border-radius:999px;padding:3px 12px;font-weight:600;font-size:13px;}
 .months .mo .mbar{width:100%;max-width:26px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;transition:.2s;}
+.months .mo .mbar.live{background:var(--live);}
 .months .mo .mbar.pl{background:var(--plan);opacity:.5;}
 .months .mo .ml{font-family:var(--mono);font-size:13px;color:var(--muted);}
 .months .mo .mn{font-family:var(--mono);font-size:13px;color:var(--ink-soft);}
@@ -261,10 +262,12 @@ td.opcell{white-space:nowrap;}
 .big-nums .bn b{font-family:var(--serif);font-size:26px;font-weight:700;}
 .big-nums .bn span{font-size:13px;color:var(--muted);}
 /* 參加次數統計：每個系統卡片「固定寬度」不隨視窗縮放；一行最多 6 欄（第 4 欄起自動往右接續），最多約 5~6 欄，超出換行 */
-.part-grid{display:grid;grid-template-columns:repeat(auto-fill,264px);gap:16px;justify-content:start;max-width:1664px;}
+.part-grid{display:grid;grid-template-columns:repeat(auto-fill,300px);gap:16px;justify-content:start;max-width:1664px;}
+/* 參加次數統計：名字欄固定寬（最長 10 個中文字，超出以…省略），使右方橫條長度一致、不被名字長度壓縮 */
+.part-cols .kv .kl{flex:0 0 10em;width:10em;max-width:10em;min-width:0;}
 @media(max-width:340px){.part-grid{grid-template-columns:1fr;}}
 .part-sys{border:1px solid var(--rule);border-radius:10px;padding:12px 14px;background:var(--paper);min-width:0;}
-.part-title{margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.part-title{margin-bottom:10px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
 .part-cols{display:flex;flex-direction:column;gap:14px;}
 .part-cols h4{margin:0 0 8px;font-size:13px;color:var(--ink-soft);font-weight:700;}
 
@@ -663,6 +666,20 @@ function dateKey(o){return dkey(parseDate(o.開始日期));}
 function endDateKey(o){var ed=parseDate(o.結束日期)||parseDate(o.開始日期);return dkey(ed);}
 function sortKey(o){var t=parseTime(o.開始時間);return dateKey(o)*10000+(t<0?0:t);}
 function numKey(o){var m=String(o.編號||"").match(/\d+/);return m?+m[0]:-1;}
+// 編號排序：自然排序（數字段依數值、文字段依 zh-Hant 語系），數字段排在文字段前，空編號排最後。
+// 例：1 < 2 < 10 < P1 < P2 < R3 < V1 < 餃子團（英數在前、中文在後，且同前綴依數字大小）
+function cmpNo(a,b){
+  var sa=String(a==null?"":a).trim(),sb=String(b==null?"":b).trim();
+  if(!sa&&!sb)return 0;if(!sa)return 1;if(!sb)return -1;
+  var ra=sa.match(/\d+|\D+/g)||[],rb=sb.match(/\d+|\D+/g)||[],n=Math.min(ra.length,rb.length);
+  for(var i=0;i<n;i++){
+    var pa=ra[i],pb=rb[i],da=/^\d/.test(pa),db=/^\d/.test(pb);
+    if(da&&db){var d=parseInt(pa,10)-parseInt(pb,10);if(d)return d<0?-1:1;}
+    else if(da!==db){return da?-1:1;}                 // 純數字段排在文字段之前
+    else{var c=pa.localeCompare(pb,"zh-Hant");if(c)return c;}
+  }
+  return ra.length-rb.length;
+}
 // resolve start/end minutes + whether it spans past midnight into another day
 function evTimes(o){
   var s=parseTime(o.開始時間),e=parseTime(o.結束時間);
@@ -849,7 +866,7 @@ function renderCal(){
         +'<span class="nm">'+esc(r.團名||"（無題）")+'</span>'
         +(tm?'<span class="t tr">'+esc(tm)+'</span>':'')+'</div>';
     });
-    body+='<div class="cal-week" style="grid-template-rows:26px repeat('+laneCount+',26px)">'+cells+'</div>';
+    body+='<div class="cal-week" style="grid-template-rows:26px repeat('+laneCount+',22px)">'+cells+'</div>';
   }
   $("#calGrid").innerHTML=head+'<div class="cal-body">'+body+'</div>';
 }
@@ -927,7 +944,7 @@ function renderTable(){
     else if(col==="結束日期"){va=endDateKey(a);vb=endDateKey(b);}
     else if(col==="開始時間"){va=sortKey(a);vb=sortKey(b);}
     else if(col==="結束時間"){va=endSortKey(a);vb=endSortKey(b);}
-    else if(col==="編號"){va=numKey(a);vb=numKey(b);}
+    else if(col==="編號"){return dir*cmpNo(a.編號,b.編號);}
     else if(col==="本次團務數"){va=+String(a.本次團務數).replace(/\D/g,"")||0;vb=+String(b.本次團務數).replace(/\D/g,"")||0;}
     else{va=String(a[col]||"");vb=String(b[col]||"");return dir*va.localeCompare(vb,"zh-Hant");}
     return dir*(va-vb);
@@ -1051,8 +1068,8 @@ function renderGallery(){
     return true;
   });
   function bySort(a,b){
-    if(sort==="num")return b.numKeyV-a.numKeyV||b.endKeyV-a.endKeyV;
-    if(sort==="numa")return a.numKeyV-b.numKeyV||a.endKeyV-b.endKeyV;
+    if(sort==="num")return -cmpNo(a.編號,b.編號)||b.endKeyV-a.endKeyV;   // 編號大→小
+    if(sort==="numa")return cmpNo(a.編號,b.編號)||a.endKeyV-b.endKeyV;     // 編號小→大
     if(sort==="date")return b.endKeyV-a.endKeyV;
     if(sort==="datea")return a.dateKeyV-b.dateKeyV;
     return 0;
@@ -1142,13 +1159,13 @@ function renderStats(){
   var sysCount={};teams.forEach(function(t){sysCount[t.sys]=(sysCount[t.sys]||0)+1;});
   var sysArr=Object.keys(sysCount).map(function(k){return [k,sysCount[k]];}).sort(function(a,b){return b[1]-a[1];});
   var sysMax=sysArr.reduce(function(m,x){return Math.max(m,x[1]);},1);
-  // months（依團計，以首場開始月份；已結團 vs 未結）
-  var mDone=[],mPlan=[];for(var i=0;i<12;i++){mDone[i]=0;mPlan[i]=0;}
-  teams.forEach(function(t){if(t.mo){if(t.st==="已結團")mDone[t.mo-1]++;else mPlan[t.mo-1]++;}});
-  var mMax=1;for(var j=0;j<12;j++)mMax=Math.max(mMax,mDone[j]+mPlan[j]);
-  // 每月「尚未結團」的團（編號＋團名），供游標提示用
-  var mUnf=[];for(var i=0;i<12;i++)mUnf[i]=[];
-  teams.forEach(function(t){if(t.mo&&t.st!=="已結團")mUnf[t.mo-1].push((t.no?t.no+". ":"")+(t.nm||"（無題）"));});
+  // months（依團計，以首場開始月份；已結團 / 未結(進行中) / 預定(尚未開始)）
+  var mDone=[],mLive=[],mPlan=[];for(var i=0;i<12;i++){mDone[i]=0;mLive[i]=0;mPlan[i]=0;}
+  teams.forEach(function(t){if(t.mo){if(t.st==="已結團")mDone[t.mo-1]++;else if(t.st==="進行中")mLive[t.mo-1]++;else mPlan[t.mo-1]++;}});
+  var mMax=1;for(var j=0;j<12;j++)mMax=Math.max(mMax,mDone[j]+mLive[j]+mPlan[j]);
+  // 每月「未結（進行中）」「預定（尚未開始）」的團（編號＋團名），供游標提示用
+  var mUnfLive=[],mUnfPlan=[];for(var i=0;i<12;i++){mUnfLive[i]=[];mUnfPlan[i]=[];}
+  teams.forEach(function(t){if(!t.mo)return;var lbl=(t.no?t.no+". ":"")+(t.nm||"（無題）");if(t.st==="進行中")mUnfLive[t.mo-1].push(lbl);else if(t.st==="預定")mUnfPlan[t.mo-1].push(lbl);});
 
   var h="";
   // progress panel
@@ -1185,17 +1202,25 @@ function renderStats(){
   });
   h+='</div>';
   // months
-  h+='<div class="panel" style="grid-column:1/-1"><h3>'+y+' 年月份分布 <span class="sub" style="font-weight:400;margin-left:6px">■ 已結團　<span style="opacity:.5">■</span> 未結</span></h3><div class="months">';
+  h+='<div class="panel" style="grid-column:1/-1"><h3>'+y+' 年月份分布 <span class="sub" style="font-weight:400;margin-left:6px"><span style="color:var(--accent)">■</span> 已結團　<span style="color:var(--live)">■</span> 未結　<span style="color:var(--plan);opacity:.6">■</span> 預定</span></h3><div class="months">';
   var mn=["1","2","3","4","5","6","7","8","9","10","11","12"];
   for(var k=0;k<12;k++){
-    var tot=mDone[k]+mPlan[k];
-    var dh=mDone[k]/mMax*100,ph=mPlan[k]/mMax*100;
-    var uf=mUnf[k];
-    var ufTip=uf.length?(mn[k]+' 月尚未結團（'+uf.length+'）：&#10;'+uf.map(esc).join('&#10;')):'';
-    h+='<div class="mo'+(uf.length?' has-uf':'')+'"'+(ufTip?' data-tip="'+ufTip+'"':'')+'><div class="mn">'+(tot||"")+'</div>'
+    var tot=mDone[k]+mLive[k]+mPlan[k];
+    var dh=mDone[k]/mMax*100,lh=mLive[k]/mMax*100,pph=mPlan[k]/mMax*100;
+    var parts=[];
+    if(mUnfLive[k].length)parts.push('未結（進行中）：&#10;'+mUnfLive[k].map(esc).join('&#10;'));
+    if(mUnfPlan[k].length)parts.push('預定（尚未開始）：&#10;'+mUnfPlan[k].map(esc).join('&#10;'));
+    var hasUf=parts.length>0;
+    var ufTip=hasUf?(mn[k]+' 月&#10;'+parts.join('&#10;&#10;')):'';
+    // 由上而下：預定 → 未結 → 已結團（最上一段保留圓角，其餘方角）
+    var segs=[];
+    if(pph>0)segs.push({c:'pl',h:pph});
+    if(lh>0)segs.push({c:'live',h:lh});
+    if(dh>0)segs.push({c:'',h:dh});
+    var bars=segs.map(function(s,i){return '<div class="mbar'+(s.c?' '+s.c:'')+'" style="height:'+s.h+'%'+(i>0?';border-radius:0':'')+'"></div>';}).join('');
+    h+='<div class="mo'+(hasUf?' has-uf':'')+'"'+(ufTip?' data-tip="'+ufTip+'"':'')+'><div class="mn">'+(tot||"")+'</div>'
       +'<div style="width:100%;max-width:26px;display:flex;flex-direction:column;justify-content:flex-end;height:100%">'
-      +(ph>0?'<div class="mbar pl" style="height:'+ph+'%"></div>':'')
-      +(dh>0?'<div class="mbar" style="height:'+dh+'%'+(ph>0?';border-radius:0':'')+'"></div>':'')
+      +bars
       +'</div>'
       +'<div class="ml">'+mn[k]+'</div></div>';
   }
@@ -1519,7 +1544,7 @@ function wire(){
   // overlay close
   $$("[data-close]").forEach(function(b){b.onclick=function(){b.closest(".overlay").classList.remove("show");};});
   // 編輯視窗(#ovEdit)不因點擊視窗外或 Esc 而關閉，必須按「儲存」或「取消」
-  $$(".overlay").forEach(function(o){if(o.id==="ovEdit")return;o.addEventListener("click",function(e){if(e.target===o)o.classList.remove("show");});});
+  $$(".overlay").forEach(function(o){o.addEventListener("click",function(e){if(e.target===o)o.classList.remove("show");});});
   document.addEventListener("keydown",function(e){if(e.key==="Escape")$$(".overlay.show").forEach(function(o){if(o.id!=="ovEdit")o.classList.remove("show");});});
 }
 
