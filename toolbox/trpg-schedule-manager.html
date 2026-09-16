@@ -214,7 +214,13 @@ td.opcell{white-space:nowrap;}
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;align-items:start;}
 .panel{background:var(--paper-lift);border:1px solid var(--rule-strong);border-radius:14px;padding:18px 20px;}
 .panel h3{font-family:var(--serif);font-size:15px;margin:0 0 14px;letter-spacing:.04em;color:var(--ink-soft);display:flex;align-items:center;gap:8px;}
-.panel.progress{grid-column:1/-1;display:flex;align-items:center;gap:26px;flex-wrap:wrap;}
+/* 統計頁上排：跑團管理 ｜ 年總覽 ｜ 跨年度尚未結團 ｜ 系統分布 —— 並排、寬度不足才換行 */
+.stat-top{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:16px;align-items:stretch;}
+.stat-top>.panel{margin:0;}
+.panel.progress{display:flex;align-items:center;gap:22px;flex-wrap:wrap;flex:3 1 380px;}
+.panel.ov{flex:2 1 260px;}
+.panel.carry-note{flex:1 1 200px;}
+.panel.carry-note.empty{visibility:hidden;}   /* 無跨年團時仍佔位，其他欄位位置/間距不變 */
 .ring{position:relative;width:132px;height:132px;flex:0 0 auto;}
 .ring svg{transform:rotate(-90deg);}
 .ring .rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
@@ -234,6 +240,7 @@ td.opcell{white-space:nowrap;}
 .kv{display:flex;align-items:center;gap:8px;margin-bottom:9px;font-size:13px;}
 .kv .kl{min-width:96px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .panel.syswide{grid-column:span 2;}
+.stat-top>.panel.syswide{flex:2 1 280px;}
 .panel.syswide .kl{min-width:210px;}
 @media(max-width:640px){.panel.syswide{grid-column:1/-1;}}
 .kv .bar{flex:1;height:9px;background:var(--paper-deep);border-radius:6px;overflow:hidden;}
@@ -1173,7 +1180,8 @@ function renderStats(){
   teams.forEach(function(t){if(!t.mo)return;var lbl=(t.no?t.no+". ":"")+(t.nm||"（無題）");if(t.st==="進行中")mUnfLive[t.mo-1].push(lbl);else if(t.st==="預定")mUnfPlan[t.mo-1].push(lbl);});
 
   var h="";
-  // progress panel
+  // progress panel（上排四欄：跑團管理｜年總覽｜跨年度尚未結團｜系統分布）
+  h+='<div class="stat-top">';
   h+='<div class="panel progress">'
     +'<div class="ring"><svg width="132" height="132" viewBox="0 0 132 132">'
       +'<circle cx="66" cy="66" r="'+R+'" fill="none" stroke="var(--paper-deep)" stroke-width="12"/>'
@@ -1186,19 +1194,17 @@ function renderStats(){
       +'<div class="prog-sub" style="margin-top:6px">目標團數＝該年度總團數（相同編號＋團名視為一團，自動計算）；進行中 '+live+' 團、預定 '+plan+' 團'+(noDate?'　·　另有 '+noDate+' 團未填日期':'')+'</div>'
     +'</div></div>';
   // big numbers
-  h+='<div class="panel"><h3>'+y+' 年總覽</h3><div class="big-nums">'
+  h+='<div class="panel ov"><h3>'+y+' 年總覽</h3><div class="big-nums">'
     +'<div class="bn"><b>'+goal+'</b><span>總團數</span></div>'
     +'<div class="bn"><b style="color:var(--done)">'+done+'</b><span>已結團</span></div>'
     +'<div class="bn'+(liveTip?' has-tip':'')+'"'+(liveTip?' data-tip="'+liveTip+'"':'')+'><b style="color:var(--live)">'+live+'</b><span>進行中</span></div>'
     +'<div class="bn'+(planTip?' has-tip':'')+'"'+(planTip?' data-tip="'+planTip+'"':'')+'><b style="color:var(--plan)">'+plan+'</b><span>預定</span></div>'
     +'<div class="bn"><b>'+sysArr.length+'</b><span>系統數</span></div>'
     +'</div></div>';
-  // 跨年度尚未結團提醒（開始於較早年度、仍未完結）→ 置於「當年總覽」右方
-  if(carryYears.length){
-    h+='<div class="panel carry-note"><h3>⚠ 跨年度尚未結團</h3><div class="chips">'
-      +carryYears.map(function(yy){return '<span class="carry-chip" data-tip="'+carry[yy].map(esc).join('&#10;')+'">'+yy+' 年 '+carry[yy].length+' 團</span>';}).join('')
-      +'</div></div>';
-  }
+  // 跨年度尚未結團（置於「當年總覽」右方；固定佔位，其他欄位不因有無而位移）
+  h+='<div class="panel carry-note'+(carryYears.length?'':' empty')+'"><h3>⚠ 跨年度尚未結團</h3><div class="chips">'
+    +(carryYears.length?carryYears.map(function(yy){return '<span class="carry-chip" data-tip="'+carry[yy].map(esc).join('&#10;')+'">'+yy+' 年 '+carry[yy].length+' 團</span>';}).join(''):'')
+    +'</div></div>';
   // systems
   h+='<div class="panel syswide"><h3>系統分布</h3>';
   if(!sysArr.length)h+='<div class="sub">尚無資料</div>';
@@ -1206,6 +1212,7 @@ function renderStats(){
     h+='<div class="kv"><div class="kl" title="'+esc(x[0])+'">'+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/sysMax*100)+'%;background:'+sysColor(x[0])+'"></i></div><div class="kn">'+x[1]+'</div></div>';
   });
   h+='</div>';
+  h+='</div>';   // /stat-top
   // months
   h+='<div class="panel" style="grid-column:1/-1"><h3>'+y+' 年月份分布 <span class="sub" style="font-weight:400;margin-left:6px"><span style="color:var(--accent)">■</span> 已結團　<span style="color:var(--live)">■</span> 未結　<span style="color:var(--plan);opacity:.6">■</span> 預定</span></h3><div class="months">';
   var mn=["1","2","3","4","5","6","7","8","9","10","11","12"];
