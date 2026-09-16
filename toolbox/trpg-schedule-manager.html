@@ -16,7 +16,7 @@
   --done:#4f8a5b;--done-soft:#e2f0e4;
   --plan:#4a6b8a;--plan-soft:#e2e9f0;
   --live:#c08a2d;--live-soft:#f6ecd6;
-  --owner:#9333c4;--pcrole:#1f8a7a;
+  --owner:#9333c4;--pcrole:#1f8a7a;--host:#b5324e;
   --cancel:#9a5050;--cancel-soft:#f0e0e0;
   --danger:#a23a30;
   --serif:"Noto Serif TC",Georgia,"Songti TC",serif;
@@ -32,7 +32,7 @@ body.dark{
   --done:#6bb47a;--done-soft:#17241a;
   --plan:#6f9fc9;--plan-soft:#16202b;
   --live:#d7ab5b;--live-soft:#241d10;
-  --owner:#c48ae8;--pcrole:#5fcdb8;
+  --owner:#c48ae8;--pcrole:#5fcdb8;--host:#e8879b;
   --cancel:#c67d7d;--cancel-soft:#241414;
   --shadow:0 18px 50px rgba(0,0,0,.5);
 }
@@ -270,6 +270,11 @@ td.opcell{white-space:nowrap;}
 .part-title{margin-bottom:10px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;}
 .part-cols{display:flex;flex-direction:column;gap:14px;}
 .part-cols h4{margin:0 0 8px;font-size:13px;color:var(--ink-soft);font-weight:700;}
+/* 參加次數統計（左）＋主持次數統計（右）並列 */
+/* 主持次數（併入參加次數統計卡片內的第三區塊，以玫瑰紅＋「主持」標記與玩家/角色區隔）*/
+.part-cols .host-block{border-top:1px dashed color-mix(in srgb,var(--host) 45%,var(--rule));padding-top:12px;}
+.part-cols .host-block h4{color:var(--host);}
+.host-badge{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--host);border-radius:5px;padding:0 6px;margin-left:6px;vertical-align:1px;}
 
 /* ===== MODAL ===== */
 .overlay{position:fixed;inset:0;background:rgba(20,18,14,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:60;padding:22px;}
@@ -1232,16 +1237,17 @@ function renderStats(){
   var cardSet={};                                            // 所有「使用角卡」名稱（用於標色「角卡」角色）
   Object.keys(tmap).forEach(function(k){tmap[k].forEach(function(r){if(isBlankCard(r))return;var c=String(r.使用角卡||"").trim();if(c)cardSet[c]=1;});});
   var teamG=tmap;   // 參加統計同樣以「開始年度＝y」的整團為準（跨年團歸開始年度）
-  var partBySys={};
+  var partBySys={},hostBySys={};
   Object.keys(teamG).forEach(function(k){
     var rows=teamG[k];
     var sc={};rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
     var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"（未填）";
-    var players={},chars={};
+    var players={},chars={},hosts={};
     rows.forEach(function(r){
       splitMembers(r.成員).forEach(function(tok){
         var pm=parseMember(tok);if(!pm)return;
-        if(pm.char&&exc[pm.char.toUpperCase()])return;       // 主持職稱不計
+        if(pm.char&&exc[pm.char.toUpperCase()]){hosts[(pm.player||"").trim()||"（未具名）"]=1;return;}  // 主持職稱→計入主持統計、不計參加
+        if(!pm.char&&pm.player&&exc[pm.player.toUpperCase()]){hosts["（未具名）"]=1;return;}            // 只寫職稱、未具名主持
         if(pm.player)players[pm.player]=1;
         if(pm.char)chars[pm.char]=1;
       });
@@ -1253,31 +1259,45 @@ function renderStats(){
       if(owner)players[owner]=1;
       cardNames.forEach(function(c){chars[c]=1;});
     }
+    // 若某參加者同時是本團主持人 → 不計入「玩家參加次數」（即使有填使用角卡），只算主持；角色參加次數不受影響
+    Object.keys(hosts).forEach(function(hn){if(hn!=="（未具名）")delete players[hn];});
     var ps=partBySys[sys]||(partBySys[sys]={players:{},chars:{}});
     Object.keys(players).forEach(function(p){ps.players[p]=(ps.players[p]||0)+1;});
     Object.keys(chars).forEach(function(c){ps.chars[c]=(ps.chars[c]||0)+1;});
+    var hs=hostBySys[sys]||(hostBySys[sys]={hosts:{}});
+    Object.keys(hosts).forEach(function(hn){hs.hosts[hn]=(hs.hosts[hn]||0)+1;});   // 主持次數：同團只計一次
   });
   var sysKeys=Object.keys(partBySys);
   if(sysKeys.length){
-    h+='<div class="panel" style="grid-column:1/-1"><h3>參加次數統計 <span class="sub" style="font-weight:400;margin-left:6px">依系統、同團（編號+團名）只計一次；已排除 '+esc((state.excRoles||[]).join("／")||"（無）")+' 等主持職稱（可於「設定」調整）</span></h3>'
-      +'<div class="sub" style="margin:-4px 0 12px;font-size:12px">已併入「角卡使用」：<span class="tag" style="color:var(--owner);background:color-mix(in srgb,var(--owner) 16%,var(--paper))">製作者</span>＝製作者'+(owner?'（'+esc(owner)+'）':'')+'的名稱、<b style="color:var(--pcrole)">青色</b>的角色＝製作者使用的角色卡</div>'
+    var excLabel=esc((state.excRoles||[]).join("／")||"（無）");
+    h+='<div class="panel" style="grid-column:1/-1"><h3>參加次數統計 <span class="sub" style="font-weight:400;margin-left:6px">依系統、同團（編號+團名）只計一次；已排除 '+excLabel+' 等主持職稱（可於「設定」調整）</span></h3>'
+      +'<div class="sub" style="margin:-4px 0 12px;font-size:12px">已併入「角卡使用」：<span class="tag" style="color:var(--owner);background:color-mix(in srgb,var(--owner) 16%,var(--paper))">製作者</span>＝製作者'+(owner?'（'+esc(owner)+'）':'')+'的名稱、<b style="color:var(--pcrole)">青色</b>的角色＝製作者使用的角色卡；<b style="color:var(--host)">主持次數</b>另計於卡片下方（同一人即使有填使用角卡，只要是該團主持人就只算主持、不計玩家）</div>'
       +'<div class="part-grid">';
     sysKeys.forEach(function(sys){
       var ps=partBySys[sys];
       var players=Object.keys(ps.players).map(function(k){return [k,ps.players[k]];}).sort(function(a,b){return b[1]-a[1]||a[0].localeCompare(b[0],"zh-Hant");});
       var chars=Object.keys(ps.chars).map(function(k){return [k,ps.chars[k]];}).sort(function(a,b){return b[1]-a[1]||a[0].localeCompare(b[0],"zh-Hant");});
+      var hs=hostBySys[sys]||{hosts:{}};
+      var hosts=Object.keys(hs.hosts).map(function(k){return [k,hs.hosts[k]];}).sort(function(a,b){return b[1]-a[1]||a[0].localeCompare(b[0],"zh-Hant");});
       var pMax=players.reduce(function(m,x){return Math.max(m,x[1]);},1);
       var cMax=chars.reduce(function(m,x){return Math.max(m,x[1]);},1);
-      h+='<div class="part-sys"><div class="part-title"><span class="syschip" style="background:'+hexA(sysColor(sys),.16)+';color:'+sysColor(sys)+'">'+esc(sys)+'</span> <span class="sub" style="font-size:13px">玩家 '+players.length+' 人／角色 '+chars.length+' 個</span></div><div class="part-cols">';
+      var hMax=hosts.reduce(function(m,x){return Math.max(m,x[1]);},1);
+      h+='<div class="part-sys"><div class="part-title"><span class="syschip" style="background:'+hexA(sysColor(sys),.16)+';color:'+sysColor(sys)+'">'+esc(sys)+'</span> <span class="sub" style="font-size:13px">玩家 '+players.length+' 人／角色 '+chars.length+' 個'+(hosts.length?'／主持 '+hosts.length+' 人':'')+'</span></div><div class="part-cols">';
       h+='<div><h4>玩家參加次數</h4>';
       if(!players.length)h+='<div class="sub">—</div>';
       players.forEach(function(x){var isOwner=(owner&&x[0]===owner);h+='<div class="kv"><div class="kl'+(isOwner?' is-owner':'')+'" title="'+esc(x[0])+'">'+(isOwner?'<span class="tag">製作者</span>':'')+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/pMax*100)+'%'+(isOwner?';background:var(--owner)':'')+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
       h+='</div><div><h4>角色參加次數</h4>';
       if(!chars.length)h+='<div class="sub">—</div>';
       chars.forEach(function(x){var isCard=!!cardSet[x[0]];h+='<div class="kv"><div class="kl'+(isCard?' is-card':'')+'" title="'+esc(x[0])+'">'+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/cMax*100)+'%;background:'+(isCard?'var(--pcrole)':sysColor(sys))+'"></i></div><div class="kn">'+x[1]+'</div></div>';});
-      h+='</div></div></div>';
+      h+='</div>';
+      if(hosts.length){
+        h+='<div class="host-block"><h4>主持次數<span class="host-badge">主持</span></h4>';
+        hosts.forEach(function(x){h+='<div class="kv"><div class="kl" title="'+esc(x[0])+'">'+esc(x[0])+'</div><div class="bar"><i style="width:'+(x[1]/hMax*100)+'%;background:var(--host)"></i></div><div class="kn">'+x[1]+'</div></div>';});
+        h+='</div>';
+      }
+      h+='</div></div>';
     });
-    h+='</div></div>';
+    h+='</div></div>';   // /part-grid /panel
   }
   $("#statGrid").innerHTML=h;
   var p=$("#styPrev"),n=$("#styNext");
