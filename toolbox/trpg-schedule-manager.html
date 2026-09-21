@@ -383,6 +383,7 @@ body.readonly .edit-only{display:none!important;}
       <select id="fSystem"><option value="">全部系統</option></select>
       <select id="fStatus"><option value="">全部狀態</option><option>已完成</option><option>預定</option></select>
       <select id="fYear"><option value="">全部年份</option></select>
+      <select id="fHost"><option value="">全部主持人</option></select>
       <div class="spacer"></div>
       <div class="sub" id="tblCount"></div>
     </div>
@@ -408,6 +409,7 @@ body.readonly .edit-only{display:none!important;}
       <select id="gSystem"><option value="">全部系統</option></select>
       <select id="gStatus"><option value="">全部狀態</option><option>預定</option><option>進行中</option><option>已結團</option></select>
       <select id="gYear"><option value="">全部年份</option></select>
+      <select id="gHost"><option value="">全部主持人</option></select>
       <select id="gSort"><option value="num">依編號（新→舊）</option><option value="numa">依編號（舊→新）</option><option value="date">依日期（新→舊）</option><option value="datea">依日期（舊→新）</option></select>
       <label class="gchk" title="勾選後先依系統分群，再依上面選的順序排"><input type="checkbox" id="gGroupSys"> 先依系統分組</label>
       <button class="tbtn edit-only" id="btnBlankCard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>空白卡片</button>
@@ -449,7 +451,7 @@ body.readonly .edit-only{display:none!important;}
         </div>
         <div class="field"><label>成員 <span class="hint">以頓號「、」分隔</span></label><textarea id="e_mem" placeholder="KP(小明)、星野 遙(小華)、蒼井 樹(阿宏)"></textarea></div>
         <div class="grid2">
-          <div class="field"><label>使用角卡</label><input id="e_pc" placeholder="例：星野 遙"></div>
+          <div class="field"><label>使用角卡 <span class="hint">多名以、分隔</span></label><input id="e_pc" placeholder="例：星野 遙、天使 亞里亞"></div>
           <div class="field"><label>備註</label><input id="e_note" placeholder="選填"></div>
         </div>
         <div class="btn-row">
@@ -505,7 +507,6 @@ body.readonly .edit-only{display:none!important;}
       <form id="setForm">
         <div class="callout">標題與年度會依<b>月曆目前所在年份自動</b>更新（切到 2027 就變「2027跑團管理」）；統計的目標團數＝<b>該年度總團數自動計算</b>，皆不需手動設定。</div>
         <div class="field"><label>製作者</label><input id="s_author" placeholder="例：你的名字或暱稱"></div>
-        <div class="field"><label>副標 <span class="hint">顯示於統計頁；固定內容、不可更改</span></label><input id="s_note" readonly title="固定副標，不可更改" style="color:var(--muted);cursor:not-allowed"></div>
         <div class="field"><label>系統代表色 <span class="hint">點色塊手動指定；按「自動」恢復自動配色</span></label><div id="sysColorList" class="syscolor-list"></div></div>
         <div class="field"><label>統計例外職稱 <span class="hint">成員中「這些字(人名)」視為主持者，不計入玩家/角色參加次數</span></label>
           <div id="excList" class="exc-list"></div>
@@ -735,6 +736,11 @@ function parseMember(m){
   return {char:"",player:m};
 }
 function excSet(){var s={};(state.excRoles||[]).forEach(function(x){var k=String(x).trim().toUpperCase();if(k)s[k]=1;});return s;}
+// 主持人：一列成員中「例外職稱(人名)」的人名（例如 KP(阿神) → 阿神）
+function rowHostNames(r){var ex=excSet(),out=[];splitMembers(r.成員).forEach(function(tok){var pm=parseMember(tok);if(!pm)return;if(pm.char&&ex[pm.char.toUpperCase()]){var hn=(pm.player||"").trim();if(hn)out.push(hn);}});return out;}
+// 該團（同編號+團名的所有場次）的主持人集合
+function teamHostNames(rows){var s={};rows.forEach(function(r){rowHostNames(r).forEach(function(h){s[h]=1;});});return s;}
+function distinctHosts(){var set={};state.rows.forEach(function(r){rowHostNames(r).forEach(function(h){set[h]=1;});});return Object.keys(set).sort(function(a,b){return a.localeCompare(b,"zh-Hant");});}
 function splitMembers(str){return String(str||"").split(/[、,，]/).map(function(x){return x.trim();}).filter(Boolean);}
 
 /* ---- campaign grouping (卡片庫：同編號+同團名 = 一張卡) ---- */
@@ -937,12 +943,16 @@ function renderTable(){
   if(!READONLY)head+='<th class="opcol">操作</th>';
   $("#tblHead").innerHTML=head;
   var q=$("#fSearch").value.trim().toLowerCase();
-  var fs=$("#fSystem").value,fst=$("#fStatus").value,fy=$("#fYear").value;
+  var fs=$("#fSystem").value,fst=$("#fStatus").value,fy=$("#fYear").value,fh=($("#fHost")?$("#fHost").value:"");
+  // 主持人篩選：以「團」為單位——只要該團任一場次由此主持人主持，整團場次都顯示
+  var hostTeams=null;
+  if(fh){hostTeams={};state.rows.forEach(function(r){if(isBlankCard(r))return;var hs=rowHostNames(r);if(hs.indexOf(fh)>=0)hostTeams[groupKey(r)]=1;});}
   var list=state.rows.filter(function(r){
     if(hiddenFromList(r))return false;               // 無標題+無日期的空白卡片不進清單
     if(fs&&r.系統!==fs)return false;
     if(fst&&r.狀態!==fst)return false;
     if(fy){var d=parseDate(r.開始日期);if(!d||String(d.y)!==fy)return false;}
+    if(fh&&!hostTeams[groupKey(r)])return false;
     if(q){
       var blob=(r.團名+" "+r.成員+" "+r.使用角卡+" "+r.備註+" "+r.系統+" "+r.編號).toLowerCase();
       if(blob.indexOf(q)<0)return false;
@@ -1057,7 +1067,7 @@ function buildGroups(){
     var startY=null;grp.rows.forEach(function(r){var d=parseDate(r.開始日期);if(d&&(startY===null||d.y<startY))startY=d.y;});
     var sc={};grp.rows.forEach(function(r){if(r.系統)sc[r.系統]=(sc[r.系統]||0)+1;});
     var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"";
-    var pcs={};grp.rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
+    var pcs={};grp.rows.forEach(function(r){splitMembers(r.使用角卡).forEach(function(c){pcs[c]=1;});});   // 使用角卡可用「、」分隔多名
     // 同一團的清單日期全部未定時，團次計為 0（尚未有實際排定的團次）
     var anyDate=grp.rows.some(function(r){return !!parseDate(r.開始日期);});
     var count=anyDate?grp.rows.length:0;
@@ -1071,11 +1081,13 @@ function renderGallery(){
   var q=$("#gSearch").value.trim().toLowerCase();
   var fs=$("#gSystem").value,fst=$("#gStatus").value,sort=$("#gSort").value;
   var fy=$("#gYear")?$("#gYear").value:"";
+  var fh=$("#gHost")?$("#gHost").value:"";
   var groupSys=$("#gGroupSys")&&$("#gGroupSys").checked;
   var groups=buildGroups().filter(function(g){
     if(fs&&g.系統!==fs)return false;
     if(fst&&g.status!==fst)return false;
     if(fy){if(String(g.startY)!==fy)return false;}   // 依團的「開始年度」篩選（跨年團只出現在開始那年，與統計一致）
+    if(fh&&!teamHostNames(g.rows)[fh])return false;   // 主持人篩選：整團任一場次由此主持人主持即顯示
     if(q){var blob=(g.團名+" "+g.系統+" "+g.編號).toLowerCase();if(blob.indexOf(q)<0)return false;}
     return true;
   });
@@ -1144,7 +1156,7 @@ function renderStats(){
     var sys=Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]||"（未填）";
     var sorted=rows.slice().sort(function(a,b){return (dateKey(a)?sortKey(a):Infinity)-(dateKey(b)?sortKey(b):Infinity);});
     var fd=parseDate(sorted[0].開始日期);   // 首場＝開始年度當年
-    var pcs={};rows.forEach(function(r){if(r.使用角卡)pcs[r.使用角卡]=1;});
+    var pcs={};rows.forEach(function(r){splitMembers(r.使用角卡).forEach(function(c){pcs[c]=1;});});   // 使用角卡可用「、」分隔多名
     var st=cardStat(rows);                    // 整團狀態（依所有場次）
     return {st:st,sys:sys,mo:fd?fd.mo:0,pcs:Object.keys(pcs),no:rows[0].編號||"",nm:rows[0].團名||""};
   });
@@ -1242,7 +1254,7 @@ function renderStats(){
   var exc={};(state.excRoles||[]).forEach(function(x){var kk=String(x).trim().toUpperCase();if(kk)exc[kk]=1;});
   var owner=(state.cfg.製作者||"").trim();                  // 角卡使用的「玩家」＝製作者
   var cardSet={};                                            // 所有「使用角卡」名稱（用於標色「角卡」角色）
-  Object.keys(tmap).forEach(function(k){tmap[k].forEach(function(r){if(isBlankCard(r))return;var c=String(r.使用角卡||"").trim();if(c)cardSet[c]=1;});});
+  Object.keys(tmap).forEach(function(k){tmap[k].forEach(function(r){if(isBlankCard(r))return;splitMembers(r.使用角卡).forEach(function(c){cardSet[c]=1;});});});   // 使用角卡可多名（「、」分隔）
   var teamG=tmap;   // 參加統計同樣以「開始年度＝y」的整團為準（跨年團歸開始年度）
   var partBySys={},hostBySys={};
   Object.keys(teamG).forEach(function(k){
@@ -1260,7 +1272,7 @@ function renderStats(){
       });
     });
     // 併入「角卡使用」：製作者當玩家、每張使用角卡當角色（同團去重、與成員同名者自動合併）
-    var usedCards={};rows.forEach(function(r){var c=String(r.使用角卡||"").trim();if(c)usedCards[c]=1;});
+    var usedCards={};rows.forEach(function(r){splitMembers(r.使用角卡).forEach(function(c){usedCards[c]=1;});});   // 使用角卡可多名（「、」分隔），各自當一個角色
     var cardNames=Object.keys(usedCards);
     if(cardNames.length){
       if(owner)players[owner]=1;
@@ -1322,6 +1334,12 @@ function refreshOptions(){
   [["#fYear"],["#gYear"]].forEach(function(p){
     var sel=$(p[0]);if(!sel)return;var yv=sel.value;
     sel.innerHTML='<option value="">全部年份</option>'+years.map(function(y){return '<option'+(String(y)===yv?" selected":"")+'>'+y+'</option>';}).join("");
+  });
+  var hosts=distinctHosts();
+  [["#fHost"],["#gHost"]].forEach(function(p){
+    var sel=$(p[0]);if(!sel)return;var hv=sel.value;
+    sel.innerHTML='<option value="">全部主持人</option>'+hosts.map(function(hn){return '<option'+(hn===hv?" selected":"")+'>'+esc(hn)+'</option>';}).join("");
+    if(hv&&hosts.indexOf(hv)<0)sel.value="";   // 原選的主持人已不存在→回到全部
   });
   $("#sysList").innerHTML=systems.map(function(s){return '<option value="'+esc(s)+'">';}).join("");
 }
@@ -1395,10 +1413,10 @@ function addExc(){
   var v=$("#excInput").value.trim();if(!v)return;
   state.excRoles=state.excRoles||[];
   if(state.excRoles.some(function(x){return x.toUpperCase()===v.toUpperCase();})){toast("已存在此例外");$("#excInput").value="";return;}
-  state.excRoles.push(v);save();$("#excInput").value="";renderExcList();
+  state.excRoles.push(v);save();$("#excInput").value="";renderExcList();refreshOptions();
 }
 function openSettings(){
-  $("#s_author").value=state.cfg.製作者||"";$("#s_note").value=SUBTITLE;
+  $("#s_author").value=state.cfg.製作者||"";
   renderSysColorList();renderExcList();
   showOv("#ovSet");
 }
@@ -1506,12 +1524,12 @@ function wire(){
   // table：內容區橫向捲動時，同步標題列橫向位置（標題列本身不出現捲軸）
   var _bw=$("#tblBodyWrap"),_hw=$("#tblHeadWrap");
   if(_bw&&_hw)_bw.addEventListener("scroll",function(){_hw.scrollLeft=_bw.scrollLeft;});
-  ["#fSearch","#fSystem","#fStatus","#fYear"].forEach(function(s){$(s).addEventListener("input",renderTable);$(s).addEventListener("change",renderTable);});
+  ["#fSearch","#fSystem","#fStatus","#fYear","#fHost"].forEach(function(s){$(s).addEventListener("input",renderTable);$(s).addEventListener("change",renderTable);});
   $("#tblHead").addEventListener("click",function(e){var th=e.target.closest("th");if(!th)return;var col=th.dataset.col;if(!col)return;if(editingCell)commitCell();if(tblSort.col===col)tblSort.dir*=-1;else{tblSort.col=col;tblSort.dir=(col==="開始日期"||col==="結束日期"||col==="開始時間"||col==="結束時間"||col==="編號"||col==="本次團務數")?-1:1;}renderTable();});
   $("#tblBody").addEventListener("click",function(e){if(READONLY)return;var cp=e.target.closest(".row-copy");if(cp){copyRow(+cp.dataset.copy);return;}var eb=e.target.closest(".row-edit");if(eb){openEdit(+eb.dataset.edit);return;}var td=e.target.closest("td.editable");if(td)beginCellEdit(td);});
   // gallery
-  ["#gSearch","#gSystem","#gStatus","#gYear","#gSort","#gGroupSys"].forEach(function(s){$(s).addEventListener("input",renderGallery);$(s).addEventListener("change",renderGallery);});
-  $("#galGrid").addEventListener("click",function(e){var c=e.target.closest(".gcard");if(!c)return;if(c.classList.contains("blank")){if(!READONLY)openEdit(+c.dataset.idx);return;}$("#fSearch").value=c.dataset.team||"";$("#fSystem").value="";$("#fStatus").value="";$("#fYear").value="";syncClr("#fSearch");setView("table");});
+  ["#gSearch","#gSystem","#gStatus","#gYear","#gHost","#gSort","#gGroupSys"].forEach(function(s){$(s).addEventListener("input",renderGallery);$(s).addEventListener("change",renderGallery);});
+  $("#galGrid").addEventListener("click",function(e){var c=e.target.closest(".gcard");if(!c)return;if(c.classList.contains("blank")){if(!READONLY)openEdit(+c.dataset.idx);return;}$("#fSearch").value=c.dataset.team||"";$("#fSystem").value="";$("#fStatus").value="";$("#fYear").value="";if($("#fHost"))$("#fHost").value="";syncClr("#fSearch");setView("table");});
   // 搜尋欄清除按鈕（有內容時顯示右方叉叉）
   [["#fSearch","#fSearchClr",renderTable],["#gSearch","#gSearchClr",renderGallery]].forEach(function(p){
     var inp=$(p[0]),btn=$(p[1]),rf=p[2];
@@ -1550,7 +1568,7 @@ function wire(){
   $("#excInput").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();addExc();}});
   $("#excList").addEventListener("click",function(e){
     var b=e.target.closest("button[data-exc]");if(!b)return;
-    state.excRoles.splice(+b.dataset.exc,1);save();renderExcList();
+    state.excRoles.splice(+b.dataset.exc,1);save();renderExcList();refreshOptions();
   });
   // io
   $("#btnIO").onclick=function(){showOv("#ovIO");};
