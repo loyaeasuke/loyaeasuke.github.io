@@ -639,9 +639,16 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
     <!--EDIT_START--><div class="row" style="margin-top:8px">
       <label class="chip" for="fHtml" aria-pressed="true">讀取原始 LOG.html</label>
       <input id="fHtml" type="file" accept=".html,.htm" hidden />
-      <button class="chip" id="btnAvatar" aria-pressed="false">設定頭像</button>
       <label class="chip" for="fLog" aria-pressed="false">載入 log.csv</label>
       <input id="fLog" type="file" accept=".csv" hidden />
+      <label class="chip" for="fCursor" aria-pressed="false" title="載入上次匯入時自動下載的 log.cursor.json，用來跨工作階段接續">載入接續游標</label>
+      <input id="fCursor" type="file" accept=".json,.cursor,application/json" hidden />
+      <span class="count" id="cursorInfo" style="opacity:.75"></span>
+      <label class="chip" for="fHtmlApp" aria-pressed="true" title="只把原始 LOG 新增的行接在目前資料後面；中間手動編輯過也沒關係。需本次已匯入過，或先載入接續游標。">＋接續匯入 LOG</label>
+      <input id="fHtmlApp" type="file" accept=".html,.htm" hidden />
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="chip" id="btnAvatar" aria-pressed="false">設定頭像</button>
       <label class="chip" for="fSpk" aria-pressed="false">載入 speakers.csv</label>
       <input id="fSpk" type="file" accept=".csv" hidden />
       <label class="chip" for="fPcs" aria-pressed="false">載入 pcs.csv</label>
@@ -649,12 +656,16 @@ dialog footer{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px;bo
       <button class="chip" id="expLog" aria-pressed="false">匯出 log.csv</button>
       <button class="chip" id="expSpk" aria-pressed="false">匯出 speakers.csv</button>
       <button class="chip" id="expPcs" aria-pressed="false">匯出 pcs.csv</button>
+    </div>
+    <div class="row" style="margin-top:8px">
       <button class="chip" id="btnEdit" aria-pressed="false">編輯模式</button>
       <button class="chip" id="expHtml" aria-pressed="true">匯出檢視版（連結）</button>
       <input type="file" id="fLib" webkitdirectory directory multiple accept="image/*" style="display:none">
       <button class="chip" id="btnLib">選擇圖庫資料夾</button>
       <button class="chip" id="expHtmlPack" aria-pressed="true">匯出檢視版（打包）</button>
       <span class="lib-info" id="libInfo"></span>
+    </div>
+    <div class="row" style="margin-top:8px;justify-content:flex-end">
       <span class="style-pick">風格
         <select id="stylePick" title="選擇檢視版風格">
           <option value="chronicle">紀事</option>
@@ -1410,6 +1421,87 @@ function convertLog(htmlText){
   return {rows, spk};
 }
 
+/* ── 原始 LOG 接續匯入（記憶體游標 + log.cursor.json 側檔） ──
+   觀念：接續點用「原始比原始」判斷，與你編輯後的資料列數無關，
+   所以 10 行編成 9 行後再匯入，照樣能只接第 11 行以後。            */
+const RAW_FP = r => (r['發言人']||'')+'\u0001'+(r['頻道']||'')+'\u0001'+(r['秘匿對象']||'')+'\u0001'+(r['內容']||'');
+function fnv1a(str){ let h=0x811c9dc5>>>0; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return ('0000000'+h.toString(16)).slice(-8); }
+function rawHashes(rows){ return rows.map(r=>fnv1a(RAW_FP(r))); }
+function prefixHashOf(hashes,n){ let acc='5381'; for(let i=0;i<n;i++){ acc=fnv1a(acc+'|'+hashes[i]); } return acc; }
+const CUR_TAILK=8;
+let rawCursor=null;   // {kind:'rawcursor',ver,count,tailK,tail:[...],prefixHash,savedAt}
+function buildCursor(hashes){ const n=hashes.length, k=Math.min(CUR_TAILK,n);
+  return {tool:'log-viewer',kind:'rawcursor',ver:1,count:n,tailK:k,tail:hashes.slice(n-k),prefixHash:prefixHashOf(hashes,n),savedAt:new Date().toISOString()}; }
+function updateCursorInfo(){ const el=document.getElementById('cursorInfo'); if(!el)return;
+  el.textContent = rawCursor ? ('接續游標：已匯入 '+rawCursor.count+' 行') : '接續游標：無'; }
+function saveCursor(cur,download2){ rawCursor=cur; updateCursorInfo();
+  if(download2!==false) download('log.cursor.json', JSON.stringify(cur)); }
+/* ── 最小 ZIP 打包（store，無壓縮）：把匯入產生的多個檔包成一包下載 ── */
+const CRC_T=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; } return t; })();
+function crc32(b){ let c=0xFFFFFFFF; for(let i=0;i<b.length;i++) c=CRC_T[(c^b[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function zipStore(files){ // files: [{name,text}]
+  const enc=new TextEncoder(), chunks=[], central=[]; let offset=0;
+  const u16=n=>[n&0xFF,(n>>>8)&0xFF], u32=n=>[n&0xFF,(n>>>8)&0xFF,(n>>>16)&0xFF,(n>>>24)&0xFF];
+  const put=a=>{ const u=Uint8Array.from(a); chunks.push(u); offset+=u.length; };
+  files.forEach(f=>{
+    const nameB=enc.encode(f.name), dataB=enc.encode(f.text), crc=crc32(dataB), sz=dataB.length, lo=offset;
+    put([].concat(u32(0x04034b50),u16(20),u16(0),u16(0),u16(0),u16(0x21),u32(crc),u32(sz),u32(sz),u16(nameB.length),u16(0)));
+    chunks.push(nameB); offset+=nameB.length; chunks.push(dataB); offset+=sz;
+    central.push([].concat(u32(0x02014b50),u16(20),u16(20),u16(0),u16(0),u16(0),u16(0x21),u32(crc),u32(sz),u32(sz),u16(nameB.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(lo),[...nameB]));
+  });
+  const cdStart=offset; let cdLen=0;
+  central.forEach(c=>{ const u=Uint8Array.from(c); chunks.push(u); offset+=u.length; cdLen+=u.length; });
+  put([].concat(u32(0x06054b50),u16(0),u16(0),u16(files.length),u16(files.length),u32(cdLen),u32(cdStart),u16(0)));
+  let total=0; chunks.forEach(c=>total+=c.length); const out=new Uint8Array(total); let p=0; chunks.forEach(c=>{ out.set(c,p); p+=c.length; }); return out;
+}
+function bundleName(){ const t=(META&&META['標題']?(''+META['標題']).trim():'').replace(/[\\/:*?"<>|]+/g,'_'); return (t||'團錄')+'_log資料.zip'; }
+function downloadZip(name, files){ const b=new Blob([zipStore(files)],{type:'application/zip'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),200); }
+// 匯入產生的三個檔打包成一包
+function importBundle(cur){ return [
+  {name:'log.csv', text:toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註'])},
+  {name:'speakers.csv', text:toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色'])},
+  {name:'log.cursor.json', text:JSON.stringify(cur)}
+]; }
+// 在新原始檔中找出「已匯入到第幾行」→ 回傳邊界 B（0..N）；找不到回 -1
+function findBoundary(newHashes){
+  if(!rawCursor) return -1;
+  const N=newHashes.length, M=rawCursor.count;
+  if(N>=M && prefixHashOf(newHashes,M)===rawCursor.prefixHash) return M;   // 快路：前 M 行完全一致
+  const tail=rawCursor.tail||[], k=tail.length;                            // 錨點重定位：tail 連續序列最後一次出現
+  if(k) for(let e=N-1;e>=k-1;e--){ let ok=true;
+      for(let j=0;j<k;j++){ if(newHashes[e-j]!==tail[k-1-j]){ ok=false; break; } }
+      if(ok) return e+1; }
+  return -1;
+}
+function appendRawRows(delta, fullSpk){
+  if(!delta.length) return;
+  let mx=0; LOG.forEach(r=>{ const n=parseInt(r['序號'],10); if(!isNaN(n)&&n>mx) mx=n; });
+  delta.forEach((r,i)=>{ r['序號']=String(mx+i+1); });
+  LOG=LOG.concat(delta);
+  const have=new Set(SPK.map(s=>s['發言人']));           // 發言人聯集：既有設定全保留，只補新面孔
+  (fullSpk||[]).forEach(s=>{ if(!have.has(s['發言人'])){ SPK.push(s); have.add(s['發言人']); } });
+}
+function doAppendImport(htmlText){
+  const {rows,spk}=convertLog(htmlText);
+  if(!rows.length){ alert('這個檔案裡沒有找到對話行。請確認是 ccfolia 匯出的 LOG.html。'); return; }
+  const hashes=rawHashes(rows);
+  let B=findBoundary(hashes);
+  if(B<0){
+    const ans=prompt('偵測不到接續點（可能是不同房間、CCFolia 端改過舊訊息，或尚未建立接續游標）。\n請輸入要從原始 LOG「第幾行」開始接續：\n（1 = 全部當新行；留空 = 取消）', String((rawCursor?rawCursor.count:0)+1));
+    if(ans===null||ans.trim()==='') return;
+    B=Math.max(0, Math.min(rows.length, (parseInt(ans,10)||1)-1));
+  }
+  const delta=rows.slice(B);
+  if(!delta.length){ alert('沒有偵測到新的行（目前已是最新）。'); saveCursor(buildCursor(hashes),false); return; }
+  if(!confirm('原始 LOG 共 '+rows.length+' 行，前 '+B+' 行判定為已匯入。\n將新增第 '+(B+1)+'～'+rows.length+' 行（共 '+delta.length+' 行），接在目前資料最後。\n確定接續匯入？')) return;
+  appendRawRows(delta, spk);
+  applyMeta(); fillSpeakers(); render(); renderPCs();
+  const cur=buildCursor(hashes); saveCursor(cur,false);
+  downloadZip(bundleName(), importBundle(cur));   // log.csv＋speakers.csv＋log.cursor.json 打包成一包
+  alert('已接續匯入 '+delta.length+' 行（原始共 '+rows.length+' 行）。\n已下載一包 '+bundleName()+'（內含 log.csv、speakers.csv、log.cursor.json）。');
+}
+
 (document.getElementById('fHtml')||{}).onchange=e=>{
   const f=e.target.files[0]; if(!f) return;
   const rd=new FileReader();
@@ -1417,12 +1509,26 @@ function convertLog(htmlText){
     const {rows,spk}=convertLog(rd.result);
     if(!rows.length){ alert('這個檔案裡沒有找到對話行。請確認是 ccfolia 匯出的 LOG.html。'); return; }
     LOG=rows; SPK=spk; applyMeta(); fillSpeakers(); render(); renderPCs();
-    download('log.csv', toCSV(logForCSV(),['序號','類型','頻道','秘匿對象','發言人','頭像','內容','備註']));
-    download('speakers.csv', toCSV(SPK,['發言人','顯示名稱','頭像網址','代表色']));
+    const cur=buildCursor(rawHashes(rows)); saveCursor(cur,false);   // 建立接續游標（不單獨下載）
+    downloadZip(bundleName(), importBundle(cur));   // log.csv＋speakers.csv＋log.cursor.json 打包成一包下載
   };
   rd.readAsText(f,'utf-8');
   e.target.value='';
 };
+(document.getElementById('fHtmlApp')||{}).onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader(); rd.onload=()=>doAppendImport(rd.result); rd.readAsText(f,'utf-8'); e.target.value='';
+};
+(document.getElementById('fCursor')||{}).onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader(); rd.onload=()=>{ try{ const c=JSON.parse(rd.result);
+    if(c&&c.kind==='rawcursor'&&Array.isArray(c.tail)&&typeof c.count==='number'){ rawCursor=c; updateCursorInfo();
+      alert('已載入接續游標：已匯入 '+c.count+' 行。\n現在可直接用「＋接續匯入 LOG」接續新內容。'); }
+    else alert('這不是有效的 log.cursor 檔。'); }
+    catch(err){ alert('讀取游標失敗：'+err.message); } };
+  rd.readAsText(f,'utf-8'); e.target.value='';
+};
+updateCursorInfo();
 
 (document.getElementById('fLog')||{}).onchange=e=>{const f=e.target.files[0];if(!f)return;
   const rd=new FileReader();rd.onload=()=>{LOG=parseCSV(rd.result);pullTitleRows();fillSpeakers();render();};rd.readAsText(f,'utf-8');};

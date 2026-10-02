@@ -63,19 +63,37 @@ strong{color:var(--ink)}
 <td><code>pcs.csv</code></td>
 <td>PC（調查員）資訊，顯示在團錄開頭的可摺疊區塊</td>
 </tr>
+<tr>
+<td><code>log.cursor.json</code></td>
+<td>接續匯入用的「進度書籤」，記錄已匯到原始 LOG 第幾行。匯入原始 LOG 時會打包在壓縮檔內一起下載，和 <code>log.csv</code> 一起留著即可（詳見〈接續匯入〉）</td>
+</tr>
 </tbody></table>
 <h2 id="新的一場團">新的一場團</h2>
 <p>開啟 <code>log-viewer.html</code> → 按「讀取原始 LOG.html」選擇 ccfolia 匯出的原始檔 →
 自動判讀標籤、發言人、代表色、擲骰與段落分隔，畫面立刻套用新內容，
-同時下載整理好的 <code>log.csv</code> 與 <code>speakers.csv</code>（瀏覽器可能會問是否允許一次下載多個檔案，選允許）。
+並下載<strong>一包壓縮檔</strong>（檔名形如 <code>團錄_log資料.zip</code>，內含整理好的 <code>log.csv</code>、<code>speakers.csv</code> 與 <code>log.cursor.json</code>）；解壓縮後就是這三個檔。
 若目前已設定過頭像，同名發言人的頭像與顯示名稱會自動沿用。</p>
 <p>編輯流程：改 CSV → 開啟 <code>log-viewer.html</code> → 按「載入 log.csv」「載入 speakers.csv」→ 畫面即時更新。
 在頁面上改完頭像後，按「匯出 speakers.csv」可把設定存回檔案。
 PC 資訊同理：改 <code>pcs.csv</code> → 按「載入 pcs.csv」套用；頁面上的 PC 區塊可整區收合，每張 PC 卡也能單獨收合。</p>
-<p>定稿後按「匯出成 HTML」，會下載一份閱讀版 <code>劇本標題_日期.html</code>：資料已寫死在檔案裡，不需要 CSV，
-且所有編輯介面（標題編輯、設定頭像、載入／匯出 CSV、匯出 HTML）都已移除，只保留篩選、搜尋、發言人下拉。
+<p>定稿後按「匯出檢視版（連結或打包）」，會下載一份閱讀版 <code>劇本標題_日期.html</code>：資料已寫死在檔案裡，不需要 CSV，
+且所有編輯介面（標題編輯、設定頭像、載入／匯出 CSV、匯出檢視版）都已移除，只保留篩選、搜尋、發言人下拉。
 頁首的「共 N 行／M 位發言人」統計只在編輯版顯示，閱讀版只留下你設定的標題與副標題。
 要再修改時回到 <code>log-viewer.html</code> 重新載入 CSV 即可。</p>
+<blockquote>
+<p>工具列小提醒：載入／匯入相關的按鈕現在分成幾排——第一排是原始 LOG 與接續匯入（讀取原始 LOG.html、載入 log.csv、載入接續游標、接續游標狀態、＋接續匯入 LOG），第二排是頭像與各 CSV（設定頭像、載入／匯出 speakers、pcs、log），第三排是編輯與匯出檢視版，最右一排是風格。</p>
+</blockquote>
+<h2 id="接續匯入把新的-log-接在舊的後面">接續匯入（把新的 LOG 接在舊的後面）</h2>
+<p>同一場團分多次跑時，CCFolia 會把同一個房間的 LOG 從頭累積、每次匯出都包含先前全部內容再加上新訊息。如果你已經載入舊的 <code>log.csv</code> 並在編輯器裡改過（甚至刪改了行數），只想把「後來新增的對話」接上去、而不是整份重來，就用「<strong>＋接續匯入 LOG</strong>」。</p>
+<p><strong>判斷方式</strong>：工具用「原始 LOG 對原始 LOG」比對來找接續點，和你編輯後的行數無關。所以就算原本 10 行、你手動編成 9 行，再匯入新的原始 LOG 時，仍能正確地只接第 11 行之後的內容。接上的新行會接在目前資料的最後、序號自動續編，新出現的發言人也會併入（你已設定的頭像／顯示名／代表色都保留）。</p>
+<p><strong>接續游標 <code>log.cursor.json</code></strong>：每次「讀取原始 LOG.html」或「＋接續匯入 LOG」都會自動多下載一個 <code>log.cursor.json</code>，裡面記錄「已匯到原始 LOG 第幾行」。它就是接續的依據，請和 <code>log.csv</code> 放在一起保管。</p>
+<p><strong>操作步驟</strong>：</p>
+<ul>
+<li><strong>同一次開著工具沒關</strong>：匯入過原始 LOG 後，直接按「＋接續匯入 LOG」選新的原始檔即可（游標記在記憶體裡，自動沿用，不必載入任何東西）。</li>
+<li><strong>關掉工具後再回來接續</strong>：先「載入 log.csv」把舊資料讀回 → 再「載入接續游標」選上次那個 <code>log.cursor.json</code> → 最後「＋接續匯入 LOG」選新的原始 LOG。（前兩步先後不拘，但「接續匯入」一定是最後一步。）</li>
+</ul>
+<p>載入游標後，工具列會顯示「接續游標：已匯入 N 行」可供確認。按下接續匯入時會先跳確認框「原始 LOG 共 M 行，前 N 行已匯入，將新增第 N+1～M 行共 K 行」，按確定才會接上，接完也會下載一包更新後的壓縮檔（內含 <code>log.csv</code>、<code>speakers.csv</code> 與 <code>log.cursor.json</code>）。</p>
+<p><strong>接不上怎麼辦</strong>：若偵測不到接續點（例如選到不同房間的 LOG、或你在 CCFolia 端改動過舊訊息導致前段對不上），工具不會亂接，而是跳出來請你手動輸入「要從原始 LOG 第幾行開始接續」（填 <code>1</code> ＝整份都當新行）。只要 <code>log.csv</code>、<code>log.cursor.json</code> 與新的原始 LOG 是同一團一路接下來的，通常都能自動對上。</p>
 <h2 id="logcsv-欄位">log.csv 欄位</h2>
 <table>
 <thead>
@@ -421,7 +439,7 @@ PC 資訊同理：改 <code>pcs.csv</code> → 按「載入 pcs.csv」套用；�
 <li>若堅持用連結版看本機圖：把 HTML 與圖放在一起、填<strong>相對路徑</strong>，並改用 <strong>Firefox</strong> 開，較有機會顯示（仍不保證跨瀏覽器）。</li>
 </ul>
 <h2 id="風格樣板">風格樣板</h2>
-<p>工具列「匯出成 HTML」右方有「風格」下拉選單，可切換整體配色。選擇後編輯器會即時套用預覽，<strong>匯出的檢視版 HTML 會採用當下所選的風格</strong>（風格選單本身不會出現在檢視版）。</p>
+<p>工具列最後一排（靠右）有「風格」下拉選單，可切換整體配色。選擇後編輯器會即時套用預覽，<strong>匯出的檢視版 HTML 會採用當下所選的風格</strong>（風格選單本身不會出現在檢視版）。</p>
 <p>目前提供六種：</p>
 <table>
 <thead>
