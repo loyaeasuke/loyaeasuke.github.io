@@ -694,7 +694,7 @@ function computeActionB(c){
   return sum;
 }
 var BASE_ACT=6;                       /* 基礎行動值固定 6 */
-var FIX_JUDGE={"頭":10,"手":9,"軀幹":8,"腳":7};   /* 攻擊判定值固定，不再讀取表格 */
+var FIX_JUDGE={"頭":10,"手":9,"軀幹":8,"腳":7};   /* 攻擊判定值固定 */
 
 /* 主要類型＋輔助類型帶來的武裝/變異/改造補正（欄位已從角色 CSV 移除，改由類型自動加算） */
 function typeMod(mainType,subType,key){
@@ -1216,7 +1216,7 @@ if(!VIEW_ONLY){
       var tb=$("toolbar").cloneNode(true);
       var rmBtn=tb.querySelector("#btnExportEditor");if(rmBtn)rmBtn.parentNode.removeChild(rmBtn);
       var rmDir=tb.querySelector("#fDir");if(rmDir){var lb=rmDir.closest("label");(lb||rmDir).parentNode.removeChild(lb||rmDir);}
-      /* 打包版已內建資料庫，載入角色 CSV 不再是「只」載入 → 改名 */
+      /* 打包版已內建資料庫，按鈕「載入角色 CSV」 */
       var fc=tb.querySelector("#fChar");if(fc){var lbc=fc.closest("label");if(lbc){for(var _i=0;_i<lbc.childNodes.length;_i++){if(lbc.childNodes[_i].nodeType===3&&lbc.childNodes[_i].nodeValue.replace(/\s/g,"")){lbc.childNodes[_i].nodeValue="載入角色 CSV";break;}}}}
       var st=tb.querySelector("#status");if(st)st.textContent="";
       var fonts='<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Oswald:wght@300;400;500;600&display=swap" rel="stylesheet">';

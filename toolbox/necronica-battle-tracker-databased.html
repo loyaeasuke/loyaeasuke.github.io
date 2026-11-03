@@ -994,7 +994,7 @@ function renderFlow(){
   // ── 行動階段 ──
   phaseH('行動階段');
   subNote('可進行動作【行動】宣告');                         // req8 說明文字
-  box.appendChild(el('div','decl-head','敵方宣告動作'));       // req1：改為項目，不用核取方塊
+  box.appendChild(el('div','decl-head','敵方宣告動作'));       // req1：以項目呈現
   const enActing=actingUnits('enemy');
   if(enActing.length) enActing.forEach(u=> box.appendChild(actionDeclBlock(u)) );
   else box.appendChild(el('div','flow-empty','　（本刻度無敵方單位行動）'));

@@ -1465,7 +1465,7 @@ bind('btnExportEditor','click',async function(){
     /* 清空已渲染的角色節點（boot 會依空資料重繪），避免靜態 DOM 殘留角色資料 */
     var _l=doc.querySelector('#list'); if(_l)_l.innerHTML='';
     var _c=doc.querySelector('#content'); if(_c)_c.innerHTML='';
-    /* 打包版按鈕改標籤（載入資料夾→載入角色CSV、下載CSV範本→下載角色.csv範本） */
+    /* 打包版按鈕標籤：載入角色CSV、下載角色.csv範本 */
     var _bf=doc.querySelector('#btnFolder'); if(_bf)_bf.textContent='載入角色 CSV';
     var _bt=doc.querySelector('#btnTemplate'); if(_bt)_bt.textContent='下載角色.csv範本';
     /* 打包版的「使用說明」改指向打包版專屬說明 */
