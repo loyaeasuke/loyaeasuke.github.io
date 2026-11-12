@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的書架</title>
+<style>
+:root{
+  --wood1:#6b4a2f;--wood2:#4f3420;--paper:#f6efe0;--paper2:#efe6d2;--page-edge:#e3d7bc;
+  --ink:#2c2419;--ink2:#5a4d38;--muted:#8a7a5e;--line:#d8c9a8;--line2:#c9b68d;
+  --accent:#9a3b2e;--accent2:#b8553f;--gold:#b58a3c;--leather:#7a4a3a;
+  --chip:#efe3c8;--chip-ink:#6b5a38;--ok:#3d7a4e;--shadow:0 10px 30px rgba(50,30,10,.28);
+}
+:root[data-theme="dark"]{
+  --wood1:#241a12;--wood2:#160f0a;--paper:#241f18;--paper2:#2c2619;--page-edge:#15110b;
+  --ink:#ece3cf;--ink2:#c7b593;--muted:#9a876a;--line:#403524;--line2:#50432c;
+  --accent:#d9735f;--accent2:#e08a76;--gold:#d2a85a;--leather:#5a3a2e;
+  --chip:#352c1c;--chip-ink:#cdb98c;--shadow:0 10px 30px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"Noto Serif TC","Songti TC","Noto Sans TC","Microsoft JhengHei",serif;color:var(--ink);
+  background:
+   radial-gradient(120% 80% at 50% -10%,rgba(255,255,255,.08),transparent 60%),
+   repeating-linear-gradient(90deg,var(--wood1) 0 60px,var(--wood2) 60px 62px,var(--wood1) 62px 124px);
+  height:100vh;overflow:hidden;padding:16px clamp(10px,3vw,40px)}
+.wrap{max-width:1180px;margin:0 auto;height:100%}
+
+/* ---- big book shell（固定視窗、內部各自捲動） ---- */
+.book{background:linear-gradient(180deg,var(--paper),var(--paper2));border-radius:16px;
+  box-shadow:var(--shadow),inset 0 0 0 2px var(--line2),inset 0 0 60px rgba(120,90,40,.12);
+  border:1px solid var(--line2);overflow:hidden;position:relative;height:100%;display:flex;flex-direction:column}
+
+/* ---- top bar ---- */
+.topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 20px;
+  background:linear-gradient(180deg,var(--leather),color-mix(in srgb,var(--leather) 70%,#000));
+  color:#f3e7cf;border-bottom:3px solid var(--gold)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;letter-spacing:.06em;
+  text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.brand .em{font-size:24px}
+.topbar .sp{flex:1}
+.btn{font-family:inherit;font-size:13.5px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);
+  color:#f3e7cf;border-radius:9px;padding:8px 12px;cursor:pointer;transition:.14s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:rgba(255,255,255,.2);border-color:var(--gold)}
+.btn.solid{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.solid:hover{background:var(--accent2)}
+.menu{position:relative;display:inline-block}
+.menu-pop{position:absolute;top:calc(100% + 6px);right:0;background:var(--paper);color:var(--ink);border:1px solid var(--line2);
+  border-radius:10px;box-shadow:var(--shadow);padding:6px;min-width:210px;z-index:40;display:none}
+.menu.open .menu-pop{display:block}
+.menu-pop button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--ink);font-family:inherit;
+  font-size:13.5px;padding:9px 10px;border-radius:7px;cursor:pointer}
+.menu-pop button:hover{background:var(--chip)}
+.menu-pop .hint{font-size:13px;color:var(--muted);padding:2px 10px 6px}
+.menu-pop hr{border:0;border-top:1px solid var(--line);margin:5px 4px}
+
+/* ---- controls row ---- */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:12px 20px;background:rgba(120,90,40,.06);
+  border-bottom:1px solid var(--line)}
+.search{display:flex;align-items:center;gap:7px;background:var(--paper);border:1px solid var(--line2);border-radius:20px;padding:6px 12px;min-width:220px;flex:1;max-width:420px}
+.search input{border:none;background:none;outline:none;font-family:inherit;font-size:14px;color:var(--ink);width:100%}
+.tagbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:13px;background:var(--chip);color:var(--chip-ink);border:1px solid var(--line2);border-radius:20px;padding:3px 10px;cursor:pointer;transition:.12s;white-space:nowrap}
+.tag.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tag .x{opacity:.6}
+.theme-btn{}
+.viewtog{margin-left:auto;display:inline-flex;border:1px solid var(--line2);border-radius:9px;overflow:hidden;background:var(--paper)}
+.viewtog button{font-family:inherit;font-size:15px;line-height:1;border:none;background:none;color:var(--ink2);padding:6px 11px;cursor:pointer}
+.viewtog button.on{background:var(--accent);color:#fff}
+
+/* ---- breadcrumb ---- */
+.crumbs{display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding:12px 20px 4px;font-size:14px}
+.crumbs a{color:var(--accent);cursor:pointer;text-decoration:none;padding:3px 7px;border-radius:7px}
+.crumbs a:hover{background:var(--chip)}
+.crumbs .sep{color:var(--muted)}
+.crumbs .cur{color:var(--ink);font-weight:700;padding:3px 7px}
+
+/* ---- shelf content ---- */
+.content{padding:10px 20px 26px;min-height:320px}
+.sec-title{font-size:13px;letter-spacing:.1em;color:var(--muted);margin:14px 2px 10px;display:flex;align-items:center;gap:8px;font-weight:700}
+.sec-title::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec-title.sec-fold{cursor:pointer;user-select:none;transition:.1s}
+.sec-title.sec-fold:hover{color:var(--ink)}
+.sec-title .chev{display:inline-block;width:14px;text-align:center;color:var(--muted);font-size:12px;flex:0 0 auto}
+.folders.hide,.marks.hide,.list.hide{display:none}
+.foldall{background:var(--paper);border:1px solid var(--line2);color:var(--ink2);border-radius:9px;padding:6px 11px;font-size:15px;line-height:1;cursor:pointer}
+.foldall:hover{border-color:var(--accent);color:var(--accent)}
+
+/* folders = little books */
+.folders{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.fbook{position:relative;cursor:pointer;height:120px;border-radius:6px 10px 10px 6px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--fc,#8a5a3a) 72%,#000) 0 10px,var(--fc,#8a5a3a) 10px 100%);
+  box-shadow:var(--shadow);color:#fff;padding:12px 14px 12px 20px;display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid rgba(0,0,0,.25);transition:.16s;overflow:hidden}
+.fbook::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.35)}
+.fbook::after{content:"";position:absolute;right:0;top:0;bottom:0;width:7px;background:linear-gradient(90deg,transparent,rgba(0,0,0,.28));border-radius:0 10px 10px 0}
+.fbook:hover{transform:translateY(-3px) rotate(-.6deg)}
+.fbook .fn{font-weight:700;font-size:16px;line-height:1.3;text-shadow:0 1px 2px rgba(0,0,0,.4);word-break:break-word;max-height:66px;overflow:hidden}
+.fbook .fmeta{display:flex;align-items:center;justify-content:space-between;font-size:13px;opacity:.92}
+.fbook .fcount{background:rgba(0,0,0,.25);border-radius:20px;padding:1px 8px}
+.fbook .fedit{position:absolute;top:6px;right:12px;background:rgba(0,0,0,.3);border:none;color:#fff;border-radius:6px;width:22px;height:22px;cursor:pointer;opacity:0;transition:.12s;font-size:13px}
+.fbook:hover .fedit{opacity:1}
+
+/* bookmarks = mini browser cards */
+.marks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-top:4px}
+.card{background:var(--paper);border:1px solid var(--line2);border-radius:12px;overflow:hidden;box-shadow:0 4px 14px rgba(60,40,15,.16);
+  display:flex;flex-direction:column;transition:.16s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--gold)}
+.chrome{display:flex;align-items:center;gap:7px;padding:7px 9px;background:linear-gradient(180deg,#efe6d2,#e6dabf);border-bottom:1px solid var(--line2)}
+:root[data-theme="dark"] .chrome{background:linear-gradient(180deg,#30291b,#272013)}
+.dots{display:flex;gap:4px;flex:0 0 auto}
+.dots i{width:9px;height:9px;border-radius:50%;display:block}
+.dots i:nth-child(1){background:#e05b4d}.dots i:nth-child(2){background:#e3b341}.dots i:nth-child(3){background:#5aa564}
+.urlpill{flex:1;min-width:0;display:flex;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--line2);border-radius:20px;padding:3px 9px;font-size:13px;color:var(--ink2)}
+.urlpill img{width:14px;height:14px;flex:0 0 auto;border-radius:3px}
+.urlpill .u{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:"SFMono-Regular",ui-monospace,monospace}
+.thumb{aspect-ratio:16/10;background:var(--paper2);position:relative;overflow:hidden;cursor:pointer;display:block}
+.thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.thumb .ph{position:absolute;inset:0;display:grid;place-items:center;flex-direction:column;gap:6px;
+  background:linear-gradient(145deg,var(--fc,#8a5a3a),color-mix(in srgb,var(--fc,#8a5a3a) 40%,#000));color:#fff}
+.thumb .ph .big{font-size:40px;font-weight:700;line-height:1;text-shadow:0 2px 4px rgba(0,0,0,.4)}
+.thumb .ph .sm{font-size:13px;opacity:.85;padding:0 10px;text-align:center;word-break:break-all}
+.thumb .load{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;background:var(--paper2)}
+.cbody{padding:10px 11px 11px;display:flex;flex-direction:column;gap:7px;flex:1}
+.ctitle{font-weight:700;font-size:14px;line-height:1.35;color:var(--ink);word-break:break-word;cursor:pointer}
+.ctitle:hover{color:var(--accent)}
+.ctags{display:flex;gap:5px;flex-wrap:wrap}
+.ctags .t{font-size:13px;background:var(--chip);color:var(--chip-ink);border-radius:5px;padding:1px 7px;cursor:pointer}
+.cact{display:flex;gap:6px;margin-top:auto;padding-top:4px}
+.cact button{flex:1;font-family:inherit;font-size:13px;border:1px solid var(--line2);background:var(--paper2);color:var(--ink2);border-radius:7px;padding:5px;cursor:pointer}
+.cact button:hover{border-color:var(--accent);color:var(--accent)}
+.cact .open{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cact .open:hover{background:var(--accent2);color:#fff}
+
+/* ---- layout: sidebar tree + main ---- */
+.topbar,.controls{flex:0 0 auto}
+.layout{display:flex;align-items:stretch;flex:1 1 auto;min-height:0;overflow:hidden}
+.sidebar{flex:0 0 238px;max-width:46%;border-right:1px solid var(--line2);background:rgba(120,90,40,.06);
+  padding:10px 4px 18px;overflow:auto;box-shadow:6px 0 14px -9px rgba(60,40,15,.3)}
+.tree-head{position:sticky;top:-10px;background:linear-gradient(180deg,var(--paper2),color-mix(in srgb,var(--paper2) 88%,transparent));backdrop-filter:blur(2px);z-index:2;padding-top:12px!important}
+.main{flex:1;min-width:0;position:relative;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat}
+.main.has-bg::before{content:"";position:absolute;inset:0;background:var(--paper);opacity:.34;pointer-events:none;z-index:0}
+.main-scroll{position:relative;z-index:1;height:100%;overflow:auto}
+.tree-head{font-size:13px;letter-spacing:.1em;color:var(--muted);font-weight:700;padding:6px 10px 8px}
+.tree-row{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:7px;cursor:pointer;font-size:14px;color:var(--ink2);white-space:nowrap;transition:.1s;user-select:none}
+.tree-row:hover{background:var(--chip)}
+.tree-row.on{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);font-weight:700}
+.tree-row .tw{width:15px;flex:0 0 auto;text-align:center;color:var(--muted);font-size:13px}
+.tree-row .tw.leaf{visibility:hidden}
+.tree-row .ti{flex:0 0 auto;font-size:14px}
+.tree-row .tn{overflow:hidden;text-overflow:ellipsis}
+.drop-hover{outline:2px dashed var(--accent)!important;outline-offset:-2px;background:color-mix(in srgb,var(--accent) 12%,transparent)!important;border-radius:7px}
+.fbook.dragging,.card.dragging,.tree-row.dragging{opacity:.4}
+.fbook,.tree-row,.card{-webkit-user-drag:element}
+@media(max-width:700px){.layout{flex-direction:column}.sidebar{flex:auto;max-width:none;max-height:230px;border-right:none;border-bottom:1px solid var(--line)}}
+.empty{text-align:center;color:var(--muted);padding:50px 20px;font-size:15px;line-height:1.9}
+.empty .big{font-size:46px;opacity:.5}
+
+/* ---- scrollbar（配合介面風格） ---- */
+html{scrollbar-color:var(--leather) rgba(120,90,40,.14);scrollbar-width:thin}
+::-webkit-scrollbar{width:13px;height:13px}
+::-webkit-scrollbar-track{background:rgba(120,90,40,.1);border-radius:10px}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--leather),color-mix(in srgb,var(--leather) 60%,#000));border-radius:10px;border:3px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);background-clip:padding-box;border:3px solid transparent}
+::-webkit-scrollbar-corner{background:transparent}
+.sidebar::-webkit-scrollbar{width:10px}
+/* ---- bookmark card delete button ---- */
+.cact .del{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--line2))}
+.cact .del:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+/* ---- list view ---- */
+.list{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.lrow{display:flex;align-items:center;gap:11px;padding:9px 12px;border:1px solid var(--line2);border-left:4px solid var(--fc,#8a5a3a);border-radius:10px;background:var(--paper);box-shadow:0 2px 6px rgba(60,40,15,.1);transition:.12s}
+.lrow:hover{border-color:var(--gold);box-shadow:var(--shadow)}
+.lrow.dragging{opacity:.4}
+.lfav{width:20px;flex:0 0 auto;display:grid;place-items:center}
+.lfav img{width:18px;height:18px;border-radius:4px}
+.lmain{flex:1;min-width:0}
+.lt{font-weight:700;font-size:14px;color:var(--ink);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lt:hover{color:var(--accent)}
+.lu{font-size:13px;color:var(--muted);font-family:ui-monospace,"SFMono-Regular",monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ltags{display:flex;gap:5px;flex-wrap:wrap;flex:0 0 auto;max-width:32%;justify-content:flex-end}
+.ltags .t{font-size:13px;background:var(--chip);color:var(--chip-ink);border-radius:5px;padding:1px 7px;cursor:pointer;white-space:nowrap}
+.lact{display:flex;gap:6px;flex:0 0 auto}
+.lact button{font-family:inherit;font-size:13px;border:1px solid var(--line2);background:var(--paper2);color:var(--ink2);border-radius:7px;padding:4px 9px;cursor:pointer;white-space:nowrap}
+.lact button:hover{border-color:var(--accent);color:var(--accent)}
+.lact .open{background:var(--accent);color:#fff;border-color:var(--accent)}
+.lact .open:hover{background:var(--accent2);color:#fff}
+.lact .del{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,var(--line2))}
+.lact .del:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+@media(max-width:680px){.ltags{display:none}.lu{display:none}}
+
+/* ---- modal ---- */
+.ov{position:fixed;inset:0;background:rgba(30,18,8,.55);backdrop-filter:blur(3px);z-index:60;display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+.ov.show{display:flex}
+.modal{background:var(--paper);border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadow);width:min(560px,100%);overflow:hidden}
+.modal h3{font-size:17px;padding:16px 20px;background:rgba(120,90,40,.08);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.mbody{padding:16px 20px;display:flex;flex-direction:column;gap:13px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:13px;color:var(--ink2);font-weight:700}
+.field .sub{font-size:13px;color:var(--muted);font-weight:400}
+.field input,.field select,.field textarea{font-family:inherit;font-size:14px;color:var(--ink);background:var(--paper2);
+  border:1px solid var(--line2);border-radius:8px;padding:8px 10px;outline:none}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.field textarea{resize:vertical;min-height:54px}
+.prevwrap{display:flex;gap:12px;align-items:flex-start}
+.prevthumb{width:150px;flex:0 0 auto;aspect-ratio:16/10;border-radius:8px;overflow:hidden;border:1px solid var(--line2);background:var(--paper2);position:relative}
+.prevthumb img{width:100%;height:100%;object-fit:cover}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line);background:rgba(120,90,40,.05)}
+/* 彈窗內的一般按鈕（例如「取消」）：改成在淺底上清楚可見 */
+.mfoot .btn:not(.solid):not(.del){background:var(--paper2);border:1px solid var(--line2);color:var(--ink)}
+.mfoot .btn:not(.solid):not(.del):hover{border-color:var(--accent);color:var(--accent);background:var(--paper)}
+.mfoot .del{margin-right:auto;color:var(--accent);border-color:var(--accent)}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.swatch{width:26px;height:26px;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.swatch.on{border-color:var(--ink)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--ink);color:var(--paper);
+  padding:9px 18px;border-radius:10px;font-size:13.5px;box-shadow:var(--shadow);z-index:80;opacity:0;pointer-events:none;transition:.2s}
+.toast.show{opacity:1}
+@media(max-width:560px){.prevwrap{flex-direction:column}.prevthumb{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="book">
+    <div class="topbar">
+      <div class="brand"><span class="em">📚</span><span>我的書架</span></div>
+      <div class="sp"></div>
+      <button class="btn solid" id="btnAddMark">＋ 書籤</button>
+      <button class="btn" id="btnAddFolder">＋ 資料夾</button>
+      <div class="menu" id="impMenu"><button class="btn" data-menu>⤓ 匯入 ▾</button>
+        <div class="menu-pop">
+          <div class="hint">把 Chrome／Firefox 的書籤匯出成 HTML 後載入</div>
+          <button id="impHtmlMerge">匯入書籤 HTML（加入目前書架）</button>
+          <button id="impHtmlReplace">匯入書籤 HTML（取代全部）</button>
+          <hr>
+          <button id="impJson">載入完整備份 JSON（取代全部）</button>
+        </div>
+      </div>
+      <div class="menu" id="expMenu"><button class="btn" data-menu>⤒ 匯出 ▾</button>
+        <div class="menu-pop">
+          <button id="expJson">匯出完整備份 JSON（含標籤／縮圖）</button>
+          <button id="expHtml">匯出書籤 HTML（可回匯瀏覽器）</button>
+          <div class="hint">JSON 保留全部；HTML 相容瀏覽器但不含自訂縮圖</div>
+        </div>
+      </div>
+      <div class="menu" id="bgMenu"><button class="btn" data-menu>🖼 背景 ▾</button>
+        <div class="menu-pop">
+          <div class="hint">更換右側書架空間的背景圖</div>
+          <div style="padding:2px 10px 6px"><input id="bgUrl" placeholder="貼圖片網址…" style="width:100%;font-family:inherit;font-size:13px;border:1px solid var(--line2);border-radius:7px;padding:7px 9px;background:var(--paper2);color:var(--ink);outline:none"></div>
+          <button id="bgApplyUrl">套用網址圖片</button>
+          <button id="bgPickFile">選本機圖片…</button>
+          <hr>
+          <button id="bgReset">恢復預設背景</button>
+        </div>
+      </div>
+      <button class="btn" id="btnGuide" title="開新分頁檢視使用說明">📖 使用說明</button>
+    </div>
+    <div class="controls">
+      <span class="search">🔍<input id="q" placeholder="搜尋名稱、網址、標籤…（全書架）"></span>
+      <div class="tagbar" id="tagbar"></div>
+      <button class="foldall" id="btnFoldAll" title="收合全部內容（露出背景）">⊟</button>
+      <div class="viewtog" id="viewTog" title="切換顯示方式">
+        <button data-v="card" title="卡片預覽">▦</button>
+        <button data-v="list" title="清單顯示">☰</button>
+      </div>
+      <button class="btn theme-btn" id="btnTheme" title="深／淺色">🌙</button>
+    </div>
+    <div class="layout">
+      <aside class="sidebar" id="tree"></aside>
+      <div class="main">
+        <div class="main-scroll">
+          <div class="crumbs" id="crumbs"></div>
+          <div class="content" id="content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileHtml" accept=".html,.htm" hidden>
+<input type="file" id="fileJson" accept=".json" hidden>
+<input type="file" id="fileBg" accept="image/*" hidden>
+
+<!-- bookmark modal -->
+<div class="ov" id="ovMark"><div class="modal">
+  <h3 id="mkTitle">🔖 書籤</h3>
+  <div class="mbody">
+    <div class="field"><label>名稱</label><input id="mkName" placeholder="網頁名稱"></div>
+    <div class="field"><label>網址</label><input id="mkUrl" placeholder="https://…"></div>
+    <div class="prevwrap">
+      <div class="prevthumb" id="mkPrev"></div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px">
+        <div class="field"><label>縮圖圖片網址 <span class="sub">留空＝自動用 mShots 網頁截圖；貼網址可手動覆寫</span></label>
+          <input id="mkThumb" placeholder="留空＝自動；或貼圖片網址"></div>
+        <div class="field"><label>標籤 <span class="sub">用逗號或空格分隔</span></label>
+          <input id="mkTags" placeholder="例：工具、參考、常用"></div>
+      </div>
+    </div>
+    <div class="field"><label>所在資料夾</label><select id="mkFolder"></select></div>
+  </div>
+  <div class="mfoot"><button class="btn del" id="mkDel" style="display:none">刪除</button>
+    <button class="btn" data-close>取消</button><button class="btn solid" id="mkSave">儲存</button></div>
+</div></div>
+
+<!-- folder modal -->
+<div class="ov" id="ovFolder"><div class="modal">
+  <h3 id="fdTitle">📘 資料夾</h3>
+  <div class="mbody">
+    <div class="field"><label>資料夾名稱</label><input id="fdName" placeholder="分類名稱"></div>
+    <div class="field"><label>書背顏色</label><div class="swatches" id="fdSwatch"></div></div>
+    <div class="field"><label>建立在</label><select id="fdParent"></select></div>
+  </div>
+  <div class="mfoot"><button class="btn del" id="fdDel" style="display:none">刪除（含內容）</button>
+    <button class="btn" data-close>取消</button><button class="btn solid" id="fdSave">儲存</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ===================== data ===================== */
+var LS="bookmarkbook_v1";
+var COLORS=["#8a5a3a","#9a3b2e","#3a5a8a","#3a7a5a","#7a4a8a","#8a7a3a","#4a6a8a","#8a3a5a","#5a6a3a","#6a4a3a"];
+var state=load();
+var path=[];       // array of folder ids (not incl root)
+var filterTags={}; // active tag filter (AND)
+var query="";
+var editId=null, editFolderId=null;
+var expanded={root:true};  // 側欄樹展開狀態（資料夾 id → true）
+var dragId=null;           // 拖曳中的節點 id
+var viewMode="card";       // 書籤顯示方式：card｜list
+try{if(localStorage.getItem(LS+"_view")==="list")viewMode="list";}catch(e){}
+var collapsed={fold:false,mark:false};   // 右側區塊摺疊狀態（折起後露出背景圖）
+try{var _cc=JSON.parse(localStorage.getItem(LS+"_collapsed"));if(_cc)collapsed={fold:!!_cc.fold,mark:!!_cc.mark};}catch(e){}
+function saveCollapsed(){try{localStorage.setItem(LS+"_collapsed",JSON.stringify(collapsed));}catch(e){}}
+function updateFoldAll(){var btn=document.querySelector("#btnFoldAll");if(!btn)return;var allC=collapsed.fold&&collapsed.mark;btn.textContent=allC?"⊞":"⊟";btn.title=allC?"展開全部內容":"收合全部內容（露出背景）";}
+function foldAll(){var collapseIt=(!collapsed.fold||!collapsed.mark);collapsed.fold=collapseIt;collapsed.mark=collapseIt;saveCollapsed();render();}
+
+function uid(){return "n"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function newFolder(name,color){return {id:uid(),type:"folder",name:name||"新資料夾",color:color||COLORS[Math.floor(Math.random()*COLORS.length)],children:[]};}
+function blankState(){return {version:1,root:{id:"root",type:"folder",name:"書架",color:"#7a4a3a",children:[]}};}
+function load(){try{var s=JSON.parse(localStorage.getItem(LS));if(s&&s.root)return s;}catch(e){}return blankState();}
+function save(){try{localStorage.setItem(LS,JSON.stringify(state));return true;}catch(e){return false;}}
+/* 右側書架空間背景圖 */
+function applyBg(){var m=document.querySelector(".main");if(!m)return;
+  if(state.bg){m.style.backgroundImage='url("'+String(state.bg).replace(/"/g,'\\"')+'")';m.classList.add("has-bg");}
+  else{m.style.backgroundImage="";m.classList.remove("has-bg");}}
+function setBg(v){var old=state.bg;state.bg=v||"";if(!save()){state.bg=old;save();toast("圖片太大、無法儲存背景（請改用較小的圖或圖片網址）");return;}applyBg();toast(v?"已更換背景":"已恢復預設背景");}
+
+/* tree helpers */
+function findNode(id,node){node=node||state.root;if(node.id===id)return node;if(node.type!=="folder")return null;
+  for(var i=0;i<node.children.length;i++){var r=findNode(id,node.children[i]);if(r)return r;}return null;}
+function findParent(id,node){node=node||state.root;if(node.type!=="folder")return null;
+  for(var i=0;i<node.children.length;i++){if(node.children[i].id===id)return node;var r=findParent(id,node.children[i]);if(r)return r;}return null;}
+function curFolder(){var f=state.root;for(var i=0;i<path.length;i++){var n=findNode(path[i]);if(n&&n.type==="folder")f=n;else{path=path.slice(0,i);break;}}return f;}
+function eachBookmark(node,cb,folder){node=node||state.root;node.children.forEach(function(c){
+  if(c.type==="folder")eachBookmark(c,cb,c);else cb(c,node);});}
+function allFolders(){var out=[];(function walk(n,depth){n.children.forEach(function(c){if(c.type==="folder"){out.push({node:c,depth:depth});walk(c,depth+1);}});})(state.root,0);return out;}
+function countItems(f){var n=0;f.children.forEach(function(c){n++;});return n;}
+function allTags(){var s={};eachBookmark(state.root,function(b){(b.tags||[]).forEach(function(t){s[t]=(s[t]||0)+1;});});return Object.keys(s).sort(function(a,b){return s[b]-s[a]||a.localeCompare(b,"zh-Hant");});}
+
+/* url helpers */
+function hostOf(u){try{return new URL(u).hostname;}catch(e){var m=String(u||"").match(/^[a-z]+:\/\/([^\/?#]+)/i);return m?m[1]:"";}}
+function faviconOf(u){var h=hostOf(u);return h?("https://www.google.com/s2/favicons?domain="+encodeURIComponent(h)+"&sz=64"):"";}
+function mshotsOf(u){return "https://s.wordpress.com/mshots/v1/"+encodeURIComponent(u)+"?w=440&h=275";}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];});}
+function initial(s){s=String(s||"").trim();return s?s[0].toUpperCase():"?";}
+
+/* ===================== render ===================== */
+function $(s,r){return (r||document).querySelector(s);}
+function render(){
+  renderTags();
+  renderTree();
+  var searching=!!query||Object.keys(filterTags).length>0;
+  $("#crumbs").style.display=searching?"none":"flex";
+  if(searching) renderSearch(); else renderBrowse();
+  updateFoldAll();
+  save();
+}
+
+/* ---------- 側欄資料夾樹（像檔案總管） ---------- */
+function pathTo(id){var out=[],n=findNode(id);while(n&&n.id!=="root"){out.unshift(n.id);n=findParent(n.id);}return out;}
+function navigateTo(id){query="";filterTags={};var qel=$("#q");if(qel)qel.value="";path=(id==="root")?[]:pathTo(id);expanded[id]=true;render();}
+function renderTree(){
+  var box=$("#tree");if(!box)return;box.innerHTML="";
+  var head=document.createElement("div");head.className="tree-head";head.textContent="📖 書籤導覽";box.appendChild(head);
+  expanded.root=true;path.forEach(function(id){expanded[id]=true;});   // 自動展開目前所在路徑
+  var curId=path.length?path[path.length-1]:"root";
+  treeNode(state.root,0,curId,box);
+}
+function treeNode(folder,depth,curId,box){
+  var subs=folder.children.filter(function(c){return c.type==="folder";});
+  var hasKids=subs.length>0,isRoot=folder.id==="root",open=!!expanded[folder.id];
+  var row=document.createElement("div");row.className="tree-row"+(folder.id===curId?" on":"");
+  row.style.paddingLeft=(6+depth*15)+"px";
+  var tw=document.createElement("span");tw.className="tw"+(hasKids?"":" leaf");tw.textContent=hasKids?(open?"▾":"▸"):"▸";
+  tw.onclick=function(e){e.stopPropagation();if(hasKids){expanded[folder.id]=!open;renderTree();}};
+  var ti=document.createElement("span");ti.className="ti";ti.textContent=isRoot?"📚":((open&&hasKids)?"📂":"📁");
+  var tn=document.createElement("span");tn.className="tn";tn.textContent=isRoot?"書架":folder.name;
+  row.appendChild(tw);row.appendChild(ti);row.appendChild(tn);
+  row.onclick=function(){navigateTo(folder.id);};
+  if(!isRoot)attachDraggable(row,folder.id);
+  attachDropTarget(row,folder.id);
+  box.appendChild(row);
+  if(hasKids&&open)subs.forEach(function(s){treeNode(s,depth+1,curId,box);});
+}
+
+/* ---------- 拖曳移動 ---------- */
+function canDrop(id,targetFolderId){
+  if(!id)return false;var node=findNode(id);if(!node)return false;
+  var target=targetFolderId==="root"?state.root:findNode(targetFolderId);
+  if(!target||target.type!=="folder")return false;
+  if(id===targetFolderId)return false;
+  var parent=findParent(id);if(parent&&parent.id===target.id)return false;      // 已在該資料夾
+  if(node.type==="folder"&&(targetFolderId===id||isDescendant(id,targetFolderId)))return false; // 不可移進自己/子孫
+  return true;
+}
+function moveNode(id,targetFolderId){
+  if(!canDrop(id,targetFolderId))return;
+  var node=findNode(id),target=targetFolderId==="root"?state.root:findNode(targetFolderId),parent=findParent(id);
+  parent.children=parent.children.filter(function(c){return c.id!==id;});
+  target.children.push(node);
+  render();toast("已移動到「"+(target.id==="root"?"書架":target.name)+"」");
+}
+function attachDraggable(el,id){
+  el.setAttribute("draggable","true");
+  el.addEventListener("dragstart",function(e){dragId=id;e.stopPropagation();try{e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",id);}catch(_){}el.classList.add("dragging");});
+  el.addEventListener("dragend",function(){dragId=null;el.classList.remove("dragging");document.querySelectorAll(".drop-hover").forEach(function(x){x.classList.remove("drop-hover");});});
+}
+function attachDropTarget(el,folderId){
+  el.addEventListener("dragover",function(e){if(dragId&&canDrop(dragId,folderId)){e.preventDefault();try{e.dataTransfer.dropEffect="move";}catch(_){}el.classList.add("drop-hover");}});
+  el.addEventListener("dragleave",function(){el.classList.remove("drop-hover");});
+  el.addEventListener("drop",function(e){e.preventDefault();e.stopPropagation();el.classList.remove("drop-hover");var d=dragId;if(d&&canDrop(d,folderId))moveNode(d,folderId);});
+}
+function renderTags(){
+  var tags=allTags(),bar=$("#tagbar");bar.innerHTML="";
+  tags.slice(0,40).forEach(function(t){
+    var on=!!filterTags[t];var el=document.createElement("span");el.className="tag"+(on?" on":"");
+    el.textContent=t+(on?" ✕":"");el.onclick=function(){if(filterTags[t])delete filterTags[t];else filterTags[t]=1;render();};
+    bar.appendChild(el);
+  });
+}
+function renderBrowse(){
+  // breadcrumb
+  var cb=$("#crumbs");cb.innerHTML="";
+  var a=document.createElement("a");a.textContent="📚 書架";a.onclick=function(){path=[];render();};attachDropTarget(a,"root");cb.appendChild(a);
+  var acc=[];
+  path.forEach(function(id,i){
+    var n=findNode(id);if(!n)return;acc.push(id);var mine=acc.slice();
+    var sep=document.createElement("span");sep.className="sep";sep.textContent="›";cb.appendChild(sep);
+    if(i===path.length-1){var c=document.createElement("span");c.className="cur";c.textContent=n.name;attachDropTarget(c,id);cb.appendChild(c);}
+    else{var l=document.createElement("a");l.textContent=n.name;l.onclick=function(){path=mine;render();};attachDropTarget(l,id);cb.appendChild(l);}
+  });
+  var f=curFolder();
+  var folders=f.children.filter(function(c){return c.type==="folder";});
+  var marks=f.children.filter(function(c){return c.type==="bookmark";});
+  function secTitle(key,label){return '<div class="sec-title sec-fold" data-sec="'+key+'" title="點擊摺疊／展開"><span class="chev">'+(collapsed[key]?"▸":"▾")+'</span>'+label+'</div>';}
+  var h="";
+  if(folders.length){h+=secTitle("fold","📘 資料夾（"+folders.length+"）")+'<div class="folders'+(collapsed.fold?" hide":"")+'" id="foldersBox"></div>';}
+  if(marks.length){h+=secTitle("mark","🔖 書籤（"+marks.length+"）")+'<div class="'+marksContainerClass()+(collapsed.mark?" hide":"")+'" id="marksBox"></div>';}
+  if(!folders.length&&!marks.length){
+    h+='<div class="empty"><div class="big">📖</div>這個資料夾還是空的。<br>用右上角「＋ 書籤」「＋ 資料夾」開始整理，或「匯入」你的瀏覽器書籤。</div>';
+  }
+  $("#content").innerHTML=h;
+  if(folders.length)folders.forEach(function(fd){$("#foldersBox").appendChild(folderEl(fd));});
+  if(marks.length)marks.forEach(function(bk){$("#marksBox").appendChild(markEl(bk,f));});
+  // 區塊摺疊：點標題收合/展開（折起後露出背景圖），狀態記憶
+  document.querySelectorAll("#content .sec-fold").forEach(function(t){t.onclick=function(){
+    var k=t.dataset.sec;collapsed[k]=!collapsed[k];saveCollapsed();
+    var box=document.getElementById(k==="fold"?"foldersBox":"marksBox");if(box)box.classList.toggle("hide",collapsed[k]);
+    var ch=t.querySelector(".chev");if(ch)ch.textContent=collapsed[k]?"▸":"▾";updateFoldAll();
+  };});
+}
+function renderSearch(){
+  var q=query.toLowerCase(),res=[];
+  eachBookmark(state.root,function(b,folder){
+    var tags=(b.tags||[]);
+    for(var t in filterTags){if(tags.indexOf(t)<0)return;}
+    if(q){var blob=((b.title||"")+" "+(b.url||"")+" "+tags.join(" ")).toLowerCase();if(blob.indexOf(q)<0)return;}
+    res.push({b:b,folder:folder});
+  });
+  var h='<div class="sec-title">🔍 搜尋結果（'+res.length+'）'+(Object.keys(filterTags).length?'　標籤：'+Object.keys(filterTags).join("、"):'')+'</div>';
+  if(!res.length){h+='<div class="empty"><div class="big">🔎</div>沒有符合的書籤。</div>';$("#content").innerHTML=h;return;}
+  h+='<div class="'+marksContainerClass()+'" id="marksBox"></div>';$("#content").innerHTML=h;
+  res.forEach(function(r){$("#marksBox").appendChild(markEl(r.b,r.folder));});
+}
+function folderEl(fd){
+  var el=document.createElement("div");el.className="fbook";el.style.setProperty("--fc",fd.color||"#8a5a3a");
+  el.innerHTML='<button class="fedit" title="編輯">✎</button><div class="fn">'+esc(fd.name)+'</div>'+
+    '<div class="fmeta"><span class="fcount">'+countItems(fd)+' 項</span><span>開啟 ›</span></div>';
+  el.onclick=function(e){if(e.target.closest(".fedit")){openFolder(fd.id);return;}path=path.concat(fd.id);render();};
+  attachDraggable(el,fd.id);attachDropTarget(el,fd.id);   // 可拖曳，也可當放置目標（移入此資料夾）
+  return el;
+}
+function phHTMLof(b,host){return '<div class="ph"><div class="big">'+esc(initial(b.title||host))+'</div><div class="sm">'+esc(host||"")+'</div></div>';}
+function cardEl(b,folder){
+  var el=document.createElement("div");el.className="card";el.style.setProperty("--fc",(folder&&folder.color)||"#8a5a3a");
+  var fav=faviconOf(b.url),host=hostOf(b.url);
+  var thumbSrc=b.thumb&&b.thumb.trim()?b.thumb.trim():mshotsOf(b.url);
+  el.innerHTML=
+    '<div class="chrome"><div class="dots"><i></i><i></i><i></i></div>'+
+      '<div class="urlpill"><span class="favslot"></span><span class="u">'+esc(b.url||"")+'</span></div></div>'+
+    '<div class="thumb"></div>'+
+    '<div class="cbody"><div class="ctitle">'+esc(b.title||host||"（未命名）")+'</div>'+
+      ((b.tags&&b.tags.length)?'<div class="ctags">'+b.tags.map(function(t){return '<span class="t">'+esc(t)+'</span>';}).join("")+'</div>':'')+
+      '<div class="cact"><button class="open">開啟</button><button class="edit">編輯</button><button class="del">刪除</button></div></div>';
+  if(fav){var fi=document.createElement("img");fi.src=fav;fi.alt="";fi.draggable=false;fi.onerror=function(){fi.remove();};el.querySelector(".favslot").appendChild(fi);}
+  var thumb=el.querySelector(".thumb");
+  if(thumbSrc){var im=document.createElement("img");im.loading="lazy";im.alt="";im.draggable=false;im.src=thumbSrc;im.onerror=function(){thumb.innerHTML=phHTMLof(b,host);};thumb.appendChild(im);}
+  else thumb.innerHTML=phHTMLof(b,host);
+  thumb.onclick=function(){openUrl(b.url);};
+  el.querySelector(".ctitle").onclick=function(){openUrl(b.url);};
+  el.querySelector(".open").onclick=function(){openUrl(b.url);};
+  el.querySelector(".edit").onclick=function(){openMark(b.id);};
+  el.querySelector(".del").onclick=function(){if(confirm("確定刪除此書籤？"))deleteBookmark(b.id);};
+  el.querySelectorAll(".ctags .t").forEach(function(tg){tg.onclick=function(){query="";filterTags={};filterTags[tg.textContent]=1;$("#q").value="";render();};});
+  attachDraggable(el,b.id);   // 書籤可拖曳移動到別的資料夾
+  return el;
+}
+function deleteBookmark(id){var p=findParent(id);if(p)p.children=p.children.filter(function(c){return c.id!==id;});render();toast("已刪除書籤");}
+/* 書籤清單列（清單顯示模式） */
+function listRowEl(b,folder){
+  var el=document.createElement("div");el.className="lrow";el.style.setProperty("--fc",(folder&&folder.color)||"#8a5a3a");
+  var fav=faviconOf(b.url),host=hostOf(b.url);
+  el.innerHTML='<span class="lfav"></span>'+
+    '<div class="lmain"><div class="lt">'+esc(b.title||host||"（未命名）")+'</div><div class="lu">'+esc(b.url||"")+'</div></div>'+
+    ((b.tags&&b.tags.length)?'<div class="ltags">'+b.tags.map(function(t){return '<span class="t">'+esc(t)+'</span>';}).join("")+'</div>':'')+
+    '<div class="lact"><button class="open">開啟</button><button class="edit">編輯</button><button class="del">刪除</button></div>';
+  if(fav){var fi=document.createElement("img");fi.src=fav;fi.alt="";fi.draggable=false;fi.onerror=function(){fi.remove();};el.querySelector(".lfav").appendChild(fi);}
+  el.querySelector(".lt").onclick=function(){openUrl(b.url);};
+  el.querySelector(".open").onclick=function(){openUrl(b.url);};
+  el.querySelector(".edit").onclick=function(){openMark(b.id);};
+  el.querySelector(".del").onclick=function(){if(confirm("確定刪除此書籤？"))deleteBookmark(b.id);};
+  el.querySelectorAll(".ltags .t").forEach(function(tg){tg.onclick=function(){query="";filterTags={};filterTags[tg.textContent]=1;$("#q").value="";render();};});
+  attachDraggable(el,b.id);
+  return el;
+}
+function markEl(b,folder){return viewMode==="list"?listRowEl(b,folder):cardEl(b,folder);}
+function marksContainerClass(){return viewMode==="list"?"list":"marks";}
+function openUrl(u){if(!u)return;try{window.open(u,"_blank","noopener");}catch(e){location.href=u;}}
+
+/* ===================== folder modal ===================== */
+function folderOptions(sel,excludeId){
+  sel.innerHTML="";var o=document.createElement("option");o.value="root";o.textContent="📚 書架（最上層）";sel.appendChild(o);
+  allFolders().forEach(function(it){if(it.node.id===excludeId)return;var op=document.createElement("option");op.value=it.node.id;
+    op.textContent="　".repeat(it.depth)+"📘 "+it.node.name;sel.appendChild(op);});
+}
+function openFolder(id){
+  editFolderId=id||null;
+  $("#fdTitle").textContent=id?"📘 編輯資料夾":"📘 新增資料夾";
+  var sw=$("#fdSwatch");sw.innerHTML="";var cur=id?(findNode(id).color):COLORS[0];
+  COLORS.forEach(function(c){var s=document.createElement("div");s.className="swatch"+(c===cur?" on":"");s.style.background=c;s.dataset.c=c;
+    s.onclick=function(){sw.querySelectorAll(".swatch").forEach(function(x){x.classList.remove("on");});s.classList.add("on");};sw.appendChild(s);});
+  if(id){var n=findNode(id);$("#fdName").value=n.name;$("#fdDel").style.display="";
+    folderOptions($("#fdParent"),id);var p=findParent(id);$("#fdParent").value=p?p.id:"root";}
+  else{$("#fdName").value="";$("#fdDel").style.display="none";folderOptions($("#fdParent"));
+    $("#fdParent").value=path.length?path[path.length-1]:"root";}
+  showOv("#ovFolder");setTimeout(function(){$("#fdName").focus();},50);
+}
+function saveFolder(){
+  var name=$("#fdName").value.trim()||"新資料夾";
+  var color=($("#fdSwatch .swatch.on")||{dataset:{}}).dataset.c||COLORS[0];
+  var parentId=$("#fdParent").value;var parent=parentId==="root"?state.root:findNode(parentId);
+  if(editFolderId){
+    var n=findNode(editFolderId);n.name=name;n.color=color;
+    var oldP=findParent(editFolderId);
+    if(parent&&oldP&&parent.id!==oldP.id&&parent.id!==editFolderId&&!isDescendant(editFolderId,parent.id)){
+      oldP.children=oldP.children.filter(function(c){return c.id!==editFolderId;});parent.children.push(n);
+    }
+  }else{var f=newFolder(name,color);(parent||state.root).children.push(f);}
+  hideOv("#ovFolder");render();toast(editFolderId?"資料夾已更新":"已新增資料夾");
+}
+function isDescendant(ancId,id){var n=findNode(ancId);return !!findNode(id,n)&&id!==ancId;}
+function delFolder(){
+  if(!editFolderId)return;
+  if(!confirm("確定刪除此資料夾及其所有內容？此動作無法復原。"))return;
+  var p=findParent(editFolderId);if(p)p.children=p.children.filter(function(c){return c.id!==editFolderId;});
+  path=path.filter(function(id){return findNode(id);});
+  hideOv("#ovFolder");render();toast("已刪除資料夾");
+}
+
+/* ===================== bookmark modal ===================== */
+function openMark(id){
+  editId=id||null;
+  $("#mkTitle").textContent=id?"🔖 編輯書籤":"🔖 新增書籤";
+  folderOptions($("#mkFolder"));
+  if(id){var b=findNode(id);$("#mkName").value=b.title||"";$("#mkUrl").value=b.url||"";$("#mkThumb").value=b.thumb||"";
+    $("#mkTags").value=(b.tags||[]).join("、");var p=findParent(id);$("#mkFolder").value=p?p.id:"root";$("#mkDel").style.display="";}
+  else{$("#mkName").value="";$("#mkUrl").value="";$("#mkThumb").value="";$("#mkTags").value="";
+    $("#mkFolder").value=path.length?path[path.length-1]:"root";$("#mkDel").style.display="none";}
+  updatePrev();showOv("#ovMark");setTimeout(function(){$("#mkName").focus();},50);
+}
+function updatePrev(){
+  var url=$("#mkUrl").value.trim(),thumb=$("#mkThumb").value.trim();
+  var src=thumb||(url?mshotsOf(url):"");
+  var box=$("#mkPrev");box.innerHTML="";
+  function note(txt){var d=document.createElement("div");d.style.cssText="display:grid;place-items:center;height:100%;color:var(--muted);font-size:13px";d.textContent=txt;return d;}
+  if(src){var im=document.createElement("img");im.src=src;im.onerror=function(){box.innerHTML="";box.appendChild(note("無預覽"));};box.appendChild(im);}
+  else box.appendChild(note("填網址後預覽"));
+}
+function parseTags(s){return String(s||"").split(/[、,，\s]+/).map(function(x){return x.trim();}).filter(Boolean).filter(function(v,i,a){return a.indexOf(v)===i;});}
+function saveMark(){
+  var url=$("#mkUrl").value.trim();if(!url){toast("請填網址");return;}
+  if(!/^[a-z]+:\/\//i.test(url))url="https://"+url;
+  var title=$("#mkName").value.trim()||hostOf(url)||url;
+  var thumb=$("#mkThumb").value.trim();var tags=parseTags($("#mkTags").value);
+  var folderId=$("#mkFolder").value;var folder=folderId==="root"?state.root:findNode(folderId);
+  if(editId){var b=findNode(editId);b.title=title;b.url=url;b.thumb=thumb;b.tags=tags;
+    var oldP=findParent(editId);if(folder&&oldP&&folder.id!==oldP.id){oldP.children=oldP.children.filter(function(c){return c.id!==editId;});folder.children.push(b);}}
+  else{(folder||state.root).children.push({id:uid(),type:"bookmark",title:title,url:url,thumb:thumb,tags:tags,addDate:Math.floor(Date.now()/1000)});}
+  hideOv("#ovMark");render();toast(editId?"書籤已更新":"已新增書籤");
+}
+function delMark(){if(!editId)return;if(!confirm("確定刪除此書籤？"))return;
+  var p=findParent(editId);if(p)p.children=p.children.filter(function(c){return c.id!==editId;});hideOv("#ovMark");render();toast("已刪除書籤");}
+
+/* ===================== import / export ===================== */
+// Netscape bookmark HTML parser (Chrome/Firefox)
+function parseNetscape(html){
+  var doc=new DOMParser().parseFromString(html,"text/html");
+  var root={id:uid(),type:"folder",name:"匯入",color:COLORS[Math.floor(Math.random()*COLORS.length)],children:[]};
+  var topDL=doc.querySelector("dl");if(!topDL)return root;
+  var done=new WeakSet();
+  function walk(dl,folder){
+    var kids=dl.children;
+    for(var i=0;i<kids.length;i++){
+      var dt=kids[i];if(done.has(dt))continue;
+      if(dt.tagName==="DL"){walk(dt,folder);continue;}
+      if(dt.tagName!=="DT"&&dt.tagName!=="DD")continue;
+      var h3=dt.querySelector(":scope > h3");var a=dt.querySelector(":scope > a");
+      if(h3){
+        var sub={id:uid(),type:"folder",name:(h3.textContent||"資料夾").trim(),color:COLORS[Math.floor(Math.random()*COLORS.length)],children:[]};
+        folder.children.push(sub);
+        var cdl=dt.querySelector(":scope > dl");
+        if(!cdl){var ns=dt.nextElementSibling;if(ns&&ns.tagName==="DL"){cdl=ns;done.add(ns);}}
+        if(cdl)walk(cdl,sub);
+      }else if(a&&a.getAttribute("href")){
+        var href=a.getAttribute("href");if(/^(place|javascript):/i.test(href))continue;
+        var tagsAttr=a.getAttribute("tags")||a.getAttribute("TAGS")||"";
+        var icon=a.getAttribute("icon")||"";
+        folder.children.push({id:uid(),type:"bookmark",title:(a.textContent||"").trim()||hostOf(href),url:href,
+          thumb:(icon&&/^https?:/i.test(icon))?"":"",tags:tagsAttr?tagsAttr.split(",").map(function(x){return x.trim();}).filter(Boolean):[],
+          addDate:+(a.getAttribute("add_date")||0)||undefined});
+      }
+    }
+  }
+  walk(topDL,root);
+  return root;
+}
+function importHtml(text,replace){
+  var imported=parseNetscape(text);
+  // unwrap: if imported has a single folder child and no bookmarks, lift its children
+  var kids=imported.children;
+  if(replace){state=blankState();path=[];}
+  // flatten top-level "Bookmarks"/"書籤" wrappers: push imported children into root
+  (kids.length?kids:[]).forEach(function(c){state.root.children.push(c);});
+  var nB=0,nF=0;eachBookmark(imported,function(){nB++;});(function cnt(n){n.children.forEach(function(c){if(c.type==="folder"){nF++;cnt(c);}});})(imported);
+  filterTags={};query="";$("#q").value="";render();toast("已匯入 "+nB+" 個書籤、"+nF+" 個資料夾");
+}
+function importJson(text){
+  try{var s=JSON.parse(text);if(!s||!s.root)throw 0;state=s;path=[];filterTags={};query="";$("#q").value="";render();toast("已載入備份");}
+  catch(e){toast("JSON 格式不符");}
+}
+function download(name,text,mime){var b=new Blob([text],{type:(mime||"text/plain")+";charset=utf-8"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},300);}
+function exportJson(){download("書籤書架備份.json","\ufeff"+JSON.stringify(state,null,1),"application/json");toast("已匯出 JSON 備份");}
+function exportHtml(){
+  var out='<!DOCTYPE NETSCAPE-Bookmark-file-1>\n<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">\n<TITLE>Bookmarks</TITLE>\n<H1>書籤書架</H1>\n<DL><p>\n';
+  function esc2(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+  function walk(node,ind){var pad=ind;
+    node.children.forEach(function(c){
+      if(c.type==="folder"){out+=pad+'<DT><H3>'+esc2(c.name)+'</H3>\n'+pad+'<DL><p>\n';walk(c,pad+"    ");out+=pad+'</DL><p>\n';}
+      else{var tg=(c.tags&&c.tags.length)?' TAGS="'+esc2(c.tags.join(","))+'"':'';var ad=c.addDate?' ADD_DATE="'+c.addDate+'"':'';
+        out+=pad+'<DT><A HREF="'+esc2(c.url)+'"'+ad+tg+'>'+esc2(c.title||c.url)+'</A>\n';}
+    });}
+  walk(state.root,"    ");out+='</DL><p>\n';
+  download("書籤書架.html",out,"text/html");toast("已匯出書籤 HTML");
+}
+
+/* ===================== wiring ===================== */
+function showOv(s){$(s).classList.add("show");}
+function hideOv(s){$(s).classList.remove("show");}
+var toastT;function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},1800);}
+
+$("#btnAddMark").onclick=function(){openMark();};
+$("#btnAddFolder").onclick=function(){openFolder();};
+$("#mkSave").onclick=saveMark;$("#mkDel").onclick=delMark;
+$("#fdSave").onclick=saveFolder;$("#fdDel").onclick=delFolder;
+$("#mkUrl").addEventListener("input",updatePrev);$("#mkThumb").addEventListener("input",updatePrev);
+document.querySelectorAll("[data-close]").forEach(function(b){b.onclick=function(){hideOv("#ovMark");hideOv("#ovFolder");};});
+document.querySelectorAll(".ov").forEach(function(o){o.addEventListener("click",function(e){if(e.target===o){o.classList.remove("show");}});});
+$("#q").addEventListener("input",function(e){query=e.target.value.trim();render();});
+
+// menus
+document.querySelectorAll(".menu [data-menu]").forEach(function(b){b.onclick=function(e){e.stopPropagation();
+  var m=b.closest(".menu");var open=m.classList.contains("open");document.querySelectorAll(".menu").forEach(function(x){x.classList.remove("open");});if(!open)m.classList.add("open");};});
+document.addEventListener("click",function(){document.querySelectorAll(".menu").forEach(function(x){x.classList.remove("open");});});
+
+$("#impHtmlMerge").onclick=function(){window._impMode="merge";$("#fileHtml").click();};
+$("#impHtmlReplace").onclick=function(){if(confirm("匯入並取代目前書架全部內容？"))  {window._impMode="replace";$("#fileHtml").click();}};
+$("#impJson").onclick=function(){if(confirm("載入備份會取代目前全部內容，確定？"))$("#fileJson").click();};
+$("#fileHtml").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){importHtml(r.result,window._impMode==="replace");};r.readAsText(f,"utf-8");e.target.value="";};
+$("#fileJson").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){importJson(r.result);};r.readAsText(f,"utf-8");e.target.value="";};
+$("#expJson").onclick=exportJson;$("#expHtml").onclick=exportHtml;
+
+// theme
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);$("#btnTheme").textContent=t==="dark"?"☀️":"🌙";try{localStorage.setItem(LS+"_theme",t);}catch(e){}}
+$("#btnTheme").onclick=function(){applyTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark");};
+try{applyTheme(localStorage.getItem(LS+"_theme")==="dark"?"dark":"light");}catch(e){applyTheme("light");}
+
+// 顯示方式切換（卡片 / 清單）
+function applyView(v){viewMode=(v==="list")?"list":"card";try{localStorage.setItem(LS+"_view",viewMode);}catch(e){}
+  document.querySelectorAll("#viewTog button").forEach(function(b){b.classList.toggle("on",b.dataset.v===viewMode);});render();}
+document.querySelectorAll("#viewTog button").forEach(function(b){b.onclick=function(){applyView(b.dataset.v);};});
+document.querySelectorAll("#viewTog button").forEach(function(b){b.classList.toggle("on",b.dataset.v===viewMode);});
+$("#btnFoldAll").onclick=foldAll;
+
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){hideOv("#ovMark");hideOv("#ovFolder");}});
+
+// 使用說明（開新分頁）
+$("#btnGuide").onclick=function(){window.open("bookmark-book-guide.html","_blank");};
+// 背景圖
+$("#bgApplyUrl").onclick=function(){var v=$("#bgUrl").value.trim();if(!v){toast("請先貼上圖片網址");return;}setBg(v);};
+$("#bgUrl").addEventListener("keydown",function(e){if(e.key==="Enter"){var v=$("#bgUrl").value.trim();if(v)setBg(v);}});
+$("#bgPickFile").onclick=function(){$("#fileBg").click();};
+// 背景圖壓縮：縮到最長邊 ≤ maxDim，再逐步降 JPEG 畫質/尺寸，直到 dataURI ≤ 約 1.4MB
+function compressBg(file,cb){
+  var LIMIT=1.4*1024*1024;
+  var r=new FileReader();
+  r.onerror=function(){cb(null);};
+  r.onload=function(){
+    var img=new Image();
+    img.onerror=function(){cb(null);};
+    img.onload=function(){
+      try{
+        function render(maxDim,q){
+          var w=img.width,h=img.height,s=Math.min(1,maxDim/Math.max(w,h));
+          var cw=Math.max(1,Math.round(w*s)),ch=Math.max(1,Math.round(h*s));
+          var cv=document.createElement("canvas");cv.width=cw;cv.height=ch;
+          cv.getContext("2d").drawImage(img,0,0,cw,ch);
+          return cv.toDataURL("image/jpeg",q);
+        }
+        var dim=1920,q=0.85,data=render(dim,q);
+        while(data.length>LIMIT&&q>0.4){q-=0.12;data=render(dim,q);}
+        while(data.length>LIMIT&&dim>640){dim=Math.round(dim*0.8);data=render(dim,0.8);}
+        cb(data);
+      }catch(err){cb(null);}
+    };
+    img.src=r.result;
+  };
+  r.readAsDataURL(file);
+}
+$("#fileBg").onchange=function(e){var f=e.target.files[0];if(!f){return;}
+  var done=function(data){if(!data){toast("圖片讀取失敗");return;}setBg(data);$("#bgUrl").value="";};
+  if(f.size>900*1024){ toast("圖片較大，壓縮中…"); compressBg(f,function(data){
+      if(data){done(data);}
+      else{var r=new FileReader();r.onload=function(){done(r.result);};r.readAsDataURL(f);} }); }
+  else{ var r=new FileReader();r.onload=function(){done(r.result);};r.readAsDataURL(f); }
+  e.target.value="";};
+$("#bgReset").onclick=function(){setBg("");$("#bgUrl").value="";};
+
+render();
+applyBg();
+</script>
+</body>
+</html>

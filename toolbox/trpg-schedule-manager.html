@@ -1224,13 +1224,21 @@ function renderStats(){
   var mDone=[],mLive=[],mPlan=[];for(var i=0;i<12;i++){mDone[i]=0;mLive[i]=0;mPlan[i]=0;}
   teams.forEach(function(t){if(t.mo){if(t.st==="已結團")mDone[t.mo-1]++;else if(t.st==="進行中")mLive[t.mo-1]++;else mPlan[t.mo-1]++;}});
   var mMax=1;for(var j=0;j<12;j++)mMax=Math.max(mMax,mDone[j]+mLive[j]+mPlan[j]);
-  // 每月各狀態（已結團／未結（進行中）／預定）的團（編號＋團名＋最後一次團務時間），供游標提示用
+  // 每月各狀態（已結團／未結（進行中）／預定）的團（編號＋團名＋最後一次團務時間、系統），供游標提示用
   var mDoneL=[],mLiveL=[],mPlanL=[];for(var i=0;i<12;i++){mDoneL[i]=[];mLiveL[i]=[];mPlanL[i]=[];}
   teams.forEach(function(t){if(!t.mo)return;
     var lbl=esc((t.no?t.no+". ":"")+(t.nm||"（無題）"))+'（最後 '+esc(t.last)+'）';
-    if(t.st==="已結團")mDoneL[t.mo-1].push(lbl);
-    else if(t.st==="進行中")mLiveL[t.mo-1].push(lbl);
-    else mPlanL[t.mo-1].push(lbl);});
+    var entry={sys:t.sys||"（未填）",lbl:lbl};
+    if(t.st==="已結團")mDoneL[t.mo-1].push(entry);
+    else if(t.st==="進行中")mLiveL[t.mo-1].push(entry);
+    else mPlanL[t.mo-1].push(entry);});
+  // 將某狀態清單依系統分組：每組前加「[系統名]」，系統依名稱排序，組內維持原順序
+  function groupBySys(entries){
+    var order=[],g={};
+    entries.forEach(function(e){var sy=e.sys;if(!g[sy]){g[sy]=[];order.push(sy);}g[sy].push(e.lbl);});
+    order.sort(function(a,b){return String(a).localeCompare(String(b),"zh-Hant");});
+    return order.map(function(sy){return '['+esc(sy)+']&#10;'+g[sy].join('&#10;');}).join('&#10;');
+  }
 
   var h="";
   // progress panel（上排四欄：跑團管理｜年總覽｜跨年度尚未結團｜系統分布）
@@ -1277,9 +1285,9 @@ function renderStats(){
     var tot=mDone[k]+mLive[k]+mPlan[k];
     var dh=mDone[k]/mMax*100,lh=mLive[k]/mMax*100,pph=mPlan[k]/mMax*100;
     var parts=[];
-    if(mDoneL[k].length)parts.push('已結團：&#10;'+mDoneL[k].join('&#10;'));
-    if(mLiveL[k].length)parts.push('未結（進行中）：&#10;'+mLiveL[k].join('&#10;'));
-    if(mPlanL[k].length)parts.push('預定（尚未開始）：&#10;'+mPlanL[k].join('&#10;'));
+    if(mDoneL[k].length)parts.push('已結團：&#10;'+groupBySys(mDoneL[k]));
+    if(mLiveL[k].length)parts.push('未結（進行中）：&#10;'+groupBySys(mLiveL[k]));
+    if(mPlanL[k].length)parts.push('預定（尚未開始）：&#10;'+groupBySys(mPlanL[k]));
     var hasUf=parts.length>0;
     var ufTip=hasUf?(mn[k]+' 月&#10;'+parts.join('&#10;&#10;')):'';
     // 由上而下：預定 → 未結 → 已結團（最上一段保留圓角，其餘方角）
